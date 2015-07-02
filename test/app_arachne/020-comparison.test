@@ -216,6 +216,41 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {1}
 
+    #-------------------------------------------------------------------
+    # /comparison/{comp}/outputs.json
+    
+    test comp_outputs.json-1.1 {Not found} -body {
+        ted getx /comparison /comp00/outputs.json
+    } -cleanup {
+        cleanup
+    } -match norm -result {NOTFOUND {No such comparison: "comp00"}}
+
+    test comp_outputs.json-2.1 {got data} -setup { 
+        advance case00 30
+        comp new case00
+    } -body {
+        # Check that it's a list of at least one object.
+        set list [ted getjsonx /comparison /comp00/outputs.json]
+        set diff [lindex $list 0]
+        expr {[dict size $diff] > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test comp_outputs.json-2.2 {matches index.json initially} -setup { 
+        advance case00 30
+        comp new case00
+    } -body {
+        # Check that it's a list of at least one object.
+        set list1 [ted getjsonx /comparison /comp00/outputs.json]
+        set list2 [ted getjsonx /comparison /comp00/index.json]
+        expr {$list1 eq $list2}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    # TBD: Once we can do a chain, do a chain and verify that outputs
+    # and index are no longer identical.
 
     #-------------------------------------------------------------------
     # Cleanup

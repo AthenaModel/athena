@@ -307,7 +307,7 @@ snit::type ::athena::comparison {
 
     # getbytype ?-toplevel?
     #
-    # Returns a dictionary of lists of vardiffs vardiffs by 
+    # Returns a dictionary of lists of vardiffs by 
     # vartype.  If -toplevel is given, only toplevel vardiffs are
     # included.
 

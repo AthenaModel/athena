@@ -127,7 +127,8 @@ smarturl /comparison /{comp}/index.json {
     Returns a list of the significant differences in comparison {comp}
     as "vardiff" objects.
     Initially this list will include only the significant outputs; as
-    chains are explored, it will include the causality chains as well.
+    chains are explored, it will include the causality chain vardiffs
+    as well.
 } {
     set comp [my ValidateComp $comp]
 
@@ -144,7 +145,7 @@ smarturl /comparison /{comp}/outputs.json {
 } {
     set comp [my ValidateComp $comp]
 
-    return [js error "Not implemented yet"]
+    return [huddle jsondump [comp with $comp diffs huddle -toplevel]]
 }
 
 smarturl /comparison /{comp}/chain.json {
