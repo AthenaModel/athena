@@ -61,6 +61,15 @@ namespace eval ::athena_test::tests:: {
     # Notes
     #
     # "case init" and "case clear" are tested in use by the test suite.
+
+    #-------------------------------------------------------------------
+    # clear
+
+    test clear-1.1 {executes without error} -body {
+        case clear
+    } -result {}
+
+    
     
     #-------------------------------------------------------------------
     # names

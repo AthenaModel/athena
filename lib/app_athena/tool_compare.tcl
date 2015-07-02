@@ -35,7 +35,7 @@ tool define COMPARE {
     Options:
 
     -format dump|json  - Output format
-    -vars list         - List of variable names to explain.
+    -chain varname     - Variable name to explain.
     -set parm=value    - Set a compdb(5) parameter value.
 } {
     #-------------------------------------------------------------------
@@ -63,7 +63,7 @@ tool define COMPARE {
         # options
         array set opts {
             -format dump
-            -vars   {}
+            -chain   {}
         }
 
         athena compdb init
@@ -76,8 +76,8 @@ tool define COMPARE {
                             "Invalid -format value, \"$opts(-format)\""
                     }
                 }
-                -vars {
-                    set opts(-vars) [lshift argv]
+                -chain {
+                    set opts(-chain) [lshift argv]
                 }
                 -set {
                     lassign [split [lshift argv] =] parm value
@@ -102,10 +102,6 @@ tool define COMPARE {
         # NEXT, look for differences
         try {
             set comp [athena diff $s1 $s2]
-
-            foreach var $opts(-vars) {
-                $comp explain $var
-            }
         } trap {ATHENA INCOMPARABLE} {result} {
             throw FATAL $result
         }
@@ -124,8 +120,25 @@ tool define COMPARE {
 
         puts ""
 
+        # NEXT, explain the -chain variable, so that its chain gets
+        # included in the list of vars.
+        if {$opts(-chain) ne "" && [$comp exists $opts(-chain)]} {
+            $comp explain $opts(-chain)
+        }
+
+
         # NEXT, output to console.
         puts [$comp diffs $opts(-format)]
+
+        # NEXT, dump chain.
+        if {$opts(-chain) ne ""} {
+            puts "\nChain for: $opts(-chain)\n"
+            if {![$comp exists $opts(-chain)]} {
+                puts "Variable $opts(-chain) is not signficant"
+            } else {
+                puts [$comp chain dump $opts(-chain)]
+            }
+        }
 
         $comp destroy
     }

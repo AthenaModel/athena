@@ -42,7 +42,6 @@ oo::class create ::athena::vardiff::sat {
     #-------------------------------------------------------------------
     # Input Differences
 
-
     method FindDiffs {} {
         variable comp
 

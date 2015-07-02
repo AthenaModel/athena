@@ -48,12 +48,14 @@ namespace eval ::app_arachne:: {
 source [file join $::app_arachne::library main.tcl                     ]
 source [file join $::app_arachne::library app.tcl                      ]
 source [file join $::app_arachne::library case.tcl                     ]
+source [file join $::app_arachne::library comp.tcl                     ]
 source [file join $::app_arachne::library js.tcl                       ]
 
 # Smart domain handlers
 source [file join $::app_arachne::library domain index.tcl             ]
 source [file join $::app_arachne::library domain meta.tcl              ]
 source [file join $::app_arachne::library domain debug.tcl             ]
+source [file join $::app_arachne::library domain comparison.tcl        ]
 source [file join $::app_arachne::library domain scenario.tcl          ]
 source [file join $::app_arachne::library domain scenario_case.tcl     ]
 source [file join $::app_arachne::library domain scenario_history.tcl  ]
