@@ -249,11 +249,31 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {1}
 
-    # TBD: Once we can do a chain, do a chain and verify that outputs
-    # and index are no longer identical.
-
     #-------------------------------------------------------------------
     # Cleanup
+
+    test comp_chain.json-1.1 {invalid var} -setup { 
+        advance case00 30
+        comp new case00
+    } -body {
+        # Check that it's a list of at least one object.
+        ted getjsonx /comparison /comp00/chain.json var NONESUCH]
+    } -cleanup {
+        cleanup
+    } -result {REJECT {var {Variable is not significant: NONESUCH]}}}
+
+    test comp_chain.json-2.1 {invalid var} -setup { 
+        advance case00 30
+        comp new case00
+        comp with comp00 explain vrel/C0002/A00
+    } -body {
+        # Check that it's a list of at least one object.
+        set list [ted getjsonx /comparison /comp00/chain.json var vrel/C0002/A00]
+        expr {[llength $list] > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
 
 
     ::tcltest::cleanupTests

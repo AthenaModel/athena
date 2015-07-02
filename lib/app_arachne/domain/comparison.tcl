@@ -132,7 +132,7 @@ smarturl /comparison /{comp}/index.json {
 } {
     set comp [my ValidateComp $comp]
 
-    return [huddle jsondump [comp with $comp diffs huddle]]
+    return [comp with $comp diffs json]
 }
 
 smarturl /comparison /{comp}/outputs.json {
@@ -145,7 +145,7 @@ smarturl /comparison /{comp}/outputs.json {
 } {
     set comp [my ValidateComp $comp]
 
-    return [huddle jsondump [comp with $comp diffs huddle -toplevel]]
+    return [comp with $comp diffs json -toplevel]
 }
 
 smarturl /comparison /{comp}/chain.json {
@@ -157,7 +157,14 @@ smarturl /comparison /{comp}/chain.json {
 } {
     set comp [my ValidateComp $comp]
 
-    return [js error "Not implemented yet"]
+    qdict prepare var -required -type [list comp with $comp]
+    qdict assign var
+
+    if {![qdict ok]} {
+        return [js reject [qdict errors]]
+    }
+
+    return [js ok [comp with $comp chain huddle $var]]
 }
 
 smarturl /comparison /{comp}/explain.json {

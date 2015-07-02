@@ -120,6 +120,13 @@ tool define COMPARE {
 
         puts ""
 
+        # NEXT, explain the -chain variable, so that its chain gets
+        # included in the list of vars.
+        if {$opts(-chain) ne "" && [$comp exists $opts(-chain)]} {
+            $comp explain $opts(-chain)
+        }
+
+
         # NEXT, output to console.
         puts [$comp diffs $opts(-format)]
 
@@ -129,7 +136,6 @@ tool define COMPARE {
             if {![$comp exists $opts(-chain)]} {
                 puts "Variable $opts(-chain) is not signficant"
             } else {
-                $comp explain $opts(-chain)
                 puts [$comp chain dump $opts(-chain)]
             }
         }

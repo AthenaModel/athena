@@ -346,6 +346,21 @@ snit::type ::athena::comparison {
         dict exists $byname $varname
     }
 
+    # validate varname
+    #
+    # varname  - A vardiff variable name
+    #
+    # Throws INVALID if varname isn't a significant variable, and
+    # returns the varname otherwise.
+
+    method validate {varname} {
+        if {![$self exists $varname]} {
+            throw INVALID "Variable is not significant: $varname"
+        }
+        return $varname
+    }
+
+
     # getdiff name
     #
     # name   - A vardiff object name
@@ -448,7 +463,7 @@ snit::type ::athena::comparison {
     # Dumps a text string showing the tree structure of the diff's chain.
 
     method DumpChain {diff leader} {
-        lappend result "$leader[$diff name]"
+        lappend result "$leader[$diff name] ([$diff score])"
 
         if {$leader eq ""} {
             set leader "+-> "
@@ -471,7 +486,7 @@ snit::type ::athena::comparison {
         set hud [huddle list]
     
         foreach diff [$self getchain $varname] {
-            huddle append hud [huddle compile dict [$diff view]]
+            huddle append hud [$diff huddle]
         }
 
         return $hud
@@ -516,6 +531,7 @@ snit::type ::athena::comparison {
             dict set row B          [$diff fmt2]
             dict set row Context    [$diff context]
             dict set row Score      [$diff score]
+            dict set row Inputs     [$diff inputs]
 
             lappend table $row
         }
@@ -540,8 +556,7 @@ snit::type ::athena::comparison {
 
         dict for {vartype difflist} [$self getbytype $opt] {
             foreach diff [$self SortByScore $difflist] {
-                set hvar [huddle compile dict [$diff view]]
-                huddle append hud $hvar
+                huddle append hud [$diff huddle]
             }
         }
 
