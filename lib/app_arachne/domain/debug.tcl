@@ -123,18 +123,6 @@ smarturl /debug /index.html {
     hb para
 
     hb ul {
-        hb li-with {
-            hb xref /scenario/urlschema.html "URL Schema: /scenario"
-        }
-        
-        hb li-with {
-            hb xref /comparison/urlschema.html "URL Schema: /comparison"
-        }
-
-        hb li-with {
-            hb iref /urlschema.html "URL Schema: [my domain]"
-        }
-
         set lognames [glob \
                         -nocomplain \
                         -directory [scratchdir join log] \

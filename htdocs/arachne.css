@@ -20,3 +20,13 @@ body {
    min-height: 1024px; 
 }
 
+/* For <p> elements at the top of a box. */
+P.top {
+    margin-top: 10px;
+}
+
+/* DD elements need a little extra space below. */
+dl.loose dd {
+    margin-bottom: 10px;
+}
+
