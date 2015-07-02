@@ -203,6 +203,14 @@ oo::class create ::athena::vardiff {
         return $result
     }
 
+    # gotdiffs
+    #
+    # Returns 1 if we've found diffs for this vardiff, and 0 otherwise.
+
+    method gotdiffs {} {
+        return $gotdiffs
+    }
+
     # diffs
     #
     # Computes vardiffs for significant differences in variable

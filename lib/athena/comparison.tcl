@@ -214,26 +214,70 @@ snit::type ::athena::comparison {
     }
 
     #-------------------------------------------------------------------
-    # Explain a variable
+    # Variable chaining
 
     # explain varname
     #
-    # varname    - A vardiff name
+    # varname   - A significant vardiff name
     #
-    # Drills down to explain the difference in the varname.
+    # Starting with the varname, which must name an existing vardiff,
+    # drills down the tree as far as possible to populate the vardiff's
+    # causality chain.  If the chain has already been computed, does
+    # nothing.
     #
-    # TBD: For now, one level of drill down!
+    # The algorithm assumes that if a given vardiff's inputs have been
+    # computed, then the inputs of those inputs have also been recruited.
+    #
+    # Returns nothing; use "chain" to retrieve the chain.
 
     method explain {varname} {
-        set diff [$self getdiff $varname]
+        require {[$self exists $varname]} "No such vardiff in memory"
 
-        if {$diff ne ""} {
-            return [$diff diffs]
-        } else {
-            return [list]
+        set diffs [list [$self getdiff $varname]]
+        while {[llength $diffs] > 0} {
+            set diff [lshift diffs]
+
+            if {![$diff gotdiffs]} {
+                set these [$diff diffs]
+                lappend diffs {*}$these
+            }
         }
     }
-    
+
+    # getchain varname
+    #
+    # varname   - A significant vardiff name
+    #
+    # Computes the causality chain for the named variable.  Returns
+    # the vardiffs in the chain.
+    #
+    # It is common for a vardiff to be an input for multiple vardiffs.
+    # Each vardiff appears in the chain once, in breadth-first-search
+    # order.
+
+    method getchain {varname} {
+        require {[$self exists $varname]} "No such vardiff in memory"
+
+        set chain [dict create]
+
+        set root [$self getdiff $varname]
+
+        if {![$root gotdiffs]} {
+            $self explain $varname
+        }
+
+        set diffs [list $root]
+        while {[llength $diffs] > 0} {
+            set diff [lshift diffs]
+
+            if {![dict exists chain $diff]} {
+                dict set chain $diff 1
+                lappend diffs {*}[$diff diffs]
+            }
+        }
+
+        return [dict keys $chain]
+    }
 
     #-------------------------------------------------------------------
     # Queries
@@ -289,6 +333,17 @@ snit::type ::athena::comparison {
         } else {
             return [dict values $byname]
         }        
+    }
+
+    # exists varname
+    #
+    # varname  - A vardiff variable name
+    #
+    # Returns 1 if there is a significant variable with the given 
+    # name, and 0 otherwise.
+
+    method exists {varname} {
+        dict exists $byname $varname
     }
 
     # getdiff name
@@ -376,6 +431,59 @@ snit::type ::athena::comparison {
 
     #-------------------------------------------------------------------
     # Output of Diffs
+
+    # chain dump varname
+    #
+    # Returns a text string showing the structure of the chain.
+
+    method {chain dump} {varname} {
+        $self DumpChain [$self getdiff $varname] ""
+    }
+
+    # DumpChain diff leader
+    #
+    # diff   - A vardiff
+    # leader - Leader spaces
+    #
+    # Dumps a text string showing the tree structure of the diff's chain.
+
+    method DumpChain {diff leader} {
+        lappend result "$leader[$diff name]"
+
+        if {$leader eq ""} {
+            set leader "+-> "
+        } else {
+            set leader "    $leader"
+        }
+
+        foreach d [$diff diffs] {
+            lappend result [$self DumpChain $d $leader]
+        }
+
+        return [join $result \n]
+    }
+
+    # chain huddle varname
+    #
+    # Returns the chain's differences formatted as a huddle(n) object.
+
+    method {chain huddle} {varname} {
+        set hud [huddle list]
+    
+        foreach diff [$self getchain $varname] {
+            huddle append hud [huddle compile dict [$diff view]]
+        }
+
+        return $hud
+    }
+
+    # chain json varname
+    #
+    # Returns the chain's differences formatted as a JSON string.
+
+    method {chain json} {varname} {
+        return [huddle jsondump [$self chain huddle $varname]]
+    }
     
     # diffs dump ?-toplevel?
     #
@@ -384,17 +492,32 @@ snit::type ::athena::comparison {
     # included.
 
     method {diffs dump} {{opt ""}} {
-        set table [list]
-        dict for {vartype difflist} [$self getbytype $opt] {
-            foreach diff [$self SortByScore $difflist] {
-                dict set row Variable   [$diff name]
-                dict set row A          [$diff fmt1]
-                dict set row B          [$diff fmt2]
-                dict set row Context    [$diff context]
-                dict set row Score      [$diff score]
+        set vardiffs [list]
 
-                lappend table $row
-            }
+        dict for {vartype difflist} [$self getbytype $opt] {
+            lappend vardiffs {*}[$self SortByScore $difflist]
+        }
+
+        return [$self DumpList $vardiffs]
+    }
+
+    # DumpList vardiffs
+    #
+    # vardiffs - A list of vardiff names
+    #
+    # Produces a monotext formatted table of the differences in the 
+    # list.
+
+    method DumpList {vardiffs} {
+        set table [list]
+        foreach diff $vardiffs {
+            dict set row Variable   [$diff name]
+            dict set row A          [$diff fmt1]
+            dict set row B          [$diff fmt2]
+            dict set row Context    [$diff context]
+            dict set row Score      [$diff score]
+
+            lappend table $row
         }
 
         return [dictab format $table -headers]

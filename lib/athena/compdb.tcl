@@ -194,7 +194,7 @@ snit::type ::athena::compdb {
         }
 
         # vrel
-        $ps define vrel.limit ::athena::compdb::dlimit 0.2 {
+        $ps define vrel.limit ::athena::compdb::dlimit 0.05 {
             Significant difference limit: minimum absolute
             difference, as a relationship value.
         }

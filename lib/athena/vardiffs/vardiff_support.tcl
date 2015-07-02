@@ -84,7 +84,6 @@ oo::class create ::athena::vardiff::support {
             AND g IN ('[join $glist ',']')
         " {
             let diff {abs($security1 - $security2)}
-            puts "security $n $g $security1 $security2 $diff"
             my diffadd security $security1 $security2 $n $g
         }
 
