@@ -21,12 +21,13 @@ body {
 }
 
 /* For <p> elements at the top of a box. */
-P.top {
+p.top {
     margin-top: 10px;
 }
 
 /* DD elements need a little extra space below. */
 dl.loose dd {
     margin-bottom: 10px;
+    margin-left: 2em;
 }
 
