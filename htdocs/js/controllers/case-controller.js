@@ -31,6 +31,10 @@ function($routeParams, $http, $timeout, LastTab) {
         return LastTab.get(this.caseId) === tab;
     };
 
+    this.isGroups = function(tab) {
+        return LastTab.get(this.caseId).indexOf('groups') != -1;
+    };
+
     //----------------------------------------------------
     // Scenario Metadata
 
@@ -46,7 +50,7 @@ function($routeParams, $http, $timeout, LastTab) {
                 if (controller.isBusy()) {
                     controller.scheduleRefresh();
                 } else if (oldState != controller.metadata.state) {
-                    controller.refreshData();
+                    controller.refreshAllObjects();
                 }
             });
     }
@@ -88,53 +92,40 @@ function($routeParams, $http, $timeout, LastTab) {
     // Scenario Objects
 
     // Object storage
-	this.actors    = [];    // List of actors in case
-    this.nbhoods   = [];    // List of nbhoods in case
-	this.groups    = [];    // List of groups by gtype in case
-
-	// Model interface
-	this.gtypes    = ['CIV', 'FRC', 'ORG', 'ALL'];
-	this.gtype     = 'ALL';
-
-
-    // Data retrieval
-	this.getActors = function () {
-        $http.get('/scenario/' + this.caseId + '/actors/index.json')
-            .success(function(data) {
-                controller.actors = data;
-        });
+    this.objectSuffix = {
+        actors:    '/actors/index.json',
+        nbhoods:   '/nbhoods/index.json',
+        groups:    '/group/index.json',
+        civgroups: '/group/civ.json',
+        frcgroups: '/group/frc.json',
+        orggroups: '/group/org.json'
     };
 
-	this.getNbhoods = function () {
-        $http.get('/scenario/' + this.caseId + '/nbhoods/index.json')
-            .success(function(data) {
-                controller.nbhoods = data;
-        });
+    this.objectData = {
     };
 
-    this.getGroups = function () { 
-        var url ;      	
-    	switch (this.gtype) {
-    		case 'ALL' :
-    		    url = '/scenario/' + this.caseId + '/group/index.json' ;
-		        break;
-		    case 'CIV' :
-		        url = '/scenario/' + this.caseId + '/group/civ.json' ;
-		        break;
-		    case 'FRC' :
-		        url = '/scenario/' + this.caseId + '/group/frc.json' ;
-		        break;
-		    case 'ORG' :
-		        url = '/scenario/' + this.caseId + '/group/org.json' ;
-		        break;
-		    default :
-		        url = '/scenario/' + this.caseId + '/group/index.json' ;
-		}
-		
+    this.refreshObjects = function(otype) {
+        var url = '/scenario/' + this.caseId + 
+                  this.objectSuffix[otype];
+
+        if (!this.objectData[otype]) {
+            this.objectData[otype] == []
+        }
+
         $http.get(url).success(function(data) {
-            controller.groups = data;
+            controller.objectData[otype] = data;
         });
-	};
+    };
+
+    this.objects = function (otype) {
+        return controller.objectData[otype];
+    };
+
+    this.refreshAllObjects = function () {
+        for (var otype in this.objectSuffix) {
+            this.refreshObjects(otype);
+        }
+    }
 
     //-------------------------------------------------------
     // Operations
@@ -262,13 +253,4 @@ function($routeParams, $http, $timeout, LastTab) {
     // Refresh
 
     this.refreshMetadata();
-
-    this.refreshData = function () {
-        this.getActors();
-        this.getNbhoods();
-        this.getGroups('ALL');
-    }
-
-    this.refreshMetadata();
-	this.refreshData();
 }]);

@@ -9,7 +9,7 @@
 <th>Subsistence<br>Agriculture</th>
 </tr>
 
-<tr ng-repeat="group in page.groups">
+<tr ng-repeat="group in page.objects('civgroups')">
 	<td><b>
 	<a href="#/scenario/{{page.caseId}}/{{group.qid}}/">{{group.g}}</a>
 	</b></td>
@@ -22,4 +22,4 @@
 </tr>
 </table>
 
-<ar-example header="JSON Result" content="{{page.groups | json:'  '}}"></ar-example>
+<ar-example header="JSON Result" content="{{page.objects('civgroups') | json:'  '}}"></ar-example>

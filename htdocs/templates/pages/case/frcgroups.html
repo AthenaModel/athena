@@ -14,7 +14,7 @@
 <th>Cost,<br>$/person/week</th>
 </tr>
 
-<tr ng-repeat="group in page.groups">
+<tr ng-repeat="group in page.objects('frcgroups')">
 	<td><b>
 	<a href="#/scenario/{{page.caseId}}/{{group.qid}}/">{{group.g}}</a>
 	</b></td>
@@ -33,4 +33,4 @@
 </tr>
 </table>
 
-<ar-example header="JSON Result" content="{{page.groups | json:'  '}}"></ar-example>
+<ar-example header="JSON Result" content="{{page.objects('frcgroups') | json:'  '}}"></ar-example>
