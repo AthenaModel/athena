@@ -1,6 +1,6 @@
 <ar-mainpage sidebar="/templates/pages/case/sidebar.html">
-<h1>Case {{page.caseId}}: {{page.objectId}}</h1>
+<h2>Case {{page.caseId}}: {{page.objectId}}</h2>
 
-<ar-example header="JSON Result" content="{{page.data}}"></ar-example>
+<ar-example header="JSON Result" content="{{page.data | json:' '}}"></ar-example>
 
 </ar-mainpage>

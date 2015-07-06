@@ -1,8 +1,23 @@
 <ar-mainpage sidebar="/templates/pages/case/sidebar.html">
-<h1>Case: {{page.caseId}}</h1>
+<h1>Case {{page.caseId}}: {{page.metadata.longname}}</h1>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+  <strong>Week:</strong> 
+  {{page.metadata.week + ' (' + page.metadata.tick + ')'}}
+  <strong>State:</strong>
+  <span class="label label-primary" ng-class="page.stateClass()">{{page.metadata.state}}
+  <span class="glyphicon glyphicon-lock" ng-show="page.isLocked()"></span>
+  <span class="glyphicon glyphicon-hourglass" ng-show="page.isBusy()"></span>
+  </span>
+  </div>
+</div>
 
 <nav>
 <ul class="nav nav-tabs">
+  <li ng-class="{ active: page.isSet('manage') }">
+    <a href ng-click="page.setTab('manage')">Manage</a>
+  </li>
   <li ng-class="{ active: page.isSet('actors') }">
     <a href ng-click="page.setTab('actors')">Actors</a>
   </li>
@@ -17,8 +32,13 @@
 </ul>
 </nav>
 
-<div ng-show="page.isSet('actors')"    ng-include="'/templates/pages/case/actors.html'"></div>
-<div ng-show="page.isSet('nbhoods')"  ng-include="'/templates/pages/case/nbhoods.html'"></div>
-<div ng-show="page.isSet('groups')"  ng-include="'/templates/pages/case/groups.html'"></div>
+<div ng-show="page.isSet('manage')"  
+     ng-include="'/templates/pages/case/manage.html'"></div>
+<div ng-show="page.isSet('actors')"  
+     ng-include="'/templates/pages/case/actors.html'"></div>
+<div ng-show="page.isSet('nbhoods')" 
+     ng-include="'/templates/pages/case/nbhoods.html'"></div>
+<div ng-show="page.isSet('groups')"  
+     ng-include="'/templates/pages/case/groups.html'"></div>
 
 </ar-mainpage>

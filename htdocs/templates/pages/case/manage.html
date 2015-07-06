@@ -1,0 +1,51 @@
+<h2>Manage This Case</h2>
+
+<p class="top text-info">
+The scenario can be locked and unlocked, and when it is locked time can be 
+advanced.<p>
+
+<form class="form-inline">
+  <button class="btn btn-primary" type="button" ng-click="page.opLock()"
+    ng-disabled="page.isLocked() || page.isBusy()">
+    Lock
+  </button> 
+  <button class="btn btn-primary" type="button" ng-click="page.opUnlock()"
+    ng-disabled="page.isUnlocked() || page.isBusy()">
+    Unlock
+  </button> 
+
+  <div class="form-group">
+    <label for="weeks">Weeks:</label>
+    <select id="weeks" class="form-control" ng-model="page.weeksToAdvance">
+      <option value="1">1 week</option>
+      <option value="2">2 weeks</option>
+      <option value="3">3 weeks</option>
+      <option value="4">4 weeks</option>
+      <option value="5">5 weeks</option>
+      <option value="6">6 weeks</option>
+      <option value="7">7 weeks</option>
+      <option value="8">9 weeks</option>
+      <option value="10">10 weeks</option>
+      <option value="12">12 weeks</option>
+      <option value="24">24 weeks</option>
+      <option value="36">36 weeks</option>
+      <option value="48">48 weeks</option>
+      <option value="52">1 year</option>
+      <option value="104">2 years</option>
+    </select>
+  </div>
+  <button class="btn btn-primary" type="button" ng-click="page.opAdvance()"
+    ng-disabled="page.isUnlocked() || page.isBusy() || !page.weeksToAdvance">
+    Advance
+  </button> 
+  <button class="btn btn-primary" type="button" ng-click="page.refreshMetadata()">
+    <span class="glyphicon glyphicon-refresh"></span>
+  </button> 
+</form>
+
+<!-- Show the operation result -->
+<ar-result op="case" result="page.status"></ar-result>
+
+<!-- Show the JSON response -->
+<ar-example header="JSON Result" content="{{page.jsonData('case')}}"></ar-example>
+

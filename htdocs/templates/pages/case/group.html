@@ -1,4 +1,4 @@
-<h1>Case {{page.caseId}}: All Groups</h1>
+<h2>All Groups</h2>
 
 <table class="table table-striped table-hover">
 <tr>
@@ -16,4 +16,4 @@
 </tr>
 </table>
 
-<ar-example header="JSON Result" content="{{page.groups}}"></ar-example>
+<ar-example header="JSON Result" content="{{page.groups | json:'  '}}"></ar-example>

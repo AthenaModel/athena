@@ -138,6 +138,15 @@ smarturl /scenario /{case}/index.html {
     return [hb /page]
 }
 
+smarturl /scenario /{case}/index.json {
+    Returns metadata for scenario {case}.
+} {
+    # FIRST, get the URL placeholder variables
+    set case [my ValidateCase $case]
+
+    return [huddle jsondump [huddle compile dict [case metadata $case]]]
+}
+
 #-----------------------------------------------------------------------
 # lock.json
 
