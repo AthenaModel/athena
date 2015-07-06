@@ -102,7 +102,8 @@ oo::class create /debug {
                     puts -nonewline $f ",\n"
                 }
 
-                set data(wallclock) [lindex $line 0]
+                set data(wallclock) [expr \
+                    [clock scan [lindex $line 0] -format {%Y-%m-%dT%H:%M:%S}] * 1000]
                 set data(level)     [lindex $line 1]
                 set data(component) [lindex $line 2]
                 set data(message)   [lindex $line 3]

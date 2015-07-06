@@ -71,18 +71,22 @@ angular.module('arachne')
     this.logEntries = [];   // Array of log entries for the selected log
 
     this.logRetrieve = function() {
-        // FIRST, get the available areas.
+        // FIRST, get the available areas
         $http.get('/debug/logs.json').success(function(data) {
             var areas = Object.keys(data);
             controller.logs = data;
             console.log(data);
 
+            // NEXT, if no area yet, set to last
             if (!controller.gotArea(controller.logArea)) {
-                controller.logArea = '';
+                controller.setArea(areas[areas.length-1])
             }
 
+            // NEXT, if no log file yet, set to last in area and display
             if (!controller.gotFile(controller.logFile)) {
-                controller.logFile = '';
+                var logfiles = controller.logs[controller.logArea];
+                controller.logFile = logfiles[logfiles.length-1];
+                controller.showLog();
             }
         })
     }
@@ -110,16 +114,27 @@ angular.module('arachne')
 
     this.setArea = function(area) {
         console.log("setArea: " + area);
+        if (area === this.logArea) {
+            return;
+        }
+
         this.logArea = area;
         this.logFile = this.logs[area][this.logs[area].length - 1];
         this.setTab('logs');
+        controller.logEntries = [];
         this.showLog();
     };
 
     this.setFile = function(file) {
         console.log("setFile: " + file);
+
+        if (file === this.logFile) {
+            return;
+        }
+
         this.logFile = file;
         this.setTab('logs');
+        controller.logEntries = [];
         this.showLog();
     };
 
@@ -129,12 +144,11 @@ angular.module('arachne')
             url = url + '&logfile=' + this.logFile;
         }
 
-        console.log(url);
         $http.get(url).success(function(data) {
             controller.logEntries = data;
             console.log(data);
         })       
-    }
+    };
 
     //--------------------------------------------
     // Initialization
