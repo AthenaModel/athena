@@ -1,0 +1,286 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    020-comparison.test
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    app_arachne(1): Comparison Management URLs
+#
+#    This test suite tests the handlers for these URLs:
+#
+#    /comparison/*.json
+#    /comparison/{comp}/*.json.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), app_athenawb(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc advance {case {ticks 1}} {
+        case with $case autogen scenario \
+            -nb 2       \
+            -actors 1   \
+            -frcg 1     \
+            -civg 2     \
+            -topics 1   \
+            -nostrategy
+        case with $case lock
+        case with $case advance -ticks $ticks
+    }
+
+    proc cleanup {} {
+       ted cleanup
+    }
+
+    ted mkadb test1
+
+    #-------------------------------------------------------------------
+    # /comparison/urlschema.html
+
+    test urlschema-1.1 {Can retrieve the URL schema} -body {
+        ted get /urlschema.html
+    } -match glob -result {<html>*URL Schema Help*</html>}
+    
+    #-------------------------------------------------------------------
+    # /comparison/index.json
+    
+    test index.json-1.1 {Initially empty} -body {
+        ted getx /comparison /index.json
+    } -cleanup {
+        cleanup
+    } -match trim -result {
+[
+  
+]
+    }
+
+    test index.json-1.2 {A couple of comparisons} -setup {
+        advance case00
+        comp new case00
+        comp new case00 case00
+    } -body {
+        ted getx /comparison /index.json
+    } -cleanup {
+        cleanup
+    } -match trim -result {
+[
+  {
+    "id": "comp00",
+    "longname": "case00 @ 0 vs. case00 @ 1",
+    "case1": "case00",
+    "case2": "case00",
+    "t1": 0,
+    "t2": 1
+  },
+  {
+    "id": "comp01",
+    "longname": "case00 @ 0 vs. case00 @ 1",
+    "case1": "case00",
+    "case2": "case00",
+    "t1": 0,
+    "t2": 1
+  }
+]
+    }
+
+    #-------------------------------------------------------------------
+    # /comparison/new.json
+    
+    test new.json-1.1 {REJECT: unknown cases} -body {
+        ted getjsonx /comparison /new.json case1 case01 case2 case02
+    } -cleanup {
+        cleanup
+    } -match norm -result {REJECT {case1 {Unknown case1} case2 {Unknown case2}}}
+
+    test new.json-1.2 {REJECT: case1 not ready} -setup {
+        # 
+    } -body {
+        ted getjsonx /comparison /new.json case1 case00
+    } -cleanup {
+        cleanup
+    } -match norm -result {ERROR {Time has not been advanced in case "case00".}}
+
+    test new.json-1.3 {REJECT: case2 not ready} -setup {
+        advance case00
+        case new
+    } -body {
+        ted getjsonx /comparison /new.json case1 case00 case2 case01
+    } -cleanup {
+        cleanup
+    } -match norm -result {ERROR {Time has not been advanced in case "case01".}}
+
+    test new.json-2.1 {OK, one case} -setup {
+        advance case00
+    } -body {
+        ted getjsonx /comparison /new.json case1 case00
+    } -cleanup {
+        cleanup
+    } -match norm -result {OK {id comp00 longname {case00 @ 0 vs. case00 @ 1} case1 case00 case2 case00 t1 0 t2 1} {}}
+
+    test new.json-2.2 {OK, two cases} -setup {
+        advance case00
+        case new
+        advance case01
+    } -body {
+        ted getjsonx /comparison /new.json case1 case00 case2 case01
+    } -cleanup {
+        cleanup
+    } -match norm -result {OK {id comp00 longname {case00 @ 1 vs. case01 @ 1} case1 case00 case2 case01 t1 1 t2 1} {}}
+
+    test new.json-2.3 {Get outputs} -setup {
+        advance case00 30
+    } -body {
+        set list [ted getjsonx /comparison /new.json case1 case00]
+        set a [lindex $list 2]
+        set b [ted getjsonx /comparison /comp00/index.json]
+        expr {$a eq $b}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # /comparison/remove.json
+    
+    test remove.json-1.1 {REJECT: missing comparison} -body {
+        ted getjsonx /comparison /remove.json
+    } -match norm -result {REJECT {comp {Required parameter}}}
+
+    test remove.json-1.2 {REJECT: unknown comparison} -body {
+        ted getjsonx /comparison /remove.json comp NONESUCH
+    } -match norm -result {REJECT {comp {Unknown comp}}}
+
+    test remove.json-2.1 {OK} -setup {
+        advance case00
+        comp new case00
+    } -body {
+        ted getjsonx /comparison /remove.json comp comp00
+    } -cleanup {
+        cleanup
+    } -match norm -result {OK {Deleted comparison comp00.}}
+
+    test remove.json-2.2 {Case deleted} -setup { 
+        advance case00
+        comp new case00
+    } -body {
+        set a [comp names]
+        ted getx /comparison /remove.json comp comp00
+        set b [comp names]
+
+        list $a $b
+    } -cleanup {
+        cleanup
+    } -result {comp00 {}}
+
+    #-------------------------------------------------------------------
+    # /comparison/{comp}/index.json
+    
+    test comp_index.json-1.1 {Not found} -body {
+        ted getx /comparison /comp00/index.json
+    } -cleanup {
+        cleanup
+    } -match norm -result {NOTFOUND {No such comparison: "comp00"}}
+
+    test comp_index.json-2.1 {basic data} -setup { 
+        advance case00 30
+        comp new case00
+    } -body {
+        # Check that it's a list of at least one object.
+        set list [ted getjsonx /comparison /comp00/index.json]
+        set diff [lindex $list 0]
+        expr {[dict size $diff] > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # /comparison/{comp}/outputs.json
+    
+    test comp_outputs.json-1.1 {Not found} -body {
+        ted getx /comparison /comp00/outputs.json
+    } -cleanup {
+        cleanup
+    } -match norm -result {NOTFOUND {No such comparison: "comp00"}}
+
+    test comp_outputs.json-2.1 {got data} -setup { 
+        advance case00 30
+        comp new case00
+    } -body {
+        # Check that it's a list of at least one object.
+        set list [ted getjsonx /comparison /comp00/outputs.json]
+        set diff [lindex $list 0]
+        expr {[dict size $diff] > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    test comp_outputs.json-2.2 {matches index.json initially} -setup { 
+        advance case00 30
+        comp new case00
+    } -body {
+        # Check that it's a list of at least one object.
+        set list1 [ted getjsonx /comparison /comp00/outputs.json]
+        set list2 [ted getjsonx /comparison /comp00/index.json]
+        expr {$list1 eq $list2}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    test comp_chain.json-1.1 {invalid var} -setup { 
+        advance case00 30
+        comp new case00
+    } -body {
+        # Check that it's a list of at least one object.
+        ted getjsonx /comparison /comp00/chain.json var NONESUCH]
+    } -cleanup {
+        cleanup
+    } -result {REJECT {var {Variable is not significant: NONESUCH]}}}
+
+    test comp_chain.json-2.1 {invalid var} -setup { 
+        advance case00 30
+        comp new case00
+        comp with comp00 explain vrel/C0002/A00
+    } -body {
+        # Check that it's a list of at least one object.
+        set list [ted getjsonx /comparison /comp00/chain.json var vrel/C0002/A00]
+        expr {[llength $list] > 0}
+    } -cleanup {
+        cleanup
+    } -result {1}
+
+
+
+    ::tcltest::cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+

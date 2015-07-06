@@ -123,6 +123,23 @@ Returns the formatted value of the variable in the second scenario.<p>
 Given a <i value> of the variable's type, formats it for display.  By 
 default, returns <i value> unchanged.<p>
 
+<defitem gotdiffs {<i obj> gotdiffs}>
+
+Returns 1 if we've computed significant inputs for this object, and
+0 otherwise.<p>
+
+<defitem huddle {<i obj> huddle}>
+
+Returns a huddle(n) object corresponding to <i obj>.  It has a field
+for each entry in the <iref view>, plus one for the list of 
+<iref inputs>.<p>
+
+
+<defitem inputs {<i obj> inputs}>
+
+If <iref gotdiffs>, returns a list of the names of the significant
+input variables.  Otherwise, returns the empty list.<p>
+
 <defitem key {<i obj> key <i name>}>
 
 Returns the value of the named key.<p>

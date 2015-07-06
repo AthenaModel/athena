@@ -94,6 +94,12 @@ snit::type ::athena::compdb {
             difference, in satisfaction points.
         }
 
+        # drivervrel
+        $ps define drivervrel.limit ::athena::compdb::dlimit 0.05 {
+            Significant difference limit: minimum absolute
+            difference, as a relationship delta.
+        }
+
         # gdp
         $ps define gdp.limit ::athena::compdb::dlimit 20.0 {
             Significant difference limit: minimum absolute percentage
@@ -151,6 +157,12 @@ snit::type ::athena::compdb {
             difference, in satisfaction points.
         }
 
+        # personnel
+        $ps define personnel.limit ::athena::compdb::dlimit 5.0 {
+            Significant difference limit: minimum absolute
+            percentage change, in percentage points.
+        }
+
         # population
         $ps define population.limit ::athena::compdb::dlimit 5.0 {
             Significant difference limit: minimum absolute
@@ -161,6 +173,12 @@ snit::type ::athena::compdb {
         $ps define sat.limit ::athena::compdb::dlimit 25.0 {
             Significant difference limit: minimum absolute
             difference, in satisfaction points.
+        }
+
+        # security
+        $ps define security.limit ::athena::compdb::ilimit 25 {
+            Significant difference limit: minimum absolute
+            difference, in security points.
         }
 
         # support
@@ -176,7 +194,7 @@ snit::type ::athena::compdb {
         }
 
         # vrel
-        $ps define vrel.limit ::athena::compdb::dlimit 0.2 {
+        $ps define vrel.limit ::athena::compdb::dlimit 0.05 {
             Significant difference limit: minimum absolute
             difference, as a relationship value.
         }

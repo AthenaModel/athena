@@ -117,13 +117,15 @@ snit::type app {
         # NEXT, initialize the temp directory.
         $type InitTempDir
 
-        # NEXT, add the base case scenario.
+        # NEXT, initialize other application modules.
         case init $scenariodir
+        comp init
 
         $type InitializeBaseCase $adbfile $script
 
         # NEXT, define the domains.
-        set domains(/scenario) [/scenario new]
+        set domains(/scenario)   [/scenario new]
+        set domains(/comparison) [/comparison new]
         set domains(/debug)    [/debug new]     ;# TBD: If -debug
 
         set helpdb [appdir join docs athena.helpdb]

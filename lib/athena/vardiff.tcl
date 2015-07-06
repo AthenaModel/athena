@@ -203,6 +203,45 @@ oo::class create ::athena::vardiff {
         return $result
     }
 
+    # inputs
+    #
+    # Returns a list of the names of the significant inputs for
+    # this vardiff, or the empty list if !gotdiffs.
+
+    method inputs {} {
+        set result [list]
+
+        if {[my gotdiffs]} {
+            foreach diff [my diffs] {
+                lappend result [$diff name]
+            }
+        }
+
+
+        return $result
+    }
+
+
+    # huddle
+    #
+    # Returns a huddle object corresponding to this vardiff.  It 
+    # contains the view plus the inputs.
+
+    method huddle {} {
+        set hvar [huddle compile dict [my view]]
+        huddle set hvar inputs [huddle compile list [my inputs]]
+        return $hvar
+    }
+
+
+    # gotdiffs
+    #
+    # Returns 1 if we've found diffs for this vardiff, and 0 otherwise.
+
+    method gotdiffs {} {
+        return $gotdiffs
+    }
+
     # diffs
     #
     # Computes vardiffs for significant differences in variable

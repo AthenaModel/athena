@@ -1,0 +1,21 @@
+<p class="text-info top">
+Arachne defines a number of domains, each with its own set of URLs.
+Select a URL in the sidebar to see its schema below.
+</p>
+
+<div ng-show="page.schema">
+
+<h2>Schema: {{'/' + page.schema + '/...'}}</h2>
+
+<dl class="loose">
+<div ng-repeat="path in page.schemas[page.schema]">
+<dt><tt ng-bind-html="path.url"></tt></dt>
+<dd ng-bind-html="path.doc"></dd>
+</div>
+</dl>
+
+
+</div>
+
+
+

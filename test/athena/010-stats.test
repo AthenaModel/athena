@@ -1,0 +1,137 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    010-stats.test
+#
+# AUTHOR:
+#    Dave Hanks
+#
+# DESCRIPTION:
+#    stats(sim) tests.
+#
+#    This test suite tests the stats(sim) queries
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# Initialize tcltest(n) and athena(1)
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    source [file join [file dirname [file normalize [info script]]] ted.tcl]
+
+    # Initialize tcltest(n), athena(n), et al.
+    ted init $argv
+}
+
+#-----------------------------------------------------------------------
+# Test Suite
+#
+# The tests run in a namespace so as not to interfere with other
+# test suites.
+
+namespace eval ::athena_test::tests:: {
+    #-------------------------------------------------------------------
+    # Set up the test environment
+
+    # Import tcltest(n)
+    namespace import ::tcltest::*
+
+    proc setup {} {
+        tdb autogen scenario -nb 2 -civg 2
+        ted lock
+    }
+    
+    #-------------------------------------------------------------------
+    # groupbybsys
+    #   
+
+    test groupsbybsys-1.1 {Valid return} -setup {
+        setup
+    } -body {
+        set list [tdb stats groupsbybsys]
+        expr {[llength $list] > 0}
+    } -cleanup {
+        ted cleanup
+    } -result {1}
+
+    test moodbybsys-1.1 {Valid return} -setup {
+        setup
+    } -body {
+        set list [tdb stats moodbybsys 1]
+        expr {[llength $list] > 0}
+    } -cleanup {
+        ted cleanup
+    } -result {1}
+
+    test pbmood-1.1 {Valid return} -setup {
+        setup
+    } -body {
+        set list [tdb stats pbmood 1]
+        expr {[llength $list] > 0}
+    } -cleanup {
+        ted cleanup
+    } -result {1}
+
+    test satbybsys-1.1 {Valid return} -setup {
+        setup
+    } -body {
+        set list [tdb stats satbybsys 1 QOL]
+        expr {[llength $list] > 0}
+    } -cleanup {
+        ted cleanup
+    } -result {1}    
+
+    test satbynb-1.1 {Valid return} -setup {
+        setup
+    } -body {
+        set list [tdb stats satbynb 1 QOL]
+        expr {[llength $list] > 0}
+    } -cleanup {
+        ted cleanup
+    } -result {1}
+
+    test pbsat-1.1 {Valid return} -setup {
+        setup
+    } -body {
+        set list [tdb stats pbsat 1 QOL]
+        expr {[llength $list] > 0}
+    } -cleanup {
+        ted cleanup
+    } -result {1}
+
+    test moodbygroups-1.1 {Valid return} -setup {
+        setup
+        ted step
+    } -body {
+        set grps [tdb civgroup names]
+        set mood [tdb stats moodbygroups $grps 1]
+        expr {$mood != 0.0}
+    } -cleanup {
+        ted cleanup
+    } -result {1}
+
+    test satbygroups-1.1 {Valid return} -setup {
+        setup
+        ted step
+    } -body {
+        set grps [tdb civgroup names]
+        set sat [tdb stats satbygroups $grps QOL 1]
+        expr {$mood != 0.0}
+    } -cleanup {
+        ted cleanup
+    } -result {1}
+
+
+    #-------------------------------------------------------------------
+    # Cleanup
+
+    cleanupTests
+}
+
+namespace delete ::athena_test::tests::
+
+
+
+
+
+

@@ -1,5 +1,8 @@
 # TODO.md - Athena TODO List
 
+- Causality Chaining
+  - Add existing vardiffs as inputs where appropriate
+  - Add inputs and work down
 - Angular Web App
   - Got code search working, but errors in .json handlers seem to return
     "success" with something other than real data.  Track this down!

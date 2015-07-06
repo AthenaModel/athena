@@ -1,4 +1,4 @@
 // app.js
 'use strict';
 
-angular.module('arachne', ['anguFixedHeaderTable', 'ngRoute']);
+angular.module('arachne', ['anguFixedHeaderTable', 'ngRoute', 'ngSanitize']);

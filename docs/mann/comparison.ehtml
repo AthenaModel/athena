@@ -56,7 +56,7 @@ Each instance of comparison(n) provides the following subcommands:<p>
 if ever need it.</b><p>
 
 This command compares two values of a given variable type, and retains
-them if the difference is signficant.  The <i vartype> is the barename of
+them if the difference is significant.  The <i vartype> is the barename of
 an <tt ::athena::vardiff::*> class, (e.g., <tt nbsecurity>).  
 The values <i val1> and <i val2>
 are the values of a variable of the given <i vartype> from 
@@ -77,9 +77,35 @@ subsequent times.<p>
 if ever need it.</b><p>
 
 This command is identical to <iref add>, but marks the variable (if 
-signficant) as a top-level significant output.  Note that a variable
+significant) as a top-level significant output.  Note that a variable
 can be both a top-level significant output and a significant input to
 another variable.<p>
+
+<defitem chain {<i obj> chain <i subcommand> ?<i args...>?}>
+
+This command has a family of subcommands for retrieving causality 
+chains in different data formats.<p>
+
+<deflist chain>
+
+<defitem "chain dump" {<i obj> chain dump <i varname>}>
+
+Returns a text string that lists all of the variables in <i varname>'s
+causality chain in tree form.<p>
+
+<defitem "chain huddle" {<i obj> chain huddle <i varname>}>
+
+Returns a huddle(n) object representing a list of the <xref vardiff(n)> objects
+in <i varname>'s causality chain.  The tree structure is defined by 
+each object's <tt inputs> field.<p>
+
+<defitem "chain json" {<i obj> chain json <i varname>}>
+
+Returns a JSON object representing a list of the <xref vardiff(n)> objects
+in <i varname>'s causality chain.  The tree structure is defined by 
+each object's <tt inputs> field.<p>
+
+</deflist chain>
 
 <defitem contribs {<i obj> contribs <i subcommand> <i keys...>}>
 
@@ -122,18 +148,29 @@ output includes only the top-level differences.<p>
 
 </deflist diffs>
 
+<defitem exists {<i obj> exists <i varname>}>
+Returns 1 if variable <i varname> has been determined to be significant
+in the comparison, in either the initial set of significant outputs or
+as part of a causality chain.<p>
+
 <defitem explain {<i obj> explain <i varname>}>
 
-Computes an explanation of the significant difference in variable
-<i varname>. <b TBD>: prototype code.  At present, it simply drills
-one level down on the variable and returns the significant inputs, if 
-any.  If the named variable isn't significant, returns nothing.<p>
+Computes the causality chain for variable
+<i varname>, adding the <xref vardiff(n)> objects to the list for 
+<i varname>'s significant inputs, and then for those variable's 
+significant inputs, and so forth.  If differences have already been
+computed for <i varname>, does nothing.<p>
 
 <defitem getbytype {<i obj> getbytype ?-toplevel?}>
 
 Returns a dictionary of lists of the known <xref vardiff(n)> objects
 by variable type.  If <tt -toplevel> is given, the
 output includes only the top-level differences.<p>
+
+<defitem getchain {<i obj> getchain <i varname>}>
+
+Returns a list of <xref vardiff(n)> objects representing the named
+variable and all of the variables in its causality chain.<p>
 
 <defitem getdiff {<i obj> getdiff <i name>}>
 
@@ -169,6 +206,12 @@ Returns the value of <i t1>, a simulation time in integer weeks.<p>
 <defitem t2 {<i obj> t2}>
 
 Returns the value of <i t2>, a simulation time in integer weeks.<p>
+
+<defitem validate {<i obj> validate <i varname>}>
+
+Validates variable <i varname>, returning <i varname> if it is a significant
+variable in the comparison, and throwing INVALID otherwise.<p>
+
 
 </deflist instance>
 

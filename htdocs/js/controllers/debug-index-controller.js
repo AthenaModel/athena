@@ -38,6 +38,33 @@ angular.module('arachne')
     };
 
     //--------------------------------------------
+    // URL Schemas
+
+    this.schema = 'scenario';
+    this.schemas = {
+        comparison: [],
+        debug:      [],
+        help:       [],
+        scenario:   []
+    };
+
+    this.retrieveSchema = function (name) {
+        var url = '/' + name + '/urlschema.json';
+
+        this.schemas[name] = [];
+
+        $http.get(url).success(function(data) {
+            controller.schemas[name] = data;
+        });
+    };
+
+    this.setDomain = function(schema) {
+        console.log("setDomain: " + schema);
+        this.schema = schema;
+        this.setTab('schemas');
+    };
+
+    //--------------------------------------------
     // Code Search
 
     this.cmdline = '';
@@ -154,5 +181,9 @@ angular.module('arachne')
     // Initialization
 
     this.retrieveMods();
+    this.retrieveSchema('comparison');
+    this.retrieveSchema('debug');
+    this.retrieveSchema('help');
+    this.retrieveSchema('scenario');
     this.logRetrieve();
 }]);

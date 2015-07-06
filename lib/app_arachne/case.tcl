@@ -81,6 +81,7 @@ snit::type case {
         set cases(names)   {}
 
         $type new "" "Base Case"
+        return
     }
 
     #-------------------------------------------------------------------
@@ -392,17 +393,48 @@ snit::type case {
     # Creates a new, configured instance of athena(n).
 
     typemethod NewScenario {case} {
+        # FIRST, get the list of SQL files to load.
         set viewlist [lmap x $webviews {
             file join $::app_arachne::library sql $x
         }]
 
+        # NEXT, create the scenario object.
         set sdb [athena new \
             -subject      $case                       \
             -logdir       [scratchdir join log $case] \
             -tempsqlfiles [lmap x $webviews {
                               file join $::app_arachne::library sql $x
                           }]]
+
+        # NEXT, track significant changes.  At present, we're interested
+        # in changes to cases that have time advanced, not order changes.
+        notifier bind $case <Time>    ::case [mytypemethod CaseUpdate $case]
+        notifier bind $case <State>   ::case [mytypemethod CaseUpdate $case]
+        notifier bind $case <Sync>    ::case [mytypemethod CaseUpdate $case]
+        notifier bind $case <Destroy> ::case [mytypemethod CaseDelete $case]
+
+        # NEXT, return the scenario
+        return $sdb
     }
+
+    # CaseUpdate case
+    #
+    # The case has changed significantly: its state has changed, or time
+    # has been advanced, or a new scenario has been loaded over it in
+    # some way.
+
+    typemethod CaseUpdate {case} {
+        notifier send ::case <Update> $case
+    } 
+
+    # CaseDelete case
+    #
+    # The case has been destroyed.
+
+    typemethod CaseDelete {case} {
+        notifier forget $case
+        notifier send ::case <Delete> $case
+    } 
 
     # export id filename
     #

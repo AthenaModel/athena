@@ -277,17 +277,31 @@ domain.<p>
 
 <section restapi.scenario "/scenario Domain">
 
-Most of Arachne's URLs reside in the <tt scenario> domain.  Top-level
+Most of Arachne's URLs reside in the <tt /scenario> domain.  Top-level
 functionality hangs directly from <tt /scenario>; for example, 
 <link /scenario/index.html /scenario/index.html> lists all of the currently
 loaded scenarios.<p>
 
 URLs specific to a particular scenario appear in the 
-<tt>/scenario/<i case>/</tt> subdomain, where <i case> the scenario's
+<tt>/scenario/<i case>/</tt> subdomain, where <i case> is the scenario's
 "case ID".<p>
 
 For a complete list of URLs in this domain, with documentation, see 
 <tt><link /scenario/urlschema.html /scenario/urlschema.html></tt>.<p>
+
+<section restapi.comparison "/comparison Domain">
+
+URLs related to comparing the results of scenarios reside in the 
+<tt /comparison> domain.  The toplevel comparison operations 
+are defined directly under <tt /comparison>; e.g., to create a 
+new comparison use <tt /comparison/new.json>.<p>
+
+URLs specific to a particular comparison appear in the 
+<tt>/comparison/<i comp>/</tt> subdomain, where <i comp> is
+the comparison's "comparison ID".<p>
+
+For a complete list of URLs in this domain, with documentation, see 
+<tt><link /comparison/urlschema.html /comparison/urlschema.html></tt>.<p>
 
 <section restapi.json "JSON Conventions">
 
@@ -298,15 +312,16 @@ list.
 In cases where error returns are possible (e.g., when using
 the JSON interface to perform some action, or when invalid query 
 parameters are sent) the JSON result is a list of 
-two or three elements.  The first element is a
+two or more elements.  The first element is a
 code, "OK", "ERROR", "REJECT", or "EXCEPTION".<p>
 
 <ul>
 <li>  If the code is "OK", the request was
-      accepted; the second element is the request's result string, 
-      which is often empty, but may be a JSON return value.  Look up the
-      particular URL in the 
-      <link /scenario/urlschema.html "URL Schema"> for specifics.<p>
+      accepted; the remaining elements constitute the request's data
+      result string.  Typically there is a single additional element,
+      a message or a single object. Look up the
+      particular URL in the domain's schema
+      for specifics.<p>
 
 <li> If the code is "REJECT", the request was rejected because of input
      errors.  The second 
