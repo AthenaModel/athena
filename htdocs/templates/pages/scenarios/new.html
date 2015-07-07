@@ -10,8 +10,8 @@
     <label for="case">Replacing:</label>
     <select id="case" class="form-control" ng-model="page.replacing">
       <option value selected></option>
-      <option ng-repeat="scenario in page.scenarios" value="{{scenario.id}}">
-        {{scenario.id}}: {{scenario.longname}}
+      <option ng-repeat="case in page.cases()" value="{{case.id}}">
+        {{case.id}}: {{case.longname}}
       </option>
     </select>
   </div>

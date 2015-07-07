@@ -2,8 +2,13 @@
 'use strict';
 
 angular.module('arachne')
-.controller('ScenariosIndexController', ['$http', function($http) {
+.controller('ScenariosIndexController', 
+['$http', 'Arachne', function($http, Arachne) {
     var controller = this;   // For use in callbacks
+
+    // Delegated Functions
+    this.cases = Arachne.cases;
+    this.files = Arachne.files;
 
     // Status Record: data from JSON requests that return status.
     this.status = {
@@ -15,10 +20,6 @@ angular.module('arachne')
         stack:   ''      // Tcl Stack Trace
     };
 
-    // Context Data
-    this.scenarios = []; // List of loaded scenarios
-    this.files = [];     // List of available scenario files
-
     // User Variables
     this.selectedCase = '';   // Case ID selected in case list, or ''
     this.selectedFile = '';   // File name selected in file list, or ''
@@ -26,7 +27,6 @@ angular.module('arachne')
     this.newLongname  = '';   // Long name for new case
 
 
-    // Functions
 
     // Retrieve all required data
     this.retrieveAll = function () {
@@ -36,44 +36,21 @@ angular.module('arachne')
 
     // Getting the list of loaded cases
     this.retrieveCases = function () {
-        $http.get('/scenario/index.json').success(function(data) {
-            controller.scenarios = data;
-            if (!controller.gotCase(controller.selectedCase)) {
+        Arachne.refreshCases(function() {
+            if (!Arachne.gotCase(controller.selectedCase)) {
                 controller.selectedCase = '';
             }
         });
     };
 
-    this.gotCase = function(caseid) {
-        var scen;
-        for (scen in this.scenarios) {
-            if (scen.name === caseid) {
-                return true;
-            }
-        }
-        return false;
-    };
-
     // Getting the list of scenario files
     this.retrieveFiles = function () {
-        $http.get('/scenario/files.json').success(function(data) {
-            controller.files = data;
-            if (!controller.gotFile(controller.selectedFile)) {
+        Arachne.refreshFiles(function() {
+            if (!Arachne.gotFile(controller.selectedFile)) {
                 controller.selectedFile = '';
             }
         });
     };
-
-    this.gotFile = function(filename) {
-        var file;
-        for (file in this.files) {
-            if (file.name === filename) {
-                return true;
-            }
-        }
-        return false;
-    };
-
 
     // Reset Query Parms
     this.resetQuery = function() {

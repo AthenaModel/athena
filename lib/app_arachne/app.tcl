@@ -31,6 +31,7 @@ snit::type app {
     # tempdir     - Temporary directory path
 
     typevariable info -array {
+        startTime    0
         port         8080
         secureport   8081
         test         0
@@ -63,9 +64,11 @@ snit::type app {
     # If it returns "vwait", the application loader will vwait forever.
 
     typemethod init {argv} {
-        appdir init
+        # FIRST, get the time at invocation
+        set info(startTime) [clock seconds]
 
-        # FIRST, load the mods
+        # NEXT, load the mods
+        appdir init
         try {
             mod load
             mod apply
@@ -346,6 +349,14 @@ snit::type app {
 
     typemethod version {} {
         return [kiteinfo version]
+    }
+
+    # startTime
+    #
+    # Returns the application start time, as a Unix time in seconds.
+
+    typemethod startTime {} {
+        return $info(startTime)
     }
 
     # Swallow args

@@ -15,6 +15,10 @@ angular.module('arachne')
         templateUrl: 'templates/pages/scenarios/index.html'
     })
 
+    .when('/comparisons', {
+        templateUrl: 'templates/pages/comparisons/index.html'
+    })
+
     .when('/debug', {
         templateUrl: 'templates/pages/debug/index.html',
         controller: 'DebugIndexController',

@@ -8,16 +8,16 @@
 
 <div>
 
-<p ng-hide="page.files.length">None.</p>
+<p ng-hide="page.files().length">None.</p>
 
-<table class="table table-striped table-hover" ng-show="page.files.length">
+<table class="table table-striped table-hover" ng-show="page.files().length">
 <tr>
 <th><span></th>
 <th><span>File Name</span></th>
 <th><span>Size</span></th>
 <th><span>Last Modified</span></th></tr>
 
-<tr ng-repeat="file in page.files">
+<tr ng-repeat="file in page.files()">
 <td>
 <input type="radio" name="scenfile" ng-model="page.selectedFile" ng-value="file.name">
 </td>    

@@ -24,7 +24,8 @@ set /meta.json application/json
 proc /meta.json {} {
     return [subst -nobackslashes -novariables {
 {
-    "version": "[athena::athena version]"
+    "version":   "[app version]",
+    "startTime": "[expr {[app startTime]*1000}]"
 }
     }]    
 }

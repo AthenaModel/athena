@@ -4,9 +4,6 @@
   - Add existing vardiffs as inputs where appropriate
   - Add inputs and work down
 - Angular Web App
-  - Got code search working, but errors in .json handlers seem to return
-    "success" with something other than real data.  Track this down!
-  - Figure out how to add Case pages.
   - Move ScenarioListController stuff to a service.
   - Handling help would require a .json interface to the help.
 - Arachne
@@ -18,7 +15,7 @@
 - Projectlib(n)
   - Tests for parmdict(n), smartdomain(n)
 - Athena(n)
-  - Optimize athena(n) creation, reset, load.  It's way slow.
+  - Optimize athena(n) creation, reset, load.  It's slow.
 
 
 
