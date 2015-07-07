@@ -2,6 +2,31 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.1a1, 7 July 2015</h3>
+
+This build introduces a new Arachne web app based upon AngularJS, a third 
+party Javascript library that allows for quick construction and easier software
+management of web-based applications. One of the biggest benefits of using
+AngularJS is that the web app uses the same JSON interface that any other
+web app would use (ie. the Federal CGI contractor). This means that the
+JSON interface can be verified directly.<p>
+
+<ul>
+<li> Issue #274: Web App: case object management
+<li> Issue #273: Web App: case lock, unlock, advance
+<li> Issue #271: arachne.css: definition list display
+<li> Issue #269: Arachne: URL Schema display in web app
+<li> Issue #268: Arachne Comparisons 
+<li> Issue #266: vardiffs drilldown: support 
+<li> Issue #265: vardiffs drilldown: vrel 
+<li> Issue #264: vardiff drilldowns: pbmood, pbsat, nbmood, nbsat, bsysmood, bsyssat
+<li> Issue #262: Need groups by belief system in stats(n) module 
+<li> Issue #272: Arachne log page
+<li> Issue #270: Arachne URL Schemas in new Debug Interface
+<li> Issue #267: Arachne comparison
+<li> Issue #261: Angular athena
+</ul>
+
 <h3>Build 6.3.0, 17 June 2015</h3>
 
 This build is the release candidate for Athena 6.3 and contains only two
