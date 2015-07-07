@@ -4,7 +4,14 @@
   - Add existing vardiffs as inputs where appropriate
   - Add inputs and work down
 - Angular Web App
-  - Move ScenarioListController stuff to a service.
+  - Merge ScenOpsController into ScenarioListController.
+  - In Arachne service, consider returning a promise from requests, 
+    refreshes instead of using a callback.  See "Tyler McGinnis: Factory
+    vs. Service vs. Provider" for example.
+  - Move entity object caching from CaseController to a service, either
+    Arachne or a new service.
+  - Case page: Add a tab for sending orders to a case.
+  - Script page: Add a tab for sending scripts to a case.
   - Handling help would require a .json interface to the help.
 - Arachne
   - Fix scenario name in Arachne's export .tcl file.  It depends on last 
@@ -15,7 +22,7 @@
 - Projectlib(n)
   - Tests for parmdict(n), smartdomain(n)
 - Athena(n)
-  - Optimize athena(n) creation, reset, load.  It's slow.
+  - Optimize athena(n) creation, reset, load.  It's way slow.
 
 
 
