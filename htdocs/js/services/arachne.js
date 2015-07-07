@@ -108,11 +108,91 @@ angular.module('arachne')
     };
 
     //----------------------------------------------------------
+    // Requests
+    //
+    // This submodule allows the client to send requests to the
+    // server, getting the standard OK/ERROR/REJECTED protocol back.
+
+    // Status Record: data from JSON requests that return status.
+    service.statusRecord = {
+        tag:     '',     // The last operation's tag.
+        data:    [],     // Raw JSON data coming back from the request.
+        code:    'OK',   // Status Code
+        message: '',     // Error message
+        errors:  {},     // Parameter Errors by parameter name
+        stack:   '',     // Tcl Stack Trace,
+        ok:      false
+    };
+
+    service.request = function(tag, url, query, callback) {
+        var params = { params: query };
+        
+        $http.get(url,params).success(function(data) {
+            service.setStatus(tag, data);
+            if (callback) { callback(service.statusRecord); }
+        }).error(function() {
+            service.setStatus(tag, ['error','Could not retrieve data']);
+            if (callback) { callback(service.statusRecord); }
+        });
+    };
+
+    service.setStatus = function(tag, data) {
+        var stat = service.statusRecord;
+
+        stat.tag        = tag;
+        stat.data       = data;
+        stat.result     = data.slice(1);
+        stat.code       = data[0];
+        stat.ok         = false;
+        stat.message    = '';
+        stat.errors     = null;
+        stat.stackTrace = '';
+
+        switch(stat.code) {
+            case 'OK':
+                stat.message = "Operation completed successfully.";
+                stat.ok = true;
+                break;
+            case 'REJECT':
+                stat.errors = data[1];
+                break;
+            case 'ERROR':
+                stat.message = data[1];
+                break;
+            case 'EXCEPTION':
+                stat.message = data[1];
+                stat.stackTrace = data[2];
+            default:
+                stat.code = 'ERROR';
+                stat.message = "Unexpected response: " + data;
+                break;
+        } 
+
+    }
+
+
+    //----------------------------------------------------------
     // Service Queries
     
     service.connected = function() {
         return service.connectedFlag;
-    }
+    };
+
+    service.status = function() {
+        return service.statusRecord;
+    };
+
+    service.statusData = function(tag) {
+        var stat = service.statusRecord;
+
+        if (tag == stat.tag && stat.data) {
+            return stat.data;
+        } else {
+            return null;
+        }
+    };
+
+
     service.version = function () {
         return service.meta.version;
     };

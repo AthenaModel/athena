@@ -2,13 +2,13 @@
 'use strict';
 
 angular.module('arachne')
-.controller('ScenariosIndexController', 
-['$http', 'Arachne', function($http, Arachne) {
+.controller('ScenariosIndexController', ['Arachne', function(Arachne) {
     var controller = this;   // For use in callbacks
 
     // Delegated Functions
     this.cases = Arachne.cases;
     this.files = Arachne.files;
+    this.statusData = Arachne.statusData;
 
     // Status Record: data from JSON requests that return status.
     this.status = {
@@ -59,51 +59,19 @@ angular.module('arachne')
         this.exportFilename = '';
     };
 
-    // Set status
-    this.setStatus = function(op, data) {
-        this.status.op         = op;
-        this.status.data       = data;
-        this.status.code       = data[0];
-        this.status.message    = '';
-        this.status.errors     = null;
-        this.status.stackTrace = '';
-
-        switch(this.status.code) {
-            case 'OK':
-                this.status.message = "Operation completed successfully.";
-                break;
-            case 'REJECT':
-                this.status.errors = data[1];
-                break;
-            case 'ERROR':
-                this.status.message = data[1];
-                break;
-            case 'EXCEPTION':
-                this.status.message = data[1];
-                this.status.stackTrace = data[2];
-            default:
-                this.status.code = 'ERROR';
-                this.status.message = "Unexpected response: " + data;
-                break;
-        } 
-
-        this.resetQuery();
-    };
-
-    this.jsonData = function(op) {
-        if (op === this.status.op && this.status.data !== '') {
-            return this.status.data;
-        } else {
-            return null;
-        }
-    };
 
     // Import Scenario
     this.opImport = function() {
-        this.createScenario('import', {
+        Arachne.request('scen-import', '/scenario/import.json', {
             filename: this.selectedFile,
             case:     this.replacing,
             longname: this.newLongname
+        }, function (stat) {
+            if (stat.ok) {
+                stat.message = 'Imported new scenario "' + stat.data[1] + '".';
+                controller.retrieveCases();
+            }
+            controller.resetQuery();
         });
     };
 
@@ -114,37 +82,33 @@ angular.module('arachne')
     };
 
     this.opExport = function() {
-        var url    = "/scenario/export.json";
-        var params = {
-            params: {
+        Arachne.request('scen-export', '/scenario/export.json', {
                 case: this.selectedCase,
                 filename: this.exportFilename
+        }, function (stat) {
+            if (stat.ok) {
+                stat.message = 'Exported scenario "' + 
+                               controller.selectedCase + '" as "' +
+                               controller.exportFilename + '".';
+                controller.retrieveFiles();
             }
-        };
-
-        $http.get(url, params).success(function(data) {
-            var caseid = controller.selectedCase;
-            var filename = controller.exportFilename
-
-            controller.retrieveFiles();
-            controller.setStatus('export',data);
-            if (data[0] === 'OK') {
-                controller.status.message = 
-                    'Exported scenario: "' + caseid + '" as "' +
-                    filename + '".';
-            }
-        }).error(function() {
-            controller.setStatus('export', ['error','Could not retrieve data']);
+            controller.resetQuery();
         });
     };
 
     // Brand new scenario
     this.opNew = function() {
-        this.createScenario('new', {
+        Arachne.request('scen-new', '/scenario/new.json', {
             case:     this.replacing,
             longname: this.newLongname
+        }, function (stat) {
+            if (stat.ok) {
+                stat.message = 'Created new scenario "' + stat.data[1] + '".'
+                controller.retrieveCases();
+            }
+            controller.resetQuery();
         });
-    };
+    }
 
     // Cloning a scenario.
     this.canClone = function () {
@@ -152,10 +116,16 @@ angular.module('arachne')
     };
 
     this.opClone = function() {
-        this.createScenario('clone', {
+        Arachne.request('scen-clone', '/scenario/clone.json', {
             source:   this.selectedCase,
             target:   this.replacing,
             longname: this.newLongname
+        }, function (stat) {
+            if (stat.ok) {
+                stat.message = 'Cloned new scenario "' + stat.data[1] + '".'
+                controller.retrieveCases();
+            }
+            controller.resetQuery();
         });
     };
 
@@ -165,39 +135,15 @@ angular.module('arachne')
     };
 
     this.opRemove = function() {
-        var url    = "/scenario/remove.json";
-        var params = {
-            params: {
-                case: this.selectedCase
+        Arachne.request('scen-remove', '/scenario/remove.json', {
+            case: this.selectedCase
+        }, function (stat) {
+            if (stat.ok) {
+                stat.message = 'Removed scenario "' + 
+                    controller.selectedCase + '".';
+                controller.retrieveCases();
             }
-        };
-
-        $http.get(url, params).success(function(data) {
-            var caseid = controller.selectedCase;
-
-            controller.retrieveCases();
-            controller.setStatus('remove',data);
-            if (data[0] === 'OK') {
-                controller.status.message = 'Removed scenario: "' + caseid + '".';
-            }
-        }).error(function() {
-            controller.setStatus('remove', ['error','Could not retrieve data']);
-        });
-    };
-
-    // Creating a scenario.
-    this.createScenario = function(op, query) {
-        var url    = "/scenario/" + op + ".json";
-        var params = {params: query};
-
-        $http.get(url, params).success(function(data) {
-            controller.retrieveCases();
-            controller.setStatus(op,data);
-            if (data[0] === 'OK') {
-                controller.status.message = 'Created new scenario "' + data[1] + '".';
-            }
-        }).error(function() {
-            controller.setStatus(op, ['error','Could not retrieve data']);
+            controller.resetQuery();
         });
     };
 

@@ -5,11 +5,22 @@ angular.module("arachne")
         templateUrl: "templates/directives/ar-result.html",
         scope: {
             header: "@",
-            op:     "@",
-            result: "="
+            tag:    "@"
         },
-        controller: function($scope) {
+        controller: ['$scope', 'Arachne', function($scope, Arachne) {
             $scope.header = $scope.header || "Result";
-        }
+
+            this.show = function() {
+                return $scope.tag === Arachne.status().tag   &&
+                       Arachne.status().data;
+            };
+
+            this.code = function() {
+                return Arachne.status().code;
+            }
+
+            this.status = Arachne.status;
+        }],
+        controllerAs: 'result'
     };
 });
