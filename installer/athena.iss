@@ -3,7 +3,7 @@
 
 #define MyAppName "Athena"
 #define MyWebName "Arachne"
-#define MyAppVersion "6.3.0"
+#define MyAppVersion "6.3.1a1"
 #define MyAppPublisher "Jet Propulsion Laboratory, California Institute of Technology"
 #define MyAppExeName "athenawb.exe"
 #define MyWebExeName "arachne.exe"
@@ -17,8 +17,8 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName={pf}\Athena 6.3
-DefaultGroupName=Athena 6.3
+DefaultDirName={pf}\Athena {#MyAppVersion}
+DefaultGroupName=Athena {#MyAppVersion}
 LicenseFile=..\LICENSE
 ;InfoBeforeFile=before.txt
 InfoAfterFile=after.txt
@@ -51,10 +51,7 @@ Source: "..\docs\man1\athenawb.html"; DestDir: "{app}\docs\man1"; Flags: ignorev
 Source: "..\docs\*.docx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion 
 Source: "..\docs\*.pptx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\docs\*.pdf"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\htdocs\*"; DestDir: "{app}\htdocs"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\htdocs\data\*"; DestDir: "{app}\htdocs\data"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\htdocs\data\subdir\*"; DestDir: "{app}\htdocs\data\subdir"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\htdocs\images\*"; DestDir: "{app}\htdocs\images"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\htdocs\*"; DestDir: "{app}\htdocs"; Flags: ignoreversion skipifsourcedoesntexist recursesubdirs
 Source: "..\maps\*.png"; DestDir: "{app}\maps"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\maps\*.tif"; DestDir: "{app}\maps"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\data\polygons\*.npf"; DestDir: "{app}\data\polygons"; Flags: ignoreversion
