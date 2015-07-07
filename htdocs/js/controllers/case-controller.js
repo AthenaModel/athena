@@ -2,8 +2,8 @@
 'use strict';
 
 angular.module('arachne')
-.controller('CaseController', ['$routeParams', '$http', '$timeout', 'LastTab',
-function($routeParams, $http, $timeout, LastTab) {
+.controller('CaseController', ['$routeParams', '$http', '$timeout', 'Arachne', 'LastTab',
+function($routeParams, $http, $timeout, Arachne, LastTab) {
 	var controller = this;
 
     //-----------------------------------------------------
@@ -11,6 +11,12 @@ function($routeParams, $http, $timeout, LastTab) {
 
     // store case ID from route for use by page
     this.caseId = $routeParams.caseId;
+
+    //-----------------------------------------------------
+    // Arachne Delegates
+
+    this.statusData = Arachne.statusData;
+
 
     //-----------------------------------------------------
     // Tab Management 
@@ -130,120 +136,45 @@ function($routeParams, $http, $timeout, LastTab) {
     //-------------------------------------------------------
     // Operations
 
-    // TBD: I'd like the status record and update methods to 
-    // be reusable code.
-
-    // Status Record: data from JSON requests that return status.
-    this.status = {
-        op:      '',     // Last operation we did.
-        data:    [],     // Raw JSON data
-        code:    'OK',   // Status Code
-        message: '',     // Error message
-        errors:  {},     // Parameter Errors by parameter name
-        stack:   ''      // Tcl Stack Trace
-    };
-
     // Form Data
     this.weeksToAdvance = '1';
 
-    // Reset Query Parms
-    this.resetQuery = function() {
-        // weeksToAdvance needn't be reset.
-    };
-
-    // Clear Status
-    this.clearStatus = function() {
-        this.status.op = null;
-    }
-
-    // Set status
-    this.setStatus = function(op, data) {
-        this.status.op         = op;
-        this.status.data       = data;
-        this.status.code       = data[0];
-        this.status.message    = '';
-        this.status.errors     = null;
-        this.status.stackTrace = '';
-
-        switch(this.status.code) {
-            case 'OK':
-                this.status.message = "Operation completed successfully.";
-                break;
-            case 'REJECT':
-                this.status.errors = data[1];
-                break;
-            case 'ERROR':
-                this.status.message = data[1];
-                break;
-            case 'EXCEPTION':
-                this.status.message = data[1];
-                this.status.stackTrace = data[2];
-            default:
-                this.status.code = 'ERROR';
-                this.status.message = "Unexpected response: " + data;
-                break;
-        } 
-
-        this.resetQuery();
-    };
-
-    this.jsonData = function(op) {
-        if (op === this.status.op && this.status.data !== '') {
-            return this.status.data;
-        } else {
-            return null;
-        }
-    };
-
     // Lock Scenario
     this.opLock = function() {
-        var url    = "/scenario/" + this.caseId + "/lock.json";
+        var url = "/scenario/" + this.caseId + "/lock.json";
 
-        $http.get(url).success(function(data) {
-            controller.refreshMetadata();
-            controller.setStatus('case',data);
-            if (data[0] === 'OK') {
-                controller.status.message = 
-                    'Locked scenario.';
+        Arachne.request('case-manage', url, {}, function (stat) {
+            if (stat.ok) {
+                stat.message = 'Locked scenario.';
+                controller.refreshMetadata();
             }
-        }).error(function() {
-            controller.setStatus('export', ['error','Could not retrieve data']);
         });
     };
 
     // Unlock Scenario
     this.opUnlock = function() {
-        var url    = "/scenario/" + this.caseId + "/unlock.json";
+        var url = "/scenario/" + this.caseId + "/unlock.json";
 
-        $http.get(url).success(function(data) {
-            controller.refreshMetadata();
-            controller.setStatus('case',data);
-            if (data[0] === 'OK') {
-                controller.status.message = 
-                    'Unlocked scenario.';
+        Arachne.request('case-manage', url, {}, function (stat) {
+            if (stat.ok) {
+                stat.message = 'Unlocked scenario.';
+                controller.refreshMetadata();
             }
-        }).error(function() {
-            controller.setStatus('export', ['error','Could not retrieve data']);
         });
     };
 
     this.opAdvance = function() {
         var url    = "/scenario/" + this.caseId + "/advance.json";
-        var params = {
-            params: {
-                weeks: this.weeksToAdvance
-            }
-        };
 
-        $http.get(url, params).success(function(data) {
-            controller.refreshMetadata();
-            controller.setStatus('case',data);
-            if (data[0] === 'OK') {
-                controller.status.message = 
-                    'Advancing time by ' + controller.weeksToAdvance + ' weeks.';
+
+        Arachne.request('case-manage', url, {
+            weeks: this.weeksToAdvance
+        }, function (stat) {
+            if (stat.ok) {
+                stat.message = 'Advancing time by ' + 
+                    controller.weeksToAdvance + ' weeks.';
+                controller.refreshMetadata();
             }
-        }).error(function() {
-            controller.setStatus('export', ['error','Could not retrieve data']);
         });
     };
 
