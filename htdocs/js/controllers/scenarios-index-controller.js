@@ -2,7 +2,8 @@
 'use strict';
 
 angular.module('arachne')
-.controller('ScenariosIndexController', ['Arachne', function(Arachne) {
+.controller('ScenariosIndexController', 
+['Arachne', 'LastTab', function(Arachne,LastTab) {
     var controller = this;   // For use in callbacks
 
     // Delegated Functions
@@ -134,6 +135,22 @@ angular.module('arachne')
             controller.resetQuery();
         });
     };
+
+    // Tab control 
+    // Initialize last tab service to 'new'
+    if (!LastTab.get('scenario')) {
+        // This registers this set of tabs with the service
+        LastTab.set('scenario', 'new');
+    }
+
+    this.setTab = function(which) {
+        LastTab.set('scenario', which);
+    };
+
+    this.isSet = function(tab) {
+        return LastTab.get('scenario') === tab;
+    };
+
 
     // Initialization
     this.retrieveAll();

@@ -31,35 +31,35 @@
 <p></p>
 
 <!-- Scenario Management Tabs -->
-<section ng-controller="ScenarioOpsController as ops">
+<section>
 <nav>
 <ul class="nav nav-tabs">
-  <li ng-class="{ active: ops.isSet('new') }">
-    <a href ng-click="ops.setTab('new')">New</a>
+  <li ng-class="{ active: page.isSet('new') }">
+    <a href ng-click="page.setTab('new')">New</a>
   </li>
-  <li ng-class="{ active: ops.isSet('clone') }">
-    <a href ng-click="ops.setTab('clone')">Clone</a>
-  </li>
-
-  <li ng-class="{ active: ops.isSet('import') }">
-    <a href ng-click="ops.setTab('import')">Import</a>
+  <li ng-class="{ active: page.isSet('clone') }">
+    <a href ng-click="page.setTab('clone')">Clone</a>
   </li>
 
-  <li ng-class="{ active: ops.isSet('export') }">
-    <a href ng-click="ops.setTab('export')">Export</a>
+  <li ng-class="{ active: page.isSet('import') }">
+    <a href ng-click="page.setTab('import')">Import</a>
   </li>
 
-  <li ng-class="{ active: ops.isSet('remove') }">
-    <a href ng-click="ops.setTab('remove')">Remove</a>
+  <li ng-class="{ active: page.isSet('export') }">
+    <a href ng-click="page.setTab('export')">Export</a>
+  </li>
+
+  <li ng-class="{ active: page.isSet('remove') }">
+    <a href ng-click="page.setTab('remove')">Remove</a>
   </li>
 </ul>
 </nav>
 
-<div ng-show="ops.isSet('new')"    ng-include="'/templates/pages/scenarios/new.html'"></div>
-<div ng-show="ops.isSet('clone')"  ng-include="'/templates/pages/scenarios/clone.html'"></div>
-<div ng-show="ops.isSet('import')" ng-include="'/templates/pages/scenarios/import.html'"></div>
-<div ng-show="ops.isSet('export')" ng-include="'/templates/pages/scenarios/export.html'"></div>
-<div ng-show="ops.isSet('remove')" ng-include="'/templates/pages/scenarios/remove.html'"></div>
+<div ng-show="page.isSet('new')"    ng-include="'/templates/pages/scenarios/new.html'"></div>
+<div ng-show="page.isSet('clone')"  ng-include="'/templates/pages/scenarios/clone.html'"></div>
+<div ng-show="page.isSet('import')" ng-include="'/templates/pages/scenarios/import.html'"></div>
+<div ng-show="page.isSet('export')" ng-include="'/templates/pages/scenarios/export.html'"></div>
+<div ng-show="page.isSet('remove')" ng-include="'/templates/pages/scenarios/remove.html'"></div>
 </section>
 
 </div>

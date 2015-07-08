@@ -692,7 +692,7 @@ smarturl /scenario /index.json {
 smarturl /scenario /files.json {
     Returns a JSON list of scenario file objects.
 } {
-    set table [dictlist new {name size mtime}]
+    set table [dictlist new {id size mtime}]
 
     set filenames [glob \
                         -nocomplain \

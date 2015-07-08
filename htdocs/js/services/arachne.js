@@ -7,7 +7,7 @@
 angular.module('arachne')
 .factory('Arachne', ['$http', '$timeout', '$q', function($http, $timeout, $q) {
     //---------------------------------------------------------
-    // Service object
+    // Service Data
 
     var service = {
         connectedFlag: false,     // Are we talking to the server?
@@ -25,8 +25,7 @@ angular.module('arachne')
     // Refresh all data.  It's usually easier to just reload the app.
     service.refresh = function() {
         service.refreshMetadata();
-        service.refreshCases();
-        service.refreshFiles();
+        service.refreshAllObjects();
     };
 
     //----------------------------------------------------------
@@ -55,17 +54,27 @@ angular.module('arachne')
     };
 
     //----------------------------------------------------------
-    // Case Records
+    // Object Store
 
-    service.cases = function() {
-        return service.caseRecords;
-    }
+    var objectUrls = {
+        cases: '/scenario/index.json',
+        comps: '/comparison/index.json',
+        files: '/scenario/files.json'
+    };
 
-    service.refreshCases = function() {
+    var store = {}; // Store of lists of objects retrieved from the
+                        // server.
+
+    service.refreshObjects = function(otype) {
+        var url = objectUrls[otype];
         var deferred = $q.defer();
 
-        $http.get('/scenario/index.json').success(function(data) {
-            service.caseRecords = data;
+        if (!store[otype]) {
+            store[otype] = []
+        }
+
+        $http.get(url).success(function(data) {
+            store[otype] = data;
             deferred.resolve(data);
         }).error(function(data) {
             deferred.reject(data);
@@ -74,47 +83,70 @@ angular.module('arachne')
         return deferred.promise;
     };
 
-    service.gotCase = function(caseid) {
-        for (var i = 0; i < service.caseRecords.length; i++) {
-            if (service.caseRecords[i].name === caseid) {
+    service.refreshAllObjects = function() {
+        for (var otype in objectUrls) {
+            service.refreshObjects(otype);
+        }
+    }
+
+    service.gotObject = function(otype,id) {
+        var objects = store[otype];
+
+        for (var i = 0; i < objects.length; i++) {
+            if (objects[i].id === id) {
                 return true;
             }
         }
         return false;
+    }
+
+    service.get = function(otype,id) {
+        var objects = store[otype];
+
+        for (var i = 0; i < objects.length; i++) {
+            if (objects[i].id === id) {
+                return objects[i];
+            }
+        }
+        return null;
+    }
+
+    //----------------------------------------------------------
+    // Case Records
+
+    service.refreshCases = function() {
+        return service.refreshObjects('cases');
     };
 
+    service.gotCase = function(caseid) {
+        return service.gotObject('cases',caseid);
+    };
+
+    service.getCase = function(caseid) {
+        return service.get('cases',caseid);
+    }
+
+
+    //----------------------------------------------------------
+    // Comparison Records
+
+    service.refreshComps = function() {
+        return service.refreshObjects('comps');
+    };
+
+    service.gotComp = function(compid) {
+        return service.gotObject('comps',compid);
+    };
 
     //----------------------------------------------------------
     // Scenario File Records
 
-    service.files = function() {
-        return service.fileRecords;
-    }
-
-    // refreshFiles()
-    //
-    // Refreshes the list of scenario files; returns a promise to be
-    // called when (and if) the list is updated.
-    service.refreshFiles = function () {
-        var deferred = $q.defer();
-
-        $http.get('/scenario/files.json').success(function(data) {
-            service.fileRecords = data;
-            deferred.resolve(data);
-        }).error(function(data) {
-            deferred.reject(data);
-        });
-
-        return deferred.promise;
+    service.refreshFiles = function() {
+        return service.refreshObjects('files');
     };
 
     service.gotFile = function(filename) {
-        for (var i = 0; i < service.fileRecords.length; i++) {
-            if (service.fileRecords[i].name === filename) {
-                return true;
-            }
-        }
-        return false;
+        return service.gotObject('files',filename);
     };
 
     //----------------------------------------------------------
@@ -219,12 +251,16 @@ angular.module('arachne')
         return service.meta.startTime;
     };
 
-    service.files = function() {
-        return service.fileRecords;
+    service.cases = function() {
+        return store['cases'];
     }
 
-    service.cases = function() {
-        return service.caseRecords;
+    service.comps = function() {
+        return store['comps'];
+    }
+
+    service.files = function() {
+        return store['files'];
     }
 
     //------------------------

@@ -4,7 +4,9 @@
   - Add existing vardiffs as inputs where appropriate
   - Add inputs and work down
 - Angular Web App
-  - Merge ScenOpsController into ScenarioListController.
+  - Comparisons
+    - Include week string in comparison metadata, and display on 
+      comparisons page.
   - Move entity object caching from CaseController to a service, either
     Arachne or a new service.
   - Case page: Add a tab for sending orders to a case.
