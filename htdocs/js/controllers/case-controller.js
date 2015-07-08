@@ -136,14 +136,14 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
     //-------------------------------------------------------
     // Operations
 
-    // Form Data
+    // Model Variables
     this.weeksToAdvance = '1';
 
     // Lock Scenario
     this.opLock = function() {
         var url = "/scenario/" + this.caseId + "/lock.json";
 
-        Arachne.request('case-manage', url, {}, function (stat) {
+        Arachne.request('case-manage', url, {}).then(function(stat) {
             if (stat.ok) {
                 stat.message = 'Locked scenario.';
                 controller.refreshMetadata();
@@ -155,7 +155,7 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
     this.opUnlock = function() {
         var url = "/scenario/" + this.caseId + "/unlock.json";
 
-        Arachne.request('case-manage', url, {}, function (stat) {
+        Arachne.request('case-manage', url, {}).then(function(stat) {
             if (stat.ok) {
                 stat.message = 'Unlocked scenario.';
                 controller.refreshMetadata();
@@ -169,7 +169,7 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
 
         Arachne.request('case-manage', url, {
             weeks: this.weeksToAdvance
-        }, function (stat) {
+        }).then(function (stat) {
             if (stat.ok) {
                 stat.message = 'Advancing time by ' + 
                     controller.weeksToAdvance + ' weeks.';

@@ -10,23 +10,11 @@ angular.module('arachne')
     this.files = Arachne.files;
     this.statusData = Arachne.statusData;
 
-    // Status Record: data from JSON requests that return status.
-    this.status = {
-        op:      '',     // Last operation we did.
-        data:    [],     // Raw JSON data
-        code:    'OK',   // Status Code
-        message: '',     // Error message
-        errors:  {},     // Parameter Errors by parameter name
-        stack:   ''      // Tcl Stack Trace
-    };
-
-    // User Variables
+    // Model Variables
     this.selectedCase = '';   // Case ID selected in case list, or ''
     this.selectedFile = '';   // File name selected in file list, or ''
     this.replacing    = '';   // Case to replace on new, clone, import
     this.newLongname  = '';   // Long name for new case
-
-
 
     // Retrieve all required data
     this.retrieveAll = function () {
@@ -36,7 +24,7 @@ angular.module('arachne')
 
     // Getting the list of loaded cases
     this.retrieveCases = function () {
-        Arachne.refreshCases(function() {
+        Arachne.refreshCases().then(function() {
             if (!Arachne.gotCase(controller.selectedCase)) {
                 controller.selectedCase = '';
             }
@@ -45,7 +33,7 @@ angular.module('arachne')
 
     // Getting the list of scenario files
     this.retrieveFiles = function () {
-        Arachne.refreshFiles(function() {
+        Arachne.refreshFiles().then(function() {
             if (!Arachne.gotFile(controller.selectedFile)) {
                 controller.selectedFile = '';
             }
@@ -66,7 +54,7 @@ angular.module('arachne')
             filename: this.selectedFile,
             case:     this.replacing,
             longname: this.newLongname
-        }, function (stat) {
+        }).then(function (stat) {
             if (stat.ok) {
                 stat.message = 'Imported new scenario "' + stat.data[1] + '".';
                 controller.retrieveCases();
@@ -85,7 +73,7 @@ angular.module('arachne')
         Arachne.request('scen-export', '/scenario/export.json', {
                 case: this.selectedCase,
                 filename: this.exportFilename
-        }, function (stat) {
+        }).then(function (stat) {
             if (stat.ok) {
                 stat.message = 'Exported scenario "' + 
                                controller.selectedCase + '" as "' +
@@ -101,7 +89,7 @@ angular.module('arachne')
         Arachne.request('scen-new', '/scenario/new.json', {
             case:     this.replacing,
             longname: this.newLongname
-        }, function (stat) {
+        }).then(function (stat) {
             if (stat.ok) {
                 stat.message = 'Created new scenario "' + stat.data[1] + '".'
                 controller.retrieveCases();
@@ -120,7 +108,7 @@ angular.module('arachne')
             source:   this.selectedCase,
             target:   this.replacing,
             longname: this.newLongname
-        }, function (stat) {
+        }).then(function (stat) {
             if (stat.ok) {
                 stat.message = 'Cloned new scenario "' + stat.data[1] + '".'
                 controller.retrieveCases();
@@ -137,7 +125,7 @@ angular.module('arachne')
     this.opRemove = function() {
         Arachne.request('scen-remove', '/scenario/remove.json', {
             case: this.selectedCase
-        }, function (stat) {
+        }).then(function (stat) {
             if (stat.ok) {
                 stat.message = 'Removed scenario "' + 
                     controller.selectedCase + '".';

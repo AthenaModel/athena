@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('arachne')
-.factory('Arachne', ['$http', '$timeout', function($http, $timeout) {
+.factory('Arachne', ['$http', '$timeout', '$q', function($http, $timeout, $q) {
     //---------------------------------------------------------
     // Service object
 
@@ -61,14 +61,17 @@ angular.module('arachne')
         return service.caseRecords;
     }
 
-    service.refreshCases = function(callback) {
+    service.refreshCases = function() {
+        var deferred = $q.defer();
+
         $http.get('/scenario/index.json').success(function(data) {
             service.caseRecords = data;
-
-            if (callback) {
-                callback();
-            }
+            deferred.resolve(data);
+        }).error(function(data) {
+            deferred.reject(data);
         });
+
+        return deferred.promise;
     };
 
     service.gotCase = function(caseid) {
@@ -88,14 +91,21 @@ angular.module('arachne')
         return service.fileRecords;
     }
 
-    service.refreshFiles = function (callback) {
+    // refreshFiles()
+    //
+    // Refreshes the list of scenario files; returns a promise to be
+    // called when (and if) the list is updated.
+    service.refreshFiles = function () {
+        var deferred = $q.defer();
+
         $http.get('/scenario/files.json').success(function(data) {
             service.fileRecords = data;
-
-            if (callback) {
-                callback();
-            }
+            deferred.resolve(data);
+        }).error(function(data) {
+            deferred.reject(data);
         });
+
+        return deferred.promise;
     };
 
     service.gotFile = function(filename) {
@@ -118,22 +128,26 @@ angular.module('arachne')
         tag:     '',     // The last operation's tag.
         data:    [],     // Raw JSON data coming back from the request.
         code:    'OK',   // Status Code
+        result:  [],     // OK Result: array, data[1] to end.
         message: '',     // Error message
         errors:  {},     // Parameter Errors by parameter name
         stack:   '',     // Tcl Stack Trace,
         ok:      false
     };
 
-    service.request = function(tag, url, query, callback) {
+    service.request = function(tag, url, query) {
+        var deferred = $q.defer();
         var params = { params: query };
-        
+
         $http.get(url,params).success(function(data) {
             service.setStatus(tag, data);
-            if (callback) { callback(service.statusRecord); }
+            deferred.resolve(service.statusRecord);
         }).error(function() {
             service.setStatus(tag, ['error','Could not retrieve data']);
-            if (callback) { callback(service.statusRecord); }
+            deferred.resolve(service.statusRecord);
         });
+
+        return deferred.promise;
     };
 
     service.setStatus = function(tag, data) {
