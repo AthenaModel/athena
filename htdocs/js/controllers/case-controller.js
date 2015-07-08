@@ -29,7 +29,7 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
 
     // 
     this.setTab = function(which) {
-        this.clearStatus();
+        Arachne.clearRequest();
     	LastTab.set(this.caseId, which);
     };
 

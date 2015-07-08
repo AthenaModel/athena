@@ -150,6 +150,10 @@ angular.module('arachne')
         return deferred.promise;
     };
 
+    service.clearRequest = function() {
+        service.statusRecord.tag = '';
+    };
+
     service.setStatus = function(tag, data) {
         var stat = service.statusRecord;
 
