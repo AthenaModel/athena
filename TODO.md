@@ -5,9 +5,6 @@
   - Add inputs and work down
 - Angular Web App
   - Merge ScenOpsController into ScenarioListController.
-  - In Arachne service, consider returning a promise from requests, 
-    refreshes instead of using a callback.  See "Tyler McGinnis: Factory
-    vs. Service vs. Provider" for example.
   - Move entity object caching from CaseController to a service, either
     Arachne or a new service.
   - Case page: Add a tab for sending orders to a case.
