@@ -4,10 +4,11 @@
   - Add existing vardiffs as inputs where appropriate
   - Add inputs and work down
 - Angular Web App
-  - Got code search working, but errors in .json handlers seem to return
-    "success" with something other than real data.  Track this down!
-  - Figure out how to add Case pages.
-  - Move ScenarioListController stuff to a service.
+  - Merge ScenOpsController into ScenarioListController.
+  - Move entity object caching from CaseController to a service, either
+    Arachne or a new service.
+  - Case page: Add a tab for sending orders to a case.
+  - Script page: Add a tab for sending scripts to a case.
   - Handling help would require a .json interface to the help.
 - Arachne
   - Fix scenario name in Arachne's export .tcl file.  It depends on last 

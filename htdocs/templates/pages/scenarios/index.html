@@ -15,16 +15,16 @@
 <th>Week</th>
 </tr>
 
-<tr ng-repeat="scenario in page.scenarios">
+<tr ng-repeat="case in page.cases()">
 <td align="left">
-<input type="radio" name="source" ng-model="page.selectedCase" ng-value="scenario.id">
+<input type="radio" name="source" ng-model="page.selectedCase" ng-value="case.id">
 </td>    
-<td><b><a ng-href="#/scenarios/{{scenario.id}}">{{scenario.id}}</a></b></td>
-<td>{{scenario.longname}}</td>
-<td>{{scenario.source}}</td>
-<td>{{scenario.state}}</td>
-<td>{{scenario.tick}}</td>
-<td>{{scenario.week}}</td>
+<td><b><a ng-href="#/scenarios/{{case.id}}">{{case.id}}</a></b></td>
+<td>{{case.longname}}</td>
+<td>{{case.source}}</td>
+<td>{{case.state}}</td>
+<td>{{case.tick}}</td>
+<td>{{case.week}}</td>
 </tr>
 </table>
 

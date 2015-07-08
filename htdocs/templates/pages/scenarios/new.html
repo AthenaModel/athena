@@ -10,8 +10,8 @@
     <label for="case">Replacing:</label>
     <select id="case" class="form-control" ng-model="page.replacing">
       <option value selected></option>
-      <option ng-repeat="scenario in page.scenarios" value="{{scenario.id}}">
-        {{scenario.id}}: {{scenario.longname}}
+      <option ng-repeat="case in page.cases()" value="{{case.id}}">
+        {{case.id}}: {{case.longname}}
       </option>
     </select>
   </div>
@@ -22,8 +22,8 @@
 </form>
 
 <!-- Show the operation result -->
-<ar-result op="new" result="page.status"></ar-result>
+<ar-result tag="scen-new"></ar-result>
 
 <!-- Show the JSON response -->
-<ar-example header="JSON Result" content="{{page.jsonData('new')}}"></ar-example>
+<ar-example header="JSON Result" content="{{page.statusData('scen-new')}}"></ar-example>
 

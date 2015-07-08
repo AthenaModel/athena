@@ -3,8 +3,6 @@
 
 angular.module('arachne')
 .controller('TopNavbarController', ['Arachne', function(Arachne) {
-    this.version = function() {
-        return Arachne.version();
-    };
+    this.version = Arachne.version;
 }]);
 

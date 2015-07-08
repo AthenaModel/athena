@@ -1,9 +1,23 @@
 <ar-mainpage sidebar="/templates/pages/home/sidebar.html">
+<div ng-controller="HomeIndexController as page">
 <h1>Arachne: Athena's Web Spinner</h1>
+
+<p ng-show="page.connected()">
+<b>
+Arachne {{page.version()}}, 
+invoked at {{page.startTime() | date:'MMM d, y h:mm:ss a'}}.</b>
+</p>
+
+<p ng-hide="page.connected()">
+<b>
+Arachne is off-line.
+</b>
+</p>
 
 <h2>Documentation</h2>
 
 <ul>
 <li> <a href="arachne.html" target="_blank">Arachne Interface Specification</a></li>
 </ul>
+</div>
 </ar-mainpage>

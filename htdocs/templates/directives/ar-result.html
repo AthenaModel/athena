@@ -1,24 +1,24 @@
 <!-- ar-result element -->
-<div ng-show="result.op === op && result.data">
+<div ng-show="result.show()">
 
 <h4 ng-show="header">{{header}}</h4>
 
-<p class="bg-success" ng-show="result.code === 'OK'">{{result.message}}</p>
+<p class="bg-success" ng-show="result.code() === 'OK'">{{result.status().message}}</p>
 
-<p class="bg-danger" ng-show="result.code === 'ERROR'">{{result.message}}</p>
+<p class="bg-danger" ng-show="result.code() === 'ERROR'">{{result.status().message}}</p>
 
-<div ng-show="result.code === 'REJECT'">
+<div ng-show="result.code() === 'REJECT'">
 <p>There was a problem with the query parameters:</p>
 <dl class="dl-horizontal" >
-<div ng-repeat="(parm, message) in result.errors">
+<div ng-repeat="(parm, message) in result.status().errors">
 <dt><code>{{parm}}</code></dt>
 <dd class="bg-danger">{{message}}</dd>
 </div>
 </dl>
 </div>
 
-<div ng-show="result.code === 'EXCEPTION'">
-<span class="bg-danger">{{result.message}}</span>
-<ar-example header="Stack Trace" content={{result.stackTrace}}></ar-example>
+<div ng-show="result.code() === 'EXCEPTION'">
+<span class="bg-danger">{{result.status().message}}</span>
+<ar-example header="Stack Trace" content={{result.status().stackTrace}}></ar-example>
 </div>
 </div>
