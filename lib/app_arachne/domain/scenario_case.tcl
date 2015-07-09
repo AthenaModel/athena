@@ -426,6 +426,19 @@ smarturl /scenario /{case}/order.json {
 }
 
 #-------------------------------------------------------------------
+# Parmdb parameters
+
+smarturl /scenario /{case}/parmdb.json {
+    Requests the contents of the parameter database.  The database
+    is returned as an array of JSON objects with parameter names,
+    doc strings, current and default values.<p>
+} {
+    set case [my ValidateCase $case]
+
+    return [case with $case parm serialize json]
+}
+
+#-------------------------------------------------------------------
 # Script Handling
 
 smarturl /scenario /{case}/script.html {

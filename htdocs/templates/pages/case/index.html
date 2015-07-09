@@ -45,6 +45,9 @@
       
     </ul>
   </li>
+  <li ng-class="{ active: page.isSet('parmdb') }">
+    <a href ng-click="page.setTab('parmdb')">Model Parameters</a>
+  </li>
 </ul>
 </nav>
 
@@ -62,5 +65,7 @@
      ng-include="'/templates/pages/case/frcgroups.html'"></div>
 <div ng-show="page.isSet('orggroups')"  
      ng-include="'/templates/pages/case/orggroups.html'"></div>
+<div ng-show="page.isSet('parmdb')"  
+     ng-include="'/templates/pages/case/parmdb.html'"></div>
 
 </ar-mainpage>

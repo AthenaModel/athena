@@ -95,6 +95,108 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
     }
 
     //----------------------------------------------------
+    // Scenario Model Parameters
+
+    this.allparms = []; //Complete heirarchy of parms
+    this.parms    = []; //Only parms with actual values
+    this.cparm    = "";
+
+    this.getParms = function () {
+        var url = '/scenario/' + this.caseId + '/parmdb.json';
+
+        $http.get(url).success(function(data) {
+            controller.allparms = [];
+            controller.parms    = [];
+            controller.allparms = data;
+            for (var i=0 ; i < data.length ; i++) {
+                // Store the parms with values separately
+                if (data[i].value) {
+                    controller.parms.push(data[i]);
+                }
+            }
+        });
+    }
+
+    this.setCurrParm = function(e) {
+        // FIRST, if the parm was clicked again, toggle off.
+        if (this.cparm === e.currentTarget.innerText) {
+            this.cparm = '';
+            return;
+        }
+
+        // NEXT, set is as the current parameter and find it's value
+        this.cparm = e.currentTarget.innerText;
+        var result = $.grep(this.parms, function(e) {
+                return e.name === controller.cparm; 
+            });
+
+        // NEXT, set new parm value as current value
+        this.newParmVal = result[0].value;
+
+    }
+
+    //-----------------------------------------------------
+    // Model Parameter Operations
+
+    this.newParmVal = '';
+    this.errmsg     = '';
+
+    this.opSetParm = function () {
+        // FIRST, if no parm or no new value, done.
+        if (!this.cparm || !this.newParmVal) {
+            return;
+        }
+
+        console.log('Set ' + this.cparm + ' to ' + this.newParmVal);
+
+        var url = '/scenario/' + this.caseId + '/order.json';
+        var qparms = {order_: 'PARM:SET', 
+                      parm:   this.cparm, 
+                      value:  this.newParmVal};
+
+        console.log('URL= ' + url + ' qparms ' + qparms);
+
+        Arachne.request('case-parm', url, qparms)
+        .then(function (stat) {
+            if (stat.ok) {
+                controller.getParms();
+            } else {
+                controller.errmsg = stat.errors;
+            }
+        });        
+
+        this.newParmVal = '';
+    }
+
+    this.opResetParm = function () {
+        if (!this.cparm) {
+            return;
+        }
+
+        var result = $.grep(this.parms, function(e){
+            return e.name === controller.cparm; 
+        });
+
+        var defval = result[0].default;
+
+        var url = '/scenario/' + this.caseId + '/order.json';
+
+        var qparms = {order_: 'PARM:RESET', 
+                      parm:   this.cparm};
+
+        Arachne.request('case-parm', url, qparms)
+        .then(function (stat) {
+            if (stat.ok) {
+                controller.getParms();
+            }
+        });  
+
+        console.log('Reset ' + this.cparm);
+
+        this.newParmVal = '';
+    }
+
+    //----------------------------------------------------
     // Scenario Objects
 
     // Object storage
@@ -120,7 +222,7 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
 
         $http.get(url).success(function(data) {
             controller.objectData[otype] = data;
-        });
+        })
     };
 
     this.objects = function (otype) {
@@ -178,10 +280,9 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
         });
     };
 
-
-
     //-------------------------------------------------------
     // Refresh
 
     this.refreshMetadata();
+    this.getParms();
 }]);
