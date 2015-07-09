@@ -5,13 +5,16 @@
   - Add inputs and work down
 - Angular Web App
   - Comparisons
-    - Include week string in comparison metadata, and display on 
-      comparisons page.
   - Move entity object caching from CaseController to a service, either
     Arachne or a new service.
   - Case page: Add a tab for sending orders to a case.
   - Script page: Add a tab for sending scripts to a case.
   - Handling help would require a .json interface to the help.
+  - Debugging page
+    - Define debugging service.
+    - Sidebar content should be defined as directives using the 
+      service; then the sidebar doesn't need to see the page controller,
+      and we can go back to using ar-mainpage.
 - Arachne
   - Fix scenario name in Arachne's export .tcl file.  It depends on last 
     export, and it shouldn't.

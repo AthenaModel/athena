@@ -134,9 +134,13 @@ angular.module('arachne')
         return service.refreshObjects('comps');
     };
 
-    service.gotComp = function(compid) {
-        return service.gotObject('comps',compid);
+    service.gotComp = function(compId) {
+        return service.gotObject('comps',compId);
     };
+
+    service.getComp = function(compId) {
+        return service.get('comps',compId);
+    }
 
     //----------------------------------------------------------
     // Scenario File Records
