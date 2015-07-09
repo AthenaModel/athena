@@ -27,7 +27,7 @@ package provide app_arachne 6.3.1a2
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
 package require projectlib
-package require huddle 0.1.5
+# package require huddle 0.1.5 Remove this comment when huddle is updated
 package require json 1.3.3
 package require -exact athena 6.3.1a2
 package require -exact ahttpd 6.3.1a2
