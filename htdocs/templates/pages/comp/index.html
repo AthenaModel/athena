@@ -35,6 +35,9 @@
 <li>Consider using a table with width "auto".  To make the columns line
     up across areas, we'd need to use a single table with a category
     column...but possibly not an output type column</li>
+<li>Could also use PMESII tabs, and display each set of outputs on its
+    own tab.  Then, use a table with an output type column.  Use a badge
+    on the tab?</li>
 </ar-tbd-list>
 
 <p class="text-info">
@@ -46,7 +49,7 @@ The following outputs were found to be significant in this comparison.
     <h3>{{page.categoryName(cat)}}</h3>
 
     <div ng-repeat="type in page.outputs.bycat[cat]">
-      <div><span class="label label-primary">{{type}}</span></div>
+      <div><h4><span class="label label-primary">{{type}}</span></h4></div>
       <ul>
       <li ng-repeat="output in page.outputs.bytype[type]">
       <span class="text-primary">{{output.name}}</span>:
