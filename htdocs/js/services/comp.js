@@ -39,7 +39,7 @@ function($http, $timeout, $q, Arachne) {
     // Retrieves the comparison data if it hasn't already been loaded.
     // If the comparison no longer exists, removes its data.
 
-    service.retrieve = function(compId) {
+    service.comparison = function(compId) {
         var meta = Arachne.getComp(compId);
 
         // FIRST, if comp is not defined, remove any data that exists
@@ -77,6 +77,18 @@ function($http, $timeout, $q, Arachne) {
         $http.get(url).success(function(data) {
             CategorizeOutputs(comps[compId], data);
         });
+
+        // NEXT, return a comparison object
+        return {
+            meta:    function()     { return service.meta(compId);          },
+            case1:   function()     { return service.case1(compId);         },
+            case2:   function()     { return service.case2(compId);         },
+            size:    function()     { return service.size(compId);          },
+            outputs: function()     { return service.outputs(compId);       },
+            catSize: function(cat)  { return service.catSize(compId, cat); },
+            byCat:   function(cat)  { return service.byCat(compId, cat);    },
+            output:  function(name) { return service.output(compId, name);  }
+        };
     }
 
     // CategorizeOutputs(comp, data)
@@ -158,8 +170,8 @@ function($http, $timeout, $q, Arachne) {
         return catNames[cat] || 'Unknown';
     }
 
-    // num() -- Number of outputs
-    service.num = function(compId) {
+    // size() -- Number of outputs
+    service.size = function(compId) {
         if (comps[compId]) {
             return Object.keys(comps[compId].byName).length;
         } else {
@@ -167,8 +179,8 @@ function($http, $timeout, $q, Arachne) {
         }        
     }
 
-    // numInCat(cat) -- Number of outputs in the category
-    service.numInCat = function(compId,cat) {
+    // catSize(cat) -- Number of outputs in the category
+    service.catSize = function(compId,cat) {
         if (comps[compId]) {
             return comps[compId].byCat[cat].length;
         } else {

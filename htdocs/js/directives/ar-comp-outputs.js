@@ -13,7 +13,7 @@ angular.module("arachne")
                             Comp.catname($scope.category) + ' Outputs';
 
             this.size = function() {
-                return Comp.numInCat($scope.compid, $scope.category);
+                return Comp.catSize($scope.compid, $scope.category);
             }
 
             this.outputs = function() {
