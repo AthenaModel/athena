@@ -16,7 +16,7 @@ below.</p>
 </div>
 
 <section ng-show="page.comps().length">
-<table class="table table-striped table-hover">
+<table class="table table-striped table-hover auto-width">
 <tr>
 <th>ID</th>
 <th>Case A</th>
@@ -29,9 +29,9 @@ below.</p>
 <tr ng-repeat="comp in page.comps()">
 <td><b><a ng-href="#/comparisons/{{comp.id}}">{{comp.id}}</a></b></td>
 <td>{{comp.case1}}, {{page.case(comp.case1).longname}} 
-    @ {{comp.week1}} ({{comp.t1}}))</td>
+    @ {{comp.week1}} ({{comp.t1}})</td>
 <td>{{comp.case2}}, {{page.case(comp.case2).longname}} 
-    @ {{comp.week2}} ({{comp.t2}}))</td>
+    @ {{comp.week2}} ({{comp.t2}})</td>
 <td>{{comp.outputs}}</td>
 <td>{{comp.diffs}}</td>
 <td>
@@ -56,7 +56,7 @@ below.</p>
   </div>
 
   <div class="form-group">
-    <label for="case2">Case B:</label>
+    <label for="case2">with Case B:</label>
     <select id="case2" class="form-control" ng-model="page.caseid2">
       <option value selected></option>
       <option ng-repeat="case in page.cases()" value="{{case.id}}">

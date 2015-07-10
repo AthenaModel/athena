@@ -37,3 +37,7 @@ dl.loose dd {
     margin-left: 2em;
 }
 
+/* For tables, to give them only the width they need. */
+table.auto-width {
+    width: auto;
+}

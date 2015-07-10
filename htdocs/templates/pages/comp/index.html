@@ -7,72 +7,116 @@
 <div class="panel panel-default">
   <div class="panel-body">
     <div>
-      <b>Case A:</b> {{page.case1.longname}} ({{page.case1.id}})
-      @ {{page.comp.week1}} ({{page.comp.t1}})
+      <b>Case A:</b> {{page.case1().longname}} ({{page.case1().id}})
+      @ {{page.comp().week1}} ({{page.comp().t1}})
     </div>
     <div>
-      <b>Case B:</b> {{page.case2.longname}} ({{page.case2.id}})
-      @ {{page.comp.week2}} ({{page.comp.t2}})
+      <b>Case B:</b> {{page.case2().longname}} ({{page.case2().id}})
+      @ {{page.comp().week2}} ({{page.comp().t2}})
     </div>
   </div>
 </div>
 </section>
 <hr>
 
-<section>
 <h2>Significant Outputs</h2>
 
 <ar-tbd-list>
-<li>Significant outputs by PMESII area and type.</li>
-<li>Use labels for the type names?</li>
+<li>Define directives that access the Comp service.</i>
 <li>Need text narrative for each difference, with precise detail
     available on demand. (Hover or more/less button)</li>
-<li>Need to display score for each output.</li>
 <li>Need to sort outputs by score within each type.</li>
 <li>Clicking on a variable name (or, perhaps, on the row itself) should
     retrieve the chain and display it in the major section
     below.</li>
-<li>Consider using a table with width "auto".  To make the columns line
-    up across areas, we'd need to use a single table with a category
-    column...but possibly not an output type column</li>
-<li>Could also use PMESII tabs, and display each set of outputs on its
-    own tab.  Then, use a table with an output type column.  Use a badge
-    on the tab?</li>
 </ar-tbd-list>
 
 <p class="text-info">
 The following outputs were found to be significant in this comparison.
+Select the tab to choose the category of outputs to display.
 </p>
 
-<div ng-repeat="cat in page.categories()">
-  <div ng-show="page.outputs.bycat[cat]">
-    <h3>{{page.categoryName(cat)}}</h3>
+<nav>
+<ul class="nav nav-tabs">
+  <li ng-class="{ active: page.isSet('political') }">
+    <a href ng-click="page.setTab('political')">
+      Political <span class="badge">{{page.numInCat('political')}}</span>
+    </a>
+  </li>
 
-    <div ng-repeat="type in page.outputs.bycat[cat]">
-      <div><h4><span class="label label-primary">{{type}}</span></h4></div>
-      <ul>
-      <li ng-repeat="output in page.outputs.bytype[type]">
-      <span class="text-primary">{{output.name}}</span>:
-      <span class="text-warning">This should be a narrative string.</span>
-      Score: {{output.score}}.
-      </li>
-      </ul>
-    </div>    
-    </dl>
-  </div>
-</div>
-</section>
+  <li ng-class="{ active: page.isSet('military') }">
+    <a href ng-click="page.setTab('military')">Military
+    <span class="badge">{{page.numInCat('military')}}</span>
+    </a>
+  </li>
 
-<section>
-<h2>Selected Chain</h2>
+  <li ng-class="{ active: page.isSet('economic') }">
+    <a href ng-click="page.setTab('economic')">Economic
+        <span class="badge">{{page.numInCat('economic')}}</span>
+    </a>
+  </li>
 
-<ar-tbd-list>
-<li>Displays the chain in outline form.</li>
-<li>Ultimately, significance slider, 100.0 to 0.0</li>
-<li>Maybe: More/Less button for each item, displaying more data
-    underneath item.</li>
-</ar-tbd-list>
-</section>
+  <li ng-class="{ active: page.isSet('social') }">
+    <a href ng-click="page.setTab('social')">Social
+        <span class="badge">{{page.numInCat('social')}}</span>
+    </a>
+  </li>
+
+  <li ng-class="{ active: page.isSet('information') }">
+    <a href ng-click="page.setTab('information')">Information
+        <span class="badge">{{page.numInCat('information')}}</span>
+    </a>
+  </li>
+
+  <li ng-class="{ active: page.isSet('infrastructure') }">
+    <a href ng-click="page.setTab('infrastructure')">Infrastructure
+        <span class="badge">{{page.numInCat('infrastructure')}}</span>
+    </a>
+  </li>
+
+  <li ng-class="{ active: page.isSet('all') }">
+    <a href ng-click="page.setTab('all')">All
+        <span class="badge">{{page.num()}}</span>
+    </a>
+  </li>
+
+  <li ng-class="{ active: page.isSet('detail') }">
+    <a href ng-click="page.setTab('detail')">Detail</a>
+  </li>
+</ul>
+</nav>
+
+<ar-comp-outputs ng-show="page.isSet('political')"
+                 compid="{{compId}}" 
+                 category="political"></ar-comp-outputs>
+
+<ar-comp-outputs ng-show="page.isSet('military')"
+                 compid="{{compId}}" 
+                 category="military"></ar-comp-outputs>
+
+<ar-comp-outputs ng-show="page.isSet('economic')"
+                 compid="{{compId}}" 
+                 category="economic"></ar-comp-outputs>
+
+<ar-comp-outputs ng-show="page.isSet('social')"
+                 compid="{{compId}}" 
+                 category="social"></ar-comp-outputs>
+
+<ar-comp-outputs ng-show="page.isSet('information')"
+                 compid="{{compId}}" 
+                 category="information"></ar-comp-outputs>
+
+<ar-comp-outputs ng-show="page.isSet('infrastructure')"
+                 compid="{{compId}}" 
+                 category="infrastructure"></ar-comp-outputs>
+
+<div ng-show="page.isSet('all')" 
+     ng-include="'/templates/pages/comp/all.html'"></div>
+
+<div ng-show="page.isSet('detail')"  
+     ng-include="'/templates/pages/comp/detail.html'"></div>
+
+
 
 </div>
 </ar-mainpage>
