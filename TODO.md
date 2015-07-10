@@ -5,8 +5,13 @@
   - Add inputs and work down
 - Angular Web App
   - Comparisons
-  - Move entity object caching from CaseController to a service, either
-    Arachne or a new service.
+    - See #/comparisons/index.html for UI issues
+    - All comparison requests should be moved to comp.js
+      - And there should be a "new()" method, which can save the 
+        comparison's metadata and outputs immediately, so that they
+        don't need to be retrieved separately.
+  - The case data management should be abstracted from CaseController
+    into a case.js service following the same pattern as comp.js.
   - Case page: Add a tab for sending orders to a case.
   - Script page: Add a tab for sending scripts to a case.
   - Handling help would require a .json interface to the help.

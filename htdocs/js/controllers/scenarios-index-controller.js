@@ -3,13 +3,14 @@
 
 angular.module('arachne')
 .controller('ScenariosIndexController', 
-['Arachne', 'LastTab', function(Arachne,LastTab) {
+['$scope', 'Arachne', 'Tab', function($scope, Arachne,Tab) {
     var controller = this;   // For use in callbacks
 
     // Delegated Functions
     this.cases = Arachne.cases;
     this.files = Arachne.files;
     this.statusData = Arachne.statusData;
+    $scope.tab = Tab.tabber('scenario');
 
     // Model Variables
     this.selectedCase = '';   // Case ID selected in case list, or ''
@@ -136,22 +137,10 @@ angular.module('arachne')
         });
     };
 
-    // Tab control 
-    // Initialize last tab service to 'new'
-    if (!LastTab.get('scenario')) {
-        // This registers this set of tabs with the service
-        LastTab.set('scenario', 'new');
+    // Initialization
+    if (!$scope.tab.get()) {
+        $scope.tab.set('new');
     }
 
-    this.setTab = function(which) {
-        LastTab.set('scenario', which);
-    };
-
-    this.isSet = function(tab) {
-        return LastTab.get('scenario') === tab;
-    };
-
-
-    // Initialization
     this.retrieveAll();
 }]);

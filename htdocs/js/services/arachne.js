@@ -14,9 +14,7 @@ angular.module('arachne')
         meta: {                   // Server metadata
             version: 'v?.?.?',    // Server version
             startTime: 0          // Server start time (msec)
-        },
-        caseRecords: [],          // Array of case records
-        fileRecords: []           // Array of scenario file records
+        }
     };
 
     //----------------------------------------------------------
