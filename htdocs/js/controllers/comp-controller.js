@@ -3,8 +3,8 @@
 
 angular.module('arachne')
 .controller('CompController', 
-['$routeParams', '$scope', 'Comp', 'LastTab',
-function($routeParams, $scope, Comp, LastTab) {
+['$routeParams', '$scope', 'Comp', 'Tab',
+function($routeParams, $scope, Comp, Tab) {
 	var controller = this;
 
     //-----------------------------------------------------
@@ -15,29 +15,19 @@ function($routeParams, $scope, Comp, LastTab) {
     $scope.compId = this.compId;
 
     //-----------------------------------------------------
-    // Tab Management 
+    // Delegated Methods
 
-    // Tab control, initialize last tab service to 'manage'
-    if (!LastTab.get(this.compId)) {
-        // This registers this set of tabs with the service
-        LastTab.set(this.compId, 'political');
+    this.categories = Comp.categories;
+    this.catname    = Comp.catname;
+    this.tab        = Tab.tabber('comp');
+
+    if (!this.tab.get()) {
+        this.tab.set('political');
     }
-
-    this.setTab = function(which) {
-        LastTab.set(this.compId, which);
-    };
-
-    this.isSet = function(tab) {
-        return LastTab.get(this.compId) === tab;
-    };
-
 
     //-----------------------------------------------------
     // Queries
 
-    // Delegated queries
-    this.categories = Comp.categories;
-    this.catname    = Comp.catname;
 
     // Simplified queries
     this.comp = function() {

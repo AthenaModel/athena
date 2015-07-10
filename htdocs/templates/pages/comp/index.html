@@ -22,13 +22,11 @@
 <h2>Significant Outputs</h2>
 
 <ar-tbd-list>
-<li>Define directives that access the Comp service.</i>
 <li>Need text narrative for each difference, with precise detail
     available on demand. (Hover or more/less button)</li>
-<li>Need to sort outputs by score within each type.</li>
+<li>Need to sort outputs in tables.</li>
 <li>Clicking on a variable name (or, perhaps, on the row itself) should
-    retrieve the chain and display it in the major section
-    below.</li>
+    retrieve the chain and display it in the Detail tab.</li>
 </ar-tbd-list>
 
 <p class="text-info">
@@ -38,82 +36,82 @@ Select the tab to choose the category of outputs to display.
 
 <nav>
 <ul class="nav nav-tabs">
-  <li ng-class="{ active: page.isSet('political') }">
-    <a href ng-click="page.setTab('political')">
+  <li ng-class="page.tab.active('political')">
+    <a href ng-click="page.tab.set('political')">
       Political <span class="badge">{{page.numInCat('political')}}</span>
     </a>
   </li>
 
-  <li ng-class="{ active: page.isSet('military') }">
-    <a href ng-click="page.setTab('military')">Military
+  <li ng-class="page.tab.active('military')">
+    <a href ng-click="page.tab.set('military')">Military
     <span class="badge">{{page.numInCat('military')}}</span>
     </a>
   </li>
 
-  <li ng-class="{ active: page.isSet('economic') }">
-    <a href ng-click="page.setTab('economic')">Economic
+  <li ng-class="page.tab.active('economic')">
+    <a href ng-click="page.tab.set('economic')">Economic
         <span class="badge">{{page.numInCat('economic')}}</span>
     </a>
   </li>
 
-  <li ng-class="{ active: page.isSet('social') }">
-    <a href ng-click="page.setTab('social')">Social
+  <li ng-class="page.tab.active('social')">
+    <a href ng-click="page.tab.set('social')">Social
         <span class="badge">{{page.numInCat('social')}}</span>
     </a>
   </li>
 
-  <li ng-class="{ active: page.isSet('information') }">
-    <a href ng-click="page.setTab('information')">Information
+  <li ng-class="page.tab.active('information')">
+    <a href ng-click="page.tab.set('information')">Information
         <span class="badge">{{page.numInCat('information')}}</span>
     </a>
   </li>
 
-  <li ng-class="{ active: page.isSet('infrastructure') }">
-    <a href ng-click="page.setTab('infrastructure')">Infrastructure
+  <li ng-class="page.tab.active('infrastructure')">
+    <a href ng-click="page.tab.set('infrastructure')">Infrastructure
         <span class="badge">{{page.numInCat('infrastructure')}}</span>
     </a>
   </li>
 
-  <li ng-class="{ active: page.isSet('all') }">
-    <a href ng-click="page.setTab('all')">All
+  <li ng-class="page.tab.active('all')">
+    <a href ng-click="page.tab.set('all')">All
         <span class="badge">{{page.num()}}</span>
     </a>
   </li>
 
-  <li ng-class="{ active: page.isSet('detail') }">
-    <a href ng-click="page.setTab('detail')">Detail</a>
+  <li ng-class="page.tab.active('detail')">
+    <a href ng-click="page.tab.set('detail')">Detail</a>
   </li>
 </ul>
 </nav>
 
-<ar-comp-outputs ng-show="page.isSet('political')"
+<ar-comp-outputs ng-show="page.tab.active('political')"
                  compid="{{compId}}" 
                  category="political"></ar-comp-outputs>
 
-<ar-comp-outputs ng-show="page.isSet('military')"
+<ar-comp-outputs ng-show="page.tab.active('military')"
                  compid="{{compId}}" 
                  category="military"></ar-comp-outputs>
 
-<ar-comp-outputs ng-show="page.isSet('economic')"
+<ar-comp-outputs ng-show="page.tab.active('economic')"
                  compid="{{compId}}" 
                  category="economic"></ar-comp-outputs>
 
-<ar-comp-outputs ng-show="page.isSet('social')"
+<ar-comp-outputs ng-show="page.tab.active('social')"
                  compid="{{compId}}" 
                  category="social"></ar-comp-outputs>
 
-<ar-comp-outputs ng-show="page.isSet('information')"
+<ar-comp-outputs ng-show="page.tab.active('information')"
                  compid="{{compId}}" 
                  category="information"></ar-comp-outputs>
 
-<ar-comp-outputs ng-show="page.isSet('infrastructure')"
+<ar-comp-outputs ng-show="page.tab.active('infrastructure')"
                  compid="{{compId}}" 
                  category="infrastructure"></ar-comp-outputs>
 
-<div ng-show="page.isSet('all')" 
+<div ng-show="page.tab.active('all')" 
      ng-include="'/templates/pages/comp/all.html'"></div>
 
-<div ng-show="page.isSet('detail')"  
+<div ng-show="page.tab.active('detail')"  
      ng-include="'/templates/pages/comp/detail.html'"></div>
 
 
