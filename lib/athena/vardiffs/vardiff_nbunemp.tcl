@@ -38,4 +38,8 @@ oo::class create ::athena::vardiff::nbunemp {
     method score {} {
         format "%.1f" [next]
     }
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Unemployment rate in neighborhood [my key n]"]
+    }
 }

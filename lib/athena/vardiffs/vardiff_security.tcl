@@ -37,4 +37,10 @@ oo::class create ::athena::vardiff::security {
     method context {} {
         format "%d vs %d" [my val1] [my val2]
     }
+
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Security of [my key g] in neighborhood [my key n]" \
+            "security points"]
+    }
 }

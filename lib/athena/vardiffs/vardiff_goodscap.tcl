@@ -42,4 +42,7 @@ oo::class create ::athena::vardiff::goodscap {
         let score {100.0*abs(double($val2)-$val2)/max($val1, $val2)}
         format "%.2f" $score
     }
+    method narrative {} {
+        return [my DeltaNarrative "Production capacity"]
+    }
 }
