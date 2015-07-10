@@ -28,49 +28,7 @@ smarturl /scenario /{case}/index.html {
     # FIRST, get the URL placeholder variables
     set case [my ValidateCase $case]
 
-    # NEXT, carry out any given operation.
-    if {[req method] eq "POST"} {
-        my status clear
-        set op    [qdict prepare op -required -in {advance lock unlock}]
-        set weeks [qdict prepare weeks -default 1 -with {ipositive validate}]
-
-        if {![qdict ok]} {
-            my status {
-                my ErrorList "Could not perform operation:" [qdict errors]
-            }
-            my redirect [req url]
-            # ALL DONE
-        }
-
-        try {
-            switch -- $op {
-                advance {
-                    case with $case lock
-                    case with $case advance -mode background -ticks $weeks
-                    my status { hb putln "Advancing time." }
-                }
-                lock {
-                    case with $case lock
-                    my status { hb putln "Scenario is locked." }
-                }
-                unlock {
-                    case with $case unlock
-                    my status { hb putln "Scenario is unlocked." }
-                }
-            }
-        } trap {ATHENA NOTSANE} {result} {
-            my redirect [my domain $case sanity onlock.html]
-        } trap ATHENA {result} {
-            my status { hb span -class error $result }
-        }
-
-        my redirect [req url]
-        # ALL DONE        
-    }
-
-
-    hb page "Scenario '$case': Overview" \
-        -refreshafter [my RefreshIfBusy $case]
+    hb page "Scenario '$case': Overview"
     my CaseNavBar $case
 
     hb h1 "Scenario '$case': Overview"
@@ -79,61 +37,6 @@ smarturl /scenario /{case}/index.html {
 
     hb h2 "Scenario Metadata"
     my ScenarioTable -cases $case
-
-    set weekdict {
-        1   "1 week"
-        2   "2 weeks"
-        3   "3 weeks"
-        4   "4 weeks"
-        5   "5 weeks"
-        6   "6 weeks"
-        7   "7 weeks"
-        8   "8 weeks"
-        10  "10 weeks"
-        12  "12 weeks"
-        24  "24 weeks"
-        36  "36 weeks"
-        48  "48 weeks"
-        52  "1 year"
-        104 "2 years"
-    }
-
-    hb h2 "Operations"
-
-    hb putln {
-        Note: We show all operations whether they are currently
-        allowed or not so that we can test the JSON interface's
-        error handling.
-    }
-    hb para
-
-    hb ul
-
-    hb li-with {
-        hb form -method post 
-        hb hidden op lock
-        hb submit Lock
-        hb submit -formaction [my domain]/$case/lock.json "JSON"
-        hb /form
-    }
-    hb li-with { 
-        hb form -method post 
-        hb hidden op unlock
-        hb submit Unlock
-        hb submit -formaction [my domain]/$case/unlock.json "JSON"
-        hb /form
-    }
-    hb li-with {
-        hb form -method post
-        hb hidden op advance
-        hb label weeks "Weeks:"
-        hb enumlong weeks -selected 1 $weekdict 
-        hb submit Advance
-        hb submit -formaction [my domain]/$case/advance.json "JSON"
-        hb /form                
-    }
-
-    hb /ul
 
     return [hb /page]
 }

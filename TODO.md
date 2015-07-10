@@ -12,8 +12,10 @@
         don't need to be retrieved separately.
   - The case data management should be abstracted from CaseController
     into a case.js service following the same pattern as comp.js.
-  - Case page: Add a tab for sending orders to a case.
-  - Script page: Add a tab for sending scripts to a case.
+  - Case page: 
+    - Sanity Check!
+    - Add a tab for sending orders to a case.
+    - Add a tab for sending scripts to a case.
   - Handling help would require a .json interface to the help.
   - Debugging page
     - Define debugging service.
