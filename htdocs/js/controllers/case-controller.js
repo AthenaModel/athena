@@ -41,6 +41,10 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
         return LastTab.get(this.caseId).indexOf('groups') != -1;
     };
 
+    this.isParms = function(tab) {
+        return LastTab.get(this.caseId).indexOf('parms') != -1;
+    }
+
     //----------------------------------------------------
     // Scenario Metadata
 
@@ -97,103 +101,106 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
     //----------------------------------------------------
     // Scenario Model Parameters
 
-    this.allparms = []; //Complete heirarchy of parms
-    this.parms    = []; //Only parms with actual values
-    this.cparm    = "";
+    this.parmtree     = []; //Complete heirarchy of parms
+    this.parms        = []; //Only parms with actual values
+    this.changedparms = []; //Only parms that have changed
+    this.currparm     = "";
 
-    this.getParms = function () {
+    this.refreshParms = function () {
         var url = '/scenario/' + this.caseId + '/parmdb.json';
 
         $http.get(url).success(function(data) {
-            controller.allparms = [];
-            controller.parms    = [];
-            controller.allparms = data;
+            controller.parmtree     = data;
+            controller.parms        = [];
+            controller.changedparms = [];
             for (var i=0 ; i < data.length ; i++) {
-                // Store the parms with values separately
+                // Store parms and non-default parms separately
                 if (data[i].value) {
                     controller.parms.push(data[i]);
+                    if (data[i].value !== data[i].default) {
+                        controller.changedparms.push(data[i]);
+                    }
                 }
             }
         });
     }
 
     this.setCurrParm = function(e) {
-        // FIRST, if the parm was clicked again, toggle off.
-        if (this.cparm === e.currentTarget.innerText) {
-            this.cparm = '';
+        // FIRST, clear any error message that may be there
+        this.parmError = '';
+
+        // NEXT, if the parm was clicked again, toggle off.
+        if (this.currparm === e.currentTarget.innerText) {
+            this.currparm = '';
             return;
         }
 
         // NEXT, set is as the current parameter and find it's value
-        this.cparm = e.currentTarget.innerText;
+        this.currparm = e.currentTarget.innerText;
         var result = $.grep(this.parms, function(e) {
-                return e.name === controller.cparm; 
+                return e.name === controller.currparm; 
             });
 
-        // NEXT, set new parm value as current value
-        this.newParmVal = result[0].value;
+        // NEXT, set parm field as current value
+        this.parmField = result[0].value;
 
+    }
+
+    this.getParms = function() {
+        if (this.isSet('changedparms')) {
+            return controller.changedparms;
+        }
+
+        return controller.parms;
     }
 
     //-----------------------------------------------------
     // Model Parameter Operations
 
-    this.newParmVal = '';
-    this.errmsg     = '';
+    this.parmField  = '';
+    this.parmError  = '';
 
     this.opSetParm = function () {
-        // FIRST, if no parm or no new value, done.
-        if (!this.cparm || !this.newParmVal) {
+        // FIRST, reset errmsg
+        this.parmError = '';
+
+        // FIRST, if no parm or no entry, done.
+        if (!this.currparm || !this.parmField) {
             return;
         }
-
-        console.log('Set ' + this.cparm + ' to ' + this.newParmVal);
 
         var url = '/scenario/' + this.caseId + '/order.json';
         var qparms = {order_: 'PARM:SET', 
-                      parm:   this.cparm, 
-                      value:  this.newParmVal};
+                      parm:   this.currparm, 
+                      value:  this.parmField};
 
-        console.log('URL= ' + url + ' qparms ' + qparms);
-
-        Arachne.request('case-parm', url, qparms)
+        Arachne.request('', url, qparms)
         .then(function (stat) {
             if (stat.ok) {
-                controller.getParms();
+                controller.refreshParms();
             } else {
-                controller.errmsg = stat.errors;
+                controller.parmError = stat.errors.value;
             }
         });        
 
-        this.newParmVal = '';
+        this.parmField = '';
     }
 
-    this.opResetParm = function () {
-        if (!this.cparm) {
-            return;
-        }
-
-        var result = $.grep(this.parms, function(e){
-            return e.name === controller.cparm; 
-        });
-
-        var defval = result[0].default;
+    this.opResetParms = function () {
+        // FIRST, reset error message
+        this.parmError = '';
 
         var url = '/scenario/' + this.caseId + '/order.json';
+        var qparms = {order_: 'PARM:RESET'};
 
-        var qparms = {order_: 'PARM:RESET', 
-                      parm:   this.cparm};
-
-        Arachne.request('case-parm', url, qparms)
+        Arachne.request('', url, qparms)
         .then(function (stat) {
             if (stat.ok) {
-                controller.getParms();
+                controller.refreshParms();
             }
         });  
 
-        console.log('Reset ' + this.cparm);
-
-        this.newParmVal = '';
+        this.parmField = '';
     }
 
     //----------------------------------------------------
@@ -284,5 +291,5 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
     // Refresh
 
     this.refreshMetadata();
-    this.getParms();
+    this.refreshParms();
 }]);
