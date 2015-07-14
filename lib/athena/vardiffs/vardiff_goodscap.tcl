@@ -32,7 +32,7 @@ oo::class create ::athena::vardiff::goodscap {
     }
 
     method context {} {
-        return {<i>x</i> &ge; &plus;$0.00}
+        return {<i>x</i> &ge; $0.00}
     }
 
 
