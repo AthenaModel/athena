@@ -32,9 +32,11 @@ No {{comp.catname() | lowercase}} outputs are significant in this comparison.
         <div class="panel-body">
           <dl class="dl-horizontal tight" style="margin-bottom:0px;">
             <dt>Case A:</dt>
-            <dd>{{output.fmt1}}</dd>
+            <dd>{{output.fancy1}}</dd>
             <dt>Case B:</dt>
-            <dd>{{output.fmt2}}</dd>
+            <dd>{{output.fancy2}}</dd>
+            <dt ng-if="output.context">Context:</dt>
+            <dd ng-if="output.context">{{output.context}}</dd>
           </dl>
         </div>
         </div>

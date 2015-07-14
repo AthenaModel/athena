@@ -40,7 +40,7 @@ oo::class create ::athena::vardiff::support {
     }
 
     method format {val} {
-        format %.1f $val
+        format %.2f $val
     }
 
     #-------------------------------------------------------------------
