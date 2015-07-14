@@ -35,9 +35,18 @@ oo::class create ::athena::vardiff::nbsecurity {
         return [format %.1f $val]
     }
 
-    method context {} {
-        format "%d vs %d" [my val1] [my val2]
+    method fancy {val} {
+        return [format "%.1f points (%s)" $val [qsecurity longname $val]]
     }
+
+    method context {} {
+        return {&minus;100.0 &le; <i>x</i> &le; &plus;100.0}
+    }
+
+    method score {} {
+        my format [next]
+    }
+
 
     method narrative {} {
         return [my DeltaNarrative \

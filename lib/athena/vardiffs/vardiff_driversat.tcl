@@ -29,6 +29,10 @@ oo::class create ::athena::vardiff::driversat {
         return [format %.1f $val]
     }
 
+    method fancy {val} {
+        return "[format %.1f $val] points"
+    }
+
     method IsSignificant {} {
         set lim [athena::compdb get [my type].limit]
 

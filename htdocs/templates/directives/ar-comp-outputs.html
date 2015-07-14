@@ -35,8 +35,10 @@ No {{comp.catname() | lowercase}} outputs are significant in this comparison.
             <dd>{{output.fancy1}}</dd>
             <dt>Case B:</dt>
             <dd>{{output.fancy2}}</dd>
+            <dt ng-if="output.delta">Delta:</dt>
+            <dd ng-if="output.delta" ng-bind-html="output.delta"></dd>
             <dt ng-if="output.context">Context:</dt>
-            <dd ng-if="output.context">{{output.context}}</dd>
+            <dd ng-if="output.context" ng-bind-html="output.context"></dd>
           </dl>
         </div>
         </div>

@@ -28,18 +28,18 @@ oo::class create ::athena::vardiff::nbunemp {
     }
 
     method format {val} {
-        return [format "%.1f%%" $val]
-    }
-
-    method context {} {
-        format "%.1f%%" [expr {[my val1]-[my val2]}]
+        return [format "%.2f%%" $val]
     }
 
     method score {} {
-        format "%.1f" [next]
+        format "%.2f" [next]
     }
     method narrative {} {
         return [my DeltaNarrative \
             "Unemployment rate in neighborhood [my key n]"]
+    }
+
+    method context {} {
+        return {<i>x</i> &ge; &plus;0.0%}
     }
 }

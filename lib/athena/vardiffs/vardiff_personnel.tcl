@@ -40,4 +40,10 @@ oo::class create ::athena::vardiff::personnel {
         return [my DeltaNarrative \
             "Personnel of group [my key g] deployed to neighborhood [my key n]"]
     }
+
+    method context {} {
+        return {<i>x</i> &ge; 0}
+    }
+
+
 }

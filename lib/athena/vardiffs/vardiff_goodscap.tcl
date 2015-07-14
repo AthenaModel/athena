@@ -32,8 +32,9 @@ oo::class create ::athena::vardiff::goodscap {
     }
 
     method context {} {
-        format "%.1f%%" [my score]
+        return {<i>x</i> &ge; &plus;$0.00}
     }
+
 
     method score {} {
         my variable val1

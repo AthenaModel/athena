@@ -184,7 +184,7 @@ oo::class create ::athena::vardiff {
     # delta
     #
     # The absolute difference of the two values, only if that makes
-    # sense.
+    # sense.  Subclasses should override this if necessary.
 
     method delta {} {
         expr {abs([my val1] - [my val2])}
@@ -242,6 +242,9 @@ oo::class create ::athena::vardiff {
         dict set result fmt2      [my fmt2]
         dict set result fancy2    [my fancy2]
         dict set result score     [my score]
+        dict set result delta     [expr {
+            [my delta] ne "" ? [my format [my delta]] : ""
+        }]
         dict set result narrative [my narrative]
         dict set result context   [my context]
 

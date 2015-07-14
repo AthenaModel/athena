@@ -29,7 +29,7 @@ oo::class create ::athena::vardiff::nbinfluence {
     }
 
     method score {} {
-        return 1
+        return 100.0
     }
 
     method format {val} {
@@ -39,6 +39,26 @@ oo::class create ::athena::vardiff::nbinfluence {
 
         return [dict keys [lsort -stride 2 -index 1 -decreasing -real $val]]
     }
+
+    method fancy {val} {
+        if {[dict size $val] == 0} {
+            return "No actor has influence"
+        }
+
+        set result ""
+        foreach a [dict keys [lsort -stride 2 -index 1 -decreasing -real $val]] {
+            lappend result "$a ([format %.2f [dict get $val $a]])"
+        }
+
+        return [join $result ", "] 
+    }
+
+    method delta {} {}  ;# Delta doesn't make sense for this vartype.
+
+    method context {} {
+        return {&minus;1.0 &le; <i>x</i> &le; &plus;1.0}
+    }
+
 
 
     method narrative {} {
