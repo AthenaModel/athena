@@ -1,5 +1,7 @@
 angular.module("arachne")
 .directive("arCompOutputs", function() {
+    var expanded = [];
+
     return {
         restrict: "E",
         templateUrl: "templates/directives/ar-comp-outputs.html",
@@ -54,6 +56,29 @@ angular.module("arachne")
                     $scope.reverse = true;
                 } else {
                     $scope.reverse = false;
+                }
+            }
+
+            this.isExpanded = function(item) {
+                return expanded.indexOf(item) !== -1;
+            }
+
+            this.toggleClass = function(item) {
+                if (this.isExpanded(item)) {
+                    return "glyphicon-chevron-up"
+                } else {
+                    return "glyphicon-chevron-down"
+                }
+            }
+
+
+            this.toggle = function(item) {
+                var ndx = expanded.indexOf(item);
+
+                if (ndx === -1) {
+                    expanded.push(item);
+                } else {
+                    expanded.splice(ndx,1);
                 }
             }
         }],

@@ -37,6 +37,14 @@ dl.loose dd {
     margin-left: 2em;
 }
 
+/* Tight horizontal DL lists */
+dl.tight dt {
+    width:60px;
+}
+dl.tight dd {
+    margin-left:70px;
+}
+
 /* For tables, to give them only the width they need. */
 table.auto-width {
     width: auto;
