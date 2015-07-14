@@ -22,7 +22,6 @@
 <h2>Significant Outputs</h2>
 
 <ar-tbd-list>
-<li> User should be able to sort output tables by column.</li>
 <li> User should be able to see precise detail for each entry,
      using hover or possibly a more/less button.</li>
 <li>Clicking on a variable name (or, perhaps, on the row itself) should
@@ -109,8 +108,14 @@ Select the tab to choose the category of outputs to display.
                  compid="{{compId}}" 
                  category="infrastructure"></ar-comp-outputs>
 
+<ar-comp-outputs ng-show="tab.active('all')"
+                 compid="{{compId}}" 
+                 category="all"></ar-comp-outputs>
+
+<!--
 <div ng-show="tab.active('all')" 
      ng-include="'/templates/pages/comp/all.html'"></div>
+-->
 
 <div ng-show="tab.active('detail')"  
      ng-include="'/templates/pages/comp/detail.html'"></div>
