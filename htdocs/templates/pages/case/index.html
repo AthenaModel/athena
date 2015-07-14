@@ -75,7 +75,7 @@
      ng-include="'/templates/pages/case/frcgroups.html'"></div>
 <div ng-show="tab.active('orggroups')"  
      ng-include="'/templates/pages/case/orggroups.html'"></div>
-<div ng-show="page.isParms()"  
+<div ng-show="tab.active(['allparms','changedparms'])"  
      ng-include="'/templates/pages/case/parmdb.html'"></div>
 
 </ar-mainpage>

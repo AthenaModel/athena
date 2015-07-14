@@ -27,17 +27,9 @@ function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
 
     $scope.tab = Tab.tabber(this.caseId);
 
-    // Initialize last tab service to 'manage'
+    // Initialize tab service to 'manage'
     if (!$scope.tab.get()) {
         $scope.tab.set('manage');
-    }
-
-    this.isGroups = function(tab) {
-        return Tab.get(this.caseId).indexOf('groups') != -1;
-    };
-
-    this.isParms = function(tab) {
-        return Tab.get(this.caseId).indexOf('parms') != -1;
     }
 
     //----------------------------------------------------
