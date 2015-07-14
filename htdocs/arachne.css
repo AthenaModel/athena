@@ -41,3 +41,8 @@ dl.loose dd {
 table.auto-width {
     width: auto;
 }
+
+/* For table columns, alignment. */
+td.right {
+  text-align: right;
+}

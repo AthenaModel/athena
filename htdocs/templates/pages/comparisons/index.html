@@ -22,7 +22,6 @@ below.</p>
 <th>Case A</th>
 <th>Case B</th>
 <th>#Outputs</th>
-<th>#Diffs</th>
 <th></th>
 </tr>
 
@@ -32,9 +31,8 @@ below.</p>
     @ {{comp.week1}} ({{comp.t1}})</td>
 <td>{{comp.case2}}, {{page.case(comp.case2).longname}} 
     @ {{comp.week2}} ({{comp.t2}})</td>
-<td>{{comp.outputs}}</td>
-<td>{{comp.diffs}}</td>
-<td>
+<td class="right">{{comp.outputs}}</td>
+<td data-toggle="tooltip" title="Delete Comparison">
 <a href ng-click="page.remove(comp.id)">
 <span class="glyphicon glyphicon-trash"></span>
 </a>

@@ -2,19 +2,19 @@
 <h2>{{header}}</h2>
 
 <p ng-hide="comp.size()">
-No political outputs are significant in this comparison.
+No {{comp.catname() | lowercase}} outputs are significant in this comparison.
 </p>
 
 <div ng-show="comp.size()">
   <table class="table table-hover auto-width">
     <tr>
-      <th>Type</th>
-      <th>Output</th>
-      <th>Narrative</th>
-      <th>Score</th>
+      <th><a href ng-click="comp.sortby('type')">Type</a></th>
+      <th><a href ng-click="comp.sortby('name')">Output</a></th>
+      <th><a href ng-click="comp.sortby('narrative')">Narrative</a></th>
+      <th><a href ng-click="comp.sortby('score',true)">Score</a></th>
     </tr>
 
-    <tr ng-repeat="output in comp.outputs()">
+    <tr ng-repeat="output in comp.outputs() | filter:{category: category} | orderBy:sortby:reverse">
       <td><span class="label label-primary">{{output.type}}</span></td>
       <td><span class="text-primary">{{output.name}}</span></td>
       <td>
