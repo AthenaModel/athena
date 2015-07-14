@@ -15,65 +15,65 @@
 
 <nav>
 <ul class="nav nav-tabs">
-  <li ng-class="{ active: page.isSet('manage') }">
-    <a href ng-click="page.setTab('manage')">Manage</a>
+  <li ng-class="tab.active('manage')">
+    <a href ng-click="tab.set('manage')">Manage</a>
   </li>
-  <li ng-class="{ active: page.isSet('actors') }">
-    <a href ng-click="page.setTab('actors')">Actors</a>
+  <li ng-class="tab.active('actors')">
+    <a href ng-click="tab.set('actors')">Actors</a>
   </li>
-  <li ng-class="{ active: page.isSet('nbhoods') }">
-    <a href ng-click="page.setTab('nbhoods')">Neighborhoods</a>
+  <li ng-class="tab.active('nbhoods')">
+    <a href ng-click="tab.set('nbhoods')">Neighborhoods</a>
   </li>
 
-  <li class="dropdown" ng-class="{ active: page.isGroups() }">
+  <li class="dropdown" ng-class="tab.active(['groups', 'civgroups', 'frcgroups', 'orggroups'])">
     <a class="dropdown-toggle" data-toggle="dropdown" role="button">
       Groups <span class="caret"></span>
     </a>
     <ul class="dropdown-menu">
-      <li ng-class="{ active: page.isSet('groups') }">
-        <a href ng-click="page.setTab('groups')">All Groups</a>
+      <li ng-class="tab.active('groups')">
+        <a href ng-click="tab.set('groups')">All Groups</a>
       </li>
-      <li ng-class="{ active: page.isSet('civgroups') }">
-        <a href ng-click="page.setTab('civgroups')">Civilian Groups</a>
+      <li ng-class="tab.active('civgroups')">
+        <a href ng-click="tab.set('civgroups')">Civilian Groups</a>
       </li>
-      <li ng-class="{ active: page.isSet('frcgroups') }">
-        <a href ng-click="page.setTab('frcgroups')">Force Groups</a>
+      <li ng-class="tab.active('frcgroups')">
+        <a href ng-click="tab.set('frcgroups')">Force Groups</a>
       </li>
-      <li ng-class="{ active: page.isSet('orggroups') }">
-        <a href ng-click="page.setTab('orggroups')">Organization Groups</a>
+      <li ng-class="tab.active('orggroups')">
+        <a href ng-click="tab.set('orggroups')">Organization Groups</a>
       </li>
       
     </ul>
   </li>
-  <li class="dropdown" ng-class="{ active: page.isParms() }">
+  <li class="dropdown" ng-class="tab.active(['allparms', 'changedparms'])">
       <a class="dropdown-toggle" data-toggle="dropdown" role="button">
         Model Parameters <span class="caret"></span>
       </a>
       <ul class="dropdown-menu">
-      <li ng-class="{ active: page.isSet('allparms') }">
-        <a href ng-click="page.setTab('allparms')">All</a>
+      <li ng-class="tab.active('allparms')">
+        <a href ng-click="tab.set('allparms')">All</a>
       </li>
-      <li ng-class="{ active: page.isSet('changedparms') }">
-        <a href ng-click="page.setTab('changedparms')">Changed</a>
+      <li ng-class="tab.active('changedparms')">
+        <a href ng-click="tab.set('changedparms')">Changed</a>
       </li>
     </ul>
   </li>
 </ul>
 </nav>
 
-<div ng-show="page.isSet('manage')"  
+<div ng-show="tab.active('manage')"  
      ng-include="'/templates/pages/case/manage.html'"></div>
-<div ng-show="page.isSet('actors')"  
+<div ng-show="tab.active('actors')"  
      ng-include="'/templates/pages/case/actors.html'"></div>
-<div ng-show="page.isSet('nbhoods')" 
+<div ng-show="tab.active('nbhoods')" 
      ng-include="'/templates/pages/case/nbhoods.html'"></div>
-<div ng-show="page.isSet('groups')"  
+<div ng-show="tab.active('groups')"  
      ng-include="'/templates/pages/case/groups.html'"></div>
-<div ng-show="page.isSet('civgroups')"  
+<div ng-show="tab.active('civgroups')"  
      ng-include="'/templates/pages/case/civgroups.html'"></div>
-<div ng-show="page.isSet('frcgroups')"  
+<div ng-show="tab.active('frcgroups')"  
      ng-include="'/templates/pages/case/frcgroups.html'"></div>
-<div ng-show="page.isSet('orggroups')"  
+<div ng-show="tab.active('orggroups')"  
      ng-include="'/templates/pages/case/orggroups.html'"></div>
 <div ng-show="page.isParms()"  
      ng-include="'/templates/pages/case/parmdb.html'"></div>

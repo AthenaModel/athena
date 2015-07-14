@@ -20,13 +20,17 @@ angular.module('arachne')
         return tabs[page] && tabs[page] === tab;
     }
 
-    // active(page,tab) -- Returns 'active' if the tab is set.
-    service.active = function(page,tab) {
-        if (tabs[page] && tabs[page] === tab) {
+    // active(page,tabset) -- Returns 'active' if one of the tab in tabset
+    // is active.  tabset can be a string or an Array
+    service.active = function(page,tabset) {
+        if (Array.isArray(tabset) && tabset.indexOf(tabs[page]) != -1) {
             return 'active';
+        } else {
+            if (tabs[page] && tabs[page] === tabset) {
+                return 'active';
+            }
         }
     }
-
 
     service.tabber = function(page) {
         return {

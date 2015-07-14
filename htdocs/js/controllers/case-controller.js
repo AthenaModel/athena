@@ -2,8 +2,13 @@
 'use strict';
 
 angular.module('arachne')
-.controller('CaseController', ['$routeParams', '$http', '$timeout', 'Arachne', 'LastTab',
-function($routeParams, $http, $timeout, Arachne, LastTab) {
+.controller('CaseController', ['$routeParams', 
+                               '$http', 
+                               '$timeout', 
+                               '$scope', 
+                               'Arachne', 
+                               'Tab',
+function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
 	var controller = this;
 
     //-----------------------------------------------------
@@ -17,32 +22,22 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
 
     this.statusData = Arachne.statusData;
 
-
     //-----------------------------------------------------
     // Tab Management 
 
-	// Tab control, initialize last tab service to 'manage'
-	if (!LastTab.get(this.caseId)) {
-		// This registers this set of tabs with the service
-		LastTab.set(this.caseId, 'manage');
-	}
+    $scope.tab = Tab.tabber(this.caseId);
 
-    // 
-    this.setTab = function(which) {
-        Arachne.clearRequest();
-    	LastTab.set(this.caseId, which);
-    };
-
-    this.isSet = function(tab) {
-        return LastTab.get(this.caseId) === tab;
-    };
+    // Initialize last tab service to 'manage'
+    if (!$scope.tab.get()) {
+        $scope.tab.set('manage');
+    }
 
     this.isGroups = function(tab) {
-        return LastTab.get(this.caseId).indexOf('groups') != -1;
+        return Tab.get(this.caseId).indexOf('groups') != -1;
     };
 
     this.isParms = function(tab) {
-        return LastTab.get(this.caseId).indexOf('parms') != -1;
+        return Tab.get(this.caseId).indexOf('parms') != -1;
     }
 
     //----------------------------------------------------
@@ -147,7 +142,7 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
     }
 
     this.getParms = function() {
-        if (this.isSet('changedparms')) {
+        if ($scope.tab.isSet('changedparms')) {
             return controller.changedparms;
         }
 
@@ -164,7 +159,7 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
         // FIRST, reset errmsg
         this.parmError = '';
 
-        // FIRST, if no parm or no entry, done.
+        // NEXT, if no parm or no entry, done.
         if (!this.currparm || !this.parmField) {
             return;
         }
