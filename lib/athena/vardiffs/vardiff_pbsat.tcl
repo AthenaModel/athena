@@ -30,7 +30,7 @@ oo::class create ::athena::vardiff::pbsat {
     }
 
     method format {val} {
-        return [qsat longname $val]
+        return [format %.1f $val]
     }
 
     method context {} {
@@ -39,6 +39,12 @@ oo::class create ::athena::vardiff::pbsat {
 
     method score {} {
         format "%.1f" [next]
+    }
+
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Satisfaction of the population of the playbox with [my key c]" \
+            "satisfaction points"]
     }
 
     #-------------------------------------------------------------------

@@ -97,5 +97,10 @@ oo::class create ::athena::vardiff::support {
         }
     }
 
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Support for actor [my key a] from neighborhood [my key n]"]
+    }
+
 }
 

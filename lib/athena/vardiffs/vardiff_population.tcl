@@ -35,4 +35,9 @@ oo::class create ::athena::vardiff::population {
 
         expr {[my score] >= $lim}
     }
+
+    method narrative {} {
+        return [my DeltaNarrative "Population of group [my key g]"]
+    }
+
 }

@@ -34,4 +34,12 @@ oo::class create ::athena::vardiff::drivermood {
 
         expr {[my score] >= $lim}
     }
+
+    method narrative {} {
+        return [my DeltaNarrative  \
+            "Total contribution to group [my key g]'s mood by this driver" \
+            "satisfaction points"]
+    }
+
+
 }

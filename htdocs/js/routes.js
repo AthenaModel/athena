@@ -19,6 +19,10 @@ angular.module('arachne')
         templateUrl: 'templates/pages/comparisons/index.html'
     })
 
+    .when('/comparisons/:compId', {
+        templateUrl: 'templates/pages/comp/index.html'
+    })
+
     .when('/debug', {
         templateUrl: 'templates/pages/debug/index.html',
         controller: 'DebugIndexController',

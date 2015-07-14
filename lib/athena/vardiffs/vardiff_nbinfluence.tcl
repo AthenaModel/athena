@@ -39,5 +39,16 @@ oo::class create ::athena::vardiff::nbinfluence {
 
         return [dict keys [lsort -stride 2 -index 1 -decreasing -real $val]]
     }
+
+
+    method narrative {} {
+        append result \
+            "In neighborhood [my key n], influence ranking was (" \
+            [join [my fmt1] ", "] \
+            "), is (" \
+            [join [my fmt2] ", "] \
+            ")." 
+    }
+
 }
 

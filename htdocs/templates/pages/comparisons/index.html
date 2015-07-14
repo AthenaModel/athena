@@ -1,8 +1,85 @@
 <ar-mainpage sidebar="/templates/pages/comparisons/sidebar.html">
 <div ng-controller="ComparisonsIndexController as page">
 
-<h1>Scenario Comparisons</h1>
+<h1>Comparisons Between Scenarios</h1>
 
-<p>TBD.</p>
+<div class="jumbotron" ng-hide="page.comps().length">
+<h1>Let Athena Compare Your Results!</h1>
+<p>
+Athena can compare the results of two different scenarios, or
+the results of one scenario against its starting point, and highlight
+the significant outputs.
+</p>
+
+<p>No comparisons have yet been created.  You can get started
+below.</p>
+</div>
+
+<section ng-show="page.comps().length">
+<table class="table table-striped table-hover auto-width">
+<tr>
+<th>ID</th>
+<th>Case A</th>
+<th>Case B</th>
+<th>#Outputs</th>
+<th>#Diffs</th>
+<th></th>
+</tr>
+
+<tr ng-repeat="comp in page.comps()">
+<td><b><a ng-href="#/comparisons/{{comp.id}}">{{comp.id}}</a></b></td>
+<td>{{comp.case1}}, {{page.case(comp.case1).longname}} 
+    @ {{comp.week1}} ({{comp.t1}})</td>
+<td>{{comp.case2}}, {{page.case(comp.case2).longname}} 
+    @ {{comp.week2}} ({{comp.t2}})</td>
+<td>{{comp.outputs}}</td>
+<td>{{comp.diffs}}</td>
+<td>
+<a href ng-click="page.remove(comp.id)">
+<span class="glyphicon glyphicon-trash"></span>
+</a>
+</td>
+</tr>
+</table>
+</section>
+
+<h2>Compare Scenarios</h2>
+
+<form class="form-inline">
+  <div class="form-group">
+    <label for="case1">Case A:</label>
+    <select id="case1" class="form-control" ng-model="page.caseid1">
+      <option ng-repeat="case in page.cases()" value="{{case.id}}">
+        {{case.id}}: {{case.longname}}
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="case2">with Case B:</label>
+    <select id="case2" class="form-control" ng-model="page.caseid2">
+      <option value selected></option>
+      <option ng-repeat="case in page.cases()" value="{{case.id}}">
+        {{case.id}}: {{case.longname}}
+      </option>
+    </select>
+  </div>
+
+  <button class="btn btn-primary" type="button" ng-click="page.compare()"
+          ng-disabled="!page.caseid1">
+    <span class="glyphicon glyphicon-plus"></span>
+  </button> 
+</form>
+
+<!-- Show the operation result -->
+<ar-result tag="comp-manage"></ar-result>
+
+<!-- Show the JSON response -->
+<ar-example header="JSON Result" 
+            content="{{page.json()}}">
+</ar-example>
+
+
+</div>
 
 </ar-mainpage>

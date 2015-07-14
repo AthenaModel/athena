@@ -34,4 +34,12 @@ oo::class create ::athena::vardiff::driversat {
 
         expr {[my score] >= $lim}
     }
+
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Total contribution to group [my key g]'s satisfaction with [my key c] by this driver" \
+            "satisfaction points"]
+    }
+
+
 }

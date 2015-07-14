@@ -26,7 +26,7 @@ oo::class create ::athena::vardiff::nbsat {
     }
 
     method format {val} {
-        return [qsat longname $val]
+        return [format %.1f $val]
     }
 
     method context {} {
@@ -36,6 +36,13 @@ oo::class create ::athena::vardiff::nbsat {
     method score {} {
         format "%.1f" [next]
     }
+
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Satisfaction of neighborhood [my key n] with concern [my key c]" \
+            "satisfaction points"]
+    }
+
 
     #-------------------------------------------------------------------
     # Input Differences
