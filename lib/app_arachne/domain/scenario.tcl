@@ -526,11 +526,6 @@ oo::class create /scenario {
             hb iref /$case/script.html "Scripts"
             hb xref /help/index.html "Help"
             hb br
-            hb iref /$case/actors/index.html "Actors"
-            hb iref /$case/nbhoods/index.html "Neighborhoods"
-            hb iref /$case/group/civ.html "Civ Groups"
-            hb iref /$case/group/frc.html "Frc Groups"
-            hb iref /$case/group/org.html "Org Groups"
             hb iref /$case/sigevent/index.html "Sig Events"
         }
         hb para
