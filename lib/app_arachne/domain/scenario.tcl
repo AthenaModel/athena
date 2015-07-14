@@ -507,11 +507,6 @@ oo::class create /scenario {
         hb linkbar {
             hb xref /index.html "Home"
             hb iref /index.html "Scenarios"
-            hb iref /new.html "New"
-            hb iref /clone.html "Clone"
-            hb iref /import.html "Import"
-            hb iref /export.html "Export"
-            hb iref /remove.html "Remove"
             hb xref /help/index.html "Help"
         }
     }
@@ -661,9 +656,6 @@ smarturl /scenario /index.html {
 
 
     hb putln "The following scenarios are loaded."
-    hb form {
-        my jsonbutton /index.json /index.html
-    }
 
     hb para
 
@@ -692,7 +684,7 @@ smarturl /scenario /index.json {
 smarturl /scenario /files.json {
     Returns a JSON list of scenario file objects.
 } {
-    set table [dictlist new {name size mtime}]
+    set table [dictlist new {id size mtime}]
 
     set filenames [glob \
                         -nocomplain \
@@ -715,66 +707,6 @@ smarturl /scenario /files.json {
 
 #-----------------------------------------------------------------------
 # New Scenario
-
-smarturl /scenario /new.html {
-    Presents a page that allows the user to create a new, empty 
-    scenario.<p>
-
-    If {op} is "new", then a new scenario is created and assigned
-    an ID and long name, and the server redirects to the scenario
-    index.  If {target} is given, it must be an existing case ID; 
-    that scenario's contents will be reset to the empty state.  
-    Otherwise, a new scenario ID will be generated.
-    If {longname} is given, the scenario will be given the new
-    name.<p>
-
-    If {op} is "", the page displays the information and form needed
-    to create a new scenario.  The parameters may be submitted to the
-    same page, or to the JSON interface.<p>
-} {
-    # FIRST, get the query parameters
-    qdict prepare op -in {new}
-    qdict prepare case -tolower -in [case names]
-    qdict prepare longname
-    qdict assign op case longname
-
-
-    # NEXT, set up a form
-    hb page "New Scenario"
-    my MainNavBar
-
-    hb h1 "New Scenario"
-
-    if {$op eq "new"} {
-        if {[qdict ok]} {
-            set newcase [case new $case $longname]
-            hb putln "Created scenario \"$newcase\": " \
-                "\"[case metadata $newcase longname]\""
-        } else {
-            my ErrorList "Could not create a new scenario:"
-        }
-        hb hr
-    }
-
-    hb form {
-        hb hidden op new
-        hb label longname "Long Name:"
-        hb entry longname -size 15
-        hb label case "Replacing:"
-        hb enumlong case [linsert [case namedict] 0 "" ""]
-        hb submit "New Scenario"
-        my jsonbutton /new.json /new.html
-    }
-    hb para
-
-    hb hr
-
-    hb h2 "Existing Scenarios"
-
-    my ScenarioTable
-
-    return [hb /page]
-}
 
 smarturl /scenario /new.json {
     Creates a new, empty scenario, assigning it an id and longname.
@@ -803,73 +735,6 @@ smarturl /scenario /new.json {
 
 #-----------------------------------------------------------------------
 # Clone Scenario
-
-
-smarturl /scenario /clone.html {
-    Presents a page that allows the user to clone a scenario.<p>
-
-    If {op} is "clone", then scenario {source} is cloned as a new scenario
-    and assigned an ID and long name, and the server redirects to the 
-    scenario index.  If {target} is given, it must be the ID of an
-    existing scenario; the scenario's contents will be replaced with the 
-    cloned data.  If {longname} is given, the cloned scenario will be given 
-    the new long name.<p>
-
-    If {op} is "", the page displays the information and form needed
-    to clone a scenario, including a list of the available scenario. 
-    The parameters may be submitted to the same page, or to 
-    the JSON interface.<p>
-} {
-    # FIRST, get the query parameters
-    qdict prepare op -in {clone}
-    qdict prepare source -required -tolower -in [case names]
-    qdict prepare target -tolower -in [case names]
-    qdict prepare longname
-    qdict assign op source target longname
-
-    qdict checkon target {
-        if {$target eq $source} {
-            qdict reject target "Cannot clone scenario to itself"
-        }            
-    }
-
-
-    # NEXT, clone the scenario if the parms are OK and we were 
-    # so requested.
-    if {$op eq "clone" && [qdict ok]} {
-        case clone $source $target $longname
-        my redirect /scenario/index.html
-    }
-
-    # NEXT, set up a form
-    hb page "Clone Scenario"
-    my MainNavBar
-
-    hb h1 "Clone Scenario"
-
-    if {$op eq "clone" && ![qdict ok]} {
-        my ErrorList "Could not clone a scenario:"
-        hb hr
-    }
-
-    hb form
-    hb hidden op clone
-    hb label longname "Long Name:"
-    hb entry longname -size 15
-    hb label target "Replacing:"
-    hb enumlong target [linsert [case namedict] 0 "" ""]
-    hb submit "Clone"
-    my jsonbutton /clone.json /clone.html
-
-    hb para
-    hb putln "Available for Cloning:"
-    hb para
-
-    my ScenarioTable -radio source
-    hb /form
-
-    return [hb /page]
-}
 
 
 smarturl /scenario /clone.json {
@@ -911,85 +776,6 @@ smarturl /scenario /clone.json {
 #-----------------------------------------------------------------------
 # Import Scenario
 
-smarturl /scenario /import.html {
-    Presents a page that allows the user to import a scenario
-    from disk.<p>
-
-    If {op} is "import", then {filename} is imported as a new scenario
-    and assigned an ID and long name, and the server redirects to the 
-    scenario index.  If {case} is given, it must be an existing scenario; the 
-    scenario's contents will be replaced with the imported data.
-    If {longname} is given, the scenario will be given the new
-    name.<p>
-
-    If {op} is "", the page displays the information and form needed
-    to import a scenario, including a list of the available scenario
-    files. The parameters may be submitted to the same page, or to 
-    the JSON interface.<p>
-} {
-    # FIRST, get the query parameters
-    qdict prepare op -in {import}
-    qdict prepare filename -required
-    qdict prepare case -tolower -in [case names]
-    qdict prepare longname
-    qdict assign op filename case longname
-
-    # NEXT, create a new scenario if the parms are OK and we were 
-    # so requested.
-    if {$op eq "import" && [qdict ok]} {
-        try {
-            set theID [case import $filename $case $longname]
-            set status ok
-        } trap ARACHNE {result} {
-            qdict reject filename "Could not import \"$filename\": $result"
-            set status error
-        }
-
-        # Note: exits the method.
-        if {$status eq "ok"} {
-            my redirect /scenario/index.html
-        }
-    }
-
-    # NEXT, set up a form
-    hb page "Import Scenario"
-    my MainNavBar
-
-    hb h1 "Import Scenario"
-
-    if {$op eq "import" && ![qdict ok]} {
-        my ErrorList "Could not import a scenario:"
-        hb hr
-    }
-
-    hb form
-    hb hidden op import
-    hb label longname "Long Name:"
-    hb entry longname -size 15
-    hb label case "Replacing:"
-    hb enumlong case [linsert [case namedict] 0 "" ""]
-    hb submit "Import"
-    my jsonbutton /import.json /import.html
-
-    hb para
-    hb putln "Available for Import:"
-    hb para
-
-    my FileTable -radio filename
-
-    hb /form
-    hb para
-
-    hb hr
-
-    hb h2 "Existing Scenarios"
-
-    my ScenarioTable
-
-    return [hb /page]
-}
-
-
 smarturl /scenario /import.json {
     Imports scenario {filename} and loads it into memory.
     The {filename} must name a file in the 
@@ -1029,76 +815,7 @@ smarturl /scenario /import.json {
 #-----------------------------------------------------------------------
 # Export Scenario
 
-smarturl /scenario /export.html {
-    Presents a page that allows the user to export a scenario.<p>
 
-    If {op} is "export", then scenario {case} is exported to the given
-    {filename} in the -scenariodir.<p>
-
-    The page displays the information and form needed
-    to export a scenario, including a list of the available scenarios
-    and a list of the files in the -scenariodir.
-    The parameters may be submitted to the same page, or to 
-    the JSON interface.<p>
-} {
-    # FIRST, get the query parameters
-    qdict prepare op -in {export}
-    qdict prepare case -required -tolower -in [case names]
-    qdict prepare filename -required 
-    qdict assign op case filename
-
-
-    # NEXT, clone the scenario if the parms are OK and we were 
-    # so requested.
-    if {$op eq "export" && [qdict ok]} {
-        try {
-            set theFileName [case export $case $filename]
-        } trap ARACHNE {result} {
-            qdict reject filename "Could not export to \"$filename\": $result"
-        }
-    }
-
-    # NEXT, set up a form
-    hb page "Export Scenario"
-    my MainNavBar
-
-    hb h1 "Export Scenario"
-
-    if {$op eq "export"} {
-        if {[qdict ok]} {
-            hb putln "Exported scenario $case to the scenario directory" \
-                " as '$filename'."
-        } else {
-            my ErrorList "Could not export the scenario:"
-        }
-        hb para
-        hb hr
-        hb para
-    }
-
-    hb form
-    hb hidden op export
-    hb label filename "File Name:"
-    hb entry filename -size 20
-    hb put " (.adb or .tcl) "
-    hb submit "Export"
-    my jsonbutton /export.json /export.html
-
-    hb para
-    hb putln "Select a Scenario to Export:"
-    hb para
-
-    my ScenarioTable -radio case
-    hb /form
-
-    hb para
-
-    hb h2 "Saved Scenarios:"
-
-    my FileTable
-
-    return [hb /page]
-}
 
 
 smarturl /scenario /export.json {
@@ -1133,74 +850,6 @@ smarturl /scenario /export.json {
 #-----------------------------------------------------------------------
 # Remove Scenario
 
-smarturl /scenario /remove.html {
-    Presents a page that allows the user to remove a scenario from
-    the session.<p>
-
-    If {op} is "remove", then scenario {case} is removed from the 
-    session.<p>
-
-    The page displays the information and form needed
-    to remove a loaded scenario, including a list of the 
-    available scenarios.
-    The parameters may be submitted to the same page, or to 
-    the JSON interface.<p>
-} {
-    # FIRST, get the query parameters
-    qdict prepare op -in {remove}
-    qdict prepare case -required -tolower -in [case names]
-    qdict assign op case 
-
-    if {$case eq "case00"} {
-        qdict reject case "Cannot remove the base case"
-    }
-
-
-    # NEXT, remove the scenario if the parms are OK and we were 
-    # so requested.
-    if {$op eq "remove" && [qdict ok]} {
-        case remove $case
-    }
-
-    # NEXT, set up a form
-    hb page "Remove Scenario"
-    my MainNavBar
-
-    hb h1 "Remove Scenario"
-
-    if {$op eq "remove"} {
-        if {[qdict ok]} {
-            hb putln "Removed scenario $case from the session."
-        } else {
-            my ErrorList "Could not remove the scenario:"
-        }
-        hb para
-        hb hr
-        hb para
-    }
-
-    if {[llength [case names]] == 1} {
-        hb putln {
-            <b>There are no remaining scenarios that can be
-            removed.</b>
-        }
-    } else {
-        hb form
-        hb hidden op remove
-        hb submit "Remove"
-        my jsonbutton /remove.json /remove.html
-
-        hb para
-        hb putln "Select a Scenario to Remove:"
-        hb para
-
-        my ScenarioTable -radio case -omit case00
-        hb /form
-    }
-
-
-    return [hb /page]
-}
 
 
 smarturl /scenario /remove.json {
@@ -1228,82 +877,9 @@ smarturl /scenario /remove.json {
     return [js ok "Deleted $case"]
 }
 
-#-----------------------------------------------------------------------
-# Compare scenarios (prototype)
-
-smarturl /scenario /diff.json {
-    <b>TBD: This URL is a prototype, and will be reimplemented
-    differently. Don't use it!</b>
-    Compares scenario {id2} with scenario {id1} looking 
-    for significant differents in the outputs.  If {id2} is
-    omitted, compares scenario {id1} at time 0 with itself
-    at its latest time.  The scenarios must be comparable, 
-    i.e., contain the same basic entities (groups, actors,
-    etc.).  Returns ["ERROR", "{message}"] on error, and 
-    and ["OK",{comparison}] otherwise.  See the 
-    Arachne interface specification for a description of 
-    the {comparison} object.<p>
-} {
-    qdict prepare id1 -required -tolower -in [case names]
-    qdict prepare id2           -tolower -in [case names]
-
-    qdict assign id1 id2
-   
-    if {![qdict ok]} {
-        return [js reject [qdict errors]]
-    }
-
-    # Check for advanced time.
-    # TBD: Add "case diff"?
-
-    set s1 [case get $id1]
-
-    if {![$s1 is advanced]} {
-        qdict reject id1 "Time has not been advanced"
-    } elseif {[$s1 is busy]} {
-        qdict reject id1 "Scenario is busy; please wait."
-    }
-
-    if {$id2 ne ""} {
-        set s2 [case get $id2]
-
-        if {![$s2 is advanced]} {
-            qdict reject id2 "Time has not been advanced"
-        } elseif {[$s2 is busy]} {
-            qdict reject id2 "Scenario is busy; please wait."
-        }
-    } else {
-        set id2 $id1
-        set s2 $s1
-    }
-
-    if {![qdict ok]} {
-        return [js reject [qdict errors]]
-    }
-
-    # NEXT, do the comparison
-    try {
-        set comp [athena diff $s1 $s2]
-    } trap {SCENARIO INCOMPARABLE} {result} {
-        return [js error $result]
-    }
-
-    # NEXT, build the response.
-    dict set result id1 $id1
-    dict set result t1  [$comp t1]
-    dict set result id2 $id2
-    dict set result t2  [$comp t2]
-
-    set hud [huddle compile dict $result]
-    huddle set hud diffs [$comp diffs huddle]
-
-    $comp destroy
-
-    return [js ok $hud]
-}
 
 #-----------------------------------------------------------------------
-# Compare scenarios (prototype)
+# JSON Url Display
 
 smarturl /scenario /json.html {
     Given query parameter "jsonurl", retrieves the data at the URL

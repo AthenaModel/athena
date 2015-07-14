@@ -36,7 +36,6 @@ proc /index.html {} {
 <td><div class="linkbar">
 <a href="/index.html">Home</a>
 <a href="/scenario/index.html">Scenarios</a>
-<a href="/debug/index.html">Debug</a>
 <a href="/help/index.html">Help</a>
 </div></td></tr>
 </table><p> 

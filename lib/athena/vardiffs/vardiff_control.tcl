@@ -33,5 +33,9 @@ oo::class create ::athena::vardiff::control {
             return "*NONE*"
         }
     }
+
+    method narrative {} {
+        return "Neighborhood [my key n] was controlled by [my fmt1], is controlled by [my fmt2]."
+    }
 }
 

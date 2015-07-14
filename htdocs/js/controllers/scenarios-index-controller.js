@@ -2,13 +2,15 @@
 'use strict';
 
 angular.module('arachne')
-.controller('ScenariosIndexController', ['Arachne', function(Arachne) {
+.controller('ScenariosIndexController', 
+['$scope', 'Arachne', 'Tab', function($scope, Arachne,Tab) {
     var controller = this;   // For use in callbacks
 
     // Delegated Functions
     this.cases = Arachne.cases;
     this.files = Arachne.files;
     this.statusData = Arachne.statusData;
+    $scope.tab = Tab.tabber('scenario');
 
     // Model Variables
     this.selectedCase = '';   // Case ID selected in case list, or ''
@@ -136,5 +138,9 @@ angular.module('arachne')
     };
 
     // Initialization
+    if (!$scope.tab.get()) {
+        $scope.tab.set('new');
+    }
+
     this.retrieveAll();
 }]);

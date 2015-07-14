@@ -28,7 +28,7 @@ oo::class create ::athena::vardiff::mood {
     }
 
     method format {val} {
-        return [qsat longname $val]
+        return [format %.1f $val]
     }
 
     method context {} {
@@ -38,6 +38,13 @@ oo::class create ::athena::vardiff::mood {
     method score {} {
         format "%.1f" [next]
     }
+
+    method narrative {} {
+        return [my DeltaNarrative "Mood of group [my key g]" \
+            "satisfaction points"]
+    }
+
+
 
     #-------------------------------------------------------------------
     # Input Differences

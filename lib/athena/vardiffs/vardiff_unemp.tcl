@@ -38,4 +38,8 @@ oo::class create ::athena::vardiff::unemp {
     method score {} {
         format "%.1f" [next]
     }
+
+    method narrative {} {
+        return [my DeltaNarrative "Unemployment rate"]
+    }
 }

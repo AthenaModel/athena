@@ -140,12 +140,21 @@ oo::class create ::athena::vardiff {
 
     # score
     #
-    # A ranking score.  By default, it's the absolute difference of the
+    # A ranking score.  By default, it's the delta of the
     # two values, which are assumed to be numeric.  
     #
     # Subclasses should override this if necessary.
 
     method score {} {
+        my delta
+    }
+
+    # delta
+    #
+    # The absolute difference of the two values, only if that makes
+    # sense.
+
+    method delta {} {
         expr {abs([my val1] - [my val2])}
     }
 
@@ -194,11 +203,12 @@ oo::class create ::athena::vardiff {
             dict set result $key $value
         }
         
-        dict set result val1     $val1
-        dict set result val2     $val2
-        dict set result fmt1     [my fmt1]
-        dict set result fmt2     [my fmt2]
-        dict set result score    [my score]
+        dict set result val1      $val1
+        dict set result val2      $val2
+        dict set result fmt1      [my fmt1]
+        dict set result fmt2      [my fmt2]
+        dict set result score     [my score]
+        dict set result narrative [my narrative]
 
         return $result
     }
@@ -284,6 +294,38 @@ oo::class create ::athena::vardiff {
         if {$diff ne ""} {
             ladd diffs $diff
         }
+    }
+
+    #-------------------------------------------------------------------
+    # Narrative Tools
+
+    # narrative
+    #
+    # Returns a narrative string for the vardiff.  This should be
+    # overridden by subclasses.
+
+    method narrative {} {
+        return [my DeltaNarrative]
+    }
+
+    method DeltaNarrative {{title "Value"} {units ""}} {
+        set text "$title "
+
+        if {[my val2] > [my val1]} {
+            append text "increased"
+        } else {
+            append text "decreased"
+        }
+
+        append text " by [my format [my delta]]"
+
+        if {$units ne ""} {
+            append text " $units"
+        }
+
+        append text "."
+
+        return $text
     }
 
 }

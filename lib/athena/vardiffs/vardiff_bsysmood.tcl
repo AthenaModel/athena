@@ -28,7 +28,7 @@ oo::class create ::athena::vardiff::bsysmood {
     }
 
     method format {val} {
-        return [qsat longname $val]
+        return [format "%.1f" $val]
     }
 
     method context {} {
@@ -37,6 +37,12 @@ oo::class create ::athena::vardiff::bsysmood {
 
     method score {} {
         format "%.1f" [next]
+    }
+
+    method narrative {} {
+        return [my DeltaNarrative \
+            "The mood of groups having belief system [my key b]" \
+            "satisfaction points"]
     }
 
     #-------------------------------------------------------------------

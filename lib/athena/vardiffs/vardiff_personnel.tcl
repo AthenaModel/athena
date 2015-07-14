@@ -35,4 +35,9 @@ oo::class create ::athena::vardiff::personnel {
 
         expr {[my score] >= $lim}
     }
+
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Personnel of group [my key g] deployed to neighborhood [my key n]"]
+    }
 }

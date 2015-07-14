@@ -32,11 +32,17 @@ oo::class create ::athena::vardiff::nbsecurity {
     }
 
     method format {val} {
-        return [qsecurity longname $val]
+        return [format %.1f $val]
     }
 
     method context {} {
         format "%d vs %d" [my val1] [my val2]
+    }
+
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Security of population in neighborhood [my key n]" \
+            "security points"]
     }
 }
 

@@ -19,9 +19,9 @@
 
 <tr ng-repeat="file in page.files()">
 <td>
-<input type="radio" name="scenfile" ng-model="page.selectedFile" ng-value="file.name">
+<input type="radio" name="scenfile" ng-model="page.selectedFile" ng-value="file.id">
 </td>    
-<td>{{file.name}}</td>
+<td>{{file.id}}</td>
 <td>{{file.size}}</td>
 <td>{{file.mtime | date:'MMM d, y h:mm:ss a'}}</td>
 </tr>

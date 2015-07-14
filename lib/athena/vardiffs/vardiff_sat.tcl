@@ -28,7 +28,7 @@ oo::class create ::athena::vardiff::sat {
     }
 
     method format {val} {
-        return [qsat longname $val]
+        return [format %.1f $val]
     }
 
     method context {} {
@@ -37,6 +37,12 @@ oo::class create ::athena::vardiff::sat {
 
     method score {} {
         format "%.1f" [next]
+    }
+
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Satisfaction of group [my key g] with [my key c]" \
+            "satisfaction points"]
     }
 
     #-------------------------------------------------------------------

@@ -29,7 +29,7 @@ oo::class create ::athena::vardiff::nbmood {
     }
 
     method format {val} {
-        return [qsat longname $val]
+        return [format %.1f $val]
     }
 
     method context {} {
@@ -39,6 +39,13 @@ oo::class create ::athena::vardiff::nbmood {
     method score {} {
         format "%.1f" [next]
     }
+
+    method narrative {} {
+        return [my DeltaNarrative "Mood of neighborhood [my key n]" \
+            "satisfaction points"]
+    }
+
+
 
     #-------------------------------------------------------------------
     # Input Differences

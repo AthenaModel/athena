@@ -29,7 +29,7 @@ oo::class create ::athena::vardiff::bsyssat {
     }
 
     method format {val} {
-        return [qsat longname $val]
+        return [format "%.1f" $val]
     }
 
     method context {} {
@@ -39,6 +39,13 @@ oo::class create ::athena::vardiff::bsyssat {
     method score {} {
         format "%.1f" [next]
     }
+
+    method narrative {} {
+        return [my DeltaNarrative \
+"The satisfaction of groups having belief system [my key b] with respect to [my key c]" \
+                "satisfaction points"]
+    }
+
 
     #-------------------------------------------------------------------
     # Input Differences

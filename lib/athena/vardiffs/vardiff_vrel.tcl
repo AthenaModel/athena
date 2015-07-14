@@ -15,7 +15,7 @@
 oo::class create ::athena::vardiff::vrel {
     superclass ::athena::vardiff
     meta type     vrel
-    meta category social
+    meta category political
 
     constructor {comp_ val1_ val2_ g_ a_} {
         next $comp_ [list g $g_ a $a_] $val1_ $val2_
@@ -28,7 +28,7 @@ oo::class create ::athena::vardiff::vrel {
     }
 
     method format {val} {
-        return [qrel longname $val]
+        return [format %.1f $val]
     }
 
     method context {} {
@@ -52,5 +52,10 @@ oo::class create ::athena::vardiff::vrel {
         foreach {drid val1 val2} [$comp contribs vrel $g $a] {
             my diffadd drivervrel $val1 $val2 $g $a $drid
         }
+    }
+
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Vertical relationship of group [my key g] with actor [my key a]"]
     }
 }

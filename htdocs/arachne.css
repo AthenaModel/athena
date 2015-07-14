@@ -13,6 +13,12 @@ body {
   display:         flex;
 }
 
+/* For indenting stuff. */
+
+.indent {
+  margin-left: 2em;
+}
+
 /* For sidebar column */
 .sidebar {
    border-right: 1px solid black; 
@@ -31,3 +37,7 @@ dl.loose dd {
     margin-left: 2em;
 }
 
+/* For tables, to give them only the width they need. */
+table.auto-width {
+    width: auto;
+}
