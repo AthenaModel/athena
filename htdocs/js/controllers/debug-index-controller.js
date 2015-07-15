@@ -59,7 +59,6 @@ angular.module('arachne')
     };
 
     this.setDomain = function(schema) {
-        console.log("setDomain: " + schema);
         this.schema = schema;
         this.setTab('schemas');
     };
@@ -102,7 +101,6 @@ angular.module('arachne')
         $http.get('/debug/logs.json').success(function(data) {
             var areas = Object.keys(data);
             controller.logs = data;
-            console.log(data);
 
             // NEXT, if no area yet, set to last
             if (!controller.gotArea(controller.logArea)) {
@@ -140,7 +138,6 @@ angular.module('arachne')
     }
 
     this.setArea = function(area) {
-        console.log("setArea: " + area);
         if (area === this.logArea) {
             return;
         }
@@ -153,8 +150,6 @@ angular.module('arachne')
     };
 
     this.setFile = function(file) {
-        console.log("setFile: " + file);
-
         if (file === this.logFile) {
             return;
         }
@@ -173,7 +168,6 @@ angular.module('arachne')
 
         $http.get(url).success(function(data) {
             controller.logEntries = data;
-            console.log(data);
         })       
     };
 
