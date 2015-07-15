@@ -90,8 +90,8 @@ function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
 
     this.parmtree     = []; //Complete heirarchy of parms
     this.parms        = []; //Only parms with actual values
-    this.changedparms = []; //Only parms that have changed
     this.currparm     = "";
+    this.show         = 'all';
 
     this.refreshParms = function () {
         var url = '/scenario/' + this.caseId + '/parmdb.json';
@@ -99,46 +99,16 @@ function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
         $http.get(url).success(function(data) {
             controller.parmtree     = data;
             controller.parms        = [];
-            controller.changedparms = [];
             for (var i=0 ; i < data.length ; i++) {
-                // Store parms and non-default parms separately
+                // Store parms and flag changed parms
                 if (data[i].value) {
-                    controller.parms.push(data[i]);
                     if (data[i].value !== data[i].default) {
-                        controller.changedparms.push(data[i]);
+                        data[i].changed = true;
                     }
+                    controller.parms.push(data[i]);
                 }
             }
         });
-    }
-
-    this.setCurrParm = function(e) {
-        // FIRST, clear any error message that may be there
-        this.parmError = '';
-
-        // NEXT, if the parm was clicked again, toggle off.
-        if (this.currparm === e.currentTarget.innerText) {
-            this.currparm = '';
-            return;
-        }
-
-        // NEXT, set is as the current parameter and find it's value
-        this.currparm = e.currentTarget.innerText;
-        var result = $.grep(this.parms, function(e) {
-                return e.name === controller.currparm; 
-            });
-
-        // NEXT, set parm field as current value
-        this.parmField = result[0].value;
-
-    }
-
-    this.getParms = function() {
-        if ($scope.tab.isSet('changedparms')) {
-            return controller.changedparms;
-        }
-
-        return controller.parms;
     }
 
     //-----------------------------------------------------
@@ -161,8 +131,7 @@ function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
                       parm:   this.currparm, 
                       value:  this.parmField};
 
-        Arachne.request('', url, qparms)
-        .then(function (stat) {
+        Arachne.request('', url, qparms).then(function (stat) {
             if (stat.ok) {
                 controller.refreshParms();
             } else {
@@ -178,10 +147,10 @@ function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
         this.parmError = '';
 
         var url = '/scenario/' + this.caseId + '/order.json';
-        var qparms = {order_: 'PARM:RESET'};
 
-        Arachne.request('', url, qparms)
-        .then(function (stat) {
+        Arachne.request('', url, {
+            order_: 'PARM:RESET'
+        }).then(function (stat) {
             if (stat.ok) {
                 controller.refreshParms();
             }
