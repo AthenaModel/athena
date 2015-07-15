@@ -165,7 +165,6 @@ snit::type comp {
         dict set dict t2       [$comp t2]
         dict set dict week1    [$comp s1 clock toString [$comp t1]]
         dict set dict week2    [$comp s2 clock toString [$comp t2]]
-        dict set dict outputs  [llength [$comp list -toplevel]]
     }
 
     #-------------------------------------------------------------------

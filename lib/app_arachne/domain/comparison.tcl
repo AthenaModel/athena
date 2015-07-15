@@ -69,15 +69,16 @@ oo::class create /comparison {
 smarturl /comparison /index.json {
     Returns a JSON list of comparison metadata objects.
 } {
-    set table [list]
+    set table [huddle list]
 
     foreach id [comp names] {
-        set cdict [comp metadata $id]
+        set cdict [huddle compile dict [comp metadata $id]]
+        huddle set cdict outputs [comp with $id diffs huddle -toplevel]
 
-        lappend table $cdict
+        huddle append table $cdict
     }
 
-    return [js dictab $table]
+    return [huddle jsondump $table]
 }
 
 smarturl /comparison /new.json {

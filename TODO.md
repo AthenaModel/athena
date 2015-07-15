@@ -1,11 +1,13 @@
 # TODO.md - Athena TODO List
 
 - Causality Chaining
-  - Add existing vardiffs as inputs where appropriate
-  - Add inputs and work down
+  - Implement new-style input scoring.
+  - Compute and return chains
+  - Chain vardiffs don't get added to comparison.
+  - Continue to flesh out input tree.
 - Angular Web App
   - Page Names:
-    - #/cases, cases-controller
+    - DONE! #/cases, cases-controller
     - #/case/:caseid, case-controller
     - #/comparisons, comparisons-controller
     - #/comparison/:case1[:/case2], comparison-controller
