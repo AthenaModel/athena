@@ -3,27 +3,32 @@
 
 angular.module('arachne')
 .controller('CompController', 
-['$routeParams', '$scope', 'Comp', 'Tab',
-function($routeParams, $scope, Comp, Tab) {
+['$routeParams', '$scope', 'Comparison', 'Tab',
+function($routeParams, $scope, Comparison, Tab) {
 	var controller = this;
 
     //-----------------------------------------------------
     // Route Parameters
 
-    // store comp ID from route for use by page
-    this.compId = $routeParams.compId;
+    this.caseId1 = $routeParams.caseId1;
+    this.caseId2 = $routeParams.caseId2;
+    this.compId = Comparison.compId(this.caseId1, this.caseId2);
     $scope.compId = this.compId;
 
     //-----------------------------------------------------
     // Delegated Methods
 
-    this.categories = Comp.categories;
-    this.catname    = Comp.catname;
-    $scope.tab        = Tab.tabber('comp');
-    $scope.comp       = Comp.comparison(this.compId);
+    $scope.tab      = Tab.tabber('comp');
+    this.categories = Comparison.categories;
+    this.catname    = Comparison.catname;
+    $scope.comp     = {};
 
     //-----------------------------------------------------
     // Initialization
+
+    Comparison.refresh().then(function() {
+        $scope.comp = Comparison.retrieve(controller.compId);
+    });
 
     if (!$scope.tab.get()) {
         $scope.tab.set('political');

@@ -78,7 +78,7 @@ smarturl /comparison /index.json {
     return [huddle jsondump $table]
 }
 
-smarturl /comparison /new.json {
+smarturl /comparison /request.json {
     Requests a comparison object for the case with ID {case1} or for a 
     pair of cases {case1} and {case2}.  On success, returns
     <tt>['ok', <i>comparison</i>]</tt>, where 
@@ -104,6 +104,8 @@ smarturl /comparison /new.json {
 }
 
 smarturl /comparison /{comp}/chain.json {
+    <b>TBD: Should probably take the comparison ID and output variable
+    both as inputs.</b>
     Returns a list of the significant inputs driving change in 
     a specific output variable {var}.  The list is recursive: we drill
     down as far as we can, producing a "causality chain".  The {var}

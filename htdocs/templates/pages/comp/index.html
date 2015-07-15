@@ -2,17 +2,17 @@
 <div ng-controller="CompController as page">
 
 <section>
-<h1>Comparison: {{comp.meta().longname}}</h1>
+<h1>Comparison: {{comp.longname}}</h1>
 
 <div class="panel panel-default">
   <div class="panel-body">
     <div>
-      <b>Case A:</b> {{comp.case1().longname}} ({{comp.case1().id}})
-      @ {{comp.meta().week1}} ({{comp.meta().t1}})
+      <b>Case A:</b> {{comp.longname1}} ({{comp.case1}})
+      @ {{comp.week1}} ({{comp.t1}})
     </div>
     <div>
-      <b>Case B:</b> {{comp.case2().longname}} ({{comp.case2().id}})
-      @ {{comp.meta().week2}} ({{comp.meta().t2}})
+      <b>Case B:</b> {{comp.longname2}} ({{comp.case2}})
+      @ {{comp.week2}} ({{comp.t2}})
     </div>
   </div>
 </div>
@@ -30,7 +30,7 @@
 The following outputs were found to be significant in this comparison.
 Select the tab to choose the category of outputs to display.
 </p>
-
+<!--
 <nav>
 <ul class="nav nav-tabs">
   <li ng-class="tab.active('political')">
@@ -110,15 +110,10 @@ Select the tab to choose the category of outputs to display.
                  compid="{{compId}}" 
                  category="all"></ar-comp-outputs>
 
-<!--
-<div ng-show="tab.active('all')" 
-     ng-include="'/templates/pages/comp/all.html'"></div>
--->
-
 <div ng-show="tab.active('detail')"  
      ng-include="'/templates/pages/comp/detail.html'"></div>
 
 
-
+-->
 </div>
 </ar-mainpage>

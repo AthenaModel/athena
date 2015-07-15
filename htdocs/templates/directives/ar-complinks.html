@@ -2,14 +2,14 @@
 <h4>Comparisons</h4>
 
 <div style="margin-left:10px">
-  <div ng-hide="arachne.comps().length">
+  <div ng-hide="comparison.all().length">
     <p>None created.</p>
   </div>
 
-  <div ng-show="arachne.comps().length">
+  <div ng-show="comparison.all().length">
     <ul class="list-unstyled" style="margin-top: 10px;">
-      <li ng-repeat="comp in arachne.comps()">
-        <a href="#/comparisons/{{comp.id}}">{{comp.longname}}</a>
+      <li ng-repeat="comp in comparison.all()">
+        <a href="#/comparison/{{comp.id}}">{{comp.longname}}</a>
       </li>
     </ul>
   </div>

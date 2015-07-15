@@ -30,37 +30,44 @@ function($http, $timeout, $q) {
                 var id = store[i][keyattr];
                 index[id] = i;
             }
-
         };
 
-        var retriever = {
-            refresh: function() {
-                var deferred = $q.defer();
+        var retriever = {};
 
-                $http.get(url).success(function(data) {
-                    store = data;
-                    buildIndex(); 
-                    deferred.resolve(data);
-                }).error(function(data) {
-                    deferred.reject(data);
-                });
+        retriever.refresh = function() {
+            var deferred = $q.defer();
 
-                return deferred.promise;
-            },
+            $http.get(url).success(function(data) {
+                store = data;
+                buildIndex(); 
+                deferred.resolve(data);
+            }).error(function(data) {
+                deferred.reject(data);
+            });
 
-            all: function() {
-                return store;
-            },
+            return deferred.promise;
+        };
 
-            get: function(id) {
-                if (index[id]) {
-                    return index[id];
-                }
-                return;
+        retriever.all = function() {
+            return store;
+        };
+
+        retriever.get = function(id) {
+            if (index[id] !== undefined) {
+                return store[index[id]];
+            }
+            return;
+        };
+
+        retriever.add = function(entity) {
+            var id = entity[keyattr];
+            if (index[id] === undefined) {
+                store.push(entity);
+                index[id] = store.length - 1;
+            } else {
+                store[index[id]] = entity;
             }
         };
-
-        retriever.refresh();
 
         return retriever;
     }

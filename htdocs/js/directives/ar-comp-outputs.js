@@ -12,12 +12,12 @@ angular.module("arachne")
             sortby:   "@",
             reverse:  "@"
         },
-        controller: ['$scope', 'Comp', function($scope, Comp) {
+        controller: ['$scope', 'Comparison', function($scope, Comparison) {
             if ($scope.category === 'all') {
                 $scope.header = $scope.header || 'All Outputs';
             } else {
                 $scope.header = $scope.header || 
-                    Comp.catname($scope.category) + ' Outputs';
+                    Comparison.catname($scope.category) + ' Outputs';
             }
 
             $scope.sortby = $scope.sortby || 'name';
@@ -29,23 +29,23 @@ angular.module("arachne")
                 if (category === 'all') {
                     return '';
                 } else {
-                    return Comp.catname(category);
+                    return Comparison.catname(category);
                 }
             }
 
             this.outputs = function() {
                 if ($scope.category === 'all') {
-                    return Comp.outputs($scope.compid);
+                    return Comparison.outputs($scope.compid);
                 } else {
-                    return Comp.byCat($scope.compid, $scope.category);
+                    return Comparison.byCat($scope.compid, $scope.category);
                 }
             }
 
             this.size = function() {
                 if ($scope.category === 'all') {
-                    return Comp.size($scope.compid);
+                    return Comparison.size($scope.compid);
                 } else {
-                    return Comp.catSize($scope.compid, $scope.category);
+                    return Comparison.catSize($scope.compid, $scope.category);
                 }
             }
 

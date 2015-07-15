@@ -19,7 +19,11 @@ angular.module('arachne')
         templateUrl: 'templates/pages/comparisons/index.html'
     })
 
-    .when('/comparisons/:compId', {
+    .when('/comparison/:caseId1', {
+        templateUrl: 'templates/pages/comp/index.html'
+    })
+
+    .when('/comparison/:caseId1/:caseId2', {
         templateUrl: 'templates/pages/comp/index.html'
     })
 

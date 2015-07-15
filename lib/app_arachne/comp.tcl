@@ -170,7 +170,11 @@ snit::type comp {
     typemethod get {case1 {case2 ""}} {
         # FIRST, get the ID.  If we already have a comparison with this
         # ID, return the ID.
-        set id [expr {$case2 eq "" ? $case1 : "$case1/$case2"}]
+        if {$case2 ne "" && $case2 ne $case1} {
+            set id "$case1/$case2"
+        } else {
+            set id "$case1"
+        }
 
         if {$id in $comps(ids)} {
             return $id
