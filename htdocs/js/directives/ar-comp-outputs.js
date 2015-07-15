@@ -65,9 +65,9 @@ angular.module("arachne")
 
             this.toggleClass = function(item) {
                 if (this.isExpanded(item)) {
-                    return "glyphicon-chevron-up"
-                } else {
                     return "glyphicon-chevron-down"
+                } else {
+                    return "glyphicon-chevron-right"
                 }
             }
 

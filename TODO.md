@@ -4,17 +4,41 @@
   - Add existing vardiffs as inputs where appropriate
   - Add inputs and work down
 - Angular Web App
+  - Page Names:
+    - #/cases, cases-controller
+    - #/case/:caseid, case-controller
+    - #/comparisons, comparisons-controller
+    - #/comparison/:case1[:/case2], comparison-controller
   - Comparisons
-    - See #/comparisons/index.html for UI issues
-    - All comparison requests should be moved to comp.js
-      - And there should be a "new()" method, which can save the 
-        comparison's metadata and outputs immediately, so that they
-        don't need to be retrieved separately.
-    - Do we need byCat, typesByCat, etc.?  Or is the simple outputs
-      array all we need at this point?
-      - I think all we need is the outputs array and a count of outputs
-        by category.
-      - Check and simplify the comp.js code as much as possible.
+    - Comparison records should always include the list of significant
+      outputs.
+    - New concept: no public comparison IDs
+      - Comparisons are cacheable but not persistent.
+      - Comparisons are requested given one or two case IDs.
+      - Comparisons are cached by the server, and deleted automatically
+        when an underlying case changes, as now.
+        - No public remove operation
+      - A comparison can be requested via /comparison/new.json; the result
+        is the comparison record is returned, which is computed if necessary.
+      - The cached comparisons are returned in their entirety by 
+        /comparison/index.json.
+    - Web app URLs: 
+      - #/comparison/:case1
+        - Requests a comparison of case1 with itself, and displays whatever
+          is available.
+      - #/comparison/:case1/:case2
+        - Requests a comparison of case A with case B, and displays whatever
+          is available.
+    - Responsibilities of the Comparison service:
+      - Refreshes cached comparison data on demand.
+      - Provides Comparison.request(case1, [case2]).then().
+      - comparisons-controller provides list of comparisons, plus a "Go"
+        form for going to a specific /comparison/:case1/:case2.
+        - Gets list of data from Comparison service.
+      - comparison-controller asks comparison.js for the comparison, and displays
+        whatever is available.
+      - On demand, comparison-controller asks comparison.js for chain, and
+        displays whatever is available.
   - Clean up Arachne URLs, e.g., "/scenario/{case}/nbhoods/index.json"
     by "/scenario/{case}/nbhood/{n}/index.json".  Both should be "nbhoods"
     or "nbhood".

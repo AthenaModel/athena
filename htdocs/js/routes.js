@@ -8,11 +8,11 @@ angular.module('arachne')
     })
 
     .when('/', {
-        templateUrl: 'templates/pages/home/index.html'
+        templateUrl:  'templates/pages/home/index.html'
     })
 
-    .when('/scenarios', {
-        templateUrl: 'templates/pages/scenarios/index.html'
+    .when('/cases', {
+        templateUrl: 'templates/pages/cases/index.html'
     })
 
     .when('/comparisons', {
@@ -25,7 +25,7 @@ angular.module('arachne')
 
     .when('/debug', {
         templateUrl: 'templates/pages/debug/index.html',
-        controller: 'DebugIndexController',
+        controller: 'DebugController',
         controllerAs: 'page'
     })
 

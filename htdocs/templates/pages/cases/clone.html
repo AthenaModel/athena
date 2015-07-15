@@ -1,4 +1,4 @@
-<h2>Create a New Scenario</h2>
+<h2>Clone a Scenario</h2>
 
 <form class="form-inline">
   <div class="form-group">
@@ -16,14 +16,21 @@
     </select>
   </div>
 
-  <button class="btn btn-default" type="button" ng-click="page.opNew()">
-    New Scenario
+  <!-- Use canClone() -->
+  <button class="btn btn-default" type="button" ng-click="page.opClone()" 
+          ng-disabled="!page.canClone()">
+  Clone Scenario
   </button> 
 </form>
 
+<p style="padding-top: 5px;" class="text-warning" ng-show="!page.canClone()">
+Select the scenario to clone from the list above.
+</p>
+
 <!-- Show the operation result -->
-<ar-result tag="scen-new"></ar-result>
+<ar-result tag="cases-clone"></ar-result>
 
 <!-- Show the JSON response -->
-<ar-example header="JSON Result" content="{{page.statusData('scen-new')}}"></ar-example>
+<ar-example header="JSON Result" content="{{page.statusData('cases-clone')}}"></ar-example>
+
 
