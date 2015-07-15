@@ -79,12 +79,11 @@ smarturl /comparison /index.json {
 }
 
 smarturl /comparison /new.json {
-    Create a new comparison for the case with ID {case1} or for a 
+    Requests a comparison object for the case with ID {case1} or for a 
     pair of cases {case1} and {case2}.  On success, returns
-    <tt>['ok', <i>metadata</i>, <i>outputs</i>]</tt>, where 
-    <i>metadata</i> is the metadata object for the new comparison, and
-    <i>outputs</i> is the same list of "vardiff" objects returned by
-    /comparison/{comp}/outputs.json.
+    <tt>['ok', <i>comparison</i>]</tt>, where 
+    <i>comparison</i> is the same kind of object returned by 
+    /comparison/index.json.
 } {
     qdict prepare case1 -required -tolower -in [case names]
     qdict prepare case2           -tolower -in [case names]
@@ -96,53 +95,12 @@ smarturl /comparison /new.json {
     }
 
     try {
-        set id [comp new $case1 $case2]
+        set id [comp get $case1 $case2]
     } trap ARACHNE {result} {
         return [js error $result]
     }
 
     return [js ok [comp huddle $id]]
-}
-
-smarturl /comparison /remove.json {
-    Removes a comparison given its {comp} ID.  On success, returns
-    <tt>['ok', '<i>message</i>']</tt>.
-} {
-    qdict prepare comp -required -tolower -in [comp names]
-    qdict assign comp
-
-    if {![qdict ok]} {
-        return [js reject [qdict errors]]
-    }
-
-    comp remove $comp
-
-    return [js ok "Deleted comparison $comp."]
-}
-
-smarturl /comparison /{comp}/index.json {
-    Returns a list of the significant differences in comparison {comp}
-    as "vardiff" objects.
-    Initially this list will include only the significant outputs; as
-    chains are explored, it will include the causality chain vardiffs
-    as well.
-} {
-    set comp [my ValidateComp $comp]
-
-    return [comp with $comp diffs json]
-}
-
-smarturl /comparison /{comp}/outputs.json {
-    Returns a list of the significant outputs in the comparison {comp}
-    as "vardiff" objects.  The list of significant outputs
-    covers a set of primary output variables and is computed when the
-    comparison is created.  To see all significant differences computed
-    to date, use /comparison/{comp}/index.json; to see the causality
-    chain for a single output, use /comparison/{comp}/chain.json.
-} {
-    set comp [my ValidateComp $comp]
-
-    return [comp with $comp diffs json -toplevel]
 }
 
 smarturl /comparison /{comp}/chain.json {
@@ -162,16 +120,4 @@ smarturl /comparison /{comp}/chain.json {
     }
 
     return [js ok [comp with $comp chain huddle $var]]
-}
-
-smarturl /comparison /{comp}/explain.json {
-    Tries to explain the change in output variable {var} in
-    human-readable terms, based on {var}'s causality chain.
-    The {var}
-    must be one of the variables included in the list returned by
-    /comparison/{comp}/index.json.
-} {
-    set comp [my ValidateComp $comp]
-
-    return [js error "Not implemented yet"]
 }
