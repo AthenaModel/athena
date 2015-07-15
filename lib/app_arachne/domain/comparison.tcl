@@ -101,8 +101,7 @@ smarturl /comparison /new.json {
         return [js error $result]
     }
 
-    set meta [huddle compile dict [comp metadata $id]]
-    return [js ok $meta [comp with $id diffs huddle]]
+    return [js ok [comp huddle $id]]
 }
 
 smarturl /comparison /remove.json {
