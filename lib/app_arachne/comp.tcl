@@ -265,6 +265,16 @@ snit::type comp {
         ldelete comps(ids) $id
     }
 
+    # huddle id
+    #
+    # Returns a huddle(n) string representing the comparison, including
+    # all significant outputs.
+
+    typemethod huddle {id} {
+        set cdict [huddle compile dict [$type metadata $id]]
+        huddle set cdict outputs [$type with $id diffs huddle -toplevel]
+        return $cdict
+    }
     
     #-------------------------------------------------------------------
     # Private Helpers

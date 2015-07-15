@@ -277,7 +277,9 @@ oo::class create ::athena::vardiff {
 
     method huddle {} {
         set hvar [huddle compile dict [my view]]
-        huddle set hvar inputs [huddle compile list [my inputs]]
+        if {[llength [my inputs]] > 0} {
+            huddle set hvar inputs [huddle compile list [my inputs]]
+        }
         return $hvar
     }
 
