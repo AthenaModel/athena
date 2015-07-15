@@ -26,6 +26,9 @@ function($routeParams, $scope, Comparison, Tab) {
     //-----------------------------------------------------
     // Initialization
 
+    // TBD: If comp were a dynamic object, calling back into
+    // the service for everything and caching nothing but the compId,
+    // we wouldn't need to do this.  Fix it!
     Comparison.refresh().then(function() {
         $scope.comp = Comparison.retrieve(controller.compId);
     });
