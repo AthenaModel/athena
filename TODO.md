@@ -12,9 +12,16 @@
     - #/comparisons, comparisons-controller
     - #/comparison/:case1[:/case2], comparison-controller
   - Comparisons
-    - Comparison records should always include the list of significant
+    - DONE! Comparison records should always include the list of significant
       outputs.
+    - DONE! `comp huddle` returns one comparison (with outputs) as a huddle
+      record.
+    - DONE! /comparison/index.json returns an array of comparisons with 
+      significant outputs.
+    - DONE! /comparison/new.json returns `['OK',{comparison...}]` instead
+      of `['OK',{metadata...},[outputs...]]`.
     - New concept: no public comparison IDs
+      - Internal comparison ID is "$case1[-$case2]".
       - Comparisons are cacheable but not persistent.
       - Comparisons are requested given one or two case IDs.
       - Comparisons are cached by the server, and deleted automatically
