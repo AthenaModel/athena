@@ -1,5 +1,5 @@
-<ar-mainpage sidebar="/templates/pages/comp/sidebar.html">
-<div ng-controller="CompController as page">
+<ar-mainpage sidebar="/templates/pages/comparison/sidebar.html">
+<div ng-controller="ComparisonController as page">
 
 <section>
 <h1>Comparison: {{comp.meta().longname}}</h1>
@@ -64,7 +64,7 @@ Select the tab to choose the category of outputs to display.
                  category="all"></ar-comp-outputs>
 
 <div ng-show="tab.active('detail')"  
-     ng-include="'/templates/pages/comp/detail.html'"></div>
+     ng-include="'/templates/pages/comparison/detail.html'"></div>
 
 </div>
 </ar-mainpage>

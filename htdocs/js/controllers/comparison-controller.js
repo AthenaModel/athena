@@ -1,8 +1,8 @@
-// comp-controller.js
+// comparison-controller.js
 'use strict';
 
 angular.module('arachne')
-.controller('CompController', 
+.controller('ComparisonController', 
 ['$routeParams', '$scope', 'Comparison', 'Tab',
 function($routeParams, $scope, Comparison, Tab) {
 	var controller = this;
