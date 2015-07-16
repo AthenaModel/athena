@@ -59,6 +59,27 @@ only names that match the pattern are included in the result.<p>
 
 Saves the current set of parameter values to the named file.<p>
 
+<defitem "serialize" {<i adb> parm serialize ?<i stype>?}>
+
+Returns the entire list of parameters in a form that is suitable 
+for transmission across a network, such as in an HTTP request. The
+list is available in two forms depending on <i stype>. If <i stype> is 
+<code>json</code> JSON is returned, if it is <code>huddle</code> a huddle
+string is returned (See the Tcllib documentation for more on huddle). If 
+<i stype> is not provided, JSON is returned by default. For each 
+parameter the following fields are returned:<p>
+<ul>
+<li> <code>name</code> - the name of the parameter
+<li> <code>id</code> - the ID of the parameter
+<li> <code>parent</code> - the parent of the parameter or "".
+<li> <code>docstr</code> - the documentation string for the parameter.
+<li> <code>value</code> - the current value of the parameter or "".
+<li> <code>default</code> - the default value of the parameter or "".
+</ul><p>
+
+For top level parameters, the parent is the empty string. For parameters
+that have children, the current and default values are the empty string.
+
 </deflist commands>
 
 <subsection "Private Subcommands">

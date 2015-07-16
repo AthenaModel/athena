@@ -303,6 +303,7 @@ snit::type ::athena::athena {
     delegate method {parm names}            to adb as {parm names}
     delegate method {parm nondefaults}      to adb as {parm nondefaults}
     delegate method {parm save}             to adb as {parm save}
+    delegate method {parm serialize}        to adb as {parm serialize}
 
     delegate method {payload exists}        to adb as {payload exists}
     delegate method {payload get}           to adb as {payload get}

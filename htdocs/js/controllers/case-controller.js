@@ -2,8 +2,13 @@
 'use strict';
 
 angular.module('arachne')
-.controller('CaseController', ['$routeParams', '$http', '$timeout', 'Arachne', 'LastTab',
-function($routeParams, $http, $timeout, Arachne, LastTab) {
+.controller('CaseController', ['$routeParams', 
+                               '$http', 
+                               '$timeout', 
+                               '$scope', 
+                               'Arachne', 
+                               'Tab',
+function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
 	var controller = this;
 
     //-----------------------------------------------------
@@ -17,29 +22,15 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
 
     this.statusData = Arachne.statusData;
 
-
     //-----------------------------------------------------
     // Tab Management 
 
-	// Tab control, initialize last tab service to 'manage'
-	if (!LastTab.get(this.caseId)) {
-		// This registers this set of tabs with the service
-		LastTab.set(this.caseId, 'manage');
-	}
+    $scope.tab = Tab.tabber(this.caseId);
 
-    // 
-    this.setTab = function(which) {
-        Arachne.clearRequest();
-    	LastTab.set(this.caseId, which);
-    };
-
-    this.isSet = function(tab) {
-        return LastTab.get(this.caseId) === tab;
-    };
-
-    this.isGroups = function(tab) {
-        return LastTab.get(this.caseId).indexOf('groups') != -1;
-    };
+    // Initialize tab service to 'manage'
+    if (!$scope.tab.get()) {
+        $scope.tab.set('manage');
+    }
 
     //----------------------------------------------------
     // Scenario Metadata
@@ -95,6 +86,80 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
     }
 
     //----------------------------------------------------
+    // Scenario Model Parameters
+
+    this.parmtree     = []; //Complete heirarchy of parms
+    this.parms        = []; //Only parms with actual values
+    this.currparm     = "";
+    this.show         = 'all';
+
+    this.refreshParms = function () {
+        var url = '/scenario/' + this.caseId + '/parmdb.json';
+
+        $http.get(url).success(function(data) {
+            controller.parmtree     = data;
+            controller.parms        = [];
+            for (var i=0 ; i < data.length ; i++) {
+                // Store parms and flag changed parms
+                if (data[i].value) {
+                    if (data[i].value !== data[i].default) {
+                        data[i].changed = true;
+                    }
+                    controller.parms.push(data[i]);
+                }
+            }
+        });
+    }
+
+    //-----------------------------------------------------
+    // Model Parameter Operations
+
+    this.parmField  = '';
+    this.parmError  = '';
+
+    this.opSetParm = function () {
+        // FIRST, reset errmsg
+        this.parmError = '';
+
+        // NEXT, if no parm or no entry, done.
+        if (!this.currparm || !this.parmField) {
+            return;
+        }
+
+        var url = '/scenario/' + this.caseId + '/order.json';
+        var qparms = {order_: 'PARM:SET', 
+                      parm:   this.currparm, 
+                      value:  this.parmField};
+
+        Arachne.request('', url, qparms).then(function (stat) {
+            if (stat.ok) {
+                controller.refreshParms();
+            } else {
+                controller.parmError = stat.errors.value;
+            }
+        });        
+
+        this.parmField = '';
+    }
+
+    this.opResetParms = function () {
+        // FIRST, reset error message
+        this.parmError = '';
+
+        var url = '/scenario/' + this.caseId + '/order.json';
+
+        Arachne.request('', url, {
+            order_: 'PARM:RESET'
+        }).then(function (stat) {
+            if (stat.ok) {
+                controller.refreshParms();
+            }
+        });  
+
+        this.parmField = '';
+    }
+
+    //----------------------------------------------------
     // Scenario Objects
 
     // Object storage
@@ -120,7 +185,7 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
 
         $http.get(url).success(function(data) {
             controller.objectData[otype] = data;
-        });
+        })
     };
 
     this.objects = function (otype) {
@@ -178,10 +243,9 @@ function($routeParams, $http, $timeout, Arachne, LastTab) {
         });
     };
 
-
-
     //-------------------------------------------------------
     // Refresh
 
     this.refreshMetadata();
+    this.refreshParms();
 }]);
