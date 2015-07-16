@@ -52,22 +52,6 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Actor URLs
 
-    test actor.html-1.1 {all actors HTML} -setup {
-        ted with {autogen actors 1}
-    } -body {
-        ted get /case00/actors/index.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': Actors*}    
-
-    test actor.html-1.2 {one actor HTML} -setup {
-        ted with {autogen actors 1}
-    } -body {
-        ted get /case00/actor/A00/index.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': Actor: A00*}
-
     test actor.json-1.1 {all actors JSON} -setup {
         ted with {autogen actors 1}
     } -body {
