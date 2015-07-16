@@ -21,33 +21,117 @@ snit::type ::athena::hist {
 
     # histVars
     #
-    # Array of history variables and their keys. These correspond to the 
+    # Dictionary of history variables and their keys along with some meta
+    # data associated with each variable. These correspond to the 
     # hist_* tables.
+    #
+    # TBD dict structure
 
     typevariable histVars -array {
-        aam_battle   {n f g}
-        activity_nga {n g a}
-        control      {n}
-        coop         {f g}
-        deploy_ng    {n g}
+        # TBD, don't use $adb commands, use SELECT DISTINCT from each
+        # table for each key!!
+        aam_battle   {
+            n {$adb ptype n+all names}    "Neighborhood"
+            f {$adb ptype frcg+all names} "Group"
+            g {$adb ptype frcg+all names} "Against"
+        }
+
+        activity_nga {
+            n {$adb ptype n+all names}   "Neighborhood"
+            g {$adb ptype fog+all names} "Group"
+            a {$adb activity names}      "Activity"
+        }
+
+        control      {
+            n {$adb ptype n+all names} "Neighborhood"
+        }
+
+        coop         {
+            f {$adb ptype civg+all names} "Civilian Group"
+            g {$adb ptype frcg+all names} "Force Group"
+        }
+
+        deploy_ng    {
+            n {$adb ptype n+all names}   "Neighborhood"
+            g {$adb ptype fog+all names} "Group"
+        }
+
         econ         {}
-        flow         {f g}
-        hrel         {f g}
-        mood         {g}
-        nbmood       {n}
-        nbur         {n}
-        npop         {n}
-        plant_a      {a}
-        plant_n      {n}
-        plant_na     {n a}
-        pop          {g}
-        sat          {g c}
-        security     {n g}
-        service_sg   {s g}
-        support      {n a}
-        volatility   {n}
-        vrel         {g a}
-    }
+        
+        flow         {
+            f {$adb ptype civg+all names} "From Group"
+            g {$adb ptype civg+all names} "To Group"
+        }
+
+        hrel         {
+            f {$adb ptype g+all names} "Group" 
+            g {$adb ptype g+all names} "With Group"
+        }
+
+        mood         {
+            g {$adb ptype civg+all names} "Group"
+        }
+
+        nbmood       {
+            n {$adb ptype n+all names} "Neighborhood"
+        }
+
+        nbur         {
+            n {$adb ptype n+all names} "Neighborhood"
+        }
+
+        npop         {
+            n {$adb ptype n+all names} "Neighborhood"
+        }
+
+        plant_a      {
+            a {$adb actor names} "Owner"
+        }
+
+        plant_n      {
+            n {$adb ptype n+all names} "Neighborhood"
+        }
+
+        plant_na     {
+            n {$adb ptype n+all names} "Neighborhood"
+            a {$adb actor names}       "Owner"
+        }
+
+        pop          {
+            g {$adb ptype civg+all names} "Group"
+        }
+
+        sat          {
+            g {$adb ptype civg+all names} "Group"
+            c {$adb ptype c names}        "Concern"
+        }
+
+        security     {
+            n {$adb ptype n+all names} "Neighborhood"
+            g {$adb ptype g+all names} "Group"
+        }
+
+        service_sg   {
+            s {eservice names} "Service"
+            g {$adb ptype civg+all names} "Group"
+        }
+
+        support      {
+            n {$adb ptype n+all names} "Neighborhood"
+            a {$adb actor names}  "Actor"
+        }
+
+        volatility   {
+            n {$adb ptype n+all names} "Neighborhood"
+        }
+
+        vrel         {
+            g {$adb ptype g+all names} "Group"
+            a {$adb actor names} "Actor"
+        }
+    }    
+
+    typevariable vardict 
 
     #-------------------------------------------------------------------
     # Components
@@ -65,6 +149,28 @@ snit::type ::athena::hist {
 
     constructor {adb_} {
         set adb $adb_
+    }
+
+    method start {} {
+        set vardict [dict create]
+
+        foreach {var meta} [array get histVars] {
+            set keys [list]
+            set labels [list]
+            foreach {key cmd lbl} $meta {
+                lappend keys $key
+                lappend labels $lbl
+                dict set vardict $var $key [eval {*}$cmd]
+            }
+
+            dict set vardict $var keys $keys
+            dict set vardict $var labels $labels
+        }
+
+        puts "vardict= $vardict"
+        # NEXT,  Save time 0 history!
+        $self tick
+        $self econ
     }
 
     #-------------------------------------------------------------------

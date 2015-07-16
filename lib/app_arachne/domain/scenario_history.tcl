@@ -751,9 +751,16 @@ smarturl /scenario /{case}/history/index.json {
 } {
     set case [my ValidateCase $case]
 
-    set hud [huddle compile dict [case with $case hist vars]]       
+    set histvars [list]
 
-    return [js ok $hud]
+    foreach {var keys} [case with $case hist vars] {
+        set data(id) $var
+        set data(keys) $keys
+
+        lappend histvars [array get data]
+    }
+
+    return [js dictab $histvars]
 }
 
 smarturl /scenario /{case}/history/{var}/index.html {
