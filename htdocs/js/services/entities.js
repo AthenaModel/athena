@@ -6,9 +6,8 @@
 
 angular.module('arachne')
 .factory('Entities', ['$http', 
-                      '$timeout', 
                       '$q', 
-function($http, $timeout, $q) {
+function($http, $q) {
     var service = {};
 
     // retriever(otype, url) -- Returns an entity retriever.

@@ -2,17 +2,17 @@
 <div ng-controller="CompController as page">
 
 <section>
-<h1>Comparison: {{comp.longname}}</h1>
+<h1>Comparison: {{comp.meta().longname}}</h1>
 
 <div class="panel panel-default">
   <div class="panel-body">
     <div>
-      <b>Case A:</b> {{comp.longname1}} ({{comp.case1}})
-      @ {{comp.week1}} ({{comp.t1}})
+      <b>Case A:</b> {{comp.case1().longname}} ({{comp.meta().case1}})
+      @ {{comp.meta().week1}} ({{comp.meta().t1}})
     </div>
     <div>
-      <b>Case B:</b> {{comp.longname2}} ({{comp.case2}})
-      @ {{comp.week2}} ({{comp.t2}})
+      <b>Case B:</b> {{comp.case2().longname}} ({{comp.meta().case2}})
+      @ {{comp.meta().week2}} ({{comp.meta().t2}})
     </div>
   </div>
 </div>
@@ -24,48 +24,19 @@
 <ar-tbd-list>
 <li>Clicking on a variable name (or, perhaps, on the row itself) should
     retrieve the chain and display it in the Detail tab.</li>
+<li>Use ng-repeat on tabs.</li>
 </ar-tbd-list>
 
 <p class="text-info">
 The following outputs were found to be significant in this comparison.
 Select the tab to choose the category of outputs to display.
 </p>
-<!--
+
 <nav>
 <ul class="nav nav-tabs">
-  <li ng-class="tab.active('political')">
-    <a href ng-click="tab.set('political')">
-      Political <span class="badge">{{comp.catSize('political')}}</span>
-    </a>
-  </li>
-
-  <li ng-class="tab.active('military')">
-    <a href ng-click="tab.set('military')">Military
-    <span class="badge">{{comp.catSize('military')}}</span>
-    </a>
-  </li>
-
-  <li ng-class="tab.active('economic')">
-    <a href ng-click="tab.set('economic')">Economic
-        <span class="badge">{{comp.catSize('economic')}}</span>
-    </a>
-  </li>
-
-  <li ng-class="tab.active('social')">
-    <a href ng-click="tab.set('social')">Social
-        <span class="badge">{{comp.catSize('social')}}</span>
-    </a>
-  </li>
-
-  <li ng-class="tab.active('information')">
-    <a href ng-click="tab.set('information')">Information
-        <span class="badge">{{comp.catSize('information')}}</span>
-    </a>
-  </li>
-
-  <li ng-class="tab.active('infrastructure')">
-    <a href ng-click="tab.set('infrastructure')">Infrastructure
-        <span class="badge">{{comp.catSize('infrastructure')}}</span>
+  <li ng-repeat="cat in comp.categories()" ng-class="tab.active(cat)">
+    <a href ng-click="tab.set(cat)">
+      {{comp.catName(cat)}} <span class="badge">{{comp.catSize(cat)}}</span>
     </a>
   </li>
 
@@ -81,30 +52,12 @@ Select the tab to choose the category of outputs to display.
 </ul>
 </nav>
 
-<ar-comp-outputs ng-show="tab.active('political')"
+<div ng-repeat="cat in comp.categories()">
+<ar-comp-outputs ng-show="tab.active(cat)"
                  compid="{{compId}}" 
-                 category="political"
-                 sortby="name"></ar-comp-outputs>
-
-<ar-comp-outputs ng-show="tab.active('military')"
-                 compid="{{compId}}" 
-                 category="military"></ar-comp-outputs>
-
-<ar-comp-outputs ng-show="tab.active('economic')"
-                 compid="{{compId}}" 
-                 category="economic"></ar-comp-outputs>
-
-<ar-comp-outputs ng-show="tab.active('social')"
-                 compid="{{compId}}" 
-                 category="social"></ar-comp-outputs>
-
-<ar-comp-outputs ng-show="tab.active('information')"
-                 compid="{{compId}}" 
-                 category="information"></ar-comp-outputs>
-
-<ar-comp-outputs ng-show="tab.active('infrastructure')"
-                 compid="{{compId}}" 
-                 category="infrastructure"></ar-comp-outputs>
+                 category="{{cat}}">
+</ar-comp-outputs>
+</div>
 
 <ar-comp-outputs ng-show="tab.active('all')"
                  compid="{{compId}}" 
@@ -113,7 +66,5 @@ Select the tab to choose the category of outputs to display.
 <div ng-show="tab.active('detail')"  
      ng-include="'/templates/pages/comp/detail.html'"></div>
 
-
--->
 </div>
 </ar-mainpage>

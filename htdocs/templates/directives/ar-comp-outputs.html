@@ -2,7 +2,7 @@
 <h2>{{header}}</h2>
 
 <p ng-hide="comp.size()">
-No {{comp.catname() | lowercase}} outputs are significant in this comparison.
+No {{comp.catName() | lowercase}} outputs are significant in this comparison.
 </p>
 
 <div ng-show="comp.size()">
@@ -18,7 +18,7 @@ No {{comp.catname() | lowercase}} outputs are significant in this comparison.
     </tr>
 
     <tr ng-repeat="output in comp.outputs() | orderBy:sortby:reverse">
-      <td ng-show="category === 'all'">{{comp.catname(output.category)}}</td>
+      <td ng-show="category === 'all'">{{comp.catName(output.category)}}</td>
       <td><span class="label label-primary">{{output.type}}</span></td>
       <td><span class="text-primary">{{output.name}}</span></td>
       <td>

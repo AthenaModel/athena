@@ -21,17 +21,10 @@ function($routeParams, $scope, Comparison, Tab) {
     $scope.tab      = Tab.tabber('comp');
     this.categories = Comparison.categories;
     this.catname    = Comparison.catname;
-    $scope.comp     = {};
+    $scope.comp     = Comparison.wrapper(this.compId);
 
     //-----------------------------------------------------
     // Initialization
-
-    // TBD: If comp were a dynamic object, calling back into
-    // the service for everything and caching nothing but the compId,
-    // we wouldn't need to do this.  Fix it!
-    Comparison.refresh().then(function() {
-        $scope.comp = Comparison.retrieve(controller.compId);
-    });
 
     if (!$scope.tab.get()) {
         $scope.tab.set('political');

@@ -1,7 +1,5 @@
 angular.module("arachne")
 .directive("arCompOutputs", function() {
-    var expanded = [];
-
     return {
         restrict: "E",
         templateUrl: "templates/directives/ar-comp-outputs.html",
@@ -13,23 +11,25 @@ angular.module("arachne")
             reverse:  "@"
         },
         controller: ['$scope', 'Comparison', function($scope, Comparison) {
+            var expanded = [];
+
             if ($scope.category === 'all') {
                 $scope.header = $scope.header || 'All Outputs';
             } else {
                 $scope.header = $scope.header || 
-                    Comparison.catname($scope.category) + ' Outputs';
+                    Comparison.catName($scope.category) + ' Outputs';
             }
 
             $scope.sortby = $scope.sortby || 'name';
             $scope.reverse = $scope.reverse || false;
 
-            this.catname = function(category) {
+            this.catName = function(category) {
                 category = category || $scope.category;
 
                 if (category === 'all') {
                     return '';
                 } else {
-                    return Comparison.catname(category);
+                    return Comparison.catName(category);
                 }
             }
 
@@ -65,9 +65,9 @@ angular.module("arachne")
 
             this.toggleClass = function(item) {
                 if (this.isExpanded(item)) {
-                    return "glyphicon-chevron-down"
+                    return "glyphicon-triangle-bottom"
                 } else {
-                    return "glyphicon-chevron-right"
+                    return "glyphicon-triangle-right"
                 }
             }
 
