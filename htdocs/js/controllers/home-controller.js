@@ -1,8 +1,8 @@
-// home-index-controller.js
+// home-controller.js -- Controller for #/home
 'use strict';
 
 angular.module('arachne')
-.controller('HomeIndexController', ['Arachne', function(Arachne) {
+.controller('HomeController', ['Arachne', function(Arachne) {
     // Expose Arachne query data
     this.startTime = Arachne.startTime;
     this.connected = Arachne.connected;

@@ -28,15 +28,19 @@ oo::class create ::athena::vardiff::vrel {
     }
 
     method format {val} {
-        return [format %.1f $val]
+        return [format %.2f $val]
+    }
+
+    method fancy {val} {
+        return [format "%.2f (%s)" $val [qrel longname $val]]
     }
 
     method context {} {
-        format "%.1f vs %.1f" [my val1] [my val2]
+        return {&minus;1.0 &le; <i>x</i> &le; &plus;1.0}
     }
 
     method score {} {
-        format "%.1f" [next]
+        my format [my delta]
     }
 
     #-------------------------------------------------------------------

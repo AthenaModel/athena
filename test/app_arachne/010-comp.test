@@ -1,3 +1,4 @@
+
 # -*-Tcl-*-
 #-----------------------------------------------------------------------
 # TITLE:
@@ -91,131 +92,112 @@ namespace eval ::athena_test::tests:: {
     # "comp init" and "comp clear" are tested in use by the test suite.
 
     #-------------------------------------------------------------------
-    # new
+    # get
 
-    test new-1.1 {compare one scenario; time not advanced} -body {
-        codecatch comp new case00
+    test get-1.1 {compare one scenario; time not advanced} -body {
+        codecatch comp get case00
     } -cleanup {
         cleanup
     } -result {{ARACHNE COMPARE NORUN} {Time has not been advanced in case "case00".}}
 
-    test new-1.2 {compare one scenario; scenario busy} -setup {
+    test get-1.2 {compare one scenario; scenario busy} -setup {
         mkbusy case00
     } -body {
-        codecatch comp new case00
+        codecatch comp get case00
     } -cleanup {
         cleanup
     } -result {{ARACHNE COMPARE BUSY} {Scenario is busy in case "case00".}}
     
-    test new-1.3 {compare two scenarios; second not advanced} -setup {
+    test get-1.3 {compare two scenarios; second not advanced} -setup {
         advance case00
         case new
     } -body {
-        codecatch comp new case00 case01
+        codecatch comp get case00 case01
     } -cleanup {
         cleanup
     } -result {{ARACHNE COMPARE NORUN} {Time has not been advanced in case "case01".}}
 
-    test new-1.4 {compare two scenarios; second is busy} -setup {
+    test get-1.4 {compare two scenarios; second is busy} -setup {
         advance case00
         case new
         mkbusy case01
     } -body {
-        codecatch comp new case00 case01
+        codecatch comp get case00 case01
     } -cleanup {
         cleanup
     } -result {{ARACHNE COMPARE BUSY} {Scenario is busy in case "case01".}}
 
-    test new-1.5 {scenarios are incomparable} -setup {
+    test get-1.5 {scenarios are incomparable} -setup {
         advance case00
         case new
         incomp case01
     } -body {
-        codecatch comp new case00 case01
+        codecatch comp get case00 case01
     } -cleanup {
         cleanup
     } -result {{ARACHNE COMPARE INCOMPARABLE} {Scenarios not comparable: different neighborhoods.}}
     
-    test new-2.1 {compare one scenario} -setup {
+    test get-2.1 {compare one scenario} -setup {
         advance case00 10
     } -body {
-        set id [comp new case00]
+        set id [comp get case00]
 
         list $id [comp longname $id]
     } -cleanup {
         cleanup
-    } -result {comp00 {case00 @ 0 vs. case00 @ 10}}
+    } -result {case00 {case00 @ 0 vs. case00 @ 10}}
 
-    test new-2.2 {compare two scenarios} -setup {
+    test get-2.2 {compare two scenarios} -setup {
         advance case00 10
         case new
         advance case01 10
     } -body {
-        set id [comp new case00 case01]
+        set id [comp get case00 case01]
 
         list $id [comp longname $id]
     } -cleanup {
         cleanup
-    } -result {comp00 {case00 @ 10 vs. case01 @ 10}}
+    } -result {case00/case01 {case00 @ 10 vs. case01 @ 10}}
 
     #-------------------------------------------------------------------
     # names
 
-    test names-1.1 {default} -body {
+    test names-1.1 {none} -body {
         comp names
     } -cleanup {
         cleanup
     } -result {}
 
-    test names-1.2 {default} -setup {
+    test names-1.2 {names} -setup {
         advance case00
-        comp new case00
-        comp new case00
+        case new
+        advance case01
+        comp get case00
+        comp get case00 case01
     } -body {
         comp names
     } -cleanup {
         cleanup
-    } -result {comp00 comp01}
+    } -result {case00 case00/case01}
     
-
-    #-------------------------------------------------------------------
-    # validate
-
-    test validate-1.1 {not found} -body {
-        codecatch comp validate nonesuch
-    } -cleanup {
-        cleanup
-    } -result {INVALID {Unknown comparison: "nonesuch"}}
-
-    test validate-1.2 {found} -setup {
+    test names-1.3 {no duplicates} -setup {
         advance case00
-        comp new case00
+        comp get case00
+        comp get case00
     } -body {
-        comp validate comp00
+        comp names
     } -cleanup {
         cleanup
-    } -result {comp00}
-
-    #-------------------------------------------------------------------
-    # get
-
-    test get-1.1 {get comparison} -setup {
-        advance case00
-        comp new case00
-    } -body {
-        comp get comp00
-    } -cleanup {
-        cleanup
-    } -match glob -result {::athena::differencer::comparison*}
+    } -result {case00}
 
     #-------------------------------------------------------------------
     # with
 
     test with-1.1 {call comparison directly given id} -setup {
         advance case00
-        comp new case00
+        set compId [comp get case00]
     } -body {
-        comp with comp00 t1
+        comp with $compId t1
     } -cleanup {
         cleanup
     } -result {0}
@@ -225,54 +207,41 @@ namespace eval ::athena_test::tests:: {
     
     test metadata-1.1 {one scenario} -setup {
         advance case00
-        comp new case00
+        set compId [comp get case00]
     } -body {
-        ted pdicts [comp metadata comp00]
+        ted pdicts [comp metadata $compId]
     } -cleanup {
         cleanup
     } -match dict -result {
         case1    case00
         case2    case00
-        id       comp00
+        id       case00
         longname {case00 @ 0 vs. case00 @ 1}
         t1       0
         t2       1
+        week1    2012W01
+        week2    2012W02
     }
 
     test metadata-1.2 {two scenarios} -setup {
         advance case00
         case new
         advance case01
-        comp new case00 case01
+        set compId [comp get case00 case01]
     } -body {
-        ted pdicts [comp metadata comp00]
+        ted pdicts [comp metadata $compId]
     } -cleanup {
         cleanup
     } -match dict -result {
         case1    case00
         case2    case01
-        id       comp00
+        id       case00/case01
         longname {case00 @ 1 vs. case01 @ 1}
         t1       1
         t2       1
-    }
-
-
-    #-------------------------------------------------------------------
-    # remove
-
-    test remove-1.1 {Can remove} -setup {
-        advance case00
-        comp new case00
-        comp new case00
-    } -body {
-        comp remove comp00
-        comp names
-    } -cleanup {
-        cleanup
-    } -result {comp01}
-
-   
+        week1    2012W02
+        week2    2012W02
+    }  
 
     #-------------------------------------------------------------------
     # Cleanup

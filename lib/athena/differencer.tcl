@@ -61,9 +61,8 @@ snit::type ::athena::differencer {
                 error "Trivial: scenario with itself at t=0"
             }
         } else {
-            # Find the latest time they have in common
-            set t1 [expr {min([$s1 clock now],[$s2 clock now])}]
-            set t2 $t1
+            set t1 [$s1 clock now]
+            set t2 [$s2 clock now]
         }
 
         foroption opt args {
@@ -82,7 +81,7 @@ snit::type ::athena::differencer {
         }
 
         if {$t2 < 0 || $t2 > [$s2 clock now]} {
-            error "-t2 out of range: 0...[$s1 clock now]"
+            error "-t2 out of range: 0...[$s2 clock now]"
         }
 
         # NEXT, look for differences

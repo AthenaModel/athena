@@ -1,8 +1,8 @@
-// debug-index.controller.js
+// debug-controller.js -- Page controller for #/debug
 'use strict';
 
 angular.module('arachne')
-.controller('DebugIndexController', ['$http', function($http) {
+.controller('DebugController', ['$http', function($http) {
     var controller = this;
 
     //-------------------------------------------

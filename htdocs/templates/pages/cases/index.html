@@ -1,5 +1,5 @@
-<ar-mainpage sidebar="/templates/pages/scenarios/sidebar.html">
-<div ng-controller="ScenariosIndexController as page">
+<ar-mainpage sidebar="/templates/pages/cases/sidebar.html">
+<div ng-controller="CasesController as page">
 
 <h1>Active Scenarios</h1>
 
@@ -55,11 +55,16 @@
 </ul>
 </nav>
 
-<div ng-show="tab.active('new')"    ng-include="'/templates/pages/scenarios/new.html'"></div>
-<div ng-show="tab.active('clone')"  ng-include="'/templates/pages/scenarios/clone.html'"></div>
-<div ng-show="tab.active('import')" ng-include="'/templates/pages/scenarios/import.html'"></div>
-<div ng-show="tab.active('export')" ng-include="'/templates/pages/scenarios/export.html'"></div>
-<div ng-show="tab.active('remove')" ng-include="'/templates/pages/scenarios/remove.html'"></div>
+<div ng-show="tab.active('new')"    
+     ng-include="page.template('/new.html')"></div>
+<div ng-show="tab.active('clone')"  
+     ng-include="page.template('/clone.html')"></div>
+<div ng-show="tab.active('import')" 
+     ng-include="page.template('/import.html')"></div>
+<div ng-show="tab.active('export')" 
+     ng-include="page.template('/export.html')"></div>
+<div ng-show="tab.active('remove')" 
+     ng-include="page.template('/remove.html')"></div>
 </section>
 
 </div>

@@ -32,7 +32,7 @@ oo::class create ::athena::vardiff::gdp {
     }
 
     method context {} {
-        format "%.1f%%" [my score]
+        return {<i>x</i> &ge; $0.00}
     }
 
     method score {} {

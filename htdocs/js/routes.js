@@ -8,24 +8,28 @@ angular.module('arachne')
     })
 
     .when('/', {
-        templateUrl: 'templates/pages/home/index.html'
+        templateUrl:  'templates/pages/home/index.html'
     })
 
-    .when('/scenarios', {
-        templateUrl: 'templates/pages/scenarios/index.html'
+    .when('/cases', {
+        templateUrl: 'templates/pages/cases/index.html'
     })
 
     .when('/comparisons', {
         templateUrl: 'templates/pages/comparisons/index.html'
     })
 
-    .when('/comparisons/:compId', {
-        templateUrl: 'templates/pages/comp/index.html'
+    .when('/comparison/:caseId1', {
+        templateUrl: 'templates/pages/comparison/index.html'
+    })
+
+    .when('/comparison/:caseId1/:caseId2', {
+        templateUrl: 'templates/pages/comparison/index.html'
     })
 
     .when('/debug', {
         templateUrl: 'templates/pages/debug/index.html',
-        controller: 'DebugIndexController',
+        controller: 'DebugController',
         controllerAs: 'page'
     })
 

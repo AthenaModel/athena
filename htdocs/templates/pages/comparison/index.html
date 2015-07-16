@@ -1,0 +1,70 @@
+<ar-mainpage sidebar="/templates/pages/comparison/sidebar.html">
+<div ng-controller="ComparisonController as page">
+
+<section>
+<h1>Comparison: {{comp.meta().longname}}</h1>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div>
+      <b>Case A:</b> {{comp.case1().longname}} ({{comp.meta().case1}})
+      @ {{comp.meta().week1}} ({{comp.meta().t1}})
+    </div>
+    <div>
+      <b>Case B:</b> {{comp.case2().longname}} ({{comp.meta().case2}})
+      @ {{comp.meta().week2}} ({{comp.meta().t2}})
+    </div>
+  </div>
+</div>
+</section>
+<hr>
+
+<h2>Significant Outputs</h2>
+
+<ar-tbd-list>
+<li>Clicking on a variable name (or, perhaps, on the row itself) should
+    retrieve the chain and display it in the Detail tab.</li>
+<li>Use ng-repeat on tabs.</li>
+</ar-tbd-list>
+
+<p class="text-info">
+The following outputs were found to be significant in this comparison.
+Select the tab to choose the category of outputs to display.
+</p>
+
+<nav>
+<ul class="nav nav-tabs">
+  <li ng-repeat="cat in comp.categories()" ng-class="tab.active(cat)">
+    <a href ng-click="tab.set(cat)">
+      {{comp.catName(cat)}} <span class="badge">{{comp.catSize(cat)}}</span>
+    </a>
+  </li>
+
+  <li ng-class="tab.active('all')">
+    <a href ng-click="tab.set('all')">All
+        <span class="badge">{{comp.size()}}</span>
+    </a>
+  </li>
+
+  <li ng-class="tab.active('detail')">
+    <a href ng-click="tab.set('detail')">Detail</a>
+  </li>
+</ul>
+</nav>
+
+<div ng-repeat="cat in comp.categories()">
+<ar-comp-outputs ng-show="tab.active(cat)"
+                 compid="{{compId}}" 
+                 category="{{cat}}">
+</ar-comp-outputs>
+</div>
+
+<ar-comp-outputs ng-show="tab.active('all')"
+                 compid="{{compId}}" 
+                 category="all"></ar-comp-outputs>
+
+<div ng-show="tab.active('detail')"  
+     ng-include="'/templates/pages/comparison/detail.html'"></div>
+
+</div>
+</ar-mainpage>

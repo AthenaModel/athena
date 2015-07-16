@@ -23,7 +23,7 @@ oo::class create ::athena::vardiff::control {
     }
 
     method score {} {
-        return 1
+        return 100.0
     }
 
     method format {val} {
@@ -33,6 +33,16 @@ oo::class create ::athena::vardiff::control {
             return "*NONE*"
         }
     }
+
+    method fancy {val} {
+        if {$val ne ""} {
+            return "Actor $val is in control"
+        } else {
+            return "No actor is in control"
+        }
+    }
+
+    method delta {} {}  ;# Delta doesn't make sense here.
 
     method narrative {} {
         return "Neighborhood [my key n] was controlled by [my fmt1], is controlled by [my fmt2]."

@@ -32,12 +32,16 @@ oo::class create ::athena::vardiff::bsyssat {
         return [format "%.1f" $val]
     }
 
+    method fancy {val} {
+        return [format "%.1f points (%s)" $val [qsat longname $val]]
+    }
+
     method context {} {
-        format "%.1f vs %.1f" [my val1] [my val2]
+        return {&minus;100.0 &le; <i>x</i> &le; &plus;100.0}
     }
 
     method score {} {
-        format "%.1f" [next]
+        my format [next]
     }
 
     method narrative {} {

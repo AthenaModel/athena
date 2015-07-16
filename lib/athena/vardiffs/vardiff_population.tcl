@@ -40,4 +40,9 @@ oo::class create ::athena::vardiff::population {
         return [my DeltaNarrative "Population of group [my key g]"]
     }
 
+    method context {} {
+        return {<i>x</i> &ge; 0}
+    }
+
+
 }

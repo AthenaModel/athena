@@ -26,7 +26,11 @@ oo::class create ::athena::vardiff::drivervrel {
     }
 
     method format {val} {
-        return [format %.1f $val]
+        return [format %.01f $val]
+    }
+
+    method context {} {
+        return {<i>x</i> &ge; 0.0}
     }
 
     method IsSignificant {} {

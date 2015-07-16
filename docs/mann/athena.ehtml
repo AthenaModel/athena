@@ -152,10 +152,10 @@ Compares two scenarios (or one scenario with itself at different
 simulation times) for significant differences, and returns a
 <xref comparison(n)> object containing them.<p>  
 
-<i s1> (and <i s2> if given) must be an <xref athena(n)> scenario object.
-By default, the command compares <i s1> at time 0 with itself at its latest
-simulation time.  If both scenarios are given, it compares <i s1> with
-<i s2> at the latest simulation time they have in common.<p>
+<i s1> (and <i s2> if given) must be an <xref athena(n)> scenario object
+with time advanced. By default, the command compares <i s1> at time 0 
+with itself at its latest simulation time.  If both scenarios are given, 
+the command compares them at their current simulation times.<p>
 
 Throws <b ATHENA INCOMPARABLE> if the two scenarios cannot reasonably be 
 compared.<p>

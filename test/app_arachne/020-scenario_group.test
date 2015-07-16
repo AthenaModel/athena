@@ -51,18 +51,6 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Group URLs
 
-    test group.html-1.1 {all groups HTML} -setup {
-        ted with {autogen actors 1}
-        ted with {autogen nbhoods 2}
-        ted with {autogen civgroups 1}
-        ted with {autogen orggroups 2}
-        ted with {autogen frcgroups 1}
-    } -body {
-        ted get /case00/group/index.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': Groups*}
-
     test group.json-1.1 {all groups JSON} -setup {
         ted with {autogen actors 1}
         ted with {autogen nbhoods 2}
@@ -159,26 +147,6 @@ namespace eval ::athena_test::tests:: {
 
     #-------------------------------------------------------------------
     # CIV group URLs
-
-    test civgroup.html-1.1 {all civgroups HTML} -setup {
-        ted with {autogen actors 1}
-        ted with {autogen nbhoods 2}
-        ted with {autogen civgroups 1}
-    } -body {
-        ted get /case00/group/civ.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': Civilian*}    
-
-    test civgroup.html-1.2 {one civgroup HTML} -setup {
-        ted with {autogen actors 1}
-        ted with {autogen nbhoods 2}
-        ted with {autogen civgroups 1}
-    } -body {
-        ted get /case00/group/C0000/index.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': Civilian Group: C0000*}
 
     test civgroup.json-1.1 {all civgroups JSON} -setup {
         ted with {autogen actors 1}
@@ -331,26 +299,6 @@ test civgroup.json-1.2 {one civgroup JSON} -setup {
     #-------------------------------------------------------------------
     # FRC group URLs
 
-    test frcgroup.html-1.1 {all frcgroups HTML} -setup {
-        ted with {autogen actors 1}
-        ted with {autogen nbhoods 2}
-        ted with {autogen frcgroups 1}
-    } -body {
-        ted get /case00/group/frc.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': Force*}    
-
-    test frcgroup.html-1.2 {one frcgroup HTML} -setup {
-        ted with {autogen actors 1}
-        ted with {autogen nbhoods 2}
-        ted with {autogen frcgroups 1}
-    } -body {
-        ted get /case00/group/F00/index.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': Force Group: F00*}
-
     test frcgroup.json-1.1 {all frcgroups JSON} -setup {
         ted with {autogen actors 1}
         ted with {autogen nbhoods 2}
@@ -441,26 +389,6 @@ test frcgroup.json-1.2 {one frcgroup JSON} -setup {
 
     #-------------------------------------------------------------------
     # ORG group URLs
-
-    test orggroup.html-1.1 {all orggroups HTML} -setup {
-        ted with {autogen actors 1}
-        ted with {autogen nbhoods 2}
-        ted with {autogen orggroups 1}
-    } -body {
-        ted get /case00/group/org.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': Organization*}    
-
-    test orggroup.html-1.2 {one orggroup HTML} -setup {
-        ted with {autogen actors 1}
-        ted with {autogen nbhoods 2}
-        ted with {autogen orggroups 1}
-    } -body {
-        ted get /case00/group/O00/index.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': Organization Group: O00*}
 
     test orggroup.json-1.1 {all orggroups JSON} -setup {
         ted with {autogen actors 1}

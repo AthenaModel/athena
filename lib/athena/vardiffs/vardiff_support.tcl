@@ -40,8 +40,14 @@ oo::class create ::athena::vardiff::support {
     }
 
     method format {val} {
-        format %.1f $val
+        format "%.2f" $val
     }
+
+    method context {} {
+        return {<i>x</i> &ge; 0.0}
+    }
+
+
 
     #-------------------------------------------------------------------
     # Input Differences
