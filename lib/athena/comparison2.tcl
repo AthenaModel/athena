@@ -301,9 +301,9 @@ snit::type ::athena::comparison2 {
 
     method compare {} {
         $self CompareNbhoodOutputs
-        # $self CompareAttitudeOutputs
-        # $self ComparePoliticalOutputs
-        # $self CompareEconomicOutputs
+        $self CompareAttitudeOutputs
+        $self ComparePoliticalOutputs
+        $self CompareEconomicOutputs
 
         $self ScoreOutputs
     }
@@ -703,39 +703,33 @@ snit::type ::athena::comparison2 {
         }
     }
 
-    # CompareAttitudeOutputs comp
-    #
-    # comp    - A comparison object
-    # cdb     - The comparison sqldocument(n)
+    # CompareAttitudeOutputs
     #
     # This method compares attitudes of civilian groups for two scenarios
     # or one scenario at different times.
 
-    method CompareAttitudeOutputs {comp} {
-        set t1 [$comp t1]
-        set t2 [$comp t2]
-
+    method CompareAttitudeOutputs {} {
         # FIRST, CIV mood by group
-        $comp eval {
+        $cdb eval {
             SELECT g, mood1, mood2 FROM comp_civg
         } {
-            $comp AddTop mood $mood1 $mood2 $g 
+            $self AddTop mood $mood1 $mood2 $g 
         }
 
         # NEXT, CIV satisfaction by group and concern
-        $comp eval {
+        $cdb eval {
             SELECT g, c, sat1, sat2
             FROM comp_sat;
         } {
-            $comp AddTop sat $sat1 $sat2 $g $c
+            $self AddTop sat $sat1 $sat2 $g $c
         }
 
         # NEXT, CIV satisfaction by belief system and concern
         set sdict [dict create]
 
         foreach c {AUT CUL SFT QOL} {
-            set d1 [$comp s1 stats satbybsys $t1 $c]
-            set d2 [$comp s2 stats satbybsys $t2 $c]
+            set d1 [$s1 stats satbybsys $t1 $c]
+            set d2 [$s2 stats satbybsys $t2 $c]
             dict set sdict $c [list $d1 $d2]
         }
 
@@ -744,63 +738,57 @@ snit::type ::athena::comparison2 {
             set d2 [lindex $ddict 1]
             foreach {bsid1 sat1} [dict get $d1] {bsid2 sat2} [dict get $d2] {
                 set bsname "B$bsid1"
-                $comp AddTop bsyssat $sat1 $sat2 $bsname $c
+                $self AddTop bsyssat $sat1 $sat2 $bsname $c
             }
         }
 
         # NEXT, CIV satisfaction in the playbox by concern
         foreach c {AUT CUL SFT QOL} {
-            set ps1 [$comp s1 stats pbsat $t1 $c]
-            set ps2 [$comp s2 stats pbsat $t2 $c]
-            $comp AddTop pbsat $ps1 $ps2 $c local
+            set ps1 [$s1 stats pbsat $t1 $c]
+            set ps2 [$s2 stats pbsat $t2 $c]
+            $self AddTop pbsat $ps1 $ps2 $c local
         }
 
         # NEXT, CIV mood by belief system
-        set mbs1 [$comp s1 stats moodbybsys $t1]
-        set mbs2 [$comp s2 stats moodbybsys $t2]
+        set mbs1 [$s1 stats moodbybsys $t1]
+        set mbs2 [$s2 stats moodbybsys $t2]
 
         foreach {bsid1 mood1} [dict get $mbs1] {bsid2 mood2} [dict get $mbs2] {
             set bsname "B$bsid1"
-            $comp AddTop bsysmood $mood1 $mood2 $bsname
+            $self AddTop bsysmood $mood1 $mood2 $bsname
         }
 
         # NEXT, playbox mood (local CIV groups)
-        set pbm1 [$comp s1 stats pbmood $t1]
-        set pbm2 [$comp s2 stats pbmood $t2]
+        set pbm1 [$s1 stats pbmood $t1]
+        set pbm2 [$s2 stats pbmood $t2]
 
-        $comp AddTop pbmood $pbm1 $pbm2 local
+        $self AddTop pbmood $pbm1 $pbm2 local
 
         # NEXT, vertical relationship 
-        $comp eval {
+        $cdb eval {
             SELECT g, a, vrel1, vrel2 FROM comp_vrel
         } {
-            $comp AddTop vrel $vrel1 $vrel2 $g $a
+            $self AddTop vrel $vrel1 $vrel2 $g $a
         }
     }
 
-    # ComparePoliticalOutputs comp
-    # 
-    # comp    - A comparison object
-    # cdb     - A comparison sqldocument(n)
+    # ComparePoliticalOutputs
     #
     # This method compares certain political outputs for two scenarios
     # or for one scenario at different times.
 
-    method ComparePoliticalOutputs {comp} {
-        set t1 [$comp t1]
-        set t2 [$comp t2]
-
+    method ComparePoliticalOutputs {} {
         # FIRST, create dicts to hold influence data 
         set i1 [dict create]
         set i2 [dict create]
 
-        foreach n [$comp s1 nbhood names] {
+        foreach n [$s1 nbhood names] {
             dict set i1 $n {}
             dict set i2 $n {}
         }
 
         # NEXT, influence and support by neighborhood and actor
-        $comp eval {
+        $cdb eval {
             SELECT H1.n         AS n,
                    H1.a         AS a,
                    H1.support   AS support1,
@@ -820,28 +808,22 @@ snit::type ::athena::comparison2 {
                 dict set i2 $n $a $influence2
             }
 
-            $comp AddTop support $support1 $support2 $n $a
+            $self AddTop support $support1 $support2 $n $a
         }
 
-        foreach n [$comp s1 nbhood names] {
-            $comp AddTop nbinfluence [dict get $i1 $n] [dict get $i2 $n] $n
+        foreach n [$s1 nbhood names] {
+            $self AddTop nbinfluence [dict get $i1 $n] [dict get $i2 $n] $n
         }
     }
 
-    # CompareEconomicOutputs comp
-    #
-    # comp    - A comparison object
-    # cdb     - A comparsion sqldocument(n)
+    # CompareEconomicOutputs
     #
     # This method compares certain economic model outputs for two
     # scenarios or for one scenario at different times.
     
-    method CompareEconomicOutputs {comp} {
-        set t1 [$comp t1]
-        set t2 [$comp t2]
-
+    method CompareEconomicOutputs {} {
         # FIRST, GOODS production capacity by nbhood
-        $comp eval {
+        $cdb eval {
             SELECT H1.n         AS n,
                    H1.cap       AS cap1,
                    H2.cap       AS cap2
@@ -849,33 +831,33 @@ snit::type ::athena::comparison2 {
             JOIN s2.hist_plant_n AS H2
             ON (H1.n = H2.n AND H1.t=$t1 AND H2.t=$t2)
         } {
-            $comp AddTop goodscap $cap1 $cap2 $n
+            $self AddTop goodscap $cap1 $cap2 $n
         }
 
         # NEXT, GDP
-        $comp eval {
+        $cdb eval {
             SELECT H1.dgdp     AS gdp1,
                    H2.dgdp     AS gdp2
             FROM s1.hist_econ AS H1
             JOIN s2.hist_econ AS H2
             ON (H1.t=$t1 AND H2.t=$t2)
         } {
-            $comp AddTop gdp $gdp1 $gdp2
+            $self AddTop gdp $gdp1 $gdp2
         }
 
         # NEXT, Playbox unemployment rate
-        $comp eval {
+        $cdb eval {
             SELECT H1.ur      AS ur1,
                    H2.ur      AS ur2
             FROM s1.hist_econ AS H1
             JOIN s2.hist_econ AS H2
             ON (H1.t=$t1 AND H2.t=$t2)
         } {
-            $comp AddTop unemp $ur1 $ur2
+            $self AddTop unemp $ur1 $ur2
         }
 
         # NEXT, Nbhood unemployment rate
-        $comp eval {
+        $cdb eval {
             SELECT H1.n       AS n,
                    H1.ur      AS ur1,
                    H2.ur      AS ur2
@@ -883,7 +865,7 @@ snit::type ::athena::comparison2 {
             JOIN s2.hist_nbhood AS H2
             ON (H1.n = H2.n AND H1.t=$t1 AND H2.t=$t2)
         } {
-            $comp AddTop nbunemp $ur1 $ur2 $n
+            $self AddTop nbunemp $ur1 $ur2 $n
         }
     }
 }
