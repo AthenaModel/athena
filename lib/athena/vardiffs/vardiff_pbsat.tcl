@@ -18,15 +18,10 @@ oo::class create ::athena::vardiff::pbsat {
     superclass ::athena::vardiff
     meta type     pbsat
     meta category social
+    meta normfunc 100.0
 
     constructor {comp_ val1_ val2_ c_ set_} {
         next $comp_ [list c $c_ set $set_] $val1_ $val2_
-    }
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method format {val} {
@@ -39,10 +34,6 @@ oo::class create ::athena::vardiff::pbsat {
 
     method context {} {
         return {&minus;100.0 &le; <i>x</i> &le; &plus;100.0}
-    }
-
-    method score {} {
-        my format [next]
     }
 
     method narrative {} {

@@ -16,15 +16,10 @@ oo::class create ::athena::vardiff::vrel {
     superclass ::athena::vardiff
     meta type     vrel
     meta category political
+    meta normfunc 1.0
 
     constructor {comp_ val1_ val2_ g_ a_} {
         next $comp_ [list g $g_ a $a_] $val1_ $val2_
-    }
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method format {val} {
@@ -39,8 +34,9 @@ oo::class create ::athena::vardiff::vrel {
         return {&minus;1.0 &le; <i>x</i> &le; &plus;1.0}
     }
 
-    method score {} {
-        my format [my delta]
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Vertical relationship of group [my key g] with actor [my key a]"]
     }
 
     #-------------------------------------------------------------------
@@ -58,8 +54,4 @@ oo::class create ::athena::vardiff::vrel {
         }
     }
 
-    method narrative {} {
-        return [my DeltaNarrative \
-            "Vertical relationship of group [my key g] with actor [my key a]"]
-    }
 }

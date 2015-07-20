@@ -82,12 +82,6 @@ snit::type ::athena::compdb {
         # control
         # None yet
 
-        # drivermood
-        $ps define drivermood.limit ::athena::compdb::dlimit 5.0 {
-            Significant difference limit: minimum absolute
-            difference, in satisfaction points.
-        }
-
         # driversat
         $ps define driversat.limit ::athena::compdb::dlimit 5.0 {
             Significant difference limit: minimum absolute

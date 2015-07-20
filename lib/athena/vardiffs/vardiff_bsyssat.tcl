@@ -17,15 +17,10 @@ oo::class create ::athena::vardiff::bsyssat {
     superclass ::athena::vardiff
     meta type     bsyssat
     meta category social
+    meta normfunc 100.0
 
     constructor {comp_ val1_ val2_ b_ c_} {
         next $comp_ [list b $b_ c $c_] $val1_ $val2_
-    }
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method format {val} {
@@ -38,10 +33,6 @@ oo::class create ::athena::vardiff::bsyssat {
 
     method context {} {
         return {&minus;100.0 &le; <i>x</i> &le; &plus;100.0}
-    }
-
-    method score {} {
-        my format [next]
     }
 
     method narrative {} {

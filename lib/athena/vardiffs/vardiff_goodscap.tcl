@@ -16,15 +16,10 @@ oo::class create ::athena::vardiff::goodscap {
     superclass ::athena::vardiff
     meta type     goodscap
     meta category economic
+    meta normfunc maxsum
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_
-    }
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method format {val} {
@@ -35,14 +30,6 @@ oo::class create ::athena::vardiff::goodscap {
         return {<i>x</i> &ge; $0.00}
     }
 
-
-    method score {} {
-        my variable val1
-        my variable val2 
-
-        let score {100.0*abs(double($val2)-$val2)/max($val1, $val2)}
-        format "%.2f" $score
-    }
     method narrative {} {
         return [my DeltaNarrative "Production capacity"]
     }

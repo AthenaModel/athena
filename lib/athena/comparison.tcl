@@ -391,58 +391,6 @@ snit::type ::athena::comparison {
         return $result
     }
 
-    # contribs sub keys...
-    #
-    # Calls the contribs command for both scenarios, retrieving the
-    # contributions for the given contribs subcommand (e.g., mood)
-    # and the given keys.  Looks up the DRID for each driver.  Returns
-    # a flat list {drid val1 val2 ...}, where the value is 0 if the
-    # driver is undefined for one scenario.
-
-    method contribs {sub args} {
-        # FIRST, get the scenario 1 contribs
-        $s1 contribs $sub {*}$args -start 0 -end $t1
-
-        $s1 eval {
-            SELECT driver_id, contrib, dtype, signature
-            FROM uram_contribs AS U
-            JOIN drivers AS D
-            ON (U.driver = D.driver_id)
-        } {
-            set drid $dtype/[join $signature /]
-            set c($drid) $contrib
-        }
-
-        # NEXT, get the scenario 2 contribs
-        $s2 contribs $sub {*}$args -start 0 -end $t2
-
-        $s2 eval {
-            SELECT driver_id, contrib, dtype, signature
-            FROM uram_contribs AS U
-            JOIN drivers AS D
-            ON (U.driver = D.driver_id)
-        } {
-            set drid $dtype/[join $signature /]
-            if {[info exists c($drid)]} {
-                lappend c($drid) $contrib                
-            }  else {
-                set c($drid) [list 0.0 $contrib]
-            }
-        }
-
-        # NEXT, build and return the list
-        set result [list]
-
-        foreach drid [array names c] {
-            if {[llength $c($drid)] == 2} {
-                lappend result $drid {*}$c($drid)
-            } else {
-                lappend result $drid $c($drid) 0.0
-            }
-        }
-
-        return $result
-    }
 
     #-------------------------------------------------------------------
     # Output of Diffs

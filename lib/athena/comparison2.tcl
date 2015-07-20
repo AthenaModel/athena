@@ -29,6 +29,32 @@
 
 snit::type ::athena::comparison2 {
     #-------------------------------------------------------------------
+    # Lookup Tables
+
+    # "A" values for comparing scores of significant
+    # outputs of different types
+    # TBD: Should probably be in compdb
+    typevariable A -array {
+        bsysmood     1.0
+        bsyssat      1.0
+        control      1.0
+        gdp          1.0
+        goodscap     1.0
+        mood         1.0
+        nbinfluence  1.0
+        nbmood       1.0
+        nbsat        1.0
+        nbsecurity   1.0
+        nbunemp      1.0
+        pbmood       1.0
+        pbsat        1.0
+        sat          1.0
+        support      1.0
+        unemp        1.0
+        vrel         1.0
+    }
+    
+    #-------------------------------------------------------------------
     # Type Methods
 
     # new s1 t1 s2 t2
@@ -98,9 +124,12 @@ snit::type ::athena::comparison2 {
     variable byname {}         ;# Dict, vardiffs by varname
     variable bytype {}         ;# Dict, list of vardiffs by vartype.
     variable toplevel {}       ;# List, toplevel vardiffs.
+    variable scores            ;# Array of scores of toplevel vardiffs by
+                                # vardiff object
 
-    variable values -array {}  ;# Accumulates pairs of values by vardiff
-                               ;# type, to compute the normalizers.
+    # Transient Variables
+    variable valueCache {}     ;# Saved values, by vartype
+
 
     #-------------------------------------------------------------------
     # Constructor
@@ -146,6 +175,9 @@ snit::type ::athena::comparison2 {
     #-------------------------------------------------------------------
     # Public Methods
 
+    delegate method eval  to cdb
+    delegate method query to cdb
+
     # reset
     #
     # Destroys all dependent vardiffs and resets the instance variables.
@@ -156,8 +188,107 @@ snit::type ::athena::comparison2 {
             $diff destroy
         }
         set byname   [dict create]
+        set bytype   [dict create]
         set toplevel [list]
+        array unset scores
     }
+
+    #-------------------------------------------------------------------
+    # Queries
+
+    # t1
+    #
+    # Return time t1
+
+    method t1 {} {
+        return $t1
+    }
+
+    # t2
+    #
+    # Return time t2
+
+    method t2 {} {
+        return $t2
+    }
+
+    # s1 args
+    #
+    # Executes the args as a subcommand of s1.
+
+    method s1 {args} {
+        if {[llength $args] == 0} {
+            return $s1
+        } else {
+            tailcall $s1 {*}$args            
+        }
+    }
+
+    # s2 args
+    #
+    # Executes the args as a subcommand of s2.
+
+    method s2 {args} {
+        if {[llength $args] == 0} {
+            return $s2
+        } else {
+            tailcall $s2 {*}$args            
+        }
+    }
+
+    # list ?-all?
+    #
+    # Returns a list of the significant output vardiffs.  
+    # If -all is given, returns all cached vardiffs..
+
+    method list {{opt "-toplevel"}} {
+        if {$opt eq "-all"} {
+            return [dict values $byname]
+        } else {
+            return $toplevel
+        }        
+    }
+
+    # exists varname
+    #
+    # varname  - A vardiff variable name
+    #
+    # Returns 1 if there is a significant variable with the given 
+    # name, and 0 otherwise.
+
+    method exists {varname} {
+        dict exists $byname $varname
+    }
+
+    # validate varname
+    #
+    # varname  - A vardiff variable name
+    #
+    # Throws INVALID if varname isn't a significant variable, and
+    # returns the varname otherwise.
+
+    method validate {varname} {
+        if {![$self exists $varname]} {
+            throw INVALID "Variable is not significant: $varname"
+        }
+        return $varname
+    }
+
+
+    # getdiff name
+    #
+    # name   - A vardiff object name
+    #
+    # Returns the vardiff object given its name, or "" if none.
+
+    method getdiff {name} {
+        if {[dict exists $byname $name]} {
+            return [dict get $byname $name]
+        } else {
+            return ""
+        }
+    }
+
 
     #-------------------------------------------------------------------
     # Comparison of significant outputs
@@ -174,7 +305,7 @@ snit::type ::athena::comparison2 {
         # $self ComparePoliticalOutputs
         # $self CompareEconomicOutputs
 
-        $self MergeScores
+        $self ScoreOutputs
     }
 
     # AddTop vartype val1 val2 keys...
@@ -195,22 +326,145 @@ snit::type ::athena::comparison2 {
         # constant number.
         set T ::athena::vardiff::$vartype
 
-        if {![string is double -string [$T normalizer]]} {
-            # save the values
-            lappend values($vartype) $val1 $val2
+        if {![string is double -strict [$T normfunc]]} {
+            dict lappend valueCache $vartype $val1 $val2
         }
 
         # NEXT, get the diff
         set diff [$self add $vartype $val1 $val2 {*}$args]
 
         # NEXT, remember that it is a top-level variable if the difference
-        # is non-trivial, and save the type.
-        if {$diff ne "" && $diff ne $toplevel} {
+        # is non-trivial, and save it by type so that we can do scoring.
+        if {$diff ne "" && $diff ni $toplevel} {
             lappend toplevel $diff
-            dict lappend bytype [info object class $diff] $diff
+            dict lappend bytype [$diff type] $diff
         }
 
         return $diff
+    }
+
+    # ScoreOutputs
+    #
+    # Scores each of the output vardiffs, adding its score to the 
+    # scores() array.  The vardiffs can now be ranked by relative score.
+    # The maximum score is always 100.0.
+
+    method ScoreOutputs {} {
+        # FIRST, score all of the outputs by type, so that each is 
+        # properly ranked within its type.  Adds a vardiff/score to the
+        # scores() array.
+        dict for {vartype diffs} $bytype {
+            $self ScoreByType $vartype $diffs
+        }
+
+        # NEXT, normalize the scores so that the max is 100.0
+        $self NormalizeScores
+
+        foreach name [lsort [array names scores]] {
+            puts "Scored $name: [format %.1f $scores($name)]"
+        }
+    }
+
+    # ScoreByType vartype diffs
+    #
+    # vartype   - A vardiff type name, without namespace
+    # diffs     - A list of diffs of that type.
+    #
+    # Scores the diffs so that they can be ranked within the type.
+
+    method ScoreByType {vartype diffs} {
+        # FIRST, get the type object.
+        set T ::athena::vardiff::$vartype
+
+        # NEXT, get the normalization function
+        set normfunc [$T normfunc]
+
+        # NEXT, it's either a numeric or symbolic constant.  Use it
+        # to get the normalization constant.
+        if {[string is double -strict $normfunc]} {
+            set normalizer $normfunc
+        } else {
+            assert {[dict exists $valueCache $vartype]}
+            set values [dict get $valueCache $vartype]
+            dict unset valueCache $vartype
+
+            switch -exact -- $normfunc {
+                maxmax  { set normalizer [$self maxmax $values] }
+                maxsum  { set normalizer [$self maxsum $values] }
+                default { error "Unknown normalizer: \"$normfunc\""}
+            }
+        }
+
+        # NEXT, set the scores.
+        foreach diff $diffs {
+            let scores($diff) {
+                [$diff delta] * 100.0 / $normalizer
+            }
+        }
+    }
+
+    # maxmax values
+    #
+    # values    - A flat list of val1 val2 pairs
+    #
+    # Finds the maximum value.  The result is used
+    # for normalizing scores of a given type.
+
+    method maxmax {values} {
+        lappend values 0.0 ;# So we know it isn't empty.
+
+        return [tcl::mathfunc::max {*}$values]
+    }
+
+    # maxsum values
+    #
+    # values    - A flat list of val1 val2 pairs
+    #
+    # Finds the sum of the values by scenario across the list of diffs,
+    # and then returns the maximum of the two sums.  The result is used
+    # for normalizing scores of a given type.
+
+    method maxsum {values} {
+        set sum1 0.0
+        set sum2 0.0
+
+        foreach {x1 x2} $values {
+            set sum1 [expr {$sum1 + $x1}]
+            set sum2 [expr {$sum2 + $x2}]
+        }
+
+        return [expr {max($sum1,$sum2)}]
+    }
+
+    # NormalizeScores 
+    #
+    # Normalizes the scores so that the max score is 100.0.
+
+    method NormalizeScores {} {
+        # FIRST, apply the "A"'s
+        foreach diff [array names scores] {
+            let scores($diff) {$scores($diff) * $A([$diff type])} 
+        }
+
+        # NEXT, get the maximum score
+        set allScores [dict values [array get scores]]
+
+        if {[llength $allScores] == 0.0} {
+            return
+
+        }
+        set max [tcl::mathfunc::max {*}$allScores]
+
+        if {$max == 0.0} {
+            return
+        }
+
+        # NEXT, scale the scores to 100.0
+        foreach diff [array names scores] {
+            let scores($diff) {
+                $scores($diff)*100.0 / $max
+            }
+        }
     }
 
     # add vartype val1 val2 keys...
@@ -225,7 +479,12 @@ snit::type ::athena::comparison2 {
     # new vardiff object, or "" if none.
 
     method add {vartype val1 val2 args} {
-        # FIRST, get the class
+        # FIRST, if the values are identical we don't want to keep it.
+        if {$val1 eq $val2} {
+            return ""
+        }
+
+        # NEXT, get the class
         set T ::athena::vardiff::$vartype
 
         # NEXT, create a vardiff object.
@@ -253,6 +512,155 @@ snit::type ::athena::comparison2 {
     }
 
 
+
+    #-------------------------------------------------------------------
+    # Contributions to curves
+    
+    # contribs sub keys...
+    #
+    # Calls the contribs command for both scenarios, retrieving the
+    # contributions for the given contribs subcommand (e.g., mood)
+    # and the given keys.  Looks up the DRID for each driver.  Returns
+    # a flat list {drid val1 val2 ...}, where the value is 0 if the
+    # driver is undefined for one scenario.
+
+    method contribs {sub args} {
+        # FIRST, get the scenario 1 contribs
+        $s1 contribs $sub {*}$args -start 0 -end $t1
+
+        $s1 eval {
+            SELECT driver_id, contrib, dtype, signature
+            FROM uram_contribs AS U
+            JOIN drivers AS D
+            ON (U.driver = D.driver_id)
+        } {
+            set drid $dtype/[join $signature /]
+            set c($drid) $contrib
+        }
+
+        # NEXT, get the scenario 2 contribs
+        $s2 contribs $sub {*}$args -start 0 -end $t2
+
+        $s2 eval {
+            SELECT driver_id, contrib, dtype, signature
+            FROM uram_contribs AS U
+            JOIN drivers AS D
+            ON (U.driver = D.driver_id)
+        } {
+            set drid $dtype/[join $signature /]
+            if {[info exists c($drid)]} {
+                lappend c($drid) $contrib                
+            }  else {
+                set c($drid) [list 0.0 $contrib]
+            }
+        }
+
+        # NEXT, build and return the list
+        set result [list]
+
+        foreach drid [array names c] {
+            if {[llength $c($drid)] == 2} {
+                lappend result $drid {*}$c($drid)
+            } else {
+                lappend result $drid $c($drid) 0.0
+            }
+        }
+
+        return $result
+    }
+
+
+
+    #-------------------------------------------------------------------
+    # Output of outputs in various formats
+    
+
+    # diffs dump ?-all?
+    #
+    # Returns a monotext formatted table of the significant outputs.
+    # If -all is given, all cached vardiffs are
+
+    method {diffs dump} {{opt ""}} {
+        set vardiffs [$self list $opt]
+        set vardiffs [$self SortByScore $vardiffs]
+
+        return [$self DumpList $vardiffs]
+    }
+
+    # DumpList vardiffs
+    #
+    # vardiffs - A list of vardiff names
+    #
+    # Produces a monotext formatted table of the differences in the 
+    # list.
+
+    method DumpList {vardiffs} {
+        set table [list]
+        foreach diff $vardiffs {
+            dict set row Variable   [$diff name]
+            dict set row A          [$diff fmt1]
+            dict set row B          [$diff fmt2]
+            dict set row Narrative  [$diff narrative]
+            dict set row Score      $scores($diff)
+            dict set row Delta      [$diff delta]
+
+            lappend table $row
+        }
+
+        return [dictab format $table -headers]
+    }
+
+    # diffs json ?-toplevel?
+    #
+    # Returns the differences formatted as JSON. 
+
+    method {diffs json} {{opt ""}} {
+        return [huddle jsondump [$self diffs huddle $opt]]
+    }
+
+    # diffs huddle ?-toplevel?
+    #
+    # Returns the differences formatted as a huddle(n) object.
+
+    method {diffs huddle} {{opt ""}} {
+        set hud [huddle list]
+
+        forach diff [$self SortByScore [$self list $opt]] {
+            # Add score to the record
+            set hdiff [$diff huddle]
+            huddle set hdiff score $scores($diff)
+            huddle append hud $hdiff
+        }
+
+        return $hud
+    }
+
+
+    # SortByScore difflist
+    #
+    # Returns the difflist sorted in order of decreasing score.
+
+    method SortByScore {difflist} {
+        return [lsort -command [mymethod CompareScores] \
+                      -decreasing $difflist]
+    } 
+
+    method CompareScores {diff1 diff2} {
+        set score1 $scores($diff1)
+        set score2 $scores($diff2)
+
+        if {$score1 < $score2} {
+            return -1
+        } elseif {$score1 > $score2} {
+            return 1
+        } else {
+            return 0
+        }
+    }
+
+    #-------------------------------------------------------------------
+    # Actual Comparisons
+    
     # CompareNbhoodOutputs comp
     #
     # comp   - A comparison object
@@ -260,7 +668,7 @@ snit::type ::athena::comparison2 {
     # This method compares neighborhood specific data for two scenarios
     # or one scenario at different times.
 
-    typemethod CompareNbhoodOutputs {} {
+    method CompareNbhoodOutputs {} {
         # FIRST, mood, security and control by nbhood
         $cdb eval {
             SELECT H1.n          AS n,
@@ -279,14 +687,10 @@ snit::type ::athena::comparison2 {
             $self AddTop nbmood     $nbmood1 $nbmood2 $n
         }
 
-        $self TypeScore nbsecurity
-        $self TypeScore control
-        $self TypeScore nbhood 
-
         # NEXT, satisfaction by nbhood and concern
         foreach c {AUT CUL SFT QOL} {            
-            set d1 [$comp s1 stats satbynb $t1 $c]
-            set d2 [$comp s2 stats satbynb $t2 $c]
+            set d1 [$s1 stats satbynb $t1 $c]
+            set d2 [$s2 stats satbynb $t2 $c]
             dict set sdict $c [list $d1 $d2]
         }
 
@@ -307,7 +711,7 @@ snit::type ::athena::comparison2 {
     # This method compares attitudes of civilian groups for two scenarios
     # or one scenario at different times.
 
-    typemethod CompareAttitudeOutputs {comp} {
+    method CompareAttitudeOutputs {comp} {
         set t1 [$comp t1]
         set t2 [$comp t2]
 
@@ -382,7 +786,7 @@ snit::type ::athena::comparison2 {
     # This method compares certain political outputs for two scenarios
     # or for one scenario at different times.
 
-    typemethod ComparePoliticalOutputs {comp} {
+    method ComparePoliticalOutputs {comp} {
         set t1 [$comp t1]
         set t2 [$comp t2]
 
@@ -432,7 +836,7 @@ snit::type ::athena::comparison2 {
     # This method compares certain economic model outputs for two
     # scenarios or for one scenario at different times.
     
-    typemethod CompareEconomicOutputs {comp} {
+    method CompareEconomicOutputs {comp} {
         set t1 [$comp t1]
         set t2 [$comp t2]
 

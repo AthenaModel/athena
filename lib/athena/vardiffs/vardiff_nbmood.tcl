@@ -17,15 +17,10 @@ oo::class create ::athena::vardiff::nbmood {
     superclass ::athena::vardiff
     meta type     nbmood
     meta category social
+    meta normfunc 100.0
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_
-    }
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method format {val} {
@@ -38,10 +33,6 @@ oo::class create ::athena::vardiff::nbmood {
 
     method context {} {
         return {&minus;100.0 &le; <i>x</i> &le; &plus;100.0}
-    }
-
-    method score {} {
-        my format [next]
     }
 
     method narrative {} {

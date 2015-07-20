@@ -16,15 +16,10 @@ oo::class create ::athena::vardiff::mood {
     superclass ::athena::vardiff
     meta type     mood
     meta category social
+    meta normfunc 100.0
 
     constructor {comp_ val1_ val2_ g_} {
         next $comp_ [list g $g_] $val1_ $val2_
-    }
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method format {val} {
@@ -37,10 +32,6 @@ oo::class create ::athena::vardiff::mood {
 
     method context {} {
         return {&minus;100.0 &le; <i>x</i> &le; &plus;100.0}
-    }
-
-    method score {} {
-        my format [next]
     }
 
     method narrative {} {
@@ -71,11 +62,6 @@ oo::class create ::athena::vardiff::mood {
             SELECT pop1, pop2 FROM comp_civg WHERE g=$g
         } {
             my diffadd population $pop1 $pop2 $g
-        }
-
-        # NEXT, get the contributions
-        foreach {drid val1 val2} [$comp contribs mood $g] {
-            my diffadd drivermood $val1 $val2 $g $drid
         }
     }
 }

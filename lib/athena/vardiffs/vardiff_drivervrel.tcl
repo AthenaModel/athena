@@ -16,13 +16,10 @@ oo::class create ::athena::vardiff::drivervrel {
     superclass ::athena::vardiff
     meta type     drivervrel
     meta category political
+    meta normfunc maxmax
 
     constructor {comp_ val1_ val2_ g_ a_ drid_} {
         next $comp_ [list g $g_ a $a_ drid $drid_] $val1_ $val2_
-    }
-
-    method score {} {
-        my format [next]
     }
 
     method format {val} {
@@ -31,12 +28,6 @@ oo::class create ::athena::vardiff::drivervrel {
 
     method context {} {
         return {<i>x</i> &ge; 0.0}
-    }
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method narrative {} {

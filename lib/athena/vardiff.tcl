@@ -14,6 +14,7 @@ oo::class create ::athena::vardiff {
     meta type *          ;# Type is undefined; subclasses should override.
     meta category "???"  ;# PMESII category is undefined; subclasses should
                           # override.
+    meta normdiff 1.0    ;# Default normalization function
 
     variable comp     ;# comparison object
     variable keydict  ;# Key dictionary
@@ -170,17 +171,6 @@ oo::class create ::athena::vardiff {
         return ""
     }
 
-    # score
-    #
-    # A ranking score.  By default, it's the delta of the
-    # two values, which are assumed to be numeric.  
-    #
-    # Subclasses should override this if necessary.
-
-    method score {} {
-        my delta
-    }
-
     # delta
     #
     # The absolute difference of the two values, only if that makes
@@ -190,36 +180,16 @@ oo::class create ::athena::vardiff {
         expr {abs([my val1] - [my val2])}
     }
 
-    # different
+    # trivial
     #
-    # Returns 1 if val1 isn't "eq" val2, and 0 otherwise.
+    # Returns 1 if the difference is trivial and not worth retaining,
+    # and 0 otherwise.  By default we presume the difference is 
+    # non-trivial.  It should be overridden
+    # by vardiff types that have some additional criterion for 
+    # non-triviality, i.e., an epsilon check.
 
-    method different {} {
-        expr {$val1 ne $val2}
-    }
-
-    # significant
-    #
-    # Returns 1 if val1 is significantly different than val2, and 0
-    # otherwise.  If the vartype's "active" flag is false, then 
-    # returns 0.
-    
-    method significant {} {
-        if {[athena::compdb get [my type].active]} {
-            return [my IsSignificant]
-        } else {
-            return 0
-        }
-    }
-
-    # IsSignificant
-    #
-    # Subclasses override this to define their own significance tests.
-    # By default, a difference is significant if the two values are
-    # not identical.
-
-    method IsSignificant {} {
-        my different
+    method trivial {} {
+        return 0
     }
 
     # view
@@ -241,10 +211,7 @@ oo::class create ::athena::vardiff {
         dict set result val2      $val2
         dict set result fmt2      [my fmt2]
         dict set result fancy2    [my fancy2]
-        dict set result score     [my score]
-        dict set result delta     [expr {
-            [my delta] ne "" ? [my format [my delta]] : ""
-        }]
+        dict set result delta     [my format [my delta]]
         dict set result narrative [my narrative]
         dict set result context   [my context]
 

@@ -16,23 +16,14 @@ oo::class create ::athena::vardiff::unemp {
     superclass ::athena::vardiff
     meta type     unemp
     meta category economic
+    meta normfunc maxmax
 
     constructor {comp_ val1_ val2_} {
         next $comp_ "" $val1_ $val2_
     }
 
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
-    }
-
     method format {val} {
         return [format "%.2f%%" $val]
-    }
-
-    method score {} {
-        format "%.2f" [next]
     }
 
     method narrative {} {
