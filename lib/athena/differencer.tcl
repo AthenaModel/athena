@@ -55,7 +55,7 @@ snit::type ::athena::differencer {
         }
 
         # NEXT, make sure they are comparable.
-        ::athena::comparison2 check $s1 $s2
+        ::athena::comparison check $s1 $s2
 
         # NEXT, set the default times
         if {$s2 eq $s1} {
@@ -91,7 +91,7 @@ snit::type ::athena::differencer {
 
         # NEXT, create the comparison and look for
         # differences.
-        set comp [::athena::comparison2 new $s1 $t1 $s2 $t2]
+        set comp [::athena::comparison new $s1 $t1 $s2 $t2]
 
         $comp compare
 

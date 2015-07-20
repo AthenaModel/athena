@@ -191,7 +191,7 @@ source [file join $::athena::library tactics tactic_withdraw.tcl     ]
 # Scenario Comparison and Causality Chaining
 source [file join $::athena::library compdb.tcl                      ]
 source [file join $::athena::library differencer.tcl                 ]
-source [file join $::athena::library comparison2.tcl                 ]
+source [file join $::athena::library comparison.tcl                  ]
 source [file join $::athena::library vardiff.tcl                     ]
 
 source [file join $::athena::library vardiffs vardiff_bsysmood.tcl   ]
