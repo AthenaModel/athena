@@ -353,26 +353,31 @@ snit::type ::athena::comparison {
         # FIRST, score all of the outputs by type, so that each is 
         # properly ranked within its type.  Adds a vardiff/score to the
         # scores() array.
+
         dict for {vartype diffs} $bytype {
-            $self ScoreByType $vartype $diffs
+            if {[dict exists $valueCache $vartype]} {
+                set values [dict get $valueCache $vartype]
+            } else {
+                set values [list]
+            }
+
+            set normalizer [$self normalizer $vartype $values]
+            $self scoreByType scores $normalizer $diffs
         }
 
         # NEXT, normalize the scores so that the max is 100.0
-        $self NormalizeScores
-
-        foreach name [lsort [array names scores]] {
-            puts "Scored $name: [format %.1f $scores($name)]"
-        }
+        $self normalizeScores scores A
     }
 
-    # ScoreByType vartype diffs
+    # normalizer vartype valuesVar
+    # 
+    # vartype    - A vardiff type name, without namespace
+    # values     - The cache of all relevant values for computing
+    #              the normalizer value.
     #
-    # vartype   - A vardiff type name, without namespace
-    # diffs     - A list of diffs of that type.
-    #
-    # Scores the diffs so that they can be ranked within the type.
+    # Computes the normalizer given the vartype and the values cache.
 
-    method ScoreByType {vartype diffs} {
+    method normalizer {vartype values} {
         # FIRST, get the type object.
         set T ::athena::vardiff::$vartype
 
@@ -384,23 +389,52 @@ snit::type ::athena::comparison {
         if {[string is double -strict $normfunc]} {
             set normalizer $normfunc
         } else {
-            assert {[dict exists $valueCache $vartype]}
-            set values [dict get $valueCache $vartype]
-            dict unset valueCache $vartype
-
             switch -exact -- $normfunc {
+                maxabs  { set normalizer [$self maxabs $values] }
                 maxmax  { set normalizer [$self maxmax $values] }
                 maxsum  { set normalizer [$self maxsum $values] }
-                default { error "Unknown normalizer: \"$normfunc\""}
+                default { error "Unknown normfunc: \"$normfunc\""}
             }
         }
 
-        # NEXT, set the scores.
+
+        return $normalizer
+    }
+
+    # scoreByType scoresVar normalizer diffs
+    #
+    # scoresVar  - The array to receive the scores
+    # normalizer - The normalizer value for these vardiffs
+    # diffs      - A list of diffs
+    #
+    # Scores the diffs so that they can be ranked within their type.
+
+    method scoreByType {scoresVar normalizer diffs} {
+        upvar 1 $scoresVar theScores
+
+        # FIRST, set the scores.
         foreach diff $diffs {
-            let scores($diff) {
+            let theScores($diff) {
                 [$diff delta] * 100.0 / $normalizer
             }
         }
+    }
+
+    # maxabs values
+    #
+    # values    - A flat list of val1 val2 pairs
+    #
+    # Finds the maximum of the absolute values.  The result is used
+    # for normalizing scores of a given type.
+
+    method maxabs {values} {
+        lappend values 0.0 ;# So we know it isn't empty.
+
+        foreach val $values {
+            lappend list [expr {abs($val)}]
+        }
+
+        return [tcl::mathfunc::max {*}$list]
     }
 
     # maxmax values
@@ -436,18 +470,26 @@ snit::type ::athena::comparison {
         return [expr {max($sum1,$sum2)}]
     }
 
-    # NormalizeScores 
+    # normalizeScores scoresVar AVar
+    #
+    # scoresVar   - An array containing the scores.
+    # AVar        - An array containing "A" values by vartype.
     #
     # Normalizes the scores so that the max score is 100.0.
 
-    method NormalizeScores {} {
+    method normalizeScores {scoresVar AVar} {
+        upvar 1 $scoresVar theScores
+        upvar 1 $AVar theAs
+
         # FIRST, apply the "A"'s
-        foreach diff [array names scores] {
-            let scores($diff) {$scores($diff) * $A([$diff type])} 
+        foreach diff [array names theScores] {
+            let theScores($diff) {
+                $theScores($diff) * $theAs([$diff type])
+            } 
         }
 
         # NEXT, get the maximum score
-        set allScores [dict values [array get scores]]
+        set allScores [dict values [array get theScores]]
 
         if {[llength $allScores] == 0.0} {
             return
@@ -459,10 +501,10 @@ snit::type ::athena::comparison {
             return
         }
 
-        # NEXT, scale the scores to 100.0
-        foreach diff [array names scores] {
-            let scores($diff) {
-                $scores($diff)*100.0 / $max
+        # NEXT, scale theScores to 100.0
+        foreach diff [array names theScores] {
+            let theScores($diff) {
+                $theScores($diff)*100.0 / $max
             }
         }
     }
@@ -511,6 +553,71 @@ snit::type ::athena::comparison {
         return $diff
     }
 
+    #-------------------------------------------------------------------
+    # Variable chaining
+
+    # explain varname
+    #
+    # varname   - A significant vardiff name
+    #
+    # Starting with the varname, which must name an existing vardiff,
+    # drills down the tree as far as possible to populate the vardiff's
+    # causality chain.  If the chain has already been computed, does
+    # nothing.
+    #
+    # The algorithm assumes that if a given vardiff's inputs have been
+    # computed, then the inputs of those inputs have also been recruited.
+    #
+    # Returns nothing; use "chain" to retrieve the chain.
+
+    method explain {varname} {
+        require {[$self exists $varname]} "No such vardiff in memory"
+
+        set diffs [list [$self getdiff $varname]]
+
+        while {[llength $diffs] > 0} {
+            set diff [lshift diffs]
+
+            if {![$diff gotInputs]} {
+                lappend diffs {*}[dict keys [$diff inputs]]
+            }
+        }
+    }
+
+    # getchain varname
+    #
+    # varname   - A significant vardiff name
+    #
+    # Computes the causality chain for the named variable.  Returns
+    # the vardiffs in the chain.
+    #
+    # It is common for a vardiff to be an input for multiple vardiffs.
+    # Each vardiff appears in the chain once, in breadth-first-search
+    # order.  Each vardiff record knows its own inputs.
+
+    method getchain {varname} {
+        require {[$self exists $varname]} "No such vardiff in memory"
+
+        set chain [dict create]
+
+        set root [$self getdiff $varname]
+
+        if {![$root gotInputs]} {
+            $self explain $varname
+        }
+
+        set diffs [list $root]
+        while {[llength $diffs] > 0} {
+            set diff [lshift diffs]
+
+            if {![dict exists chain $diff]} {
+                dict set chain $diff 1
+                lappend diffs {*}[dict keys [$diff inputs]]
+            }
+        }
+
+        return [dict keys $chain]
+    }
 
 
     #-------------------------------------------------------------------
@@ -578,7 +685,7 @@ snit::type ::athena::comparison {
     # diffs dump ?-all?
     #
     # Returns a monotext formatted table of the significant outputs.
-    # If -all is given, all cached vardiffs are
+    # If -all is given, all cached vardiffs are included
 
     method {diffs dump} {{opt ""}} {
         set vardiffs [$self list $opt]
@@ -610,7 +717,7 @@ snit::type ::athena::comparison {
         return [dictab format $table -headers]
     }
 
-    # diffs json ?-toplevel?
+    # diffs json ?-all?
     #
     # Returns the differences formatted as JSON. 
 
@@ -618,7 +725,7 @@ snit::type ::athena::comparison {
         return [huddle jsondump [$self diffs huddle $opt]]
     }
 
-    # diffs huddle ?-toplevel?
+    # diffs huddle ?-all?
     #
     # Returns the differences formatted as a huddle(n) object.
 
@@ -657,6 +764,62 @@ snit::type ::athena::comparison {
             return 0
         }
     }
+
+    # chain dump varname
+    #
+    # Returns a text string showing the structure of the chain.
+
+    method {chain dump} {varname} {
+        set diff [$self getdiff $varname]
+        $self DumpChain $diff $scores($diff) ""
+    }
+
+    # DumpChain diff score leader
+    #
+    # diff   - A vardiff
+    # score  - The vardiff's score in this context
+    # leader - Leader spaces
+    #
+    # Dumps a text string showing the tree structure of the diff's chain.
+
+    method DumpChain {diff score leader} {
+        lappend result "$leader[$diff name] ($score)"
+
+        if {$leader eq ""} {
+            set leader "+-> "
+        } else {
+            set leader "    $leader"
+        }
+
+        foreach {d score} [$diff inputs] {
+            lappend result [$self DumpChain $d $score $leader]
+        }
+
+        return [join $result \n]
+    }
+
+    # chain huddle varname
+    #
+    # Returns the chain's differences formatted as a huddle(n) object.
+
+    method {chain huddle} {varname} {
+        set hud [huddle list]
+    
+        foreach diff [$self getchain $varname] {
+            huddle append hud [$diff huddle]
+        }
+
+        return $hud
+    }
+
+    # chain json varname
+    #
+    # Returns the chain's differences formatted as a JSON string.
+
+    method {chain json} {varname} {
+        return [huddle jsondump [$self chain huddle $varname]]
+    }
+    
 
     #-------------------------------------------------------------------
     # Actual Comparisons

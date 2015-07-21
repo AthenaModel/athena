@@ -17,6 +17,9 @@ oo::class create ::athena::vardiff::vrel {
     meta type     vrel
     meta category political
     meta normfunc 1.0
+    meta afactors {
+        drivervrel 1.0
+    }
 
     constructor {comp_ val1_ val2_ g_ a_} {
         next $comp_ [list g $g_ a $a_] $val1_ $val2_
@@ -42,7 +45,7 @@ oo::class create ::athena::vardiff::vrel {
     #-------------------------------------------------------------------
     # Input Differences
 
-    method FindDiffs {} {
+    method FindInputs {} {
         variable comp
 
         set g [my key g]
@@ -50,7 +53,7 @@ oo::class create ::athena::vardiff::vrel {
 
         # FIRST, get the contributions
         foreach {drid val1 val2} [$comp contribs vrel $g $a] {
-            my diffadd drivervrel $val1 $val2 $g $a $drid
+            my AddInput drivervrel $val1 $val2 $g $a $drid
         }
     }
 

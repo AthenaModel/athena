@@ -1,11 +1,13 @@
 # TODO.md - Athena TODO List
 
 - Causality Chaining
-  - Need to move comparison(n)'s "A" values to compdb(n).
+  - Need to move comparison(n)'s "A" values to compdb(n)?
   - Might want to add "trivial" checks to some of the vardiff types, based
     on limits in compdb(n); but the limits that are there now are OBE.
   - Need to update the "FindDiff" mechanism for existing vardiffs to 
     do the scoring as comparison(n) does.
+    - The "inputs" field will be a dictionary of scores by vardiff object.
+    - It will be published as a dictionary of scores by varname.
     - See if it's possible to share the code.
   - Compute and return chains
   - Chain vardiffs don't get added to comparison.

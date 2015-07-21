@@ -17,6 +17,10 @@ oo::class create ::athena::vardiff::mood {
     meta type     mood
     meta category social
     meta normfunc 100.0
+    meta afactors {
+        sat        1.0
+        population 1.0
+    }
 
     constructor {comp_ val1_ val2_ g_} {
         next $comp_ [list g $g_] $val1_ $val2_
@@ -45,7 +49,7 @@ oo::class create ::athena::vardiff::mood {
     # Input Differences
     
 
-    method FindDiffs {} {
+    method FindInputs {} {
         variable comp
 
         set g [my key g]
@@ -54,14 +58,14 @@ oo::class create ::athena::vardiff::mood {
         $comp eval {
             SELECT c, sat1, sat2 FROM comp_sat WHERE g=$g
         } {
-            my diffadd sat $sat1 $sat2 $g $c
+            my AddInput sat $sat1 $sat2 $g $c
         }
 
         # NEXT, get the population inputs
         $comp eval {
             SELECT pop1, pop2 FROM comp_civg WHERE g=$g
         } {
-            my diffadd population $pop1 $pop2 $g
+            my AddInput population $pop1 $pop2 $g
         }
     }
 }

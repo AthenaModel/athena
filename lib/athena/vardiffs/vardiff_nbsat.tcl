@@ -15,6 +15,10 @@ oo::class create ::athena::vardiff::nbsat {
     meta type     nbsat
     meta category social
     meta normfunc 100.0
+    meta afactors {
+        sat        1.0
+        population 1.0
+    }
 
     constructor {comp_ val1_ val2_ n_ c_} {
         next $comp_ [list n $n_ c $c_] $val1_ $val2_
@@ -42,7 +46,7 @@ oo::class create ::athena::vardiff::nbsat {
     #-------------------------------------------------------------------
     # Input Differences
     
-    method FindDiffs {} {
+    method FindInputs {} {
         variable comp
 
         set n [my key n]
@@ -52,14 +56,14 @@ oo::class create ::athena::vardiff::nbsat {
         $comp eval {
             SELECT g, sat1, sat2 FROM comp_sat WHERE n = $n AND c = $c
         } {
-            my diffadd sat $sat1 $sat2 $g $c
+            my AddInput sat $sat1 $sat2 $g $c
         }
 
         # NEXT, get the population inputs
         $comp eval {
             SELECT g, pop1, pop2 FROM comp_civg WHERE n = $n
         } {
-            my diffadd population $pop1 $pop2 $g
+            my AddInput population $pop1 $pop2 $g
         }
     }
 
