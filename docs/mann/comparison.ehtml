@@ -10,11 +10,19 @@ package require athena <version>
 
 <section DESCRIPTION>
 
-The <xref athena(n)> command <xref athena(n) "athena diff"> compares two
-scenarios for significant differences, and returns a comparison(n) object
-that contains them.  The comparison(n) object provides
-information about the differences in a variety of formats, and is also
-used to drill down on particular differences for more information.<p> 
+The comparison(n) object compares two
+scenarios for significant differences, providing
+information about the differences in a variety of formats.  It is also
+used to drill down on particular differences for more information, and
+provides services to the <xref vardiff(n)> objects that are used to 
+represent differences.<p>
+
+To compare two scenarios, first use <iref ::athena::comparison check> to
+verify that they are comparable.  Then, create a new comparison(n) instance
+using <iref ::athena::comparison new> and ask it to <iref compare> the
+scenarios.  The significant outputs can then be retrieved in a number of
+ways, and the <iref explain> and <iref getchain> subcommands can be used
+to drill down and explain the change in a particular output.<p>
 
 <section "COMMANDS">
 
@@ -22,25 +30,34 @@ comparison(n) provides the following commands:<p>
 
 <deflist commands>
 
-<defitem "::athena::comparison create" {comparison create <i>obj</i> <i s1 t1 s2 t2>}>
+<defitem "::athena::comparison check" {comparison check <i s1 s2>}>
+
+Checks scenarios <i s1> and <i s2> for comparability, throwing
+<b ATHENA INCOMPARABLE> with an appropriate error message if they are
+not.  The requirements are still evolving, but include:
+
+<ul>
+    <li> Identical neighborhood names
+    <li> Identical actor names
+    <li> Identical group names
+    <li> Identical belief system names
+</ul><p>
+
+
+<defitem "::athena::comparison create" {comparison create <i>obj</i> <i s1 t1 s2 t2>}> 
 
 Creates a new comparison(n) instance named <i>obj</i>, and
 returns the fully qualified object name.  The object will contain
 a comparison of scenarios <i s1> and <i s2> (which might be identical)
 at times <i t1> and <i t2>.<p>
 
-If <i s1> and <i s2> are not identical, then they are checked for
-compatibility.  The requirements are still evolving, but include:
+The object is initially empty; call <iref compare> to compare the two
+scenarios and find the significant outputs.<p>
 
-<ul>
-    <li> Identical neighborhood names
-    <li> Identical actor names
-    <li> Identical group names
-</ul><p>
+<defitem "::athena::comparison new" {comparison new <i s1 t1 s2 t2>}>
 
-The object is initially empty.  Practically speaking, comparison(n) 
-objects will usually be created and populated by 
-<xref athena(n) "athena diff">.<p>
+Creates a new comparison(n) instance object, just as for 
+<iref ::athena::comparison create>, but assigns an object name.<p>
 
 </deflist commands>
 
@@ -52,7 +69,8 @@ Each instance of comparison(n) provides the following subcommands:<p>
 
 <defitem add {<i obj> add vartype val1 val2 keys...}>
 
-<b>This command is used when populating the object; clients should rarely
+<b>This command is used when populating the comparison with 
+<xref vardiff(n)> instances; clients should rarely
 if ever need it.</b><p>
 
 This command compares two values of a given variable type, and retains
@@ -71,15 +89,11 @@ wasn't significant.  Note that if the same variable is checked multiple
 times, the previously saved instance will be returned the second and
 subsequent times.<p>
 
-<defitem addtop {<i obj> addtop vartype val1 val2 keys...}>
+<defitem compare {<i obj> compare}>
 
-<b>This command is used when populating the object; clients should rarely
-if ever need it.</b><p>
-
-This command is identical to <iref add>, but marks the variable (if 
-significant) as a top-level significant output.  Note that a variable
-can be both a top-level significant output and a significant input to
-another variable.<p>
+Asks the comparison(n) object to compare the two scenarios at the given
+times and record all primary outputs with signicant differences.  Scores
+are assigned so that the differences can be ranked.<p>
 
 <defitem chain {<i obj> chain <i subcommand> ?<i args...>?}>
 
@@ -110,7 +124,7 @@ each object's <tt inputs> field.<p>
 <defitem contribs {<i obj> contribs <i subcommand> <i keys...>}>
 
 Determines contributions by driver for the curve indicated by the 
-subcommand and keys (e.g., <tt mood> and a civilian group name; 
+subcommand and keys (e.g., <tt sat> and a civilian group name; 
 see <xref mars:uram(n)>'s <xref mars:uram(n) contrib> subcommand).
 Returns a flat list <tt>{<i drid> <i val1> <i val2> ...}</tt> of the
 contributions made by the driver in each scenario.<p>
@@ -127,61 +141,126 @@ the output format.<p>
 
 <deflist diffs>
 
-<defitem "diffs dump" {<i obj> diffs dump ?-toplevel?}>
+<defitem "diffs dump" {<i obj> diffs dump ?-all?}>
 
-Returns a dump of the signicant differences as a simple text table.  This
-format is usually used for debugging.  If <tt -toplevel> is given, the
-output includes only the top-level differences.<p>
+Returns a dump of the signicant outputs as a simple text table; this
+format is usually used for debugging.  If <tt -all> is given, the
+output includes not only the top-level variables but all that have
+been cached as part of chains.<p>
 
-<defitem "diffs huddle" {<i obj> diffs huddle ?-toplevel?}>
+<defitem "diffs huddle" {<i obj> diffs huddle ?-all?}>
 
 Returns a dump of the signicant differences as a huddle(n) list containing
 difference records.  This dump can be included into a larger huddle(n)
-object for conversion to JSON.  If <tt -toplevel> is given, the
-output includes only the top-level differences.<p>
+object for conversion to JSON.  The option is as for <iref diffs dump>.<p>
 
-<defitem "diffs json" {<i obj> diffs json ?-toplevel?}>
+<defitem "diffs json" {<i obj> diffs json ?-all?}>
 
 Returns a dump of the signicant differences as a JSON list containing
-difference records.  If <tt -toplevel> is given, the
-output includes only the top-level differences.<p>
+difference records.  The option is as for <iref diffs dump>.<p>
 
 </deflist diffs>
 
+<defitem eval {<i obj> eval <i sql> ?<i args...>?}>
+
+The comparison(n) object contains an internal SQLite3 database, to which
+the two scenario files are attached as databases "S1" and "S2".  This 
+command gives SQL access to that database.<p>
+
 <defitem exists {<i obj> exists <i varname>}>
-Returns 1 if variable <i varname> has been determined to be significant
-in the comparison, in either the initial set of significant outputs or
-as part of a causality chain.<p>
+
+Returns 1 if variable <i varname> has been cached by the comparison(n)
+instance, as either a significant output or as part of a causality
+chain.<p>
 
 <defitem explain {<i obj> explain <i varname>}>
 
 Computes the causality chain for variable
-<i varname>, adding the <xref vardiff(n)> objects to the list for 
+<i varname>, adding the <xref vardiff(n)> objects to the list of 
 <i varname>'s significant inputs, and then for those variable's 
 significant inputs, and so forth.  If differences have already been
 computed for <i varname>, does nothing.<p>
 
-<defitem getbytype {<i obj> getbytype ?-toplevel?}>
-
-Returns a dictionary of lists of the known <xref vardiff(n)> objects
-by variable type.  If <tt -toplevel> is given, the
-output includes only the top-level differences.<p>
-
 <defitem getchain {<i obj> getchain <i varname>}>
 
 Returns a list of <xref vardiff(n)> objects representing the named
-variable and all of the variables in its causality chain.<p>
+variable and all of the variables in its causality chain.  Calls
+<iref explain> if necessary to compute the chain.<p>
+
+A single variable can appear in the causality chain in multiple places
+with different scores.  This routine simply returns a list of the relevant
+<xref vardiff(n)> objects; each object appears only once.  To trace the 
+chain, start with the root (the first item in the list) and follow its
+<xref vardiff(n) inputs>.<p>
 
 <defitem getdiff {<i obj> getdiff <i name>}>
 
 Given a variable name, returns the variable's <xref vardiff(n)> object,
 or "" if none.<p>
 
-<defitem list {<i obj> list ?-toplevel?}>
+<defitem list {<i obj> list ?-all?}>
 
-Returns a list of the <xref vardiff(n)> objects that have been added to the
-comparison.  If <tt -toplevel> is given, the
-output includes only the top-level differences.<p>
+Returns a list of the <xref vardiff(n)> objects that represent primary
+scenario outputs with signficant differences between the two scenarios
+(i.e., the "significant outputs").<p>
+
+Other <xref vardiff(n)> objects are added to the comparison as the user
+drills down into causality chains; if <b -all> is given, then those 
+objects are included in the list.<p>
+
+<defitem maxabs {<i obj> maxabs <i values>}>
+
+Given a flat list of variable <i x1 x2> values, returns the maximum 
+absolute value in the list.<p>
+
+<defitem maxmax {<i obj> maxmax <i values>}>
+
+Given a flat list of variable <i x1 x2> values, returns the maximum 
+value in the list.<p>
+
+<defitem maxsum {<i obj> maxsum <i values>}>
+
+Given a flat list of variable <i x1 x2> values, returns the maximum 
+of the sum of the x1's and the sum of the x2's.<p>
+
+<defitem normalizer {<i obj> normalizer <i vartype values>}>
+
+Returns the normalizer value for the given <i vartype> given a flat list
+of {<tt>x1 x2</tt>} values for a set of <xref vardiffs(n)> of the given 
+type.  The <i vartype> is the barename of
+an <tt ::athena::vardiff::*> class, (e.g., <tt nbsecurity>).<p>
+
+A <i normalizer> is a value used in scoring a set of <xref vardiff(n)>
+instances of the same variable type in the context of a particular output,
+e.g., all satisfaction levels that are inputs to a particular mood.  Each
+<xref vardiff(n)> subclass defines a metadata item called <b normfunc>, 
+which may take one of the following values:<p>
+
+<ul>
+<li> A constant number.
+<li> A symbol, <b><iref maxabs></b>, <b><iref maxmax></b>, or 
+     <b><iref maxsum></b>, which indicates that the named subcommand is
+     used to compute the normalizer from the <i values>.
+</ul><p>
+
+<defitem normalizeScores {<i obj> normalizeScores <i scoresVar AVar>}>
+
+Once all <xref vardiff(n)> instances have been scored in the given 
+context, this command is used to normalize the scores so that the
+largest is 100.0.  The scores are found in the <i scoresVar>, which is
+an array of scores by <xref vardiff(n)> object name.<p>
+
+Each variable type has its own distinct <i A> factor within the given 
+context; <i A> factors default to 1.0, and can be increased or decreased
+to move variables of that type higher or lower in the final scores 
+ranking.   The <i AVar> is the name of an array of <i A> factors by 
+variable type for the caller's context.<p>
+
+<defitem query {<i obj> query <i sql> <i args...>}>
+
+Queries the comparison(n) object's internal database and returns the 
+results in human-readable form.  See <iref eval> for more about 
+the internal database.<p>
 
 <defitem reset {<i obj> reset}>
 
@@ -199,6 +278,14 @@ Called with no arguments, returns the <xref athena(n)> scenario
 object for scenario <i s2>.  Otherwise, the remaining arguments are
 passed along to <i s2> as a subcommand and the result is returned.<p>
 
+<defitem scoreByType {<i obj> scoreByType <i scoresVar normalizer diffs>}>
+
+Computes a score for each of the <xref vardiff(n)> objects in list 
+<i diffs>; they must all have the same type.  The <i normalizer> is a 
+normalizer value computed using <iref normalizer>.  The <i scoresVar> is
+the name of an array variable in the caller's context; computed scores
+will be placed in the array by <xref vardiff(n)> object name.<p>
+
 <defitem t1 {<i obj> t1}>
 
 Returns the value of <i t1>, a simulation time in integer weeks.<p>
@@ -209,9 +296,8 @@ Returns the value of <i t2>, a simulation time in integer weeks.<p>
 
 <defitem validate {<i obj> validate <i varname>}>
 
-Validates variable <i varname>, returning <i varname> if it is a significant
-variable in the comparison, and throwing INVALID otherwise.<p>
-
+Validates variable <i varname>, returning <i varname> if it
+<iref exists> and throwing INVALID otherwise.<p>
 
 </deflist instance>
 

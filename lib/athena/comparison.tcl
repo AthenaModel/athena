@@ -369,7 +369,7 @@ snit::type ::athena::comparison {
         $self normalizeScores scores A
     }
 
-    # normalizer vartype valuesVar
+    # normalizer vartype values
     # 
     # vartype    - A vardiff type name, without namespace
     # values     - The cache of all relevant values for computing
