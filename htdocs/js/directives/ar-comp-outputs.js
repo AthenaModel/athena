@@ -20,9 +20,10 @@ angular.module("arachne")
                     Comparison.catName($scope.category) + ' Outputs';
             }
 
-            $scope.sortby = $scope.sortby || 'name';
-            $scope.reverse = $scope.reverse || false;
-
+            $scope.sortby = $scope.sortby || 'score';
+            $scope.reverse = $scope.reverse || ($scope.sortby === 'score');
+            this.siglevel = 20;
+            
             this.catName = function(category) {
                 category = category || $scope.category;
 
@@ -34,19 +35,26 @@ angular.module("arachne")
             }
 
             this.outputs = function() {
+                var outputs;
+                var result = [];
+
                 if ($scope.category === 'all') {
-                    return Comparison.outputs($scope.compid);
+                    outputs = Comparison.outputs($scope.compid);
                 } else {
-                    return Comparison.byCat($scope.compid, $scope.category);
+                    outputs = Comparison.byCat($scope.compid, $scope.category);
                 }
+
+                for (var i = 0; i < outputs.length; i++) {
+                    if (outputs[i].score >= this.siglevel) {
+                        result.push(outputs[i]);
+                    }
+                }
+
+                return result;
             }
 
             this.size = function() {
-                if ($scope.category === 'all') {
-                    return Comparison.size($scope.compid);
-                } else {
-                    return Comparison.catSize($scope.compid, $scope.category);
-                }
+                return this.outputs().length;
             }
 
             this.sortby = function(column,reverse) {
