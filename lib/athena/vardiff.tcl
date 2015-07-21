@@ -217,7 +217,7 @@ oo::class create ::athena::vardiff {
         dict set result val2      $val2
         dict set result fmt2      [my fmt2]
         dict set result fancy2    [my fancy2]
-        dict set result delta     [my format [my delta]]
+        dict set result delta     [my delta]
         dict set result narrative [my narrative]
         dict set result context   [my context]
 

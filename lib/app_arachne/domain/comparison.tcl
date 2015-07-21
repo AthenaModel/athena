@@ -103,14 +103,13 @@ smarturl /comparison /request.json {
     return [js ok [comp huddle $id]]
 }
 
-smarturl /comparison /{comp}/chain.json {
-    <b>TBD: Should probably take the comparison ID and output variable
-    both as inputs.</b>
+smarturl /comparison /chain.json {
     Returns a list of the significant inputs driving change in 
-    a specific output variable {var}.  The list is recursive: we drill
+    a specific output variable {var} in comparison {comp}.  
+    The list is recursive: we drill
     down as far as we can, producing a "causality chain".  The {var}
     must be one of the variables included in the list returned by
-    /comparison/{comp}/index.json.
+    /comparison/request.json.
 } {
     set comp [my ValidateComp $comp]
 

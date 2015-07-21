@@ -732,7 +732,7 @@ snit::type ::athena::comparison {
     method {diffs huddle} {{opt ""}} {
         set hud [huddle list]
 
-        forach diff [$self SortByScore [$self list $opt]] {
+        foreach diff [$self SortByScore [$self list $opt]] {
             # Add score to the record
             set hdiff [$diff huddle]
             huddle set hdiff score $scores($diff)

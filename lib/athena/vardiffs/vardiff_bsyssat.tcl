@@ -41,7 +41,7 @@ oo::class create ::athena::vardiff::bsyssat {
 
     method narrative {} {
         return [my DeltaNarrative \
-"The satisfaction of groups having belief system [my key b] with respect to [my key c]" \
+"The satisfaction with respect to [my key c] of groups having belief system [my key b]" \
                 "satisfaction points"]
     }
 

@@ -135,7 +135,7 @@ snit::type comp {
 
     typemethod huddle {id} {
         set cdict [huddle compile dict [$type metadata $id]]
-        huddle set cdict outputs [$type with $id diffs huddle -toplevel]
+        huddle set cdict outputs [$type with $id diffs huddle]
         return $cdict
     }    
 
