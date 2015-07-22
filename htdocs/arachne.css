@@ -54,3 +54,36 @@ table.auto-width {
 td.right {
   text-align: right;
 }
+
+/* Indents, for tree structures in tables */
+.indent1 {
+  margin-left: 1em;
+}
+
+.indent2 {
+  margin-left: 2em;
+}
+
+.indent3 {
+  margin-left: 3em;
+}
+
+.indent4 {
+  margin-left: 4em;
+}
+
+.indent5 {
+  margin-left: 5em;
+}
+
+.indent6 {
+  margin-left: 6em;
+}
+
+.indent7 {
+  margin-left: 7em;
+}
+
+.indent8 {
+  margin-left: 8em;
+}

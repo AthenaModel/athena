@@ -23,6 +23,9 @@ angular.module("arachne")
             $scope.sortby = $scope.sortby || 'score';
             $scope.reverse = $scope.reverse || ($scope.sortby === 'score');
             this.siglevel = 20;
+
+            this.levels = [100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 
+                            50, 45, 40, 35, 30, 25, 20, 15, 10,  5, 0];
             
             this.catName = function(category) {
                 category = category || $scope.category;
