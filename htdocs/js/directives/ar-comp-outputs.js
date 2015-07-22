@@ -22,6 +22,8 @@ angular.module("arachne")
 
             $scope.sortby = $scope.sortby || 'score';
             $scope.reverse = $scope.reverse || ($scope.sortby === 'score');
+
+            // Significance level
             this.siglevel = 20;
 
             this.levels = [100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 
@@ -38,14 +40,16 @@ angular.module("arachne")
             }
 
             this.outputs = function() {
-                var outputs;
-                var result = [];
-
                 if ($scope.category === 'all') {
-                    outputs = Comparison.outputs($scope.compid);
+                    return Comparison.outputs($scope.compid);
                 } else {
-                    outputs = Comparison.byCat($scope.compid, $scope.category);
+                    return Comparison.byCat($scope.compid, $scope.category);
                 }
+            }
+
+            this.sigOutputs = function() {
+                var outputs = this.outputs();
+                var result = [];
 
                 for (var i = 0; i < outputs.length; i++) {
                     if (outputs[i].score >= this.siglevel) {
@@ -58,6 +62,10 @@ angular.module("arachne")
 
             this.size = function() {
                 return this.outputs().length;
+            }
+
+            this.sigSize = function() {
+                return this.sigOutputs().length;
             }
 
             this.sortby = function(column,reverse) {

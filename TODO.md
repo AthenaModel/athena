@@ -2,23 +2,6 @@
 
 - Causality Chaining
   - Need better narratives for drivers; the driver isn't identified clearly.
-  - Displaying outputs with respect to a significance level:
-    - How to specify the significance level in the UI?
-      - select box is annoying: can't seem to make it display default value.
-      - Would really like a slider.
-    - How to filter on significance?
-      - Using a standard filter in the ng-repeat is difficult; need to
-        specify a function in some way.
-      - Perhaps a "setFilter()" method?
-    - Need to keep track of (and make available to template):
-      - Total number of outputs, of all categories and by category
-      - Total number of *significant* outputs, given current significance
-        level.
-      - Outputs, by category
-      - Significant outputs by category
-    - Perhaps setSigLevel() function?
-    - Perhaps we set a significance field true/false based on setSigLevel?
-    - Need to make significance level visible.
   - Need to move comparison(n)'s "A" values to compdb(n)?
   - Might want to add "trivial" checks to some of the vardiff types, based
     on limits in compdb(n); but the limits that are there now are OBE.

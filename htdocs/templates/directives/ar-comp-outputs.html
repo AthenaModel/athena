@@ -2,21 +2,30 @@
 
 <h2>{{header}}</h2>
 
-<form class="form-inline" style="margin-bottom:15px">
-  <div class="form-group">
-  <label for="siglevel">Significance Level:</label>
-  <select id="siglevel" class="form-control input-sm" 
-          ng-model="comp.siglevel"
-          ng-options="level for level in comp.levels">
-  </select>
-  </div>
-</form>
-
-<p ng-hide="comp.size()">
-No {{comp.catName() | lowercase}} outputs are significant in this comparison.
+<p ng-if="!comp.size()">
+No {{comp.catName() | lowercase}} outputs differ in non-trivial ways
+in this comparison.
 </p>
 
-<div ng-show="comp.size()">
+<div ng-if="comp.size()">
+  <form class="form-inline" style="margin-bottom:15px">
+    <div class="form-group">
+    <label for="siglevel control-label">Significance Level:</label>
+    <select id="siglevel" class="form-control input-sm" 
+            ng-model="comp.siglevel"
+            ng-options="level for level in comp.levels">
+    </select>
+    </div>
+    <div class="form-group">
+      <label class="control-label">Total Outputs:</label>
+      <p class="form-control-static">{{comp.size()}}</p>
+    </div>
+    <div class="form-group">
+      <label class="control-label">Significant Outputs:</label>
+      <p class="form-control-static">{{comp.sigSize()}}</p>
+    </div>
+  </form>
+
   <table class="table auto-width">
     <tr>
       <th ng-show="category === 'all'">
@@ -28,7 +37,7 @@ No {{comp.catName() | lowercase}} outputs are significant in this comparison.
       <th><a href ng-click="comp.sortby('score',true)">Score</a></th>
     </tr>
 
-    <tr ng-repeat="output in comp.outputs() | orderBy:sortby:reverse">
+    <tr ng-repeat="output in comp.sigOutputs() | orderBy:sortby:reverse">
       <td ng-show="category === 'all'">{{comp.catName(output.category)}}</td>
       <td><span class="label label-primary">{{output.type}}</span></td>
       <td><span class="text-primary">{{output.name}}</span></td>
