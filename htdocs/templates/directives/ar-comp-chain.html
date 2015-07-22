@@ -1,19 +1,21 @@
 <!-- ar-comp-chain element -->
 
 <h2>{{header}}</h2>
-
-<p ng-if="!comp.size()">
-Variable <b>{{varname}}</b> has no significant inputs.
-</p>
-
-<div ng-if="comp.size()">
+<div>
   <form class="form-inline" style="margin-bottom:15px">
     <div class="form-group">
-    <label for="siglevel control-label">Significance Level:</label>
-    <select id="siglevel" class="form-control input-sm" 
-            ng-model="comp.siglevel"
-            ng-options="level for level in comp.levels">
-    </select>
+      <label for="varname control-label">Variable:</label>
+      <select id="varname" class="form-control input-sm" 
+              ng-model="comp.varname"
+              ng-options="name for name in comp.varnames()">
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="siglevel control-label">Significance Level:</label>
+      <select id="siglevel" class="form-control input-sm" 
+              ng-model="comp.siglevel"
+              ng-options="level for level in comp.levels">
+      </select>
     </div>
     <div class="form-group">
       <label class="control-label">Total Inputs:</label>
@@ -24,6 +26,13 @@ Variable <b>{{varname}}</b> has no significant inputs.
       <p class="form-control-static">{{comp.sigSize()}}</p>
     </div>
   </form>
+<div>
+
+<p ng-if="!comp.size()">
+Variable <b>{{varname}}</b> has no significant inputs.
+</p>
+
+<div ng-if="comp.size()">
 
   <table class="table auto-width">
     <tr>

@@ -211,6 +211,17 @@ function($http, $q, Arachne, Entities) {
         }
     }
 
+    service.outputNames = function(compId) {
+        var outputs = service.outputs(compId);
+        var result = [];
+
+        for (var i = 0; i < outputs.length; i++) {
+            result.push(outputs[i].name);
+        }
+
+        return result.sort();
+    }
+
     //----------------------------------------------------------
     // Comparison wrapper
 

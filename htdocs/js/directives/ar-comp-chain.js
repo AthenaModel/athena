@@ -18,7 +18,14 @@ angular.module("arachne")
             $scope.header = $scope.header || "Chain: " + $scope.varname;
 
             Comparison.requestChain($scope.compid, $scope.varname);
-            
+
+            // Significant outputs
+            this.varnames = function() {
+                return Comparison.outputNames($scope.compid);                
+            }
+
+            this.varname = $scope.varname || this.varnames()[0];
+
             // Chain Data
 
             this.items = function() {
