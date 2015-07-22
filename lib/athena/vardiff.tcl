@@ -261,7 +261,7 @@ oo::class create ::athena::vardiff {
     method inputs {} {
         # FIRST, simply return inputs if we already have them.
         if {$gotInputs} {
-            return [array get iscores]
+            return [my SortDict [array get iscores]]
         }
 
         # NEXT, call the subclass method to populate the byType and
@@ -273,7 +273,7 @@ oo::class create ::athena::vardiff {
         array unset valueCache
         array unset byType
 
-        return [array get iscores]
+        return [my SortDict [array get iscores]]
     }
 
     # FindInputs
@@ -345,7 +345,16 @@ oo::class create ::athena::vardiff {
         $comp normalizeScores iscores A
     }
 
+    # SortDict dict
+    #
+    # dict   - A dictionary with numeric values.
+    #
+    # Returns the same dictionary with the keys sorted in order
+    # of descending value.
 
+    method SortDict {dict} {
+        return [lsort -real -decreasing -stride 2 -index 1 $dict]
+    }
 
     #-------------------------------------------------------------------
     # Narrative Tools

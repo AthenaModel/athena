@@ -682,34 +682,49 @@ snit::type ::athena::comparison {
     # Output of outputs in various formats
     
 
-    # diffs dump ?-all?
+    # diffs dump ?-all? ?-siglevel score?
     #
     # Returns a monotext formatted table of the significant outputs.
-    # If -all is given, all cached vardiffs are included
+    # If -all is given, all cached vardiffs are included.  Only
+    # outputs with a score at least the given -siglevel are included;
+    # the -siglevel defaults to 0.0
 
-    method {diffs dump} {{opt ""}} {
-        set vardiffs [$self list $opt]
+    method {diffs dump} {args} {
+        set which    toplevel
+        set siglevel 0.0
+
+        foroption opt args -all {
+            -all      { set which all              }
+            -siglevel { set siglevel [lshift args] }
+        }
+
+        set vardiffs [$self list $which]
         set vardiffs [$self SortByScore $vardiffs]
 
-        return [$self DumpList $vardiffs]
+        return [$self DumpList $siglevel $vardiffs]
     }
 
-    # DumpList vardiffs
+    # DumpList siglevel vardiffs
     #
+    # siglevel - The minimum score to display
     # vardiffs - A list of vardiff names
     #
     # Produces a monotext formatted table of the differences in the 
     # list.
 
-    method DumpList {vardiffs} {
+    method DumpList {siglevel vardiffs} {
         set table [list]
+
         foreach diff $vardiffs {
+            if {$scores($diff) < $siglevel} {
+                continue
+            }
             dict set row Variable   [$diff name]
             dict set row A          [$diff fmt1]
             dict set row B          [$diff fmt2]
             dict set row Narrative  [$diff narrative]
-            dict set row Score      $scores($diff)
-            dict set row Delta      [$diff delta]
+            dict set row Score      [format %.2f $scores($diff)]
+            dict set row Delta      [format %.2f [$diff delta]]
 
             lappend table $row
         }
@@ -765,26 +780,47 @@ snit::type ::athena::comparison {
         }
     }
 
-    # chain dump varname
+    # chain dump varname ?options...?
     #
-    # Returns a text string showing the structure of the chain.
+    # Returns a text string showing the tree structure of the chain.
+    # 
+    # -siglevel score   - Minimum score to display.
 
-    method {chain dump} {varname} {
-        set diff [$self getdiff $varname]
-        $self DumpChain $diff $scores($diff) ""
+    method {chain dump} {varname args} {
+        set opts(-siglevel) 0.0
+        array set opts $args
+
+        set root [$self getdiff $varname]
+        set table [list]
+
+        $self DumpChain table $opts(-siglevel) $root $scores($root) ""
+
+        return [dictab format $table -headers]
     }
 
-    # DumpChain diff score leader
+    # DumpChain tableVar siglevel diff score leader
     #
-    # diff   - A vardiff
-    # score  - The vardiff's score in this context
-    # leader - Leader spaces
+    # tableVar  - List variable to receive the dictionaries of data
+    # siglevel  - Minimum score for child inputs
+    # diff      - A vardiff
+    # score     - The vardiff's score in this context
+    # leader    - Leader spaces
     #
     # Dumps a text string showing the tree structure of the diff's chain.
 
-    method DumpChain {diff score leader} {
-        lappend result "$leader[$diff name] ($score)"
+    method DumpChain {tableVar siglevel diff score leader} {
+        upvar 1 $tableVar table
 
+        # FIRST, add a record for this diff.
+        dict set row Variable "$leader[$diff name]"
+        dict set row A          [$diff fmt1]
+        dict set row B          [$diff fmt2]
+        dict set row Narrative  [$diff narrative]
+        dict set row Score      [format %.2f $score]
+        dict set row Delta      [format %.2f [$diff delta]]
+        lappend table $row
+
+        # NEXT, add the variable's inputs
         if {$leader eq ""} {
             set leader "+-> "
         } else {
@@ -792,10 +828,10 @@ snit::type ::athena::comparison {
         }
 
         foreach {d score} [$diff inputs] {
-            lappend result [$self DumpChain $d $score $leader]
+            if {$score >= $siglevel} {
+                $self DumpChain table $siglevel $d $score $leader
+            }
         }
-
-        return [join $result \n]
     }
 
     # chain huddle varname
