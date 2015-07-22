@@ -1,0 +1,49 @@
+<!-- ar-comp-chain element -->
+
+<h2>{{header}}</h2>
+
+<p ng-if="!comp.size()">
+Variable <b>{{varname}}</b> has no significant inputs.
+</p>
+
+<div ng-if="comp.size()">
+  <form class="form-inline" style="margin-bottom:15px">
+    <div class="form-group">
+    <label for="siglevel control-label">Significance Level:</label>
+    <select id="siglevel" class="form-control input-sm" 
+            ng-model="comp.siglevel"
+            ng-options="level for level in comp.levels">
+    </select>
+    </div>
+    <div class="form-group">
+      <label class="control-label">Total Inputs:</label>
+      <p class="form-control-static">{{comp.size()}}</p>
+    </div>
+    <div class="form-group">
+      <label class="control-label">Significant Inputs:</label>
+      <p class="form-control-static">{{comp.sigSize()}}</p>
+    </div>
+  </form>
+
+  <table class="table auto-width">
+    <tr>
+      <th><a href>Output</a></th>
+      <th><a href>Type</a></th>
+      <th><a href>Narrative</a></th>
+      <th><a href>Score</a></th>
+    </tr>
+
+    <tr ng-repeat="var in comp.sigItems()">
+      <td>
+        <span class="text-primary" ng-class="var.class">
+          {{var.name}}
+        </span>
+      </td>
+      <td><span class="label label-primary">{{var.type}}</span></td>
+      <td>
+        {{var.narrative}}
+      </td>
+      <td class="right">{{var.score | number:2}}</td>
+    </tr>
+  </table>
+</div>

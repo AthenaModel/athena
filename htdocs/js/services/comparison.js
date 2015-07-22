@@ -6,8 +6,8 @@
 
 angular.module('arachne')
 .factory('Comparison', 
-['$q', 'Arachne', 'Entities',
-function($q, Arachne, Entities) {
+['$http', '$q', 'Arachne', 'Entities',
+function($http, $q, Arachne, Entities) {
     //---------------------------------------------------------
     // Service Data
 
@@ -30,6 +30,7 @@ function($q, Arachne, Entities) {
 
     var comps = Entities.retriever('/comparison/index.json');
     var byCat = {};
+    var chains = {};
 
     //----------------------------------------------------------
     // Delegated Methods
@@ -68,6 +69,71 @@ function($q, Arachne, Entities) {
             return caseId1 + '/' + caseId2;
         } else {
             return caseId1;
+        }
+    }
+
+    // requestChain(compId, varname)
+    //
+    // Requests the chain data structure for the named variable
+    // from the server.
+
+    service.requestChain = function(compId, varname) {
+        Arachne.request('comp-chain', '/comparison/chain.json', {
+            comp: compId,
+            varname: varname 
+        }).then(function (stat) {
+            if (stat.ok) {
+                chains[compId] = chains[compId] || {}
+                chains[compId][varname] = ProcessChain(stat.result[0]);
+            }
+        });
+    }
+
+    // chain(compId, varname)
+    //
+    // Retrieves the chain data structure for the named variable,
+    // requesting it if need be.
+
+    service.chain = function(compId, varname) {
+        // FIRST, if we have it just return it.
+        if (chains[compId] && chains[compId][varname]) {
+            return chains[compId][varname];
+        } else {
+            return [];
+        }
+    }
+
+    //----------------------------------------------------------
+    // Processing the Chain
+
+    // ProcessChain(raw) returns the processed chain.
+    var ProcessChain = function(raw) {
+        // FIRST, make an index, by name.
+        var ndx = {};
+
+        for (var i = 0; i < raw.length; i++) {
+            ndx[raw[i].name] = raw[i];
+        }
+
+        // NEXT, build up the chain.
+        var chain = [];
+        var next  = raw[0].name;
+        ExtendChain(chain, 0, ndx, next);
+
+        return chain;
+    };
+
+    var ExtendChain = function ExtendChain(chain, level, ndx, next) {
+        var diff = ndx[next];
+
+        for (name in diff.inputs) {
+            var input = ndx[name];
+            input.level = level;
+            input.class = "indent"+level;
+            input.score = diff.inputs[name];
+            chain.push(input);
+
+            ExtendChain(chain, level+1, ndx, name);
         }
     }
 
