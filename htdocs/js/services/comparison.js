@@ -30,6 +30,7 @@ function($http, $q, Arachne, Entities) {
 
     var comps = Entities.retriever('/comparison/index.json');
     var byCat = {};
+    var byName = {};
     var chains = {};
 
     //----------------------------------------------------------
@@ -247,10 +248,8 @@ function($http, $q, Arachne, Entities) {
     service.output = function(compId, varname) {
         var outputs = service.outputs(compId);
 
-        for (var i = 0; i < outputs.length; i++) {
-            if (outputs[i].name === varname) {
-                return outputs[i];
-            }
+        if (byName[compId] && byName[compId][varname]) {
+            return outputs[byName[compId][varname]];
         }
 
         return null;
@@ -286,13 +285,14 @@ function($http, $q, Arachne, Entities) {
     // Helpers
 
     var PopulateIndices = function() {
-        // TBD: add byName!
         byCat = {};
+        byName = {};
 
         for (var i = 0; i < comps.all().length; i++) {
             var comp = comps.all()[i];
 
             byCat[comp.id] = {};
+            byName[comp.id] = {};
 
             for (var cat in catNames) {
                 byCat[comp.id][cat] = [];
@@ -301,7 +301,8 @@ function($http, $q, Arachne, Entities) {
             for (var j = 0; j < comp.outputs.length; j++) {
                 var output = comp.outputs[j];
                 output.numInputs = Object.keys(output.inputs).length;
-                byCat[comp.id][comp.outputs[j].category].push(j);
+                byCat[comp.id][output.category].push(j);
+                byName[comp.id][output.name] = j;
             }
         }
     };
