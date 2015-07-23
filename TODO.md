@@ -1,6 +1,8 @@
 # TODO.md - Athena TODO List
 
 - Causality Chaining
+  - PROBLEM: the "numInputs" fields are incorrect for some outputs and 
+    chain items.  Need to fix that!
   - Detail box can be an element ar-var-detail(compid, varname). 
   - On chain, comparison pages, sidebar includes links to output chains
     sorted by name.

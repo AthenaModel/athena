@@ -1,112 +1,17 @@
-<ar-mainpage sidebar="/templates/pages/chain/sidebar.html">
-<div ng-controller="ChainController as page">
-
-<h1>
-<small>
-<a href="#/comparison/{{page.compId}}">{{page.casename()}}</a>
-</small>
-<br/>
-Chain: {{page.varname}}
-</h1>
-
-<div>
-  <span class="glyphicon" ng-class="page.detailClass()"
-    ng-click="page.toggleDetail()"></span>
-  {{page.var().narrative}}
-</div>
-<div class="panel panel-default" ng-if="page.showDetail()"
-  style="margin-bottom:0px;">
-  <div class="panel-body">
-    <dl class="dl-horizontal tight" style="margin-bottom:0px;">
-      <dt>Type:</dt>
-      <dd>
-        <span class="label label-primary">{{page.var().category}}</span> /
-        <span class="label label-primary">{{page.var().type}}</span>
-      </dd>
-      <dt>Case A:</dt>
-      <dd>{{page.var().fancy1}}</dd>
-      <dt>Case B:</dt>
-      <dd>{{page.var().fancy2}}</dd>
-      <dt ng-if="page.var().delta">Delta:</dt>
-      <dd ng-if="page.var().delta" ng-bind-html="page.var().delta"></dd>
-      <dt ng-if="page.var().context">Context:</dt>
-      <dd ng-if="page.var().context" ng-bind-html="page.var().context"></dd>
-    </dl>
-  </div>
-</div>
-
-<hr/>
-
-<div>
-  <form class="form-inline" style="margin-bottom:15px">
-    <div class="form-group">
-      <label for="siglevel" class="control-label">Significance Level:</label>
-      <select id="siglevel" class="form-control input-sm" 
-              ng-model="page.siglevel"
-              ng-options="level for level in page.levels">
-      </select>
+<!-- Chain Index File
+  -- This doesn't use ar-mainpage, because ar-mainpage prevents the sidebar
+  -- from seeing the page controller.  There might be a way to use 
+  -- directives for this purpose, but I've not figured out what it is.
+  -->
+<div class="container-fluid">
+  <div class="row row-eq-height">
+    <div class="col-xs-2" style="border-right: 1px solid black; margin-top: 5px; min-height: 1024px;">
+      <div ng-include="'/templates/pages/chain/sidebar.html'"></div>
     </div>
-    <div class="form-group">
-      <label class="control-label">Total Inputs:</label>
-      <p class="form-control-static">{{page.size()}}</p>
+    <div class="col-xs-10">
+      <div ng-include="'/templates/pages/chain/content.html'"></div>
     </div>
-    <div class="form-group">
-      <label class="control-label">Significant Inputs:</label>
-      <p class="form-control-static">{{page.visibleSize()}}</p>
-    </div>
-  </form>
-<div>
-
-<p ng-if="!page.size()">
-Variable <b>{{varname}}</b> has no significant inputs.  Either it is
-a model input, or we haven't yet implemented chaining for it.
-</p>
-
-<div ng-if="page.size()">
-  <table class="table auto-width">
-    <tr>
-      <th>Output</th>
-      <th>Type</th>
-      <th>Narrative</th>
-      <th>Score</th>
-    </tr>
-
-    <tr ng-repeat="var in page.visibleItems()">
-      <td>
-        <span class="text-primary" ng-class="var.class">
-          {{var.name}} 
-          <span ng-show="var.numInputs" class="badge">{{var.numInputs}}</span>
-        </span>
-      </td>
-      <td><span class="label label-primary">{{var.type}}</span></td>
-      <td>
-        <div>
-          <span class="glyphicon" ng-class="page.toggleClass(var.name)"
-            ng-click="page.toggle(var.name)"></span>
-          {{var.narrative}}
-        </div>
-        <div class="panel panel-default" ng-if="page.isExpanded(var.name)"
-          style="margin-bottom:0px;">
-          <div class="panel-body">
-            <dl class="dl-horizontal tight" style="margin-bottom:0px;">
-              <dt>Case A:</dt>
-              <dd>{{var.fancy1}}</dd>
-              <dt>Case B:</dt>
-              <dd>{{var.fancy2}}</dd>
-              <dt ng-if="var.delta">Delta:</dt>
-              <dd ng-if="var.delta" ng-bind-html="var.delta"></dd>
-              <dt ng-if="var.context">Context:</dt>
-              <dd ng-if="var.context" ng-bind-html="var.context"></dd>
-            </dl>
-          </div>
-        </div>
-      </td>
-      <td class="right">{{var.score | number:2}}</td>
-    </tr>
-  </table>
-</div>
+  </div><!-- /.row -->
+</div> <!-- .container-fluid>
 
 
-
-</div>
-</ar-mainpage>

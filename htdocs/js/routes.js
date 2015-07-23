@@ -16,11 +16,15 @@ angular.module('arachne')
     })
 
     .when('/chain/:caseId1/:varname', {
-        templateUrl: 'templates/pages/chain/index.html'
+        templateUrl:  'templates/pages/chain/index.html',
+        controller:   'ChainController',
+        controllerAs: 'page'
     })
 
     .when('/chain/:caseId1/:caseId2/:varname', {
-        templateUrl: 'templates/pages/chain/index.html'
+        templateUrl:  'templates/pages/chain/index.html',
+        controller:   'ChainController',
+        controllerAs: 'page'
     })
 
     .when('/comparisons', {
