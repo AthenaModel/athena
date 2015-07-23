@@ -29,7 +29,32 @@ function($routeParams, $scope, Comparison) {
     this.levels = [100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 
                     50, 45, 40, 35, 30, 25, 20, 15, 10,  5, 0];
     
+
+    //------------------------------------------------------
     // Chain Data
+
+    var detailFlag = false;
+
+    this.showDetail = function() {
+        return detailFlag;
+    }
+
+    this.detailClass = function(id) {
+        if (this.showDetail(id)) {
+            return "glyphicon-triangle-bottom"
+        } else {
+            return "glyphicon-triangle-right"
+        }
+    }
+
+    this.toggleDetail = function() {
+        detailFlag = !detailFlag;
+    }
+
+    this.var = function() {
+        return this.chain.output(this.varname);
+    }
+    
     this.casename = function() {
         if (this.chain.meta()) {
             return this.chain.meta().longname;

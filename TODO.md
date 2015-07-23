@@ -1,11 +1,13 @@
 # TODO.md - Athena TODO List
 
 - Causality Chaining
+  - Detail box can be an element ar-var-detail(compid, varname). 
+  - On chain, comparison pages, sidebar includes links to output chains
+    sorted by name.
+    - Skip variables with no inputs.
+  - In ar-comp-outputs table, no link if there are no inputs?
   - The vardiff "inputs" field should probably be an array in JSON
     - We can send it sorted, and it will stick.
-  - Need to display detail for chain roots.
-    - Possibly, just make them the top of the outline.
-  - Need to indicate which variables have inputs and which don't.
   - Need better narratives for drivers; the driver isn't identified clearly.
   - Need to move comparison(n)'s "A" values to compdb(n)?
   - Might want to add "trivial" checks to some of the vardiff types, based
