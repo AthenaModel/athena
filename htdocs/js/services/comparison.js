@@ -329,6 +329,8 @@ function($http, $q, Arachne, Entities) {
 
             for (var j = 0; j < comp.outputs.length; j++) {
                 var output = comp.outputs[j];
+                // TBD: I think this should be done before the data
+                // is saved.
                 output.numInputs = Object.keys(output.inputs).length;
                 byCat[comp.id][output.category].push(j);
                 byName[comp.id][output.name] = j;
