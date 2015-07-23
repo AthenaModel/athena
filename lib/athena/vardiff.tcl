@@ -58,9 +58,9 @@ oo::class create ::athena::vardiff {
         set prefix [lindex [split [my type] .] 0]
 
         dict for {key val} $keydict {
-            append prefix /$val
+            append prefix .$val
         }
-        return $prefix
+        return [string map {/ .} $prefix]
     }
 
     # keydict

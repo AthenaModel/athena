@@ -1,43 +1,38 @@
-<!-- ar-comp-chain element -->
+<ar-mainpage sidebar="/templates/pages/chain/sidebar.html">
+<div ng-controller="ChainController as page">
 
-<h2>Chain: {{page.chain}}</h2>
+<h1>
+<small>{{page.casename()}}</small><br/>
+Chain: {{page.varname}}
+</h1>
+<hr/>
 
 <div>
-  <hr/>
   <form class="form-inline" style="margin-bottom:15px">
-    <div class="form-group">
-      <label for="varname" class="control-label">Variable:</label>
-      <select id="varname" class="form-control input-sm" 
-              ng-model="page.chain"
-              ng-options="name for name in page.outputNames()"
-              ng-change="page.requestChain(page.chain)">
-      </select>
-    </div>
     <div class="form-group">
       <label for="siglevel" class="control-label">Significance Level:</label>
       <select id="siglevel" class="form-control input-sm" 
-              ng-model="comp.siglevel"
-              ng-options="level for level in comp.levels">
+              ng-model="page.siglevel"
+              ng-options="level for level in page.levels">
       </select>
     </div>
     <div class="form-group">
       <label class="control-label">Total Inputs:</label>
-      <p class="form-control-static">{{comp.size()}}</p>
+      <p class="form-control-static">{{page.size()}}</p>
     </div>
     <div class="form-group">
       <label class="control-label">Significant Inputs:</label>
-      <p class="form-control-static">{{comp.visibleSize()}}</p>
+      <p class="form-control-static">{{page.visibleSize()}}</p>
     </div>
   </form>
 <div>
 
-<p ng-if="page.chain != '' && !comp.size()">
-Variable <b>{{page.chain}}</b> has no significant inputs.  Either it is
+<p ng-if="!page.size()">
+Variable <b>{{varname}}</b> has no significant inputs.  Either it is
 a model input, or we haven't yet implemented chaining for it.
 </p>
 
-<div ng-if="comp.size()">
-
+<div ng-if="page.size()">
   <table class="table auto-width">
     <tr>
       <th>Output</th>
@@ -46,7 +41,7 @@ a model input, or we haven't yet implemented chaining for it.
       <th>Score</th>
     </tr>
 
-    <tr ng-repeat="var in comp.visibleItems()">
+    <tr ng-repeat="var in page.visibleItems()">
       <td>
         <span class="text-primary" ng-class="var.class">
           {{var.name}} 
@@ -56,11 +51,11 @@ a model input, or we haven't yet implemented chaining for it.
       <td><span class="label label-primary">{{var.type}}</span></td>
       <td>
         <div>
-          <span class="glyphicon" ng-class="comp.toggleClass(var.name)"
-            ng-click="comp.toggle(var.name)"></span>
+          <span class="glyphicon" ng-class="page.toggleClass(var.name)"
+            ng-click="page.toggle(var.name)"></span>
           {{var.narrative}}
         </div>
-        <div class="panel panel-default" ng-if="comp.isExpanded(var.name)"
+        <div class="panel panel-default" ng-if="page.isExpanded(var.name)"
         style="margin-bottom:0px;">
         <div class="panel-body">
           <dl class="dl-horizontal tight" style="margin-bottom:0px;">
@@ -80,3 +75,8 @@ a model input, or we haven't yet implemented chaining for it.
     </tr>
   </table>
 </div>
+
+
+
+</div>
+</ar-mainpage>

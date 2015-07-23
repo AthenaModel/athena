@@ -42,7 +42,7 @@ in this comparison.
       <td ng-show="category === 'all'">{{comp.catName(output.category)}}</td>
       <td>
         <span class="text-primary">
-          <a href ng-click="page.setChain(output.name)">
+          <a ng-href="{{'#/chain/' + compid + '/' + output.name}}">
             {{output.name}} 
             <span ng-show="output.numInputs" class="badge">{{output.numInputs}}</span>
           </a>

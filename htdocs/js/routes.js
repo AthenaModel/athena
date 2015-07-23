@@ -15,6 +15,14 @@ angular.module('arachne')
         templateUrl: 'templates/pages/cases/index.html'
     })
 
+    .when('/chain/:caseId1/:varname', {
+        templateUrl: 'templates/pages/chain/index.html'
+    })
+
+    .when('/chain/:caseId1/:caseId2/:varname', {
+        templateUrl: 'templates/pages/chain/index.html'
+    })
+
     .when('/comparisons', {
         templateUrl: 'templates/pages/comparisons/index.html'
     })

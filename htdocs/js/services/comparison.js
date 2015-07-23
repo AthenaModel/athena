@@ -81,7 +81,7 @@ function($http, $q, Arachne, Entities) {
     service.requestChain = function(compId, varname) {
         Arachne.request('comp-chain', '/comparison/chain.json', {
             comp: compId,
-            varname: varname 
+            varname: varname
         }).then(function (stat) {
             if (stat.ok) {
                 chains[compId] = chains[compId] || {}
@@ -266,7 +266,6 @@ function($http, $q, Arachne, Entities) {
     // TBD: caseId1, caseId2 instead of compId?
 
     service.wrapper = function(compId) {
-        // TBD: Do we use output()?
         return {
             categories: service.categories,
             catName:    service.catName,
@@ -280,6 +279,36 @@ function($http, $q, Arachne, Entities) {
             output:  function(name) { return service.output(compId, name); }
         };
     }
+
+    //----------------------------------------------------------
+    // Chain wrapper
+
+    // chainWrapper(compId,varname)
+    //
+    // compId   - A comparison ID, e.g., 'case00/case01'
+    // varname  - A variable name included in the comparison.
+    //
+    // Returns a wrapper object for this comparison ID and chain variable.
+
+    service.chainWrapper = function(compId,varname) {
+        var w = {
+            categories: service.categories,
+            catName:    service.catName,
+            meta:    function()     { return service.get(compId);          },
+            case1:   function()     { return service.case1(compId);        },
+            case2:   function()     { return service.case2(compId);        },
+            size:    function()     { return service.size(compId);         },
+            outputs: function()     { return service.outputs(compId);      },
+            catSize: function(cat)  { return service.catSize(compId, cat); },
+            byCat:   function(cat)  { return service.byCat(compId, cat);   },
+            output:  function(name) { return service.output(compId, name); }
+        };
+
+        w.items = function() { return service.chain(compId, varname); }
+
+        return w;
+    }
+
 
     //----------------------------------------------------------
     // Helpers

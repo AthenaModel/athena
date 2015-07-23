@@ -39,10 +39,6 @@ Select the tab to choose the category of outputs to display.
         <span class="badge">{{comp.size()}}</span>
     </a>
   </li>
-
-  <li ng-class="tab.active('chain')">
-    <a href ng-click="tab.set('chain')">Chain</a>
-  </li>
 </ul>
 </nav>
 
@@ -59,12 +55,6 @@ Select the tab to choose the category of outputs to display.
                  compid="{{compId}}" 
                  category="all">
 </ar-comp-outputs>
-
-<ar-comp-chain ng-show="tab.active('chain')"
-               page="page"
-               compid="{{compId}}" 
-               varname="{{page.chain}}">
-</ar-comp-chain>
 
 </div>
 </ar-mainpage>
