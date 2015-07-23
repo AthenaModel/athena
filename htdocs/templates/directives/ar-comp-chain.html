@@ -1,7 +1,9 @@
 <!-- ar-comp-chain element -->
 
-<h2>{{header}} <small>{{page.chain}}</h2>
+<h2>Chain: {{page.chain}}</h2>
+
 <div>
+  <hr/>
   <form class="form-inline" style="margin-bottom:15px">
     <div class="form-group">
       <label for="varname" class="control-label">Variable:</label>
@@ -29,7 +31,7 @@
   </form>
 <div>
 
-<p ng-if="!comp.size()">
+<p ng-if="page.chain != '' && !comp.size()">
 Variable <b>{{page.chain}}</b> has no significant inputs.  Either it is
 a model input, or we haven't yet implemented chaining for it.
 </p>
@@ -38,8 +40,6 @@ a model input, or we haven't yet implemented chaining for it.
 
   <table class="table auto-width">
     <tr>
-      <th>ID</th>
-      <th>Parent</th>
       <th>Output</th>
       <th>Type</th>
       <th>Narrative</th>
@@ -47,17 +47,35 @@ a model input, or we haven't yet implemented chaining for it.
     </tr>
 
     <tr ng-repeat="var in comp.visibleItems()">
-      <td>{{var.id}}</td>
-      <td>{{var.parent}}</td>
       <td>
         <span class="text-primary" ng-class="var.class">
-          {{var.name}}
+          {{var.name}} 
+          <span ng-show="var.numInputs" class="badge">{{var.numInputs}}</span>
         </span>
       </td>
       <td><span class="label label-primary">{{var.type}}</span></td>
       <td>
-        {{var.narrative}}
-      </td>
+        <div>
+          <span class="glyphicon" ng-class="comp.toggleClass(var.name)"
+            ng-click="comp.toggle(var.name)"></span>
+          {{var.narrative}}
+        </div>
+        <div class="panel panel-default" ng-if="comp.isExpanded(var.name)"
+        style="margin-bottom:0px;">
+        <div class="panel-body">
+          <dl class="dl-horizontal tight" style="margin-bottom:0px;">
+            <dt>Case A:</dt>
+            <dd>{{var.fancy1}}</dd>
+            <dt>Case B:</dt>
+            <dd>{{var.fancy2}}</dd>
+            <dt ng-if="var.delta">Delta:</dt>
+            <dd ng-if="var.delta" ng-bind-html="var.delta"></dd>
+            <dt ng-if="var.context">Context:</dt>
+            <dd ng-if="var.context" ng-bind-html="var.context"></dd>
+          </dl>
+        </div>
+      </div>
+    </td>
       <td class="right">{{var.score | number:2}}</td>
     </tr>
   </table>

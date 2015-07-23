@@ -118,7 +118,6 @@ function($http, $q, Arachne, Entities) {
         // NEXT, build up the chain.
         var chain = [];
         var next  = raw[0].name;
-        console.log('Building chain for ' + next);
         ExtendChain(chain, null, 0, ndx, next);
 
         return chain;
@@ -126,6 +125,7 @@ function($http, $q, Arachne, Entities) {
 
     var ExtendChain = function ExtendChain(chain, parent, level, ndx, next) {
         var diff = ndx[next];
+        diff.numInputs = Object.keys(diff.inputs).length;
 
         // FIRST, copy the inputs into an array, and annotate them.
         var inputs = [];
@@ -244,6 +244,18 @@ function($http, $q, Arachne, Entities) {
         return result.sort();
     }
 
+    service.output = function(compId, varname) {
+        var outputs = service.outputs(compId);
+
+        for (var i = 0; i < outputs.length; i++) {
+            if (outputs[i].name === varname) {
+                return outputs[i];
+            }
+        }
+
+        return null;
+    }
+
     //----------------------------------------------------------
     // Comparison wrapper
 
@@ -274,6 +286,7 @@ function($http, $q, Arachne, Entities) {
     // Helpers
 
     var PopulateIndices = function() {
+        // TBD: add byName!
         byCat = {};
 
         for (var i = 0; i < comps.all().length; i++) {
@@ -286,6 +299,8 @@ function($http, $q, Arachne, Entities) {
             }
 
             for (var j = 0; j < comp.outputs.length; j++) {
+                var output = comp.outputs[j];
+                output.numInputs = Object.keys(output.inputs).length;
                 byCat[comp.id][comp.outputs[j].category].push(j);
             }
         }

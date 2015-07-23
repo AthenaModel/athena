@@ -1,6 +1,9 @@
 # TODO.md - Athena TODO List
 
 - Causality Chaining
+  - Need to display detail for chain roots.
+    - Possibly, just make them the top of the outline.
+  - Need to indicate which variables have inputs and which don't.
   - Need better narratives for drivers; the driver isn't identified clearly.
   - Need to move comparison(n)'s "A" values to compdb(n)?
   - Might want to add "trivial" checks to some of the vardiff types, based

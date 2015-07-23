@@ -19,6 +19,11 @@ body {
   margin-left: 2em;
 }
 
+/* For a little extra space */
+.padleft {
+  margin-left: 5px;
+}
+
 /* For sidebar column */
 .sidebar {
    border-right: 1px solid black; 
@@ -29,11 +34,6 @@ body {
 /* For <p> elements at the top of a box. */
 p.top {
     margin-top: 10px;
-}
-
-/* For a little extra space */
-.padleft {
-  margin-left: 5px;
 }
 
 /* DD elements need a little extra space below. */

@@ -8,6 +8,7 @@ in this comparison.
 </p>
 
 <div ng-if="comp.size()">
+  <hr/>
   <form class="form-inline" style="margin-bottom:15px">
     <div class="form-group">
       <label for="siglevel" class="control-label">Significance Level:</label>
@@ -31,8 +32,8 @@ in this comparison.
       <th ng-show="category === 'all'">
         <a href ng-click="comp.sortby('category')">Category</a>
       </th>
-      <th><a href ng-click="comp.sortby('type')">Type</a></th>
       <th><a href ng-click="comp.sortby('name')">Output</a></th>
+      <th><a href ng-click="comp.sortby('type')">Type</a></th>
       <th><a href ng-click="comp.sortby('narrative')">Narrative</a></th>
       <th><a href ng-click="comp.sortby('score',true)">Score</a></th>
     </tr>
@@ -42,7 +43,8 @@ in this comparison.
       <td>
         <span class="text-primary">
           <a href ng-click="page.setChain(output.name)">
-            {{output.name}}
+            {{output.name}} 
+            <span ng-show="output.numInputs" class="badge">{{output.numInputs}}</span>
           </a>
         </span>
       </td>

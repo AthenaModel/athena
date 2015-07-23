@@ -5,19 +5,17 @@ angular.module("arachne")
         templateUrl: "templates/directives/ar-comp-chain.html",
         scope: {
             page:     "=page",
-            header:   "@",
             compid:   "@"
         },
         controller: ['$scope', 'Comparison', function($scope, Comparison) {
+            var expanded = [];
+
             // Significance level
             this.siglevel = 20;
 
             this.levels = [100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 
                             50, 45, 40, 35, 30, 25, 20, 15, 10,  5, 0];
             
-            $scope.header = $scope.header || "Chain: " + $scope.page.chain;
-
-
             // Chain Data
             this.items = function() {
                 return Comparison.chain($scope.compid, $scope.page.chain);
@@ -52,8 +50,6 @@ angular.module("arachne")
                 return result;
             }
 
-
-
             this.size = function() {
                 return this.items().length;
             }
@@ -61,6 +57,45 @@ angular.module("arachne")
             this.visibleSize = function() {
                 return this.visibleItems().length;
             }
+
+            this.output = function() {
+                if ($scope.page.chain) {
+                    if (saved === null || $scope.page.chain !== saved.name) {
+                        saved = Comparison.output($scope.compid, $scope.page.chain);
+                    }
+                } else {
+                    saved = null;
+                }
+
+                return saved;
+            }
+
+            //--------------------------------------------
+            // Expanding items
+
+            this.isExpanded = function(item) {
+                return expanded.indexOf(item) !== -1;
+            }
+
+            this.toggleClass = function(item) {
+                if (this.isExpanded(item)) {
+                    return "glyphicon-triangle-bottom"
+                } else {
+                    return "glyphicon-triangle-right"
+                }
+            }
+
+
+            this.toggle = function(item) {
+                var ndx = expanded.indexOf(item);
+
+                if (ndx === -1) {
+                    expanded.push(item);
+                } else {
+                    expanded.splice(ndx,1);
+                }
+            }
+
         }],
         controllerAs: 'comp'
     };
