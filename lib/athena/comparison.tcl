@@ -391,7 +391,6 @@ snit::type ::athena::comparison {
         } else {
             switch -exact -- $normfunc {
                 maxabs  { set normalizer [$self maxabs $values] }
-                maxmax  { set normalizer [$self maxmax $values] }
                 maxsum  { set normalizer [$self maxsum $values] }
                 default { error "Unknown normfunc: \"$normfunc\""}
             }
@@ -435,19 +434,6 @@ snit::type ::athena::comparison {
         }
 
         return [tcl::mathfunc::max {*}$list]
-    }
-
-    # maxmax values
-    #
-    # values    - A flat list of val1 val2 pairs
-    #
-    # Finds the maximum value.  The result is used
-    # for normalizing scores of a given type.
-
-    method maxmax {values} {
-        lappend values 0.0 ;# So we know it isn't empty.
-
-        return [tcl::mathfunc::max {*}$values]
     }
 
     # maxsum values

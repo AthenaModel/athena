@@ -213,11 +213,6 @@ objects are included in the list.<p>
 Given a flat list of variable <i x1 x2> values, returns the maximum 
 absolute value in the list.<p>
 
-<defitem maxmax {<i obj> maxmax <i values>}>
-
-Given a flat list of variable <i x1 x2> values, returns the maximum 
-value in the list.<p>
-
 <defitem maxsum {<i obj> maxsum <i values>}>
 
 Given a flat list of variable <i x1 x2> values, returns the maximum 
@@ -238,8 +233,8 @@ which may take one of the following values:<p>
 
 <ul>
 <li> A constant number.
-<li> A symbol, <b><iref maxabs></b>, <b><iref maxmax></b>, or 
-     <b><iref maxsum></b>, which indicates that the named subcommand is
+<li> A symbol, <b><iref maxabs></b> or <b><iref maxsum></b>, 
+     which indicates that the named subcommand is
      used to compute the normalizer from the <i values>.
 </ul><p>
 

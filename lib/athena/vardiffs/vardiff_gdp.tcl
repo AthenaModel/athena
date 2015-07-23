@@ -16,7 +16,7 @@ oo::class create ::athena::vardiff::gdp {
     superclass ::athena::vardiff
     meta type     gdp
     meta category economic
-    meta normfunc maxmax
+    meta normfunc maxabs
 
     constructor {comp_ val1_ val2_} {
         next $comp_ "" $val1_ $val2_
