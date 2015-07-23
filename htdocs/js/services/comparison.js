@@ -118,6 +118,7 @@ function($http, $q, Arachne, Entities) {
         // NEXT, build up the chain.
         var chain = [];
         var next  = raw[0].name;
+        console.log('Building chain for ' + next);
         ExtendChain(chain, null, 0, ndx, next);
 
         return chain;
@@ -126,16 +127,35 @@ function($http, $q, Arachne, Entities) {
     var ExtendChain = function ExtendChain(chain, parent, level, ndx, next) {
         var diff = ndx[next];
 
+        // FIRST, copy the inputs into an array, and annotate them.
+        var inputs = [];
+
         for (name in diff.inputs) {
             var input = ndx[name];
-            input.id     = chain.length;
             input.parent = parent;
             input.level  = level;
             input.class  = "indent"+level;
             input.score  = diff.inputs[name];
-            chain.push(input);
+            inputs.push(input);
+        }
 
-            ExtendChain(chain, input.id, level+1, ndx, name);
+        // NEXT, sort the array in decreasing order by score.
+        inputs.sort(function(a, b) {
+            if (a.score < b.score) {
+                return 1;
+            } else if (a.score > b.score) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+
+        // NEXT, add the array to the chain, finding child inputs.
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].id = chain.length;
+            chain.push(inputs[i]);
+
+            ExtendChain(chain, inputs[i].id, level+1, ndx, inputs[i].name);
         }
     }
 
