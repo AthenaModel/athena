@@ -24,6 +24,16 @@ function($routeParams, $scope, Comparison, Tab) {
     $scope.comp     = Comparison.wrapper(this.compId);
 
     //-----------------------------------------------------
+    // Chain Display
+
+    this.chain = '';
+
+    this.setChain = function(varname) {
+        this.chain = varname;
+        $scope.tab.set('chain');
+    }
+
+    //-----------------------------------------------------
     // Initialization
 
     if (!$scope.tab.get()) {

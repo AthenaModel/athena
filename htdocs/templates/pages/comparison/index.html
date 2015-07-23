@@ -40,25 +40,32 @@ Select the tab to choose the category of outputs to display.
     </a>
   </li>
 
-  <li ng-class="tab.active('detail')">
-    <a href ng-click="tab.set('detail')">Detail</a>
+  <li ng-class="tab.active('chain')">
+    <a href ng-click="tab.set('chain')">Chain</a>
   </li>
 </ul>
 </nav>
 
 <div ng-repeat="cat in comp.categories()">
 <ar-comp-outputs ng-show="tab.active(cat)"
+                 page="page"
                  compid="{{compId}}" 
                  category="{{cat}}">
 </ar-comp-outputs>
 </div>
 
 <ar-comp-outputs ng-show="tab.active('all')"
+                 page="page"
                  compid="{{compId}}" 
-                 category="all"></ar-comp-outputs>
+                 category="all">
+</ar-comp-outputs>
 
-<div ng-show="tab.active('detail')"  
-     ng-include="'/templates/pages/comparison/detail.html'"></div>
+<ar-comp-chain ng-show="tab.active('chain')"
+               page="page"
+               header="Causality Chain"
+               compid="{{compId}}" 
+               varname="{{page.chain}}">
+</ar-comp-chain>
 
 </div>
 </ar-mainpage>

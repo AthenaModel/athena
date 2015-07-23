@@ -4,6 +4,7 @@ angular.module("arachne")
         restrict: "E",
         templateUrl: "templates/directives/ar-comp-outputs.html",
         scope: {
+            page:     "=page",
             header:   "@",
             compid:   "@",
             category: "@",
