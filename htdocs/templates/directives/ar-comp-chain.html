@@ -1,17 +1,18 @@
 <!-- ar-comp-chain element -->
 
-<h2>{{header}}</h2>
+<h2>{{header}} <small>{{page.chain}}</h2>
 <div>
   <form class="form-inline" style="margin-bottom:15px">
     <div class="form-group">
-      <label for="varname control-label">Variable:</label>
+      <label for="varname" class="control-label">Variable:</label>
       <select id="varname" class="form-control input-sm" 
-              ng-model="comp.varname"
-              ng-options="name for name in comp.varnames()">
+              ng-model="page.chain"
+              ng-options="name for name in page.outputNames()"
+              ng-change="page.requestChain(page.chain)">
       </select>
     </div>
     <div class="form-group">
-      <label for="siglevel control-label">Significance Level:</label>
+      <label for="siglevel" class="control-label">Significance Level:</label>
       <select id="siglevel" class="form-control input-sm" 
               ng-model="comp.siglevel"
               ng-options="level for level in comp.levels">
@@ -23,26 +24,31 @@
     </div>
     <div class="form-group">
       <label class="control-label">Significant Inputs:</label>
-      <p class="form-control-static">{{comp.sigSize()}}</p>
+      <p class="form-control-static">{{comp.visibleSize()}}</p>
     </div>
   </form>
 <div>
 
 <p ng-if="!comp.size()">
-Variable <b>{{varname}}</b> has no significant inputs.
+Variable <b>{{page.chain}}</b> has no significant inputs.  Either it is
+a model input, or we haven't yet implemented chaining for it.
 </p>
 
 <div ng-if="comp.size()">
 
   <table class="table auto-width">
     <tr>
-      <th><a href>Output</a></th>
-      <th><a href>Type</a></th>
-      <th><a href>Narrative</a></th>
-      <th><a href>Score</a></th>
+      <th>ID</th>
+      <th>Parent</th>
+      <th>Output</th>
+      <th>Type</th>
+      <th>Narrative</th>
+      <th>Score</th>
     </tr>
 
-    <tr ng-repeat="var in comp.sigItems()">
+    <tr ng-repeat="var in comp.visibleItems()">
+      <td>{{var.id}}</td>
+      <td>{{var.parent}}</td>
       <td>
         <span class="text-primary" ng-class="var.class">
           {{var.name}}

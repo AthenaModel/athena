@@ -118,22 +118,24 @@ function($http, $q, Arachne, Entities) {
         // NEXT, build up the chain.
         var chain = [];
         var next  = raw[0].name;
-        ExtendChain(chain, 0, ndx, next);
+        ExtendChain(chain, null, 0, ndx, next);
 
         return chain;
     };
 
-    var ExtendChain = function ExtendChain(chain, level, ndx, next) {
+    var ExtendChain = function ExtendChain(chain, parent, level, ndx, next) {
         var diff = ndx[next];
 
         for (name in diff.inputs) {
             var input = ndx[name];
-            input.level = level;
-            input.class = "indent"+level;
-            input.score = diff.inputs[name];
+            input.id     = chain.length;
+            input.parent = parent;
+            input.level  = level;
+            input.class  = "indent"+level;
+            input.score  = diff.inputs[name];
             chain.push(input);
 
-            ExtendChain(chain, level+1, ndx, name);
+            ExtendChain(chain, input.id, level+1, ndx, name);
         }
     }
 

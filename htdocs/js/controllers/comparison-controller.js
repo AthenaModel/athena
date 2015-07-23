@@ -30,7 +30,20 @@ function($routeParams, $scope, Comparison, Tab) {
 
     this.setChain = function(varname) {
         this.chain = varname;
+        this.requestChain(varname);
         $scope.tab.set('chain');
+    }
+
+    this.requestChain = function(varname) {
+        if (varname) {
+            Comparison.requestChain(this.compId, varname);
+        }
+    }
+
+
+    // Significant outputs
+    this.outputNames = function() {
+        return Comparison.outputNames(this.compId);                
     }
 
     //-----------------------------------------------------
