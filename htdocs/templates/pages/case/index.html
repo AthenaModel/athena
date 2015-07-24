@@ -1,4 +1,4 @@
-<ar-mainpage sidebar="/templates/pages/case/sidebar.html">
+<ar-page page="page">
 <h1>Case {{page.caseId}}: {{page.metadata.longname}}</h1>
 
 <div class="panel panel-default">
@@ -68,4 +68,4 @@
 <div ng-show="tab.active('parms')"  
      ng-include="'/templates/pages/case/parmdb.html'"></div>
 
-</ar-mainpage>
+</ar-page>

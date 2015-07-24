@@ -16,15 +16,13 @@ oo::class create ::athena::vardiff::sat {
     superclass ::athena::vardiff
     meta type     sat
     meta category social
+    meta normfunc 100.0
+    meta afactors {
+        driversat 1.0
+    }
 
     constructor {comp_ val1_ val2_ g_ c_} {
         next $comp_ [list g $g_ c $c_] $val1_ $val2_
-    }
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method format {val} {
@@ -39,10 +37,6 @@ oo::class create ::athena::vardiff::sat {
         return {&minus;100.0 &le; <i>x</i> &le; &plus;100.0}
     }
 
-    method score {} {
-        my format [next]
-    }
-
     method narrative {} {
         return [my DeltaNarrative \
             "Satisfaction of group [my key g] with [my key c]" \
@@ -52,7 +46,7 @@ oo::class create ::athena::vardiff::sat {
     #-------------------------------------------------------------------
     # Input Differences
 
-    method FindDiffs {} {
+    method FindInputs {} {
         variable comp
 
         set g [my key g]
@@ -60,10 +54,10 @@ oo::class create ::athena::vardiff::sat {
 
         # FIRST, get the contributions
         foreach {drid val1 val2} [$comp contribs sat $g $c] {
-            my diffadd driversat $val1 $val2 $g $c $drid
+            my AddInput driversat $val1 $val2 $g $c $drid
         }
 
-        # NEXT, for SFT only, get security changes.
-        # TBD: No vardiff for group security yet.
+        # NEXT, SFT depends on security as well (natural level)...but
+        # we should managed that as a pseudo-driver.
     }
 }

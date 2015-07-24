@@ -16,13 +16,11 @@ oo::class create ::athena::vardiff::drivervrel {
     superclass ::athena::vardiff
     meta type     drivervrel
     meta category political
+    meta normfunc maxabs
+    meta leaf     1
 
     constructor {comp_ val1_ val2_ g_ a_ drid_} {
         next $comp_ [list g $g_ a $a_ drid $drid_] $val1_ $val2_
-    }
-
-    method score {} {
-        my format [next]
     }
 
     method format {val} {
@@ -33,15 +31,9 @@ oo::class create ::athena::vardiff::drivervrel {
         return {<i>x</i> &ge; 0.0}
     }
 
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
-    }
-
     method narrative {} {
         return [my DeltaNarrative \
-            "Total contribution to group [my key g]'s relationship with actor [my key a] by this driver" \
+            "Total contribution by driver [my key drid] to group [my key g]'s relationship with actor [my key a]"  \
             "satisfaction points"]
     }
 }

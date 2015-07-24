@@ -5,6 +5,12 @@ angular.module('arachne')
 .controller('DebugController', ['$http', function($http) {
     var controller = this;
 
+    // Template URL
+    this.template = function(suffix) {
+        return '/templates/pages/debug' + suffix;
+    }
+
+
     //-------------------------------------------
     // Tab Management
 

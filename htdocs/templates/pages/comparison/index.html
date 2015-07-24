@@ -1,70 +1,103 @@
-<ar-mainpage sidebar="/templates/pages/comparison/sidebar.html">
-<div ng-controller="ComparisonController as page">
+<ar-page page="page">
 
-<section>
-<h1>Comparison: {{comp.meta().longname}}</h1>
+<h1>Comparison: {{page.meta().longname}}</h1>
 
 <div class="panel panel-default">
   <div class="panel-body">
     <div>
-      <b>Case A:</b> {{comp.case1().longname}} ({{comp.meta().case1}})
-      @ {{comp.meta().week1}} ({{comp.meta().t1}})
+      <b>Case A:</b> {{page.case1().longname}} ({{page.meta().case1}})
+      @ {{page.meta().week1}} ({{page.meta().t1}})
     </div>
     <div>
-      <b>Case B:</b> {{comp.case2().longname}} ({{comp.meta().case2}})
-      @ {{comp.meta().week2}} ({{comp.meta().t2}})
+      <b>Case B:</b> {{page.case2().longname}} ({{page.meta().case2}})
+      @ {{page.meta().week2}} ({{page.meta().t2}})
     </div>
   </div>
 </div>
-</section>
 <hr>
 
 <h2>Significant Outputs</h2>
 
-<ar-tbd-list>
-<li>Clicking on a variable name (or, perhaps, on the row itself) should
-    retrieve the chain and display it in the Detail tab.</li>
-<li>Use ng-repeat on tabs.</li>
-</ar-tbd-list>
-
-<p class="text-info">
+<p class="text-info" style="margin-bottom:2ex">
 The following outputs were found to be significant in this comparison.
-Select the tab to choose the category of outputs to display.
+Select the tab to choose the category of outputs to display.  Click
+on items marked by "<span class="glyphicon glyphicon-link"></span>"
+to follow the causality chain back through the models.
 </p>
 
+<!-- Tabs -->
 <nav>
 <ul class="nav nav-tabs">
-  <li ng-repeat="cat in comp.categories()" ng-class="tab.active(cat)">
+  <li ng-repeat="cat in page.categories()" ng-class="tab.active(cat)">
     <a href ng-click="tab.set(cat)">
-      {{comp.catName(cat)}} <span class="badge">{{comp.catSize(cat)}}</span>
+      {{page.catName(cat)}} <span class="badge">{{page.catSize(cat)}}</span>
     </a>
-  </li>
-
-  <li ng-class="tab.active('all')">
-    <a href ng-click="tab.set('all')">All
-        <span class="badge">{{comp.size()}}</span>
-    </a>
-  </li>
-
-  <li ng-class="tab.active('detail')">
-    <a href ng-click="tab.set('detail')">Detail</a>
   </li>
 </ul>
 </nav>
 
-<div ng-repeat="cat in comp.categories()">
-<ar-comp-outputs ng-show="tab.active(cat)"
-                 compid="{{compId}}" 
-                 category="{{cat}}">
-</ar-comp-outputs>
+<h3>{{page.catName()}} Outputs</h3>
+
+<hr/>
+
+<!-- Significance Level Form -->
+<form class="form-inline" style="margin-bottom:15px">
+  <div class="form-group">
+    <label for="siglevel" class="control-label">Significance Level:</label>
+    <select id="siglevel" class="form-control input-sm" 
+      ng-model="page.siglevel"
+      ng-options="level for level in page.levels">
+    </select>
+  </div>
+  <div class="form-group">
+    <label for "sigsize" class="control-label padleft">Significant Outputs:</label>
+    <p id="sigsize" class="form-control-static">{{page.sigSize()}}</p>
+  </div>
+  <div class="form-group">
+    <label for="size" class="control-label padleft">Total Outputs:</label>
+    <p id="size" class="form-control-static">{{page.catSize()}}</p>
+  </div>
+</form>
+
+<p ng-hide="page.catSize()">
+No <span ng-show="page.cat() !== 'all'">{{page.catName() | lowercase}}</span>
+outputs differ in non-trivial ways in this comparison.
+</p>
+
+<div ng-show="page.catSize()">
+  <table class="table auto-width">
+    <tr>
+      <th ng-show="page.cat() === 'all'">
+        <a href ng-click="page.sortby('category')">Category</a>
+      </th>
+      <th><a href ng-click="page.sortby('name')">Output</a></th>
+      <th><a href ng-click="page.sortby('narrative')">Narrative</a></th>
+      <th><a href ng-click="page.sortby('score')">Score</a></th>
+    </tr>
+
+    <tr ng-repeat="output in page.sigOutputs() | orderBy:sortby:reverse">
+      <td ng-show="page.cat() === 'all'">
+        <span class="label label-primary">
+          {{page.catName(output.category)}}
+        </span>
+      </td>
+      <td>
+        <span ng-if="output.leaf" class="text-primary">
+        {{output.name}} 
+        </span>
+        <span ng-if="!output.leaf" class="text-primary">
+          <a ng-href="{{'#/chain/' + page.compId + '/' + output.name}}">
+            {{output.name}} 
+            <span class="glyphicon glyphicon-link"></span>
+          </a>
+        </span>
+      </td>
+      <td><ar-varbox vardiff="output"></ar-varbox></td>
+    <td class="right">{{output.score | number:2}}</td>
+  </tr>
+  </table>
+
 </div>
 
-<ar-comp-outputs ng-show="tab.active('all')"
-                 compid="{{compId}}" 
-                 category="all"></ar-comp-outputs>
 
-<div ng-show="tab.active('detail')"  
-     ng-include="'/templates/pages/comparison/detail.html'"></div>
-
-</div>
-</ar-mainpage>
+</ar-page>

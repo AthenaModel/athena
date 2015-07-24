@@ -109,6 +109,20 @@ snit::type comp {
         expr {$id in $comps(ids)}
     }
 
+    # validate id
+    #
+    # Validates the comp id.
+
+    typemethod validate {id} {
+        if {![comp exists $id]} {
+            throw INVALID "Unknown comparison: \"$id\""
+        }
+
+        return $id
+    }
+
+
+
     # metadata id
     #
     # id - A comparison ID
@@ -135,7 +149,7 @@ snit::type comp {
 
     typemethod huddle {id} {
         set cdict [huddle compile dict [$type metadata $id]]
-        huddle set cdict outputs [$type with $id diffs huddle -toplevel]
+        huddle set cdict outputs [$type with $id diffs huddle]
         return $cdict
     }    
 

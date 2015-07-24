@@ -16,15 +16,13 @@ oo::class create ::athena::vardiff::vrel {
     superclass ::athena::vardiff
     meta type     vrel
     meta category political
+    meta normfunc 1.0
+    meta afactors {
+        drivervrel 1.0
+    }
 
     constructor {comp_ val1_ val2_ g_ a_} {
         next $comp_ [list g $g_ a $a_] $val1_ $val2_
-    }
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method format {val} {
@@ -39,14 +37,15 @@ oo::class create ::athena::vardiff::vrel {
         return {&minus;1.0 &le; <i>x</i> &le; &plus;1.0}
     }
 
-    method score {} {
-        my format [my delta]
+    method narrative {} {
+        return [my DeltaNarrative \
+            "Vertical relationship of group [my key g] with actor [my key a]"]
     }
 
     #-------------------------------------------------------------------
     # Input Differences
 
-    method FindDiffs {} {
+    method FindInputs {} {
         variable comp
 
         set g [my key g]
@@ -54,12 +53,8 @@ oo::class create ::athena::vardiff::vrel {
 
         # FIRST, get the contributions
         foreach {drid val1 val2} [$comp contribs vrel $g $a] {
-            my diffadd drivervrel $val1 $val2 $g $a $drid
+            my AddInput drivervrel $val1 $val2 $g $a $drid
         }
     }
 
-    method narrative {} {
-        return [my DeltaNarrative \
-            "Vertical relationship of group [my key g] with actor [my key a]"]
-    }
 }

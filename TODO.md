@@ -1,60 +1,26 @@
 # TODO.md - Athena TODO List
 
 - Causality Chaining
-  - Implement new-style input scoring.
-  - Compute and return chains
-  - Chain vardiffs don't get added to comparison.
-  - Continue to flesh out input tree.
+  - Vardiffs need better context strings, or perhaps links to help.
+  - Need to add "trivial" checks to some of the vardiff types, based
+    on limits in compdb(n); but the limits that are there now are OBE.
+    - Could do this just by pruning based on type-specific "score" or "delta".
+  - Need to move comparison(n)'s "A" values to compdb(n)?
+  - Continue to flesh out chains.
+  - Vardiffs need tests.
 - Angular Web App
-  - Page Names:
-    - DONE! #/cases, cases-controller
-    - #/case/:caseid, case-controller
-    - #/comparisons, comparisons-controller
-    - #/comparison/:case1[:/case2], comparison-controller
-  - Comparisons
-    - DONE! Comparison records should always include the list of significant
-      outputs.
-    - DONE! `comp huddle` returns one comparison (with outputs) as a huddle
-      record.
-    - DONE! /comparison/index.json returns an array of comparisons with 
-      significant outputs.
-    - DONE! /comparison/new.json returns `['OK',{comparison...}]` instead
-      of `['OK',{metadata...},[outputs...]]`.
-    - New concept: no public comparison IDs
-      - Internal comparison ID is "$case1[-$case2]".
-      - Comparisons are cacheable but not persistent.
-      - Comparisons are requested given one or two case IDs.
-      - Comparisons are cached by the server, and deleted automatically
-        when an underlying case changes, as now.
-        - No public remove operation
-      - A comparison can be requested via /comparison/new.json; the result
-        is the comparison record is returned, which is computed if necessary.
-      - The cached comparisons are returned in their entirety by 
-        /comparison/index.json.
-    - Web app URLs: 
-      - #/comparison/:case1
-        - Requests a comparison of case1 with itself, and displays whatever
-          is available.
-      - #/comparison/:case1/:case2
-        - Requests a comparison of case A with case B, and displays whatever
-          is available.
-    - Responsibilities of the Comparison service:
-      - Refreshes cached comparison data on demand.
-      - Provides Comparison.request(case1, [case2]).then().
-      - comparisons-controller provides list of comparisons, plus a "Go"
-        form for going to a specific /comparison/:case1/:case2.
-        - Gets list of data from Comparison service.
-      - comparison-controller asks comparison.js for the comparison, and displays
-        whatever is available.
-      - On demand, comparison-controller asks comparison.js for chain, and
-        displays whatever is available.
+  - See if we can pass "page" to ar-mainpage, which includes both
+    templates.
+  - Various pages need to do something better when the route params are
+    empty.
   - Clean up Arachne URLs, e.g., "/scenario/{case}/nbhoods/index.json"
     by "/scenario/{case}/nbhood/{n}/index.json".  Both should be "nbhoods"
     or "nbhood".
   - Should the scenario_*.json modules be merged, now that HTML is being
     removed?
   - The case data management should be abstracted from CaseController
-    into a case.js service following the same pattern as comp.js.
+    into a case.js service following the same pattern as comparison.js
+    -   Which itself needs some help.
   - Case page: 
     - Sanity Check!
     - Add a tab for sending orders to a case.

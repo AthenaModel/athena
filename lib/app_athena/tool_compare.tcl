@@ -36,6 +36,8 @@ tool define COMPARE {
 
     -format dump|json  - Output format
     -chain varname     - Variable name to explain.
+    -siglevel level    - A minimum score from 0.0 to 100.0.  Defaults 
+                         to 0.0.
     -set parm=value    - Set a compdb(5) parameter value.
 } {
     #-------------------------------------------------------------------
@@ -62,8 +64,9 @@ tool define COMPARE {
 
         # options
         array set opts {
-            -format dump
-            -chain   {}
+            -format   dump
+            -chain    {}
+            -siglevel 0.0
         }
 
         athena compdb init
@@ -84,6 +87,10 @@ tool define COMPARE {
                     athena compdb validate $parm
                     athena compdb set $parm $value
                     puts "$parm = $value"
+                }
+                -siglevel {
+                    set opts(-siglevel) [lshift argv]
+                    siglevel validate $opts(-siglevel)
                 }
             }            
         } on error {result} {
@@ -128,15 +135,20 @@ tool define COMPARE {
 
 
         # NEXT, output to console.
-        puts [$comp diffs $opts(-format)]
+        if {$opts(-format) eq "dump"} {
+            puts [$comp diffs dump -siglevel $opts(-siglevel)]
+        } else {
+            puts [$comp diffs $opts(-format)]
+        }
 
         # NEXT, dump chain.
         if {$opts(-chain) ne ""} {
-            puts "\nChain for: $opts(-chain)\n"
             if {![$comp exists $opts(-chain)]} {
                 puts "Variable $opts(-chain) is not signficant"
             } else {
-                puts [$comp chain dump $opts(-chain)]
+                puts "\nVariables in chain for: $opts(-chain)\n"
+                puts [$comp chain dump $opts(-chain) \
+                        -siglevel $opts(-siglevel)]
             }
         }
 
@@ -176,6 +188,7 @@ tool define COMPARE {
     }
 }
 
-
+# Validation types
+snit::double siglevel -min 0.0 -max 100.0
 
 

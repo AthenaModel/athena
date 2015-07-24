@@ -19,17 +19,17 @@ oo::class create ::athena::vardiff::nbinfluence {
     superclass ::athena::vardiff
     meta type     nbinfluence
     meta category political
+    meta normfunc 1.0
+    meta leaf     1
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_
     }
 
-    method IsSignificant {} {
-        expr {[my fmt1] ne [my fmt2]}
-    }
-
-    method score {} {
-        return 100.0
+    method trivial {} {
+        # Non-trivial if the actor ranking by influence has changed in the
+        # neighborhood.
+        expr {[my fmt1] eq [my fmt2]}
     }
 
     method format {val} {
@@ -53,13 +53,14 @@ oo::class create ::athena::vardiff::nbinfluence {
         return [join $result ", "] 
     }
 
-    method delta {} {}  ;# Delta doesn't make sense for this vartype.
+    method delta {} {
+        # At present, any difference in rank ordering is important.
+        return 1.0
+    }  
 
     method context {} {
         return {&minus;1.0 &le; <i>x</i> &le; &plus;1.0}
     }
-
-
 
     method narrative {} {
         append result \

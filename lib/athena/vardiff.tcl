@@ -11,16 +11,26 @@
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff {
-    meta type *          ;# Type is undefined; subclasses should override.
-    meta category "???"  ;# PMESII category is undefined; subclasses should
-                          # override.
+    meta type *            ;# Type is undefined; subclasses should override.
+    meta category "???"    ;# PMESII category is undefined; subclasses 
+                            # should override.
+    meta normfunc 1.0      ;# Default normalization function
+    meta afactors {}       ;# A factors, used to relate scores of different 
+                            # types
+    meta leaf     0        ;# Vardiffs that do not have or can't yet find
+                            # their inputs should set this to 1.
 
-    variable comp     ;# comparison object
-    variable keydict  ;# Key dictionary
-    variable val1     ;# Value from case 1
-    variable val2     ;# Value from case 2
-    variable gotdiffs ;# 1 if we've computed diffs, and 0 otherwise.
-    variable diffs    ;# List of vardiffs of significant inputs.
+    variable comp          ;# comparison object
+    variable keydict       ;# Key dictionary
+    variable val1          ;# Value from case 1
+    variable val2          ;# Value from case 2
+    variable gotInputs     ;# 1 if we've computed diffs, and 0 otherwise.
+    variable iscores       ;# Array of scores by vardiff object for
+                            # significant inputs.
+
+    # Transient variables, used during input scoring.
+    variable byType        ;# Array of input vardiffs by vartype.
+    variable valueCache    ;# Array of value lists by vartype.
 
     # constructor comp_ keydict_ val1_ val2_
     #
@@ -34,12 +44,11 @@ oo::class create ::athena::vardiff {
     # Saves the inputs into instance variables.
 
     constructor {comp_ keydict_ val1_ val2_} {
-        set comp     $comp_
-        set keydict  $keydict_
-        set val1     $val1_
-        set val2     $val2_
-        set gotdiffs 0
-        set diffs    [list]
+        set comp      $comp_
+        set keydict   $keydict_
+        set val1      $val1_
+        set val2      $val2_
+        set gotInputs 0
     }
 
     # name
@@ -51,9 +60,9 @@ oo::class create ::athena::vardiff {
         set prefix [lindex [split [my type] .] 0]
 
         dict for {key val} $keydict {
-            append prefix /$val
+            append prefix .$val
         }
-        return $prefix
+        return [string map {/ .} $prefix]
     }
 
     # keydict
@@ -170,17 +179,6 @@ oo::class create ::athena::vardiff {
         return ""
     }
 
-    # score
-    #
-    # A ranking score.  By default, it's the delta of the
-    # two values, which are assumed to be numeric.  
-    #
-    # Subclasses should override this if necessary.
-
-    method score {} {
-        my delta
-    }
-
     # delta
     #
     # The absolute difference of the two values, only if that makes
@@ -190,36 +188,16 @@ oo::class create ::athena::vardiff {
         expr {abs([my val1] - [my val2])}
     }
 
-    # different
+    # trivial
     #
-    # Returns 1 if val1 isn't "eq" val2, and 0 otherwise.
+    # Returns 1 if the difference is trivial and not worth retaining,
+    # and 0 otherwise.  By default we presume the difference is 
+    # non-trivial.  It should be overridden
+    # by vardiff types that have some additional criterion for 
+    # non-triviality, i.e., an epsilon check.
 
-    method different {} {
-        expr {$val1 ne $val2}
-    }
-
-    # significant
-    #
-    # Returns 1 if val1 is significantly different than val2, and 0
-    # otherwise.  If the vartype's "active" flag is false, then 
-    # returns 0.
-    
-    method significant {} {
-        if {[athena::compdb get [my type].active]} {
-            return [my IsSignificant]
-        } else {
-            return 0
-        }
-    }
-
-    # IsSignificant
-    #
-    # Subclasses override this to define their own significance tests.
-    # By default, a difference is significant if the two values are
-    # not identical.
-
-    method IsSignificant {} {
-        my different
+    method trivial {} {
+        return 0
     }
 
     # view
@@ -230,6 +208,7 @@ oo::class create ::athena::vardiff {
         dict set result type     [my type]
         dict set result name     [my name]
         dict set result category [my category]
+        dict set result leaf     [my leaf]
 
         dict for {key value} $keydict {
             dict set result $key $value
@@ -241,34 +220,12 @@ oo::class create ::athena::vardiff {
         dict set result val2      $val2
         dict set result fmt2      [my fmt2]
         dict set result fancy2    [my fancy2]
-        dict set result score     [my score]
-        dict set result delta     [expr {
-            [my delta] ne "" ? [my format [my delta]] : ""
-        }]
+        dict set result delta     [my delta]
         dict set result narrative [my narrative]
         dict set result context   [my context]
 
         return $result
     }
-
-    # inputs
-    #
-    # Returns a list of the names of the significant inputs for
-    # this vardiff, or the empty list if !gotdiffs.
-
-    method inputs {} {
-        set result [list]
-
-        if {[my gotdiffs]} {
-            foreach diff [my diffs] {
-                lappend result [$diff name]
-            }
-        }
-
-
-        return $result
-    }
-
 
     # huddle
     #
@@ -276,64 +233,130 @@ oo::class create ::athena::vardiff {
     # contains the view plus the inputs.
 
     method huddle {} {
-        set hvar [huddle compile dict [my view]]
-        if {[llength [my inputs]] > 0} {
-            huddle set hvar inputs [huddle compile list [my inputs]]
+        # FIRST, get a dictionary of scores by diff name
+        set inputs [dict create]
+
+        foreach diff [array names iscores] {
+            dict set inputs [$diff name] $iscores($diff)
         }
+
+        set hvar [huddle compile dict [my view]]
+        huddle set hvar inputs [huddle compile dict $inputs]
+        
         return $hvar
     }
 
 
-    # gotdiffs
+    # gotInputs
     #
-    # Returns 1 if we've found diffs for this vardiff, and 0 otherwise.
+    # Returns 1 if we've scored inputs for this vardiff, and 0 otherwise.
 
-    method gotdiffs {} {
-        return $gotdiffs
+    method gotInputs {} {
+        return $gotInputs
     }
 
-    # diffs
+    # inputs
     #
     # Computes vardiffs for significant differences in variable
-    # inputs, adding them to the comparison object, and returns
-    # a list of them.
+    # inputs, adding them to the comparison object and scoring them
+    # as inputs.  Returns the dictionary of scores by vardiff.
 
-    method diffs {} {
-        if {!$gotdiffs} {
-            my FindDiffs
-            set gotdiffs 1
+    method inputs {} {
+        # FIRST, simply return inputs if we already have them.
+        if {$gotInputs} {
+            return [my SortDict [array get iscores]]
         }
 
-        return $diffs
+        # NEXT, call the subclass method to populate the byType and
+        # valueCache variables.
+        my FindInputs 
+        my ScoreInputs
+
+        set gotInputs 1
+        array unset valueCache
+        array unset byType
+
+        return [my SortDict [array get iscores]]
     }
 
-    # FindDiffs
+    # FindInputs
     #
     # Subclasses should override this if drilling down is possible.
 
-    method FindDiffs {} {
+    method FindInputs {} {
         return
     }
 
 
-    # diffadd vartype val1 val2 keys...
+    # AddInput vartype val1 val2 keys...
     #
     # vartype  - A vardiff type.
     # val1     - The value from s1/t1
     # val2     - The value from s2/t2
     # keys...  - Key values for the vardiff class
     #
-    # Given a vardiff type and a pair of values, saves a significant output
+    # Given a vardiff type and a pair of values, saves a significant input
     # diff if the difference between the two values is significant.  
     #
     # Returns the diff if it was significant, and "" otherwise. 
+    #
+    # This method is for use by subclasses in their FindInputs methods.
 
-    method diffadd {vartype val1 val2 args} {
+    method AddInput {vartype val1 val2 args} {
+        # FIRST, save the values for the normalizer, if they are needed.
+        # They will be needed if the normalizer function isn't a 
+        # constant number.
+        set T ::athena::vardiff::$vartype
+
+        if {![string is double -strict [$T normfunc]]} {
+            lappend valueCache($vartype) $val1 $val2
+        }
+
+        # NEXT, get the diff.
         set diff [$comp add $vartype $val1 $val2 {*}$args]
 
+        # NEXT, save it by type so that we can do scoring.  Note that 
+        # trivial differences are filtered out by the previous step.
         if {$diff ne ""} {
-            ladd diffs $diff
+            lappend byType($vartype) $diff
         }
+    }
+
+    # ScoreInputs
+    #
+    # Scores each of the input vardiffs, adding its score to the 
+    # scores array.  The vardiffs can now be ranked by relative score.
+    # The maximum score is always 100.0.
+
+    method ScoreInputs {} {
+        # FIRST, score all of the outputs by type, so that each is 
+        # properly ranked within its type.  Adds a vardiff/score to the
+        # scores array.
+        foreach vartype [array names byType] {
+            if {[info exists valueCache($vartype)]} {
+                set values $valueCache($vartype)
+            } else {
+                set values [list]
+            }
+
+            set normalizer [$comp normalizer $vartype $values]
+            $comp scoreByType iscores $normalizer $byType($vartype)
+        }
+
+        # NEXT, normalize the scores so that the max is 100.0
+        array set A [my afactors]
+        $comp normalizeScores iscores A
+    }
+
+    # SortDict dict
+    #
+    # dict   - A dictionary with numeric values.
+    #
+    # Returns the same dictionary with the keys sorted in order
+    # of descending value.
+
+    method SortDict {dict} {
+        return [lsort -real -decreasing -stride 2 -index 1 $dict]
     }
 
     #-------------------------------------------------------------------

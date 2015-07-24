@@ -17,15 +17,14 @@ oo::class create ::athena::vardiff::nbmood {
     superclass ::athena::vardiff
     meta type     nbmood
     meta category social
+    meta normfunc 100.0
+    meta afactors {
+        sat        1.0
+        population 1.0
+    }
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_
-    }
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method format {val} {
@@ -40,10 +39,6 @@ oo::class create ::athena::vardiff::nbmood {
         return {&minus;100.0 &le; <i>x</i> &le; &plus;100.0}
     }
 
-    method score {} {
-        my format [next]
-    }
-
     method narrative {} {
         return [my DeltaNarrative "Mood of neighborhood [my key n]" \
             "satisfaction points"]
@@ -54,7 +49,7 @@ oo::class create ::athena::vardiff::nbmood {
     #-------------------------------------------------------------------
     # Input Differences
     
-    method FindDiffs {} {
+    method FindInputs {} {
         variable comp
 
         set n [my key n]
@@ -63,14 +58,14 @@ oo::class create ::athena::vardiff::nbmood {
         $comp eval {
             SELECT g, c, sat1, sat2 FROM comp_sat WHERE n = $n
         } {
-            my diffadd sat $sat1 $sat2 $g $c
+            my AddInput sat $sat1 $sat2 $g $c
         }
 
         # NEXT, get the population inputs
         $comp eval {
             SELECT g, pop1, pop2 FROM comp_civg WHERE n = $n
         } {
-            my diffadd population $pop1 $pop2 $g
+            my AddInput population $pop1 $pop2 $g
         }
     }
 

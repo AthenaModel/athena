@@ -16,27 +16,16 @@ oo::class create ::athena::vardiff::support {
     superclass ::athena::vardiff
     meta type     support
     meta category political
+    meta normfunc 1.0
+    meta afactors {
+        population 1.0
+        personnel  1.0
+        security   1.0
+        vrel       1.0
+    }
 
     constructor {comp_ val1_ val2_ n_ a_} {
         next $comp_ [list n $n_ a $a_] $val1_ $val2_
-    }
-
-    method score {} {
-        my variable val1
-        my variable val2
-
-        let score {
-            100.0 - 100.0*(min(double($val1),double($val2))/max($val1,$val2))
-        }
-
-        return [my format $score]
-    }
-
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method format {val} {
@@ -47,12 +36,10 @@ oo::class create ::athena::vardiff::support {
         return {<i>x</i> &ge; 0.0}
     }
 
-
-
     #-------------------------------------------------------------------
     # Input Differences
 
-    method FindDiffs {} {
+    method FindInputs {} {
         variable comp
 
         set n [my key n]
@@ -70,7 +57,7 @@ oo::class create ::athena::vardiff::support {
             SELECT g, pop1, pop2 FROM comp_civg WHERE n = $n
         } {
             lappend glist $g
-            my diffadd population $pop1 $pop2 $g
+            my AddInput population $pop1 $pop2 $g
         }
 
         # NEXT, get the personnel figures for non-civgroups in n.
@@ -80,7 +67,7 @@ oo::class create ::athena::vardiff::support {
             AND gtype != 'CIV'
         " {
             lappend glist $g
-            my diffadd personnel $personnel1 $personnel2 $n $g
+            my AddInput personnel $personnel1 $personnel2 $n $g
         }
 
         # NEXT, get the security figures for groups in n.
@@ -90,7 +77,7 @@ oo::class create ::athena::vardiff::support {
             AND g IN ('[join $glist ',']')
         " {
             let diff {abs($security1 - $security2)}
-            my diffadd security $security1 $security2 $n $g
+            my AddInput security $security1 $security2 $n $g
         }
 
         # NEXT, get the vertical relationships.
@@ -99,7 +86,7 @@ oo::class create ::athena::vardiff::support {
             WHERE g IN ('[join $glist ',']') 
             AND   a IN ('[join $alist ',']')
         " {
-            my diffadd vrel $vrel1 $vrel2 $g $b
+            my AddInput vrel $vrel1 $vrel2 $g $b
         }
     }
 

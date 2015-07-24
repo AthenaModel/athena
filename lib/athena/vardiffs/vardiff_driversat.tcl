@@ -16,13 +16,11 @@ oo::class create ::athena::vardiff::driversat {
     superclass ::athena::vardiff
     meta type     driversat
     meta category social
+    meta normfunc maxabs
+    meta leaf     1
 
     constructor {comp_ val1_ val2_ g_ c_ drid_} {
         next $comp_ [list g $g_ c $c_ drid $drid_] $val1_ $val2_
-    }
-
-    method score {} {
-        my format [next]
     }
 
     method format {val} {
@@ -37,15 +35,9 @@ oo::class create ::athena::vardiff::driversat {
         return {<i>x</i> &ge; 0.0}
     }
 
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
-    }
-
     method narrative {} {
         return [my DeltaNarrative \
-            "Total contribution to group [my key g]'s satisfaction with [my key c] by this driver" \
+            "Total contribution by driver [my key drid] to group [my key g]'s satisfaction with [my key c]" \
             "satisfaction points"]
     }
 

@@ -11,6 +11,11 @@ angular.module('arachne')
 function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
 	var controller = this;
 
+    // Template URL
+    this.template = function(suffix) {
+        return '/templates/pages/case' + suffix;
+    }
+
     //-----------------------------------------------------
     // Route Parameters
 

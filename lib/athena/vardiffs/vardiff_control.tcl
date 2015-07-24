@@ -17,13 +17,11 @@ oo::class create ::athena::vardiff::control {
     superclass ::athena::vardiff
     meta type     control
     meta category political
+    meta normfunc 1.0
+    meta leaf     1
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_  
-    }
-
-    method score {} {
-        return 100.0
     }
 
     method format {val} {
@@ -42,7 +40,10 @@ oo::class create ::athena::vardiff::control {
         }
     }
 
-    method delta {} {}  ;# Delta doesn't make sense here.
+    method delta {} {
+        # All symbolic differences are equally important.
+        return [expr {1.0}]
+    }
 
     method narrative {} {
         return "Neighborhood [my key n] was controlled by [my fmt1], is controlled by [my fmt2]."
