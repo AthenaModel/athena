@@ -34,6 +34,11 @@ Chain: {{page.varname}}
   </div>
 </div>
 
+<ar-tbd-list>
+<li> Indent narratives, push triangle button left, so wrapping looks better.</li>
+<li> Add chain links to sidebar.</li>
+</ar-tbd-list>
+
 <hr/>
 
 <div>
@@ -46,12 +51,12 @@ Chain: {{page.varname}}
       </select>
     </div>
     <div class="form-group">
-      <label class="control-label">Total Inputs:</label>
-      <p class="form-control-static">{{page.size()}}</p>
+      <label class="control-label padleft">Significant Inputs:</label>
+      <p class="form-control-static">{{page.visibleSize()}}</p>
     </div>
     <div class="form-group">
-      <label class="control-label">Significant Inputs:</label>
-      <p class="form-control-static">{{page.visibleSize()}}</p>
+      <label class="control-label padleft">Total Inputs:</label>
+      <p class="form-control-static">{{page.size()}}</p>
     </div>
   </form>
 <div>
@@ -71,9 +76,8 @@ a model input, or we haven't yet implemented chaining for it.
 
     <tr ng-repeat="var in page.visibleItems()">
       <td>
-        <span class="text-primary" ng-class="var.class">
+        <span class="text-primary" ng-class="var.indent">
           {{var.name}} 
-          <span ng-show="var.numInputs" class="badge">{{var.numInputs}}</span>
         </span>
       </td>
       <td>

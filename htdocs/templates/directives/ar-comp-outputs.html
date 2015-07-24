@@ -18,12 +18,12 @@ in this comparison.
       </select>
     </div>
     <div class="form-group">
-      <label class="control-label">Total Outputs:</label>
-      <p class="form-control-static">{{comp.size()}}</p>
+      <label class="control-label padleft">Significant Outputs:</label>
+      <p class="form-control-static">{{comp.sigSize()}}</p>
     </div>
     <div class="form-group">
-      <label class="control-label">Significant Outputs:</label>
-      <p class="form-control-static">{{comp.sigSize()}}</p>
+      <label class="control-label padleft">Total Outputs:</label>
+      <p class="form-control-static">{{comp.size()}}</p>
     </div>
   </form>
 
@@ -41,10 +41,13 @@ in this comparison.
     <tr ng-repeat="output in comp.sigOutputs() | orderBy:sortby:reverse">
       <td ng-show="category === 'all'">{{comp.catName(output.category)}}</td>
       <td>
-        <span class="text-primary">
+        <span ng-if="output.leaf" class="text-primary">
+        {{output.name}} 
+        </span>
+        <span ng-if="!output.leaf" class="text-primary">
           <a ng-href="{{'#/chain/' + compid + '/' + output.name}}">
             {{output.name}} 
-            <span ng-show="output.numInputs" class="badge">{{output.numInputs}}</span>
+            <span class="glyphicon glyphicon-link"></span>
           </a>
         </span>
       </td>

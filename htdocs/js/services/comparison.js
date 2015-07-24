@@ -126,17 +126,16 @@ function($http, $q, Arachne, Entities) {
 
     var ExtendChain = function ExtendChain(chain, parent, level, ndx, next) {
         var diff = ndx[next];
-        diff.numInputs = Object.keys(diff.inputs).length;
 
         // FIRST, copy the inputs into an array, and annotate them.
         var inputs = [];
 
         for (name in diff.inputs) {
             var input = ndx[name];
-            input.parent = parent;
-            input.level  = level;
-            input.class  = "indent"+level;
-            input.score  = diff.inputs[name];
+            input.parent  = parent;
+            input.level   = level;
+            input.indent  = "indent"+level;
+            input.score   = diff.inputs[name];
             inputs.push(input);
         }
 
@@ -329,9 +328,6 @@ function($http, $q, Arachne, Entities) {
 
             for (var j = 0; j < comp.outputs.length; j++) {
                 var output = comp.outputs[j];
-                // TBD: I think this should be done before the data
-                // is saved.
-                output.numInputs = Object.keys(output.inputs).length;
                 byCat[comp.id][output.category].push(j);
                 byName[comp.id][output.name] = j;
             }

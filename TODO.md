@@ -1,26 +1,18 @@
 # TODO.md - Athena TODO List
 
 - Causality Chaining
-  - PROBLEM: the "numInputs" field on outputs() are incorrect; they don't
-    seem to be related to the actual number of inputs.
-    - That's because the "inputs" aren't computed for all outputs until
-      you ask for them; and then you'd need to refresh the list of outputs
-      from the server.  I'm not sure what to do about this.
-    - Idea: always find the direct inputs of all significant outputs.
-      - And then, fill in the rest of the chain on request.
   - Detail box could be an element ar-var-detail(compid, varname)?
     - Whoops!  It depends on whether the var is an output or in a chain.
   - On chain, comparison pages, sidebar should include links to output 
     chains sorted by name.
     - Skip variables with no inputs.
-  - In ar-comp-outputs table, provide a name link only if there are inputs
-    in the chain.
+  - Vardiffs need tests.
   - The vardiff "inputs" field should possibly be an array in JSON
     - We can send it sorted, and it will stick.
   - We need better narratives and context strings, especially for driver
     vars.
   - Need to move comparison(n)'s "A" values to compdb(n)?
-  - Might want to add "trivial" checks to some of the vardiff types, based
+  - Need to add "trivial" checks to some of the vardiff types, based
     on limits in compdb(n); but the limits that are there now are OBE.
   - Compute and return chains
   - Chain vardiffs don't get added to comparison.
