@@ -7,6 +7,12 @@ angular.module('arachne')
 function($routeParams, $scope, Comparison, Tab) {
 	var controller = this;
 
+    // Template URL
+    this.template = function(suffix) {
+        return '/templates/pages/comparison' + suffix;
+    }
+
+
     //-----------------------------------------------------
     // Route Parameters
 

@@ -7,6 +7,12 @@ angular.module('arachne')
 function($filter,Arachne,Comparison) {
     var controller = this;   // For use in callbacks
 
+    // Template URL
+    this.template = function(suffix) {
+        return '/templates/pages/comparisons' + suffix;
+    }
+
+
     // Delegated Functions
     this.cases = Arachne.cases;
     this.comps = Comparison.all;

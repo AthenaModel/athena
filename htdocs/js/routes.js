@@ -4,15 +4,21 @@
 angular.module('arachne')
 .config(function($routeProvider) {
     $routeProvider.when('/home', {
-        templateUrl: 'templates/pages/home/index.html'
+        templateUrl: 'templates/pages/home/index.html',
+        controller:   'HomeController',
+        controllerAs: 'page'
     })
 
     .when('/', {
-        templateUrl:  'templates/pages/home/index.html'
+        templateUrl:  'templates/pages/home/index.html',
+        controller:   'HomeController',
+        controllerAs: 'page'
     })
 
     .when('/cases', {
-        templateUrl: 'templates/pages/cases/index.html'
+        templateUrl: 'templates/pages/cases/index.html',
+        controller:   'CasesController',
+        controllerAs: 'page'
     })
 
     .when('/chain/:caseId1/:varname', {
@@ -28,7 +34,9 @@ angular.module('arachne')
     })
 
     .when('/comparisons', {
-        templateUrl: 'templates/pages/comparisons/index.html'
+        templateUrl: 'templates/pages/comparisons/index.html',
+        controller:   'ComparisonsController',
+        controllerAs: 'page'    
     })
 
     .when('/comparison/:caseId1', {
@@ -50,15 +58,19 @@ angular.module('arachne')
     })
 
     .when('/help', {
-        templateUrl: 'templates/pages/help/index.html'
+        templateUrl: 'templates/pages/help/index.html',
+        controller: 'HelpController',
+        controllerAs: 'page'
     })
 
+    // TBD: Should be /case, not /scenarios
     .when('/scenarios/:caseId', {
         templateUrl: 'templates/pages/case/index.html',
         controller: 'CaseController',
         controllerAs: 'page'
     })
 
+    // TBD: Should be /case, not /scenarios
     .when('/scenario/:caseId/:objectType/:objectId', {
         templateUrl: 'templates/pages/case/object.html',
         controller: 'ObjectController',

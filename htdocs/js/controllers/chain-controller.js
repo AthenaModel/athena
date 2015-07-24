@@ -6,6 +6,12 @@ angular.module('arachne')
 ['$routeParams', '$scope', 'Comparison',
 function($routeParams, $scope, Comparison) {
 	var controller = this;
+    
+    // Template URL
+    this.template = function(suffix) {
+        return '/templates/pages/chain' + suffix;
+    }
+
 
     //-----------------------------------------------------
     // Route Parameters

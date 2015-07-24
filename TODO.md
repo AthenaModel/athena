@@ -1,8 +1,7 @@
 # TODO.md - Athena TODO List
 
 - Causality Chaining
-  - We need better narratives and context strings, especially for driver
-    vars.
+  - Vardiffs need better context strings, or perhaps links to help.
   - Need to add "trivial" checks to some of the vardiff types, based
     on limits in compdb(n); but the limits that are there now are OBE.
     - Could do this just by pruning based on type-specific "score" or "delta".
