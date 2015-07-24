@@ -10,14 +10,18 @@
   - Continue to flesh out chains.
   - Vardiffs need tests.
 - Angular Web App
-  - Comparisons
+  - See if we can pass "page" to ar-mainpage, which includes both
+    templates.
+  - Various pages need to do something better when the route params are
+    empty.
   - Clean up Arachne URLs, e.g., "/scenario/{case}/nbhoods/index.json"
     by "/scenario/{case}/nbhood/{n}/index.json".  Both should be "nbhoods"
     or "nbhood".
   - Should the scenario_*.json modules be merged, now that HTML is being
     removed?
   - The case data management should be abstracted from CaseController
-    into a case.js service following the same pattern as comp.js.
+    into a case.js service following the same pattern as comparison.js
+    -   Which itself needs some help.
   - Case page: 
     - Sanity Check!
     - Add a tab for sending orders to a case.
