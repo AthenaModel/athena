@@ -7,6 +7,7 @@ angular.module("arachne")
         templateUrl: "templates/directives/ar-mainpage.html",
         transclude: true,
         scope: {
+            page:    "=", // The including page
             sidebar: "@"  // The sidebar template's URL
         }
     };

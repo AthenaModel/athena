@@ -32,11 +32,15 @@ angular.module('arachne')
     })
 
     .when('/comparison/:caseId1', {
-        templateUrl: 'templates/pages/comparison/index.html'
+        templateUrl: 'templates/pages/comparison/index.html',
+        controller: 'ComparisonController',
+        controllerAs: 'page'
     })
 
     .when('/comparison/:caseId1/:caseId2', {
-        templateUrl: 'templates/pages/comparison/index.html'
+        templateUrl: 'templates/pages/comparison/index.html',
+        controller: 'ComparisonController',
+        controllerAs: 'page'
     })
 
     .when('/debug', {

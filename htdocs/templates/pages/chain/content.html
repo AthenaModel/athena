@@ -5,15 +5,10 @@
 <a href="#/comparison/{{page.compId}}">{{page.casename()}}</a>
 </small>
 <br/>
-Chain: {{page.varname}}
+Chain: {{page.varname}} (score={{page.var().score|number:2}})
 </h1>
 
 <ar-varbox vardiff="page.var()"></ar-varbox>
-
-<ar-tbd-list>
-<li> Indent narratives, push triangle button left, so wrapping looks better.</li>
-<li> Add chain links to sidebar.</li>
-</ar-tbd-list>
 
 <hr/>
 

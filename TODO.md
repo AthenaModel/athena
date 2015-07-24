@@ -1,12 +1,11 @@
 # TODO.md - Athena TODO List
 
 - Causality Chaining
-  - Detail box could be an element ar-var-detail(compid, varname)?
-    - Whoops!  It depends on whether the var is an output or in a chain.
-    - On the contrary, just pass in the output using "="?
-  - On chain, comparison pages, sidebar should include links to output 
-    chains sorted by name.
-    - Skip variables with no inputs.
+  - Comparison sidebar should include ar-chainlinks with significance.
+    - Problem is that on the comparison page, significance is owned by
+      ar-comp-outputs
+    - Have a central significance value?  A siglevel service?  A
+      Global Variable service?  (Ugh!)
   - Vardiffs need tests.
   - The vardiff "inputs" field should possibly be an array in JSON
     - We can send it sorted, and it will stick.

@@ -1,0 +1,16 @@
+<div>
+<h4>Related Chains</h4>
+
+  <p ng-hide="directive.names().length">
+    There are no chains at this significance level.
+  </p>
+
+  <div style="margin-left:10px" ng-show="directive.names().length">
+    <ul class="list-unstyled" style="margin-top: 10px;">
+      <li ng-repeat="varname in directive.names()">
+        <a href="#/chain/{{compid}}/{{varname}}">{{varname}}</a>
+      </li>
+    </ul>
+  </div>
+
+</div>
