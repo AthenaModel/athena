@@ -1,22 +1,14 @@
 # TODO.md - Athena TODO List
 
 - Causality Chaining
-  - Comparison sidebar should include ar-chainlinks with significance.
-    - Problem is that on the comparison page, significance is owned by
-      ar-comp-outputs
-    - Have a central significance value?  A siglevel service?  A
-      Global Variable service?  (Ugh!)
-  - Vardiffs need tests.
-  - The vardiff "inputs" field should possibly be an array in JSON
-    - We can send it sorted, and it will stick.
   - We need better narratives and context strings, especially for driver
     vars.
-  - Need to move comparison(n)'s "A" values to compdb(n)?
   - Need to add "trivial" checks to some of the vardiff types, based
     on limits in compdb(n); but the limits that are there now are OBE.
-  - Compute and return chains
-  - Chain vardiffs don't get added to comparison.
-  - Continue to flesh out input tree.
+    - Could do this just by pruning based on type-specific "score" or "delta".
+  - Need to move comparison(n)'s "A" values to compdb(n)?
+  - Continue to flesh out chains.
+  - Vardiffs need tests.
 - Angular Web App
   - Comparisons
   - Clean up Arachne URLs, e.g., "/scenario/{case}/nbhoods/index.json"

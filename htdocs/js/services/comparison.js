@@ -2,6 +2,23 @@
 //
 // This service is used to interact with the server regarding 
 // scenario comparisons, and to provide the data to pages.
+//
+// TBD: Some rearchitecting would be nice:
+// 
+// * Create a "comp" object for each known comparison that 
+//   Encapsulates everything about it.
+//   * The object is responsible for retrieving the comparison's
+//     data itself; all calls to get data about the comparison
+//     go to the original data variable.
+//   * It's no longer necessary for the service itself to have
+//     multiple data structures keyed on compid.
+// * Requesting a comparison creates, registers, and returns the
+//   comp object.  As part of creation, it requests the data
+//   from the server, but can also be refreshed.
+// * Given a "comp" object, you can request a "chain" object.  This
+//   works the same way as the comp object: you have the whole
+//   comparison, but also the chain.
+
 'use strict';
 
 angular.module('arachne')
@@ -22,7 +39,8 @@ function($http, $q, Arachne, Entities) {
         economic:       "Economic",
         social:         "Social",
         information:    "Information",
-        infrastructure: "Infrastructure"
+        infrastructure: "Infrastructure",
+        all:            "All"
     };
 
     //----------------------------------------------------------
@@ -318,6 +336,7 @@ function($http, $q, Arachne, Entities) {
             for (var j = 0; j < comp.outputs.length; j++) {
                 var output = comp.outputs[j];
                 byCat[comp.id][output.category].push(j);
+                byCat[comp.id]['all'].push(j);
                 byName[comp.id][output.name] = j;
             }
         }

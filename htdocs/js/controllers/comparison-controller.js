@@ -19,11 +19,11 @@ function($routeParams, $scope, Comparison, Tab) {
     // Delegated Methods
 
     $scope.tab  = Tab.tabber('comp');
-    $scope.comp = Comparison.wrapper(this.compId);
+    var comp = Comparison.wrapper(this.compId);
 
-    this.meta = $scope.comp.meta;
-    this.case1 = $scope.comp.case1;
-    this.case2 = $scope.comp.case2;
+    this.meta = comp.meta;
+    this.case1 = comp.case1;
+    this.case2 = comp.case2;
 
     //-----------------------------------------------------
     // Significance Levels
@@ -39,41 +39,23 @@ function($routeParams, $scope, Comparison, Tab) {
 
     this.cat = $scope.tab.get;
 
-    this.categories = function() {
-        var result = $scope.comp.categories();
-        result.push('all');
-        return result;
-    }
+    this.categories = comp.categories;
 
     this.catName = function(category) {
         var category = category || this.cat();
-
-        if (category === 'all') {
-            return 'All';
-        } else {
-            return $scope.comp.catName(category);
-        }
+        return comp.catName(category);
     }
 
     this.catSize = function(category) {
         var category = category || this.cat();
-
-        if (category === 'all') {
-            return $scope.comp.size();
-        } else {
-            return $scope.comp.catSize(category);
-        }
+        return comp.catSize(category);
     }
 
     //-----------------------------------------------------
     // Outputs and Significant Outputs
 
     this.outputs = function() {
-        if (this.cat() === 'all') {
-            return $scope.comp.outputs();
-        } else {
-            return $scope.comp.byCat(this.cat());
-        }
+        return comp.byCat(this.cat());
     }
 
     this.sigOutputs = function() {
