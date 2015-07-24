@@ -3,6 +3,7 @@
 - Causality Chaining
   - Detail box could be an element ar-var-detail(compid, varname)?
     - Whoops!  It depends on whether the var is an output or in a chain.
+    - On the contrary, just pass in the output using "="?
   - On chain, comparison pages, sidebar should include links to output 
     chains sorted by name.
     - Skip variables with no inputs.

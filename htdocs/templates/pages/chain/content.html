@@ -13,26 +13,8 @@ Chain: {{page.varname}}
     ng-click="page.toggleDetail()"></span>
   {{page.var().narrative}}
 </div>
-<div class="panel panel-default" ng-if="page.showDetail()"
-  style="margin-bottom:0px;">
-  <div class="panel-body">
-    <dl class="dl-horizontal tight" style="margin-bottom:0px;">
-      <dt>Type:</dt>
-      <dd>
-        <span class="label label-primary">{{page.var().category}}</span> /
-        <span class="label label-primary">{{page.var().type}}</span>
-      </dd>
-      <dt>Case A:</dt>
-      <dd>{{page.var().fancy1}}</dd>
-      <dt>Case B:</dt>
-      <dd>{{page.var().fancy2}}</dd>
-      <dt ng-if="page.var().delta">Delta:</dt>
-      <dd ng-if="page.var().delta" ng-bind-html="page.var().delta"></dd>
-      <dt ng-if="page.var().context">Context:</dt>
-      <dd ng-if="page.var().context" ng-bind-html="page.var().context"></dd>
-    </dl>
-  </div>
-</div>
+
+<ar-varbox vardiff="page.var()" ng-if="page.showDetail()"></ar-varbox>
 
 <ar-tbd-list>
 <li> Indent narratives, push triangle button left, so wrapping looks better.</li>
@@ -86,26 +68,8 @@ a model input, or we haven't yet implemented chaining for it.
             ng-click="page.toggle(var.name)"></span>
           {{var.narrative}}
         </div>
-        <div class="panel panel-default" ng-if="page.isExpanded(var.name)"
-          style="margin-bottom:0px;">
-          <div class="panel-body">
-            <dl class="dl-horizontal tight" style="margin-bottom:0px;">
-              <dt>Type:</dt>
-              <dd>
-                <span class="label label-primary">{{var.category}}</span> /
-                <span class="label label-primary">{{var.type}}</span>
-              </dd>
-              <dt>Case A:</dt>
-              <dd>{{var.fancy1}}</dd>
-              <dt>Case B:</dt>
-              <dd>{{var.fancy2}}</dd>
-              <dt ng-if="var.delta">Delta:</dt>
-              <dd ng-if="var.delta" ng-bind-html="var.delta"></dd>
-              <dt ng-if="var.context">Context:</dt>
-              <dd ng-if="var.context" ng-bind-html="var.context"></dd>
-            </dl>
-          </div>
-        </div>
+        <ar-varbox vardiff="var" ng-if="page.isExpanded(var.name)">
+        </ar-varbox>
       </td>
       <td class="right">{{var.score | number:2}}</td>
     </tr>

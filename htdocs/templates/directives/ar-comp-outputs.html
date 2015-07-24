@@ -58,26 +58,8 @@ in this comparison.
             ng-click="comp.toggle(output.name)"></span>
           {{output.narrative}}
         </div>
-        <div class="panel panel-default" ng-if="comp.isExpanded(output.name)"
-        style="margin-bottom:0px;">
-        <div class="panel-body">
-          <dl class="dl-horizontal tight" style="margin-bottom:0px;">
-            <dt>Type:</dt>
-            <dd>
-              <span class="label label-primary">{{output.category}}</span> /
-              <span class="label label-primary">{{output.type}}</span>
-            </dd>
-            <dt>Case A:</dt>
-            <dd>{{output.fancy1}}</dd>
-            <dt>Case B:</dt>
-            <dd>{{output.fancy2}}</dd>
-            <dt ng-if="output.delta">Delta:</dt>
-            <dd ng-if="output.delta" ng-bind-html="output.delta"></dd>
-            <dt ng-if="output.context">Context:</dt>
-            <dd ng-if="output.context" ng-bind-html="output.context"></dd>
-          </dl>
-        </div>
-      </div>
+        <ar-varbox vardiff="output" ng-if="comp.isExpanded(output.name)">
+        </ar-varbox>
     </td>
     <td class="right">{{output.score | number:2}}</td>
   </tr>
