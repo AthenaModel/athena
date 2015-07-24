@@ -12,7 +12,6 @@ angular.module("arachne")
             reverse:  "@"
         },
         controller: ['$scope', 'Comparison', function($scope, Comparison) {
-            var expanded = [];
 
             if ($scope.category === 'all') {
                 $scope.header = $scope.header || 'All Outputs';
@@ -76,29 +75,6 @@ angular.module("arachne")
                     $scope.reverse = true;
                 } else {
                     $scope.reverse = false;
-                }
-            }
-
-            this.isExpanded = function(item) {
-                return expanded.indexOf(item) !== -1;
-            }
-
-            this.toggleClass = function(item) {
-                if (this.isExpanded(item)) {
-                    return "glyphicon-triangle-bottom"
-                } else {
-                    return "glyphicon-triangle-right"
-                }
-            }
-
-
-            this.toggle = function(item) {
-                var ndx = expanded.indexOf(item);
-
-                if (ndx === -1) {
-                    expanded.push(item);
-                } else {
-                    expanded.splice(ndx,1);
                 }
             }
         }],

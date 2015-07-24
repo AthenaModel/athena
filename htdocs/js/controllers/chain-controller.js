@@ -33,24 +33,6 @@ function($routeParams, $scope, Comparison) {
     //------------------------------------------------------
     // Chain Data
 
-    var detailFlag = false;
-
-    this.showDetail = function() {
-        return detailFlag;
-    }
-
-    this.detailClass = function(id) {
-        if (this.showDetail(id)) {
-            return "glyphicon-triangle-bottom"
-        } else {
-            return "glyphicon-triangle-right"
-        }
-    }
-
-    this.toggleDetail = function() {
-        detailFlag = !detailFlag;
-    }
-
     this.var = function() {
         return this.chain.output(this.varname);
     }
@@ -98,35 +80,6 @@ function($routeParams, $scope, Comparison) {
     this.visibleSize = function() {
         return this.visibleItems().length;
     }
-
-    //-----------------------------------------------------
-    // Expanding Details
-
-    var expanded = [];  // Expansion flag by ID
-
-    this.isExpanded = function(id) {
-        return expanded.indexOf(id) !== -1;
-    }
-
-    this.toggleClass = function(id) {
-        if (this.isExpanded(id)) {
-            return "glyphicon-triangle-bottom"
-        } else {
-            return "glyphicon-triangle-right"
-        }
-    }
-
-
-    this.toggle = function(id) {
-        var ndx = expanded.indexOf(id);
-
-        if (ndx === -1) {
-            expanded.push(id);
-        } else {
-            expanded.splice(ndx,1);
-        }
-    }
-
 
     //-----------------------------------------------------
     // Initialization

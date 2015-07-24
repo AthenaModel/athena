@@ -52,15 +52,7 @@ in this comparison.
         </span>
       </td>
       <td><span class="label label-primary">{{output.type}}</span></td>
-      <td>
-        <div>
-          <span class="glyphicon" ng-class="comp.toggleClass(output.name)"
-            ng-click="comp.toggle(output.name)"></span>
-          {{output.narrative}}
-        </div>
-        <ar-varbox vardiff="output" ng-if="comp.isExpanded(output.name)">
-        </ar-varbox>
-    </td>
+      <td><ar-varbox vardiff="output"></ar-varbox></td>
     <td class="right">{{output.score | number:2}}</td>
   </tr>
   </table>

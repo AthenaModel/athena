@@ -8,13 +8,7 @@
 Chain: {{page.varname}}
 </h1>
 
-<div>
-  <span class="glyphicon" ng-class="page.detailClass()"
-    ng-click="page.toggleDetail()"></span>
-  {{page.var().narrative}}
-</div>
-
-<ar-varbox vardiff="page.var()" ng-if="page.showDetail()"></ar-varbox>
+<ar-varbox vardiff="page.var()"></ar-varbox>
 
 <ar-tbd-list>
 <li> Indent narratives, push triangle button left, so wrapping looks better.</li>
@@ -62,15 +56,7 @@ a model input, or we haven't yet implemented chaining for it.
           {{var.name}} 
         </span>
       </td>
-      <td>
-        <div>
-          <span class="glyphicon" ng-class="page.toggleClass(var.name)"
-            ng-click="page.toggle(var.name)"></span>
-          {{var.narrative}}
-        </div>
-        <ar-varbox vardiff="var" ng-if="page.isExpanded(var.name)">
-        </ar-varbox>
-      </td>
+      <td><ar-varbox vardiff="var"></ar-varbox></td>
       <td class="right">{{var.score | number:2}}</td>
     </tr>
   </table>

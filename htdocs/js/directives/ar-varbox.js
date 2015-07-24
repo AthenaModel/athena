@@ -7,7 +7,19 @@ angular.module("arachne")
             vardiff:  "=vardiff"
         },
         controller: ['$scope', function($scope) {
-            // TBD
+            this.expanded = false;
+
+            this.toggle = function() {
+                this.expanded = !this.expanded;
+            }
+
+            this.glyph = function() {
+                if (this.expanded) {
+                    return "glyphicon-triangle-bottom"
+                } else {
+                    return "glyphicon-triangle-right"
+                }                
+            }
         }],
         controllerAs: 'directive'
     };
