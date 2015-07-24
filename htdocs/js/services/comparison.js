@@ -169,7 +169,7 @@ function($http, $q, Arachne, Entities) {
 
     // catName(cat) -- Return the category name
     service.catName = function(cat) {
-        return catNames[cat] || 'Unknown';
+        return catNames[cat] || '';
     }
 
     // case1(compId) -- Return case1 metadata
@@ -231,17 +231,6 @@ function($http, $q, Arachne, Entities) {
         } else {
             return [];
         }
-    }
-
-    service.outputNames = function(compId) {
-        var outputs = service.outputs(compId);
-        var result = [];
-
-        for (var i = 0; i < outputs.length; i++) {
-            result.push(outputs[i].name);
-        }
-
-        return result.sort();
     }
 
     service.output = function(compId, varname) {
