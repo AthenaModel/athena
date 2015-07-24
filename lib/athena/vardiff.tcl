@@ -17,6 +17,8 @@ oo::class create ::athena::vardiff {
     meta normfunc 1.0      ;# Default normalization function
     meta afactors {}       ;# A factors, used to relate scores of different 
                             # types
+    meta leaf     0        ;# Vardiffs that do not have or can't yet find
+                            # their inputs should set this to 1.
 
     variable comp          ;# comparison object
     variable keydict       ;# Key dictionary
@@ -206,6 +208,7 @@ oo::class create ::athena::vardiff {
         dict set result type     [my type]
         dict set result name     [my name]
         dict set result category [my category]
+        dict set result leaf     [my leaf]
 
         dict for {key value} $keydict {
             dict set result $key $value

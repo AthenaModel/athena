@@ -17,6 +17,7 @@ oo::class create ::athena::vardiff::drivervrel {
     meta type     drivervrel
     meta category political
     meta normfunc maxabs
+    meta leaf     1
 
     constructor {comp_ val1_ val2_ g_ a_ drid_} {
         next $comp_ [list g $g_ a $a_ drid $drid_] $val1_ $val2_

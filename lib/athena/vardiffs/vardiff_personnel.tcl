@@ -17,6 +17,7 @@ oo::class create ::athena::vardiff::personnel {
     meta type     personnel
     meta category social
     meta normfunc maxsum
+    meta leaf     1
 
     constructor {comp_ val1_ val2_ n_ g_} {
         next $comp_ [list n $n_ g $g_] $val1_ $val2_

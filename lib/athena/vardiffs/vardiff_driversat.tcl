@@ -17,6 +17,7 @@ oo::class create ::athena::vardiff::driversat {
     meta type     driversat
     meta category social
     meta normfunc maxabs
+    meta leaf     1
 
     constructor {comp_ val1_ val2_ g_ c_ drid_} {
         next $comp_ [list g $g_ c $c_ drid $drid_] $val1_ $val2_

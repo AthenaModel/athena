@@ -60,6 +60,12 @@ the <b mood> type depends on the <i sat> and <i population> types.  The
 other variable types in the same context as an aid to scoring.  The 
 nominal value is 1.0.<p>
 
+<defitem leaf {meta leaf <i boolean>}>
+
+If 1, the vardiff is a leaf in the causality tree, i.e., it either has
+no inputs or input chaining has not yet been implemented.  If 0, inputs
+can and will be chained.<p>
+
 </deflist meta>
 
 

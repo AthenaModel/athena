@@ -17,6 +17,7 @@ oo::class create ::athena::vardiff::goodscap {
     meta type     goodscap
     meta category economic
     meta normfunc maxsum
+    meta leaf     1
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_

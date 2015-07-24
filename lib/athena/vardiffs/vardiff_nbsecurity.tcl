@@ -18,6 +18,7 @@ oo::class create ::athena::vardiff::nbsecurity {
     meta type     nbsecurity
     meta category political
     meta normfunc 100.0
+    meta leaf     1
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_

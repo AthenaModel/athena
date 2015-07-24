@@ -17,6 +17,7 @@ oo::class create ::athena::vardiff::unemp {
     meta type     unemp
     meta category economic
     meta normfunc maxabs
+    meta leaf     1
 
     constructor {comp_ val1_ val2_} {
         next $comp_ "" $val1_ $val2_

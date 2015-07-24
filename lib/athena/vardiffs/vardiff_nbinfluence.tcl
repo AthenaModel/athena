@@ -20,6 +20,7 @@ oo::class create ::athena::vardiff::nbinfluence {
     meta type     nbinfluence
     meta category political
     meta normfunc 1.0
+    meta leaf     1
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_
