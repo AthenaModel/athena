@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide ahttpd 6.3.1a2
+package provide ahttpd 6.3.1a3
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
