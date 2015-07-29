@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide athena 6.3.1a2
+package provide athena 6.3.1a3
 # -kite-provide-end
 
 # The thread package is part of Tcl, and so doesn't need to be
@@ -197,7 +197,6 @@ source [file join $::athena::library vardiff.tcl                     ]
 source [file join $::athena::library vardiffs vardiff_bsysmood.tcl   ]
 source [file join $::athena::library vardiffs vardiff_bsyssat.tcl    ]
 source [file join $::athena::library vardiffs vardiff_control.tcl    ]
-source [file join $::athena::library vardiffs vardiff_drivermood.tcl ]
 source [file join $::athena::library vardiffs vardiff_driversat.tcl  ]
 source [file join $::athena::library vardiffs vardiff_drivervrel.tcl ]
 source [file join $::athena::library vardiffs vardiff_gdp.tcl        ]

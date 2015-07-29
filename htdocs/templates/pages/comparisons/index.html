@@ -1,5 +1,4 @@
-<ar-mainpage sidebar="/templates/pages/comparisons/sidebar.html">
-<div ng-controller="ComparisonsIndexController as page">
+<ar-page page="page">
 
 <h1>Comparisons Between Scenarios</h1>
 
@@ -22,23 +21,15 @@ below.</p>
 <th>Case A</th>
 <th>Case B</th>
 <th>#Outputs</th>
-<th>#Diffs</th>
-<th></th>
 </tr>
 
 <tr ng-repeat="comp in page.comps()">
-<td><b><a ng-href="#/comparisons/{{comp.id}}">{{comp.id}}</a></b></td>
+<td><b><a ng-href="#/comparison/{{comp.id}}">{{comp.id}}</a></b></td>
 <td>{{comp.case1}}, {{page.case(comp.case1).longname}} 
     @ {{comp.week1}} ({{comp.t1}})</td>
 <td>{{comp.case2}}, {{page.case(comp.case2).longname}} 
     @ {{comp.week2}} ({{comp.t2}})</td>
-<td>{{comp.outputs}}</td>
-<td>{{comp.diffs}}</td>
-<td>
-<a href ng-click="page.remove(comp.id)">
-<span class="glyphicon glyphicon-trash"></span>
-</a>
-</td>
+<td class="right">{{comp.outputs.length}}</td>
 </tr>
 </table>
 </section>
@@ -72,7 +63,7 @@ below.</p>
 </form>
 
 <!-- Show the operation result -->
-<ar-result tag="comp-manage"></ar-result>
+<ar-result tag="comparisons-compare"></ar-result>
 
 <!-- Show the JSON response -->
 <ar-example header="JSON Result" 
@@ -80,6 +71,4 @@ below.</p>
 </ar-example>
 
 
-</div>
-
-</ar-mainpage>
+</ar-page>

@@ -5,10 +5,10 @@ angular.module("arachne")
     return {
         restrict: "E",
         templateUrl: "templates/directives/ar-complinks.html",
-        controller: ['Arachne', function(Arachne) {
-            this.comps = Arachne.comps;
+        controller: ['Comparison', function(Comparison) {
+            this.all = Comparison.all;
         }],
         scope: {},
-        controllerAs: 'arachne'
+        controllerAs: 'comparison'
     };
 });

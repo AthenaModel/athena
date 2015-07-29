@@ -23,67 +23,6 @@
 #-------------------------------------------------------------------
 # General Content
 
-smarturl /scenario /{case}/nbhoods/index.html {
-    Displays a list of neighborhood entities for <i>case</i>, with links to 
-    the actual neighborhoods.
-} {
-    # FIRST, validate scenario
-    set case [my ValidateCase $case]
-
-    hb page "Scenario '$case': Neighborhoods"
-    my CaseNavBar $case
-
-    hb h1 "Scenario '$case': Neighborhoods"
-
-    set nbhoods [case with $case nbhood names]
-
-    if {[llength $nbhoods] == 0} {
-        hb putln "None defined."
-        hb para
-        return [hb /page]
-    }
-
-    hb putln "The following neighborhoods are in this scenario ("
-    hb iref /$case/nbhoods/index.json json
-    hb put )
-
-    hb para
-
-    hb table -headers {
-        "ID" "Name" "Local" "Controller" "Urbanization" "Population"
-        "Subsistence" "Consumers" "Labor Force" "Unemployed"
-    } {
-        foreach nbhood $nbhoods {
-            set ndict [case with $case nbhood view $nbhood web]
-            dict with ndict {}
-            hb tr {
-                hb td-with {
-                    hb iref "/$case/$url" "$id"
-                }
-                hb td $longname
-                hb td $local 
-                hb td-with {
-                    if {$controller_url ne ""} {
-                        hb iref "/$case/$controller_url" "$controller"
-                    } else {
-                        hb put $controller
-                    }
-                }
-                hb td $urbanization
-                hb td $population
-                hb td $subsistence 
-                hb td $consumers 
-                hb td $labor_force
-                hb td $unemployed 
-            }
-        }
-    }
-
-    hb para
-
-    return [hb /page]
-}
-
 smarturl /scenario /{case}/nbhoods/index.json {
     Returns a JSON list of nbhood entities in the <i>case</i> specified.
 } {
@@ -106,28 +45,6 @@ smarturl /scenario /{case}/nbhoods/index.json {
     }
 
     return [js dictab $table]
-}
-
-smarturl /scenario /{case}/nbhood/{n}/index.html {
-    Displays data for a particular actor <i>a</i> in scenario <i>case</i>.
-} {
-    set n [my ValidateNbhood $case $n]
-
-    set name [case with $case nbhood get $n longname]
-
-    hb page "Scenario '$case': Neighborhood: $n"
-    my CaseNavBar $case 
-
-    hb h1 "Scenario '$case': Neighborhood: $n"
-
-    hb putln "Click for "
-    hb iref /$case/nbhood/$n/index.json "json"
-    hb put "."
-
-    hb para
-
-    hb para
-    return [hb /page]
 }
 
 smarturl /scenario /{case}/nbhood/{n}/index.json {

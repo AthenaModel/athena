@@ -73,13 +73,6 @@ namespace eval ::athena_test::tests:: {
   }]
     }
 
-    #-------------------------------------------------------------------
-    # /scenario/index.html
-    
-    test index.html-1.1 {Can retrieve the URL} -body {
-        ted get /index.html
-    } -match glob -result {<html>*case00*</html>}
-
 
     #-------------------------------------------------------------------
     # /scenario/new.json
@@ -121,45 +114,6 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {case00 {A New Name}}
 
-    #-------------------------------------------------------------------
-    # /scenario/new.html
-    
-    test new.html-1.1 {unknown ID} -body {
-        ted get /new.html op new case case01
-    } -match glob -result {*Unknown case, "case01"*}
-
-    test new.html-2.1 {success, redirect} -body {
-        ted get /new.html op new
-    } -cleanup {
-        cleanup
-    } -match glob -result {*Created scenario "case01"*}
-
-    test new.html-3.1 {New case, default longname} -body {
-        ted get /new.html op new
-        set case [lindex [case names] end]
-
-        list $case [dict get [case metadata $case] longname]
-    } -cleanup {
-        cleanup
-    } -match trim -result {case01 {Scenario #01}}
-
-    test new.html-3.2 {New case, new longname} -body {
-        ted get /new.html op new longname "My New Name"
-        set case [lindex [case names] end]
-
-        list $case [dict get [case metadata $case] longname]
-    } -cleanup {
-        cleanup
-    } -match trim -result {case01 {My New Name}}
-
-    test new.html-3.3 {Reset case, new longname} -body {
-        ted get /new.html op new case case00 longname "A New Name"
-        set case [lindex [case names] end]
-
-        list $case [dict get [case metadata $case] longname]
-    } -cleanup {
-        cleanup
-    } -match trim -result {case00 {A New Name}}
 
     #-------------------------------------------------------------------
     # /scenario/clone.json
@@ -379,13 +333,6 @@ namespace eval ::athena_test::tests:: {
     } -cleanup {
         cleanup
     } -match norm -result {EXCEPTION {Bogus Error} {*}}
-
-    #-------------------------------------------------------------------
-    # /scenario/{name}/script.html
-
-    test script.html-1.1 {No such scenario} -body {
-        ted get /nonesuch/script.html
-    } -result {NOTFOUND {No such scenario: "nonesuch"}}
 
 
     #-------------------------------------------------------------------

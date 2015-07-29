@@ -10,12 +10,16 @@ package require athena <version>
 
 <section DESCRIPTION>
 
-The <xref athena(n)> command <xref athena(n) "athena diff"> compares two
+The <xref comparison(n)> object compares two
 scenarios for significant differences, and returns a
 <xref comparison(n)> object that contains them.  The differences are 
 captures as a set of <xref vardiff(n)> objects, each of which represents
 a significant difference in a particular variable, e.g., a significant
-different in the mood of a particular civilian group.<p>
+different in the mood of a particular civilian group.  Then, the user
+may produce a "causality" chain for a particular significant output,
+which traces the difference back through the output variable's inputs,
+to their inputs and beyond; these differences are also captured as
+<xref vardiff(n)> objects.<p>
 
 The <xref vardiff(n)> class is an abstract base class; it is subclassed
 for each of the important variable types, e.g., group mood, neighborhood
@@ -41,6 +45,27 @@ this will also be the bare name of the subclass, e.g.,
 States the variable's PMESII category, e.g., <b political>, <b military>,
 or <b social>.<p>
 
+<defitem normfunc {meta normfunc <i func>}>
+
+Specifies the normalization function to use when scoring a set of 
+variables of this type.  The <i func> may be a constant number or 
+one of a number of symbols; see <xref comparison(n) normalizer> for
+the full set and for their meanings.<p>
+
+<defitem afactors {meta afactors <i dict>}>
+
+Specifies a dictionary of <i A> factors by input variable type, e.g.,
+the <b mood> type depends on the <i sat> and <i population> types.  The
+<i A> factor is a factor used to rate the type's importance relative to
+other variable types in the same context as an aid to scoring.  The 
+nominal value is 1.0.<p>
+
+<defitem leaf {meta leaf <i boolean>}>
+
+If 1, the vardiff is a leaf in the causality tree, i.e., it either has
+no inputs or input chaining has not yet been implemented.  If 0, inputs
+can and will be chained.<p>
+
 </deflist meta>
 
 
@@ -50,8 +75,8 @@ vardiff(n) provides the following commands:<p>
 
 <deflist commands>
 
-<defitem "::athena::vardiff create" {vardiff create <i obj> <i comp keydict val1 val2>}>
-<defitem "::athena::vardiff new" {vardiff create <i comp keydict val1 val2>}>
+<defitem "::athena::vardiff create" {::athena::vardiff create <i obj> <i comp keydict val1 val2>}>
+<defitem "::athena::vardiff new" {::athena::vardiff new <i comp keydict val1 val2>}>
 
 Creates a new vardiff(n) instance, returning the fully qualified object 
 name.  The object exists in the context of <xref comparison(n)> object
@@ -67,7 +92,7 @@ argument list for a <b sat> vardiff might look like this:
 
 </deflist commands>
 
-<section "INSTANCE COMMANDS">
+<section "PUBLIC INSTANCE COMMANDS">
 
 Each instance of vardiff(n) provides the following subcommands:<p>
 
@@ -76,54 +101,48 @@ Each instance of vardiff(n) provides the following subcommands:<p>
 <defitem context {<i obj> context}>
 
 <b Subclasses should override this method as needed.>
-Returns a string of context information about the difference.  When 
-the formatted values are symbolic and the raw values are numeric, this
-might return something like "<tt><i val1> vs. <i val2></tt>".  Defaults
-to "<tt>n/a</tt>".<p>
+Returns a string of context information about the difference, for 
+example the numeric range.<p>
 
-<defitem diffadd {<i obj> diffadd <i vartype val1 val2 keys...>}>
-Given a vardiff(n) type, a pair of values, and the variable keys, checks
-whether the two values are significantly different and if so saves a
-vardiff object for them.  This is intended to be used each subclass's
-<iref FindDiffs> method.<p>
+<defitem delta {<i obj> delta}>
 
-<defitem different {<i obj> different}>
+For variables with numeric values, returns the absolute difference
+between <iref val1> and <iref val2>.  For variables with symbolic
+values, returns some number representing the degree of difference; or,
+minimally, a constant 1.0.<p>
 
-Returns 1 if <iref val1> and <iref val2> are different, i.e., not <b eq>.<p>
+<defitem fancy {<i obj> fancy <i value>}>
 
-<defitem diffs {<i obj> diffs}>
+<b Subclasses should override this method as needed.>
+Given a <i value> of the variable's type, formats it for display in a 
+"fancy" way, i.e., includes symbolic values and units as well as the
+bare number.rounds decimals to one or two decimal places.  By 
+default, calls <iref format>.<p>
 
-Compares the inputs to the variable across the two scenarios,
-and returns a (possibly empty) list of vardiff objects representing 
-the significant differences.  The differences are also added to the 
-<xref comparison(n)> object.<p>
+<defitem fancy1 {<i obj> fancy1}>
 
-The results are cached and returned on subsequent calls.<p>
+Returns the result of calling <iref fancy> on <iref val1>.<p>
 
-<defitem FindDiffs {<i obj> FindDiffs}>
+<defitem fancy2 {<i obj> fancy2}>
 
-<b Private. Subclasses should override this method as needed.>
-Compares the inputs to the variable across the two scenarios,
-and adds possible differences using <iref diffadd>.
-The differences are also added to the <xref comparison(n)>
-object.  This is used when drilling down to provide an explanation of 
-a particular difference.<p>
+Returns the result of calling <iref fancy> on <iref val2>.<p>
 
 <defitem fmt1 {<i obj> fmt1}>
 
-Returns the formatted value of the variable in the first scenario.<p>
+Returns the result of calling <iref format> on <iref val1>.<p>
 
 <defitem fmt2 {<i obj> fmt2}>
 
-Returns the formatted value of the variable in the second scenario.<p>
+Returns the result of calling <iref format> on <iref val2>.<p>
 
 <defitem format {<i obj> format <i value>}>
 
 <b Subclasses should override this method as needed.>
-Given a <i value> of the variable's type, formats it for display.  By 
+Given a <i value> of the variable's type, formats it for display, i.e.,
+rounds decimals to one or two decimal places.  By 
 default, returns <i value> unchanged.<p>
 
-<defitem gotdiffs {<i obj> gotdiffs}>
+<defitem gotInputs {<i obj> gotInputs}>
 
 Returns 1 if we've computed significant inputs for this object, and
 0 otherwise.<p>
@@ -131,14 +150,14 @@ Returns 1 if we've computed significant inputs for this object, and
 <defitem huddle {<i obj> huddle}>
 
 Returns a huddle(n) object corresponding to <i obj>.  It has a field
-for each entry in the <iref view>, plus one for the list of 
-<iref inputs>.<p>
-
+for each entry in the <iref view>, plus one for the dictionary of
+of input names and scores.<p>
 
 <defitem inputs {<i obj> inputs}>
 
-If <iref gotdiffs>, returns a list of the names of the significant
-input variables.  Otherwise, returns the empty list.<p>
+Returns a dictionary of the input <xref vardiff(n)>
+objects with their scores in the context of this variable, computing
+them if necessary.<p>
 
 <defitem key {<i obj> key <i name>}>
 
@@ -159,27 +178,20 @@ on the variable type and the key values.  For example, the satisfaction
 of group SHIA with concern SFT has a variable type name of <b sat> and
 key values <b SHIA> and <b SFT>; the qid is then "sat/SHIA/SFT".<p>
 
-<defitem score {<i obj> score}>
-<b Subclasses should override this method as needed.>
-Returns the object's "score", a numeric value used to sort vardiff
-instances of the same type in order of importance.  Defaults to the
-absolute difference of <iref val1> and <iref val2>.<p>
-
-<b TBD:> Ideally, we'd have a score that was comparable across all
-vardiffs in a set, i.e., across all significant inputs to a particular 
-output.<p>
-
-<defitem significant {<i obj> significant}>
-
-If the variable type's <xref compdb(5)> <tt><i vartype>.active</tt>
-parameter is on, then returns 1 if the difference <iref IsSignificant>,
-and 0 otherwise.  If the parameter is off, returns 0.<p>
-
-<defitem IsSignificant {<i obj> IsSignificant}>
+<defitem narrative {<i obj> narrative}>
 
 <b Subclasses should override this method as needed.>
-The is the subclass's significance test; by default it returns 1 if
-<iref val1> and <iref val2> are not identical.<p> 
+Returns a brief narrative description of the difference between 
+<iref val1> and <iref val2>.<p>
+
+<defitem trivial {<i obj> trivial}>
+
+<b Subclasses should override this method as needed.>
+Returns 1 if the difference between <iref val1> and <iref val2> is 
+trivial, and 0 otherwise.  By default, this method simply returns 0; 
+we wouldn't normally create a <xref vardiff(n)> instance unless the 
+two values were known to be non-identical.  Subclasses can override this 
+method to provide an additional check, e.g., an epsilon test.<p>
 
 <defitem val1 {<i obj> val1}>
 
@@ -193,6 +205,32 @@ Returns the raw value of the variable in the second scenario.<p>
 
 Returns a view dictionary for the vardiff, including the type, name,
 category, key values, and so forth.<p>
+
+</deflist instance>
+
+<section "PRIVATE INSTANCE COMMANDS">
+
+Each instance of vardiff(n) provides the following private subcommands:<p>
+
+<deflist instance>
+
+<defitem AddInput {<i obj> AddInput <i vartype val1 val2 keys...>}>
+
+Given a vardiff(n) type, a pair of values, and the variable keys, checks
+whether the two values are non-trivially different and if so saves a
+vardiff object for them.  This is intended to be used in each subclass's
+<iref FindInputs> method.<p>
+
+<defitem FindInputs {<i obj> FindInputs}>
+
+<b Subclasses should override this method as needed.>
+Compares the inputs to the variable across the two scenarios,
+and adds possible differences using the private method <iref AddInput>.
+The differences are also added to the <xref comparison(n)>
+object.  This is used when drilling down to provide an explanation of 
+a particular difference.<p>
+
+</deflist instance>
 
 <section AUTHOR>
 

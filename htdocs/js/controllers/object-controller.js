@@ -6,6 +6,11 @@ angular.module('arachne')
 	function($scope, $routeParams, $http) {
 		var controller = this;
 
+        // Template URL
+        this.template = function(suffix) {
+            return '/templates/pages/case' + suffix;
+        }
+
         // Data storage
 		this.data = '' ; // JSON response
 

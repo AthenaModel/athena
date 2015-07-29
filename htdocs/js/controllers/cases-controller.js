@@ -1,16 +1,21 @@
-// slist-controller.js
+// cases-controller.js -- Page controller for #/cases
 'use strict';
 
 angular.module('arachne')
-.controller('ScenariosIndexController', 
+.controller('CasesController', 
 ['$scope', 'Arachne', 'Tab', function($scope, Arachne,Tab) {
     var controller = this;   // For use in callbacks
+
+    // Template URL
+    this.template = function(suffix) {
+        return '/templates/pages/cases' + suffix;
+    }
 
     // Delegated Functions
     this.cases = Arachne.cases;
     this.files = Arachne.files;
     this.statusData = Arachne.statusData;
-    $scope.tab = Tab.tabber('scenario');
+    $scope.tab = Tab.tabber('cases');
 
     // Model Variables
     this.selectedCase = '';   // Case ID selected in case list, or ''
@@ -52,7 +57,7 @@ angular.module('arachne')
 
     // Import Scenario
     this.opImport = function() {
-        Arachne.request('scen-import', '/scenario/import.json', {
+        Arachne.request('cases-import', '/scenario/import.json', {
             filename: this.selectedFile,
             case:     this.replacing,
             longname: this.newLongname
@@ -72,7 +77,7 @@ angular.module('arachne')
     };
 
     this.opExport = function() {
-        Arachne.request('scen-export', '/scenario/export.json', {
+        Arachne.request('cases-export', '/scenario/export.json', {
                 case: this.selectedCase,
                 filename: this.exportFilename
         }).then(function (stat) {
@@ -88,7 +93,7 @@ angular.module('arachne')
 
     // Brand new scenario
     this.opNew = function() {
-        Arachne.request('scen-new', '/scenario/new.json', {
+        Arachne.request('cases-new', '/scenario/new.json', {
             case:     this.replacing,
             longname: this.newLongname
         }).then(function (stat) {
@@ -106,7 +111,7 @@ angular.module('arachne')
     };
 
     this.opClone = function() {
-        Arachne.request('scen-clone', '/scenario/clone.json', {
+        Arachne.request('cases-clone', '/scenario/clone.json', {
             source:   this.selectedCase,
             target:   this.replacing,
             longname: this.newLongname
@@ -125,7 +130,7 @@ angular.module('arachne')
     };
 
     this.opRemove = function() {
-        Arachne.request('scen-remove', '/scenario/remove.json', {
+        Arachne.request('cases-remove', '/scenario/remove.json', {
             case: this.selectedCase
         }).then(function (stat) {
             if (stat.ok) {

@@ -79,6 +79,7 @@ snit::type ted {
         ::tcltest::customMatch indict   [mytypemethod MatchInDict]
         ::tcltest::customMatch dictglob [mytypemethod MatchDictGlob]
         ::tcltest::customMatch trim     [mytypemethod MatchTrim]
+        ::tcltest::customMatch trimglob [mytypemethod MatchTrimGlob]
         ::tcltest::customMatch json     [mytypemethod MatchJson]
         ::tcltest::customMatch jsonglob [mytypemethod MatchJsonGlob]
         ::tcltest::customMatch norm     [mytypemethod MatchNorm]
@@ -401,6 +402,18 @@ snit::type ted {
 
     typemethod MatchTrim {e a} {
         expr {[string trim $e] eq [string trim $a]}
+    }
+
+    # MatchTrimGlob e a
+    #
+    # e    - Expected result
+    # a    - Actual result
+    #
+    # TclTest custom match algorithm for "trimglob":
+    # trims both results and glob matches.
+
+    typemethod MatchTrimGlob {e a} {
+        string match [string trim $e] [string trim $a]
     }
 
     # MatchNorm e a

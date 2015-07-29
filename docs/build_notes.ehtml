@@ -2,6 +2,25 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.1a2, 27 July 2015</h3>
+
+This build contains some updates to Arachne and the Web App.  There is a
+page for each case that can be used to display and filter model 
+parameters and to change model parameter values.  There is also a comparison 
+page that can be used to compare the same scenario at different times or 
+two different scenarios.<p>
+
+<ul>
+<li> Issue #285: New vardiff scoring
+<li> Issue #284: Uniform Vardiff Scoring 
+<li> Issue #283: Web App: Comparisons, Part II Arachne enhancement 
+<li> Issue #282: Webapp comparison two
+<li> Issue #281: Web App: Comparisons, Part I Arachne enhancement 
+<li> Issue #280: Webapp comparisons, Part I
+<li> Issue #279: Arachne parms
+<li> Issue #276: Web App: Arachne service extensions 
+</ul>
+
 <h3>Build 6.3.1a1, 7 July 2015</h3>
 
 This build introduces a new Arachne web app based upon AngularJS, a third 

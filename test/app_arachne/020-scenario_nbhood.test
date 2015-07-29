@@ -51,24 +51,6 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # Nbhood URLs
 
-    test nbhood.html-1.1 {all nbhoods HTML} -setup {
-        ted with {autogen actors 1}
-        ted with {autogen nbhoods 2}
-    } -body {
-        ted get /case00/nbhoods/index.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': Neighborhoods*}    
-
-    test nbhood.html-1.2 {one nbhood HTML} -setup {
-        ted with {autogen actors 1}
-        ted with {autogen nbhoods 2}
-    } -body {
-        ted get /case00/nbhood/N00/index.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': Neighborhood: N00*}
-
     test nbhood.json-1.1 {all nbhoods JSON} -setup {
         ted with {autogen actors 1}
         ted with {autogen nbhoods 2}

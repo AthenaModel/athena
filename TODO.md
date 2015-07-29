@@ -1,17 +1,26 @@
 # TODO.md - Athena TODO List
 
 - Causality Chaining
-  - Add existing vardiffs as inputs where appropriate
-  - Add inputs and work down
+  - Vardiffs need better context strings, or perhaps links to help.
+  - Need to add "trivial" checks to some of the vardiff types, based
+    on limits in compdb(n); but the limits that are there now are OBE.
+    - Could do this just by pruning based on type-specific "score" or "delta".
+  - Need to move comparison(n)'s "A" values to compdb(n)?
+  - Continue to flesh out chains.
+  - Vardiffs need tests.
 - Angular Web App
-  - Comparisons
-    - See #/comparisons/index.html for UI issues
-    - All comparison requests should be moved to comp.js
-      - And there should be a "new()" method, which can save the 
-        comparison's metadata and outputs immediately, so that they
-        don't need to be retrieved separately.
+  - See if we can pass "page" to ar-mainpage, which includes both
+    templates.
+  - Various pages need to do something better when the route params are
+    empty.
+  - Clean up Arachne URLs, e.g., "/scenario/{case}/nbhoods/index.json"
+    by "/scenario/{case}/nbhood/{n}/index.json".  Both should be "nbhoods"
+    or "nbhood".
+  - Should the scenario_*.json modules be merged, now that HTML is being
+    removed?
   - The case data management should be abstracted from CaseController
-    into a case.js service following the same pattern as comp.js.
+    into a case.js service following the same pattern as comparison.js
+    -   Which itself needs some help.
   - Case page: 
     - Sanity Check!
     - Add a tab for sending orders to a case.

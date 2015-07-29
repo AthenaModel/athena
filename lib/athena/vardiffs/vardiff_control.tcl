@@ -17,13 +17,11 @@ oo::class create ::athena::vardiff::control {
     superclass ::athena::vardiff
     meta type     control
     meta category political
+    meta normfunc 1.0
+    meta leaf     1
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_  
-    }
-
-    method score {} {
-        return 1
     }
 
     method format {val} {
@@ -32,6 +30,19 @@ oo::class create ::athena::vardiff::control {
         } else {
             return "*NONE*"
         }
+    }
+
+    method fancy {val} {
+        if {$val ne ""} {
+            return "Actor $val is in control"
+        } else {
+            return "No actor is in control"
+        }
+    }
+
+    method delta {} {
+        # All symbolic differences are equally important.
+        return [expr {1.0}]
     }
 
     method narrative {} {

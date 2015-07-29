@@ -16,27 +16,26 @@ oo::class create ::athena::vardiff::bsysmood {
     superclass ::athena::vardiff
     meta type     bsysmood
     meta category social
+    meta normfunc 100.0
+    meta afactors {
+        sat        1.0
+        population 1.0
+    }
 
     constructor {comp_ val1_ val2_ b_} {
         next $comp_ [list b $b_] $val1_ $val2_
-    }
-
-    method IsSignificant {} {
-        set lim [athena::compdb get [my type].limit]
-
-        expr {[my score] >= $lim}
     }
 
     method format {val} {
         return [format "%.1f" $val]
     }
 
-    method context {} {
-        format "%.1f vs %.1f" [my val1] [my val2]
+    method fancy {val} {
+        return [format "%.1f points (%s)" $val [qsat longname $val]]
     }
 
-    method score {} {
-        format "%.1f" [next]
+    method context {} {
+        return {&minus;100.0 &le; <i>x</i> &le; &plus;100.0}
     }
 
     method narrative {} {
@@ -48,7 +47,7 @@ oo::class create ::athena::vardiff::bsysmood {
     #-------------------------------------------------------------------
     # Input Differences
     
-    method FindDiffs {} {
+    method FindInputs {} {
         variable comp
 
         set bsid [string range [my key b] 1 end]
@@ -57,14 +56,14 @@ oo::class create ::athena::vardiff::bsysmood {
         $comp eval {
             SELECT g, c, sat1, sat2 FROM comp_sat WHERE bsid = $bsid
         } {
-            my diffadd sat $sat1 $sat2 $g $c
+            my AddInput sat $sat1 $sat2 $g $c
         }
 
         # NEXT, get the population inputs
         $comp eval {
             SELECT g, pop1, pop2 FROM comp_civg WHERE bsid = $bsid
         } {
-            my diffadd population $pop1 $pop2 $g
+            my AddInput population $pop1 $pop2 $g
         }
     }
 }

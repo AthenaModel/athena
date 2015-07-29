@@ -24,13 +24,13 @@
 
   <h4>Available for import:</h4>
 
-  <div ng-include="'/templates/pages/scenarios/import_files.html'"></div>
+  <div ng-include="page.template('/import_files.html')"></div>
 </form>
 
 
 <!-- Show the operation result -->
-<ar-result tag="scen-import"></ar-result>
+<ar-result tag="cases-import"></ar-result>
 
 <!-- Show the JSON response -->
-<ar-example header="JSON Result" content="{{page.statusData('scen-import')}}"></ar-example>
+<ar-example header="JSON Result" content="{{page.statusData('cases-import')}}"></ar-example>
 

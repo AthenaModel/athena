@@ -1,0 +1,33 @@
+<!-- ar-varbox element -->
+
+<div>
+  <!-- Narrative and Toggle -->
+  <div>
+    <span class="glyphicon" ng-class="directive.glyph()"
+          ng-click="directive.toggle()"></span>
+    {{vardiff.narrative}}
+  </div>
+
+  <!-- Detail Panel -->
+  <div ng-if="directive.expanded"
+       class="panel panel-default" style="margin-bottom:0px;">
+    <div class="panel-body">
+      <dl class="dl-horizontal tight" style="margin-bottom:0px;">
+        <dt>Type:</dt>
+        <dd>
+          <span class="label label-primary">{{vardiff.category}}</span> /
+          <span class="label label-primary">{{vardiff.type}}</span>
+        </dd>
+        <dt>Case A:</dt>
+        <dd>{{vardiff.fancy1}}</dd>
+        <dt>Case B:</dt>
+        <dd>{{vardiff.fancy2}}</dd>
+        <dt ng-if="vardiff.delta">Delta:</dt>
+        <dd ng-if="vardiff.delta" ng-bind-html="vardiff.delta"></dd>
+        <dt ng-if="vardiff.context">Context:</dt>
+        <dd ng-if="vardiff.context" ng-bind-html="vardiff.context"></dd>
+      </dl>
+    </div>
+  </div>
+
+</div>

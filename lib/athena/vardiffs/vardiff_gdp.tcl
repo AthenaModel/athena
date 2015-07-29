@@ -16,6 +16,8 @@ oo::class create ::athena::vardiff::gdp {
     superclass ::athena::vardiff
     meta type     gdp
     meta category economic
+    meta normfunc maxabs
+    meta leaf     1
 
     constructor {comp_ val1_ val2_} {
         next $comp_ "" $val1_ $val2_
@@ -32,15 +34,7 @@ oo::class create ::athena::vardiff::gdp {
     }
 
     method context {} {
-        format "%.1f%%" [my score]
-    }
-
-    method score {} {
-        my variable val1
-        my variable val2 
-
-        let score {100.0*abs(double($val2)-$val2)/max($val1, $val2)}
-        format "%.2f" $score
+        return {<i>x</i> &ge; $0.00}
     }
 
     method narrative {} {

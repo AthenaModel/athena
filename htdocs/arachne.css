@@ -19,6 +19,11 @@ body {
   margin-left: 2em;
 }
 
+/* For a little extra space */
+.padleft {
+  margin-left: 5px;
+}
+
 /* For sidebar column */
 .sidebar {
    border-right: 1px solid black; 
@@ -37,7 +42,53 @@ dl.loose dd {
     margin-left: 2em;
 }
 
+/* Tight horizontal DL lists */
+dl.tight dt {
+    width:60px;
+}
+dl.tight dd {
+    margin-left:70px;
+}
+
 /* For tables, to give them only the width they need. */
 table.auto-width {
     width: auto;
+}
+
+/* For table columns, alignment. */
+td.right {
+  text-align: right;
+}
+
+/* Indents, for tree structures in tables */
+.indent1 {
+  margin-left: 1em;
+}
+
+.indent2 {
+  margin-left: 2em;
+}
+
+.indent3 {
+  margin-left: 3em;
+}
+
+.indent4 {
+  margin-left: 4em;
+}
+
+.indent5 {
+  margin-left: 5em;
+}
+
+.indent6 {
+  margin-left: 6em;
+}
+
+.indent7 {
+  margin-left: 7em;
+}
+
+.indent8 {
+  margin-left: 8em;
 }
