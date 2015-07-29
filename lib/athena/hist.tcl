@@ -215,7 +215,7 @@ snit::type ::athena::hist {
 
     # start
     #
-    # Saves time 0 history upon 
+    # Saves time 0 history upon simulation start 
 
     method start {} {
         $self tick
