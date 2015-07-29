@@ -33,7 +33,6 @@ oo::class create ::athena::vardiff::drivervrel {
 
     method narrative {} {
         return [my DeltaNarrative \
-            "Total contribution by driver [my key drid] to group [my key g]'s relationship with actor [my key a]"  \
-            "satisfaction points"]
+            "Total contribution by driver [my key drid] to group [my key g]'s relationship with actor [my key a]"]
     }
 }
