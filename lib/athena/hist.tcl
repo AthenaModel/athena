@@ -27,111 +27,173 @@ snit::type ::athena::hist {
     #
     # TBD dict structure
 
-    typevariable histVars -array {
-        # TBD, don't use $adb commands, use SELECT DISTINCT from each
-        # table for each key!!
-        aam_battle   {
-            n {$adb ptype n+all names}    "Neighborhood"
-            f {$adb ptype frcg+all names} "Group"
-            g {$adb ptype frcg+all names} "Against"
+    typevariable histVars {
+        aam_battle {
+            "Attrition History"
+            keys {
+                n  "Neighborhood"
+                f  "Group"
+                g  "Against"
+            }
         }
 
         activity_nga {
-            n {$adb ptype n+all names}   "Neighborhood"
-            g {$adb ptype fog+all names} "Group"
-            a {$adb activity names}      "Activity"
+            "Neighborhood Activities"
+            keys {
+                n  "Neighborhood"
+                g  "Group"
+                a  "Activity"
+            }
         }
 
-        control      {
-            n {$adb ptype n+all names} "Neighborhood"
+        control {
+            "Neighborhood Control"
+            keys {
+                n "Neighborhood"
+            }
         }
 
-        coop         {
-            f {$adb ptype civg+all names} "Civilian Group"
-            g {$adb ptype frcg+all names} "Force Group"
+        coop {
+            "Civilian Group Cooperation"
+            keys {
+                f {Civilian Group}
+                g {Force Group}
+            }
         }
 
-        deploy_ng    {
-            n {$adb ptype n+all names}   "Neighborhood"
-            g {$adb ptype fog+all names} "Group"
+        deploy_ng {
+            "Force/Org Group Deployments"
+            keys {
+                n "Neighborhood"
+                g "Group"
+            }
         }
 
-        econ         {}
+        econ {
+            "Economy"
+            keys {}
+        }
         
-        flow         {
-            f {$adb ptype civg+all names} "From Group"
-            g {$adb ptype civg+all names} "To Group"
+        flow {
+            "Civilian Group Population Flow"
+            keys {
+                f "From Group"
+                g "To Group"
+            }
         }
 
-        hrel         {
-            f {$adb ptype g+all names} "Group" 
-            g {$adb ptype g+all names} "With Group"
+        hrel {
+            "Horizontal Relationships"
+            keys {
+                f "Group" 
+                g "With Group"
+            }
         }
 
-        mood         {
-            g {$adb ptype civg+all names} "Group"
+        mood  {
+            "Civilian Group Mood"
+            keys {
+                g "Group"
+            }
         }
 
-        nbmood       {
-            n {$adb ptype n+all names} "Neighborhood"
+        nbmood {
+            "Neighborhood Mood"
+            keys {
+                n "Neighborhood"
+            }
         }
 
-        nbur         {
-            n {$adb ptype n+all names} "Neighborhood"
+        nbur {
+            "Neighborhood Unemployment"
+            keys {
+                n "Neighborhood"
+            }
         }
 
-        npop         {
-            n {$adb ptype n+all names} "Neighborhood"
+        npop {
+            "Neighborhood Population"
+            keys {
+                n "Neighborhood"
+            }
         }
 
-        plant_a      {
-            a {$adb actor names} "Owner"
+        plant_a {
+            "Goods Plants by Owner"
+            keys {
+                a "Owner"
+            }
         }
 
-        plant_n      {
-            n {$adb ptype n+all names} "Neighborhood"
+        plant_n {
+            "Goods Plants by Neighborhood"
+            keys {
+                n "Neighborhood"
+            }
         }
 
-        plant_na     {
-            n {$adb ptype n+all names} "Neighborhood"
-            a {$adb actor names}       "Owner"
+        plant_na {
+            "Goods Plants by Nbhood/Owner"
+            keys {
+                n "Neighborhood"
+                a "Owner"
+            }
         }
 
-        pop          {
-            g {$adb ptype civg+all names} "Group"
+        pop {
+            "Civilian Group Population"
+            keys {
+                g "Group"
+            }
         }
 
-        sat          {
-            g {$adb ptype civg+all names} "Group"
-            c {$adb ptype c names}        "Concern"
+        sat {
+            "Civilian Group Satisfaction"
+            keys {
+                g "Group"
+                c "Concern"
+            }
         }
 
-        security     {
-            n {$adb ptype n+all names} "Neighborhood"
-            g {$adb ptype g+all names} "Group"
+        security {
+            "Neighborhood/Group Security"
+            keys {
+                n "Neighborhood"
+                g "Group"
+            }
         }
 
-        service_sg   {
-            s {eservice names} "Service"
-            g {$adb ptype civg+all names} "Group"
+        service_sg {
+            "Service Levels"
+            keys {
+                s "Service"
+                g "Group"
+            }
         }
 
-        support      {
-            n {$adb ptype n+all names} "Neighborhood"
-            a {$adb actor names}  "Actor"
+        support {
+            "Political Support"
+            keys {
+                n "Neighborhood"
+                a "Actor"
+            }
         }
 
-        volatility   {
-            n {$adb ptype n+all names} "Neighborhood"
+        volatility {
+            "Neighborhood Volatility"
+            keys {
+                n "Neighborhood"
+            }
         }
 
-        vrel         {
-            g {$adb ptype g+all names} "Group"
-            a {$adb actor names} "Actor"
+        vrel {
+            "Vertical Relationships"
+            keys {
+                g "Group"
+                a "Actor"
+            }
         }
     }    
-
-    typevariable vardict 
 
     #-------------------------------------------------------------------
     # Components
@@ -151,26 +213,96 @@ snit::type ::athena::hist {
         set adb $adb_
     }
 
+    # start
+    #
+    # Saves time 0 history upon 
+
     method start {} {
-        set vardict [dict create]
-
-        foreach {var meta} [array get histVars] {
-            set keys [list]
-            set labels [list]
-            foreach {key cmd lbl} $meta {
-                lappend keys $key
-                lappend labels $lbl
-                dict set vardict $var $key [eval {*}$cmd]
-            }
-
-            dict set vardict $var keys $keys
-            dict set vardict $var labels $labels
-        }
-
-        puts "vardict= $vardict"
-        # NEXT,  Save time 0 history!
         $self tick
         $self econ
+    }
+
+    # meta
+    #
+    # Returns meta data about all history variables as huddle. The meta data is
+    # built up as the list of history variables is traversed.  The returned
+    # data is suitable for conversion to other formats, such as JSON. Rather 
+    # than  return all possible key values for each history table key, only 
+    # the key values that are present in the table are returned.
+    #
+    # The structure of the meta data is as follows:
+    #
+    # var  -> history variable name (ie. vrel)
+    # desc -> descripion of table (ie. "Vertical Relationship")
+    # keys => list of dictionaries of key metadata
+    #      -> key    => the key as appears in the table (ie. "g")
+    #      -> label  => label to use for key (ie. "Group")
+    #      -> values => A list of valid values for the key
+
+    method meta {} {
+        # FIRST, initialize the list of huddle objects
+        set hlist [list]
+
+        # NEXT, traverse the list of history variables supported
+        foreach {var meta} $histVars {
+            # NEXT, initialize variable dictionary 
+            set vdict ""
+
+            foreach {desc dummy keys} $meta {
+                # NEXT compile var name and description to huddle object, keys
+                # is initially empty; they are read next
+                set vdict \
+                    [huddle compile dict [list var $var desc $desc keys {}]]
+
+                # NEXT, initialize list of keys and read them from meta data
+                set klist [list]
+
+                foreach {key lbl} $keys {
+                    # NEXT, compile key information and set values as empty, 
+                    # we will extract them from the adb.
+                    set kdict \
+                        [huddle compile dict \
+                            [list key $key label $lbl values {}]]
+
+                    # NEXT, get the valid values for the current key    
+                    set keyvals [$self GetHistKeyVals $var $key]
+
+                    # NEXT, override values with whatever is returned 
+                    huddle append kdict values [huddle compile list $keyvals]
+
+                    # NEXT, append the key dict to the list of key dicts
+                    lappend klist $kdict
+                }
+
+                # NEXT, override keys with the list just compiled
+                huddle append vdict keys [huddle list {*}$klist]
+            }
+
+            # NEXT, add current variable metadata to growing list of history
+            # variables
+            lappend hlist $vdict
+        }
+
+        # NEXT compile the list to huddle and return
+        return [huddle list {*}$hlist]
+    }
+
+    # GetHistKeyVals var key
+    #
+    # var  - a history variable
+    # key  - a key present in the table corresponding to var
+    #
+    # This helper method looks up valid values in the given history variable
+    # table for the specific key. It is assumed that the variable has a
+    # corresponding table formatted as "hist_<var>" where <var> is a history
+    # variable.
+
+    method GetHistKeyVals {var key} {
+        set table hist_$var
+
+        set query "SELECT DISTINCT $key FROM $table"
+
+        return [$adb eval $query]
     }
 
     #-------------------------------------------------------------------
@@ -419,8 +551,19 @@ snit::type ::athena::hist {
     # vars
     #
     # Returns available history variables and their keys
+    # TBD: this should go away once the old web app is gone
 
     method vars {} {
-        return [array get histVars]
+        foreach {var meta} $histVars {
+            set klist [list]
+            foreach {dummy dummy keys} $meta {
+                foreach {key dummy} $keys {
+                    lappend klist $key
+                }
+            }
+
+            set hvars($var) $klist
+        }        
+        return [array get hvars]
     }
 }

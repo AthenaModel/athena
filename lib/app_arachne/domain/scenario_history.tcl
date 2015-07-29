@@ -763,6 +763,17 @@ smarturl /scenario /{case}/history/index.json {
     return [js dictab $histvars]
 }
 
+smarturl /scenario /{case}/history/meta.json {
+    Returns all meta data associated with history variables as an
+    array of JSON objects.
+} {
+    set case [my ValidateCase $case]
+
+    set hud [case with $case hist meta]
+    
+    return [huddle jsondump $hud]
+}
+
 smarturl /scenario /{case}/history/{var}/index.html {
     Retrieves history request form for {case} for history 
     variable {var}.
