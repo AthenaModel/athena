@@ -246,7 +246,7 @@ snit::type ::athena::athena {
     delegate method {hook validate}         to adb as {hook validate}
 
     delegate method {hist vars}             to adb as {hist vars}
-    delegate method {hist meta}             to adb as {hist meta}
+    delegate method {hist meta huddle}      to adb as {hist meta huddle}
 
     delegate method {inject exists}         to adb as {inject exists}
     delegate method {inject get}            to adb as {inject get}

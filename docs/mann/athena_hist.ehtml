@@ -31,6 +31,15 @@ where <i adb> is an instance of <xref athena(n)>.<p>
 
 <deflist commands>
 
+<defitem "meta huddle" {<i adb> hist meta huddle}>
+Returns meta data about all history variables as huddle. Each history 
+variable has an associated description and a list of keys with a key
+label and a list of valid key values for each key.  The description and 
+labels are meant for display. The returned
+data is suitable for conversion to other formats, such as JSON. Rather 
+than return all possible key values for each history table key, only 
+the key values that are present in the table are returned.<p>
+
 <defitem vars {<i adb> hist vars}>
 
 Returns the entire list of history variables and their keys for access to

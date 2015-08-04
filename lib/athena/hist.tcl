@@ -24,8 +24,6 @@ snit::type ::athena::hist {
     # Dictionary of history variables and their keys along with some meta
     # data associated with each variable. These correspond to the 
     # hist_* tables.
-    #
-    # TBD dict structure
 
     typevariable histVars {
         aam_battle {
@@ -222,7 +220,7 @@ snit::type ::athena::hist {
         $self econ
     }
 
-    # meta
+    # meta huddle
     #
     # Returns meta data about all history variables as huddle. The meta data is
     # built up as the list of history variables is traversed.  The returned
@@ -239,7 +237,7 @@ snit::type ::athena::hist {
     #      -> label  => label to use for key (ie. "Group")
     #      -> values => A list of valid values for the key
 
-    method meta {} {
+    method {meta huddle} {} {
         # FIRST, initialize the list of huddle objects
         set hlist [list]
 

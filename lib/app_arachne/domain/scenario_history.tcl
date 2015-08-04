@@ -769,7 +769,7 @@ smarturl /scenario /{case}/history/meta.json {
 } {
     set case [my ValidateCase $case]
 
-    set hud [case with $case hist meta]
+    set hud [case with $case hist meta huddle]
     
     return [huddle jsondump $hud]
 }
