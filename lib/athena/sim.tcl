@@ -213,9 +213,8 @@ snit::type ::athena::sim {
         # entered above.
         $adb cprofile aram advance $t0
 
-        # NEXT,  Save time 0 history!
-        $adb cprofile hist tick
-        $adb cprofile hist econ
+        # NEXT, initialize history module, this save time 0 history
+        $adb cprofile hist start
     }
 
 
