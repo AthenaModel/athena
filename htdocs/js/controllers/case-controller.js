@@ -6,9 +6,10 @@ angular.module('arachne')
                                '$http', 
                                '$timeout', 
                                '$scope', 
-                               'Arachne', 
+                               'Arachne',
+                               'History', 
                                'Tab',
-function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
+function($routeParams, $http, $timeout, $scope, Arachne, History, Tab) {
 	var controller = this;
 
     // Template URL
@@ -114,6 +115,14 @@ function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
                 }
             }
         });
+    }
+
+    //----------------------------------------------------
+    // Scenario History
+    this.histvars = History.meta(controller.caseId);
+
+    if (controller.histvars.length) {
+        controller.histvar  = controller.histvars[0].name;
     }
 
     //-----------------------------------------------------
@@ -253,4 +262,5 @@ function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
 
     this.refreshMetadata();
     this.refreshParms();
+    //this.refreshHistMeta();
 }]);

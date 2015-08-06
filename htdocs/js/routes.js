@@ -70,6 +70,12 @@ angular.module('arachne')
         controllerAs: 'page'
     })
 
+    .when('/scenario/:caseId/history/:varName', {
+        templateUrl: 'templates/pages/case/history.html',
+        controller: 'HistController',
+        controllerAs: 'page'
+    })
+
     // TBD: Should be /case, not /scenarios
     .when('/scenario/:caseId/:objectType/:objectId', {
         templateUrl: 'templates/pages/case/object.html',

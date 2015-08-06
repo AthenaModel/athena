@@ -1,0 +1,17 @@
+<h2>History</h2>
+
+<form class="form-inline">
+<div class="form-group">
+  <label for="histvar">Variable:</label>
+  <select id="histvar" class="form-control" ng-model="page.histvar">
+    <option ng-repeat="var in page.histvars" value="{{var.name}}">
+      {{var.desc}}
+    </option>
+  </select>
+ </div>
+
+ <a class="button btn btn-default" type="button" href="#/scenario/{{page.caseId}}/history/{{page.histvar}}">Select</a>
+ </form>
+
+<ar-example header="JSON Result" content="{{page.histvars | json:' '}}"></ar-example>
+

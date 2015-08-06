@@ -4,5 +4,6 @@
 angular.module('arachne', [
     'anguFixedHeaderTable', 
     'ngRoute', 
-    'ngSanitize'
+    'ngSanitize',
+    'chart.js'
 ]);
