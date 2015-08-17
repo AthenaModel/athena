@@ -418,6 +418,15 @@ snit::widget appwin {
                 scriptbrowser %W
             }
         }
+
+        analysis {
+            label   "Analysis"
+            vistype *
+            parent  ""
+            script {
+                chainbrowser %W
+            }
+        }
     }
 
 
