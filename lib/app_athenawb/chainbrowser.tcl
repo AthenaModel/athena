@@ -325,19 +325,19 @@ snit::widget chainbrowser {
 
 dynaform define ::chainbrowser::selectcases {
     rc {
-        Enter the scenario or scenarios whose outputs you wish to compare.
+        Enter the scenario(s) whose outputs you wish to analyze.
     } -span 2
 
     rc ""
 
-    rcc "Compare Cases:"
+    rcc "Compare&nbsp;Cases:"
     selector mode {
         case single "Beginning and End of Run" {
             rcc "Case:" -for amode
             selector amode {
                 case current "Current Scenario" {}
                 case external "External Scenaro" {
-                    rcc "Scenario File:"
+                    rcc "Scenario&nbsp;File:"
                     file afile \
                         -title "Select a scenario file to compare" \
                         -width 30 \
@@ -352,7 +352,7 @@ dynaform define ::chainbrowser::selectcases {
             selector amode {
                 case current "Current Scenario" {}
                 case external "External Scenario" {
-                    rcc "Scenario File:"
+                    rcc "Scenario&nbsp;File:"
                     file afile \
                         -title "Select a scenario file to compare" \
                         -width 30 \
@@ -366,7 +366,7 @@ dynaform define ::chainbrowser::selectcases {
             selector bmode {
                 case current "Current Scenario" {}
                 case external "External Scenaro" {
-                    rcc "Scenario File:"
+                    rcc "Scenario&nbsp;File:"
                     file bfile \
                         -title "Select a scenario file to compare" \
                         -width 30 \
