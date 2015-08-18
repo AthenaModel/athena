@@ -324,34 +324,55 @@ snit::widget chainbrowser {
 # Dynaform: Select Cases
 
 dynaform define ::chainbrowser::selectcases {
-    rcc "Compare:"
+    rc {
+        Enter the scenario or scenarios whose outputs you wish to compare.
+    } -span 2
+
+    rc ""
+
+    rcc "Compare Cases:"
     selector mode {
         case single "Beginning and End of Run" {
-            rcc "Case:"
+            rcc "Case:" -for amode
             selector amode {
                 case current "Current Scenario" {}
                 case external "External Scenaro" {
-                    rc ""
-                    text afile ;# TBD: Need file field!
+                    rcc "Scenario File:"
+                    file afile \
+                        -title "Select a scenario file to compare" \
+                        -width 30 \
+                        -filetypes {
+                            { {Athena Scenario} {.adb} }
+                        }
                 }
             }
         }
         case double "Two Distinct Runs" {
-            rcc "Case A:"
+            rcc "Case A:" -for amode
             selector amode {
                 case current "Current Scenario" {}
-                case external "External Scenaro" {
-                    rc ""
-                    text afile ;# TBD: Need file field!
+                case external "External Scenario" {
+                    rcc "Scenario File:"
+                    file afile \
+                        -title "Select a scenario file to compare" \
+                        -width 30 \
+                        -filetypes {
+                            { {Athena Scenario} {.adb} }
+                        }
                 }
             }
 
-            rcc "Case B:"
+            rcc "Case B:" -for bmode
             selector bmode {
                 case current "Current Scenario" {}
                 case external "External Scenaro" {
-                    rc ""
-                    text bfile ;# TBD: Need file field!
+                    rcc "Scenario File:"
+                    file bfile \
+                        -title "Select a scenario file to compare" \
+                        -width 30 \
+                        -filetypes {
+                            { {Athena Scenario} {.adb} }
+                        }
                 }
             }
         }
