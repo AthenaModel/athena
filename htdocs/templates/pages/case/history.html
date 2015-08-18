@@ -1,19 +1,28 @@
 <ar-page page="page">
-<h1>History</h1>
-
-<h2>{{page.caseId}}: {{page.getDesc()}}</h2>
+<h1>{{page.caseId}}: History</h1>
 <p>
+
+<form class="form-inline">
+<div class="form-group">
+  <label for="histvar">Variable:</label>
+  <select class="form-control" ng-model="page.varName">
+    <option ng-repeat="var in page.meta()" value="{{var.name}}">
+      {{var.desc}}
+    </option>
+  </select>
+ </div>
+
 <form class="form-inline">
   <div class="form-group" ng-repeat="key in page.getKeys()">
     <label>{{key.label}}:</label>
-    <select id="keyval" class="form-control" ng-model="page.svals[$index]">
+    <select id="keyval" class="form-control" ng-model="page.svals[$index]" ng-init="page.svals[$index]=key.values[0]">
       <option ng-repeat="val in key.values">{{val}}</option>
     </select>
   </div>
   <button class="btn btn-default" ng-click="page.getHist()">Get</button>
 </form>
 
-<div ng-hide="page.store">
+<div ng-show="page.store">
 <p>
 <table class="table table-striped table-hover auto-width">
   <tr>
@@ -25,9 +34,5 @@
   </tr>
 </table>
 </div>
-
-<canvas id="line" class="chart chart-line" data="page.data"
-  labels="page.labels" legend="true" series="page.series">
-</canvas>
 
 </ar-page>

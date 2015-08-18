@@ -246,8 +246,13 @@ snit::type ::athena::hist {
             # NEXT, initialize variable dictionary 
             set vdict ""
 
-            # NEXT, number of records in the variables table
+            # NEXT, number of records in the variables table, pruning out
+            # empty variables
             set size [$self GetHistTableSize $name]
+
+            if {$size == 0} {
+                continue
+            }
 
             foreach {desc dummy keys} $meta {
                 # NEXT compile var name and description to huddle object, keys
@@ -312,9 +317,14 @@ snit::type ::athena::hist {
     method GetHistKeyVals {var key} {
         set table hist_$var
 
+        # FIRST, 'ALL' is always a valid key and it should appear first
+        set klist [list ALL]
+
         set query "SELECT DISTINCT $key FROM $table"
 
-        return [$adb eval $query]
+        lappend klist {*}[$adb eval $query]
+
+        return $klist
     }
 
     #-------------------------------------------------------------------

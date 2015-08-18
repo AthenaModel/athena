@@ -70,7 +70,7 @@ angular.module('arachne')
         controllerAs: 'page'
     })
 
-    .when('/scenario/:caseId/history/:varName', {
+    .when('/scenarios/:caseId/history.html', {
         templateUrl: 'templates/pages/case/history.html',
         controller: 'HistController',
         controllerAs: 'page'

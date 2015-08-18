@@ -7,9 +7,8 @@ angular.module('arachne')
                                '$timeout', 
                                '$scope', 
                                'Arachne',
-                               'History', 
                                'Tab',
-function($routeParams, $http, $timeout, $scope, Arachne, History, Tab) {
+function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
 	var controller = this;
 
     // Template URL
@@ -117,14 +116,6 @@ function($routeParams, $http, $timeout, $scope, Arachne, History, Tab) {
         });
     }
 
-    //----------------------------------------------------
-    // Scenario History
-    this.histvars = History.meta(controller.caseId);
-
-    if (controller.histvars.length) {
-        controller.histvar  = controller.histvars[0].name;
-    }
-
     //-----------------------------------------------------
     // Model Parameter Operations
 
@@ -226,6 +217,7 @@ function($routeParams, $http, $timeout, $scope, Arachne, History, Tab) {
             if (stat.ok) {
                 stat.message = 'Locked scenario.';
                 controller.refreshMetadata();
+                Arachne.refreshCases();
             }
         });
     };
@@ -238,6 +230,7 @@ function($routeParams, $http, $timeout, $scope, Arachne, History, Tab) {
             if (stat.ok) {
                 stat.message = 'Unlocked scenario.';
                 controller.refreshMetadata();
+                Arachne.refreshCases();
             }
         });
     };
@@ -262,5 +255,5 @@ function($routeParams, $http, $timeout, $scope, Arachne, History, Tab) {
 
     this.refreshMetadata();
     this.refreshParms();
-    //this.refreshHistMeta();
 }]);
+

@@ -50,10 +50,6 @@
     <a href ng-click="tab.set('parms')">Model Parameters</a>
   </li>
 
-  <li ng-class="tab.active('hist')">
-    <a href ng-click="tab.set('hist')">History</a>
-  </li>
-
 </ul>
 </nav>
 
@@ -73,7 +69,5 @@
      ng-include="'/templates/pages/case/orggroups.html'"></div>
 <div ng-show="tab.active('parms')"  
      ng-include="'/templates/pages/case/parmdb.html'"></div>
-<div ng-show="tab.active('hist')"  
-     ng-include="'/templates/pages/case/histvars.html'"></div>
 
 </ar-page>

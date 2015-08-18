@@ -9,13 +9,11 @@ angular.module('arachne')
                                'History',
 function($routeParams, $http, $timeout, $scope, History) {
 	var controller = this;
-    var meta   = [];
-    var svals  = [];
-    var store  = [];
-    var header = [];
-    var data   = [];
-    var labels = [];
-    var series = [];
+    var metadata   = [];
+    var svals      = [];
+    var store      = [];
+    var header     = [];
+    var varName    = "";
 
     this.template = function(suffix) {
         return '/templates/pages/case' + suffix;
@@ -23,28 +21,34 @@ function($routeParams, $http, $timeout, $scope, History) {
 
     //-----------------------------------------------------
     // Route Parameters
-
-    // store case ID from route for use by page
     this.caseId  = $routeParams.caseId;
-    this.varName = $routeParams.varName;
+
+
+    //----------------------------------------------------
+    // Scenario History
+
+    History.refreshMeta(controller.caseId);
+    this.varName = "";
 
     // Query history service for meta data for this case
-    meta = History.meta(controller.caseId);
+    this.meta = function() {
+        metadata = History.getMeta();
 
-    this.getKeys = function() {
-        for (var i=0 ; i<meta.length ; i++) {
-            if (meta[i].name === controller.varName) {
-                return meta[i].keys;
-            }
+        // Initialize varName to first table in metadata
+        if (metadata.length > 0 && controller.varName === "") {
+            controller.varName = metadata[0].name
         }
+
+        return metadata;
     }
 
-    this.getDesc = function() {
-        for (var i=0 ; i<meta.length ; i++) {
-            if (meta[i].name === controller.varName) {
-                return meta[i].desc;
+    this.getKeys = function() {
+        metadata = History.getMeta();
+        for (var i=0 ; i<metadata.length ; i++) {
+            if (metadata[i].name === controller.varName) {
+                return metadata[i].keys;
             }
-        }        
+        }
     }
 
     this.getHist = function() {
@@ -52,13 +56,13 @@ function($routeParams, $http, $timeout, $scope, History) {
         var parms = new Array();
 
         // Extract keys for selected history variable
-        for (var i=0 ; i<meta.length ; i++) {
-            if (meta[i].name === controller.varName) {
-                keys = meta[i].keys;
+        for (var i=0 ; i<metadata.length ; i++) {
+            if (metadata[i].name === controller.varName) {
+                keys = metadata[i].keys;
             }
         }
 
-        // Extract selected values, there may be none
+        // Extract selected values
         if (controller.svals) {
             for (var i=0 ; i<keys.length ; i++) {
                 var key = keys[i].key;
@@ -74,20 +78,9 @@ function($routeParams, $http, $timeout, $scope, History) {
 
         $http.get(url, {params: parms}).success(function(data) {
             if (data[0] === 'OK') {
-                controller.store = data[1]; 
+                controller.store  = data[1]; 
+                controller.header = Object.keys(controller.store[0]);
             }
-
-            controller.header = Object.keys(controller.store[0]);
-            controller.labels = new Array();
-            controller.series = new Array();
-            controller.data   = new Array();
-            var tdata = new Array();
-            controller.series.push("Vert. Rel.");
-            for (var i=0 ; i < controller.store.length ; i++) {
-                controller.labels.push(controller.store[i].t);
-                tdata.push(controller.store[i].vrel);
-            }
-            controller.data.push(tdata);
         });    
     }
 }]);
