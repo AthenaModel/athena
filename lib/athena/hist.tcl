@@ -230,7 +230,7 @@ snit::type ::athena::hist {
     #
     # The structure of the meta data is as follows:
     #
-    # var  -> history variable name (ie. vrel)
+    # name -> history variable name (ie. vrel)
     # desc -> descripion of table (ie. "Vertical Relationship")
     # keys => list of dictionaries of key metadata
     #      -> key    => the key as appears in the table (ie. "g")
@@ -242,15 +242,24 @@ snit::type ::athena::hist {
         set hlist [list]
 
         # NEXT, traverse the list of history variables supported
-        foreach {var meta} $histVars {
+        foreach {name meta} $histVars {
             # NEXT, initialize variable dictionary 
             set vdict ""
+
+            # NEXT, number of records in the variables table, pruning out
+            # empty variables
+            set size [$self GetHistTableSize $name]
+
+            if {$size == 0} {
+                continue
+            }
 
             foreach {desc dummy keys} $meta {
                 # NEXT compile var name and description to huddle object, keys
                 # is initially empty; they are read next
                 set vdict \
-                    [huddle compile dict [list var $var desc $desc keys {}]]
+                    [huddle compile dict \
+                        [list name $name desc $desc size $size keys {}]]
 
                 # NEXT, initialize list of keys and read them from meta data
                 set klist [list]
@@ -263,7 +272,7 @@ snit::type ::athena::hist {
                             [list key $key label $lbl values {}]]
 
                     # NEXT, get the valid values for the current key    
-                    set keyvals [$self GetHistKeyVals $var $key]
+                    set keyvals [$self GetHistKeyVals $name $key]
 
                     # NEXT, override values with whatever is returned 
                     huddle append kdict values [huddle compile list $keyvals]
@@ -285,6 +294,16 @@ snit::type ::athena::hist {
         return [huddle list {*}$hlist]
     }
 
+    # GetHistTableSize var
+
+    method GetHistTableSize {var} {
+        set table hist_$var
+
+        set query "SELECT count(*) FROM $table"
+
+        $adb eval $query
+    }
+
     # GetHistKeyVals var key
     #
     # var  - a history variable
@@ -298,9 +317,14 @@ snit::type ::athena::hist {
     method GetHistKeyVals {var key} {
         set table hist_$var
 
+        # FIRST, 'ALL' is always a valid key and it should appear first
+        set klist [list ALL]
+
         set query "SELECT DISTINCT $key FROM $table"
 
-        return [$adb eval $query]
+        lappend klist {*}[$adb eval $query]
+
+        return $klist
     }
 
     #-------------------------------------------------------------------

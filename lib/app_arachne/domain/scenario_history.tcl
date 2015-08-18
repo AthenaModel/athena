@@ -663,7 +663,7 @@ oo::define /scenario {
         append tbl "hist_" $var
 
         # NEXT, build up the query
-        set query "SELECT * FROM $tbl "
+        set query "SELECT *, timestr(t) AS week FROM $tbl "
 
         # NEXT, values for where clause, if any
         set wlist [list]

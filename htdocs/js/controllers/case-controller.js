@@ -6,7 +6,7 @@ angular.module('arachne')
                                '$http', 
                                '$timeout', 
                                '$scope', 
-                               'Arachne', 
+                               'Arachne',
                                'Tab',
 function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
 	var controller = this;
@@ -217,6 +217,7 @@ function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
             if (stat.ok) {
                 stat.message = 'Locked scenario.';
                 controller.refreshMetadata();
+                Arachne.refreshCases();
             }
         });
     };
@@ -229,6 +230,7 @@ function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
             if (stat.ok) {
                 stat.message = 'Unlocked scenario.';
                 controller.refreshMetadata();
+                Arachne.refreshCases();
             }
         });
     };
@@ -254,3 +256,4 @@ function($routeParams, $http, $timeout, $scope, Arachne, Tab) {
     this.refreshMetadata();
     this.refreshParms();
 }]);
+

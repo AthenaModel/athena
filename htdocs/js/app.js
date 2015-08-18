@@ -4,5 +4,7 @@
 angular.module('arachne', [
     'anguFixedHeaderTable', 
     'ngRoute', 
-    'ngSanitize'
+    'ngSanitize',
+    'ui-rangeSlider',
+    'chart.js'
 ]);

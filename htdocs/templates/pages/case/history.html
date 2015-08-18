@@ -1,0 +1,46 @@
+<ar-page page="page">
+<h1>{{page.caseId}}: History</h1>
+<p>
+
+<form class="form-inline">
+<div class="form-group">
+  <label for="histvar">Variable:</label>
+  <select class="form-control" ng-model="page.varName">
+    <option ng-repeat="var in page.meta()" value="{{var.name}}">
+      {{var.desc}}
+    </option>
+  </select>
+ </div>
+
+<form class="form-inline">
+  <div class="form-group" ng-repeat="key in page.getKeys()">
+    <label>{{key.label}}:</label>
+    <select id="keyval" class="form-control" ng-model="page.svals[$index]" ng-init="page.svals[$index]=key.values[0]">
+      <option ng-repeat="val in key.values">{{val}}</option>
+    </select>
+  </div>
+  <button class="btn btn-default" ng-click="page.getHist()">Get</button>
+</form>
+
+<table>
+<tr>
+<td width="13%"><label>Time Range:</label></td>
+<td align="left"><div style="width:600px;" range-slider min="0" max="maxT" model-min="page.startt" model-max="page.endt" attach-handle-values="true" data-show-values="true"></div></td>
+<td>
+</tr>
+</table>
+
+<div ng-show="page.store">
+<p>
+<table class="table table-striped table-hover auto-width">
+  <tr>
+    <th ng-repeat="title in page.header">{{title}}</th>
+  </tr>
+
+  <tr ng-repeat="record in page.store">
+    <td ng-repeat="(key, value) in record">{{value}}</td>
+  </tr>
+</table>
+</div>
+
+</ar-page>
