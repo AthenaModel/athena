@@ -222,7 +222,7 @@ snit::widget chainbrowser {
         set choice [dynabox popup \
             -formtype     ::chainbrowser::selectcases   \
             -parent       .main                         \
-            -initvalue    {mode single amode current}   \
+            -initvalue    {amode current bmode none}    \
             -oktext       "Analyze"                     \
             -title        "Analyze Significant Outputs" \
             -validatecmd  [mymethod ValidateCasesCB]]
@@ -231,7 +231,7 @@ snit::widget chainbrowser {
             return
         }
 
-        puts "Cases: $choice"
+        $self CompareCases $choice
     }
 
     # ValidateCasesCB dict
@@ -241,6 +241,84 @@ snit::widget chainbrowser {
     # Validates the user's choice of cases.
 
     method ValidateCasesCB {dict} {
+        dict with dict {}
+        set s1 ""
+        set s2 ""
+
+        if {$amode eq "current" || $bmode eq "current"} {
+            if {[adb is locked]} {
+                set s1 ::adb 
+            } else {
+                return [outdent {
+                    The current scenario is unlocked, and has
+                    no outputs to analyze.
+                }]
+            }
+        }
+        return
+    }
+
+    # CompareCases dict
+    #
+    # dict  - A parameter dictionary from the dialog.
+    #
+    # Attempts to compare the cases, displaying the results in the
+    # body of the browser.
+
+    method CompareCases {dict} {
+        dict with dict {}
+
+        try {
+            # FIRST, validate case A
+            if {$amode eq "current"} {
+                if {[adb is locked]} {
+                    set s1 ::adb 
+                } else {
+                    return "The current scenario is unlocked."
+                }
+            } elseif {$afile eq ""} {
+                return "Select the scenario for Case A."
+            } else {
+                set s1 [::athena::athena new]
+                try {
+                    $s1 load $afile
+                } on error {result} {
+                    return "Could not load file: [file tail $afile], $result"
+                }
+            }
+
+            # NEXT, validate case B if needed.
+            if {$mode eq "double"} {
+                if {$bfile eq ""} {
+                    return "Select the scenario for Case B."
+                } else {
+                    set s2 [::athena::athena new]
+                    try {
+                        $s2 load $bfile
+                    } on error {result} {
+                        return "Could not load file: [file tail $bfile], $result"
+                    }
+                }
+            }
+
+            # NEXT, if we have two scenarios check for comparability.
+            if {$s2 ne ""} {
+                try {
+                    ::athena::comparison check $s1 $s2
+                } trap {ATHENA INCOMPARABLE} {result} {
+                    return $result
+                }
+            }
+        } finally {
+            if {$s1 ne "" && $s1 ne "::adb"} {
+                $s1 destroy
+            }
+
+            if {$s2 ne ""} {
+                $s2 destroy
+            }
+        }
+
         return
     }
 
@@ -330,51 +408,34 @@ dynaform define ::chainbrowser::selectcases {
 
     rc ""
 
-    rcc "Compare&nbsp;Cases:"
-    selector mode {
-        case single "Beginning and End of Run" {
-            rcc "Case:" -for amode
-            selector amode {
-                case current "Current Scenario" {}
-                case external "External Scenaro" {
-                    rcc "Scenario&nbsp;File:"
-                    file afile \
-                        -title "Select a scenario file to compare" \
-                        -width 30 \
-                        -filetypes {
-                            { {Athena Scenario} {.adb} }
-                        }
+    rcc "Case A:" -for amode
+    selector amode {
+        case current "Current Scenario" {}
+        case external "External Scenario" {
+            rcc "Scenario&nbsp;File:"
+            file afile \
+                -title "Select a scenario file to compare" \
+                -width 30 \
+                -filetypes {
+                    { {Athena Scenario} {.adb} }
                 }
-            }
         }
-        case double "Two Distinct Runs" {
-            rcc "Case A:" -for amode
-            selector amode {
-                case current "Current Scenario" {}
-                case external "External Scenario" {
-                    rcc "Scenario&nbsp;File:"
-                    file afile \
-                        -title "Select a scenario file to compare" \
-                        -width 30 \
-                        -filetypes {
-                            { {Athena Scenario} {.adb} }
-                        }
-                }
-            }
+    }
 
-            rcc "Case B:" -for bmode
-            selector bmode {
-                case current "Current Scenario" {}
-                case external "External Scenaro" {
-                    rcc "Scenario&nbsp;File:"
-                    file bfile \
-                        -title "Select a scenario file to compare" \
-                        -width 30 \
-                        -filetypes {
-                            { {Athena Scenario} {.adb} }
-                        }
+    rcc "&nbsp;"
+
+    rcc "Case B:" -for bmode
+    selector bmode {
+        case none    "None" {}
+        case current "Current Scenario" {}
+        case external "External Scenario" {
+            rcc "Scenario&nbsp;File:"
+            file bfile \
+                -title "Select a scenario file to compare" \
+                -width 30 \
+                -filetypes {
+                    { {Athena Scenario} {.adb} }
                 }
-            }
         }
     }
 }
