@@ -7,7 +7,8 @@ angular.module('arachne')
                                '$timeout', 
                                '$scope',
                                'History',
-function($routeParams, $http, $timeout, $scope, History) {
+                               'Arachne',
+function($routeParams, $http, $timeout, $scope, History, Arachne) {
 	var controller = this;
     var metadata   = [];
     var svals      = [];
@@ -23,11 +24,15 @@ function($routeParams, $http, $timeout, $scope, History) {
     // Route Parameters
     this.caseId  = $routeParams.caseId;
 
-
     //----------------------------------------------------
     // Scenario History
 
     History.refreshMeta(controller.caseId);
+    var caseobj  = Arachne.getCase(controller.caseId);
+    $scope.minT  = 0;
+    $scope.maxT  = caseobj.tick;
+    this.startt  = $scope.minT;
+    this.endt    = $scope.maxT;
     this.varName = "";
 
     // Query history service for meta data for this case
@@ -71,6 +76,9 @@ function($routeParams, $http, $timeout, $scope, History) {
                 parms[key] = val;
             } 
         }
+
+        parms["t1"] = controller.startt;
+        parms["t2"] = controller.endt;
 
         // Request the data
         var url = '/scenario/' + controller.caseId + 

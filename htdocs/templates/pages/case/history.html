@@ -22,6 +22,14 @@
   <button class="btn btn-default" ng-click="page.getHist()">Get</button>
 </form>
 
+<table>
+<tr>
+<td width="13%"><label>Time Range:</label></td>
+<td align="left"><div style="width:600px;" range-slider min="0" max="maxT" model-min="page.startt" model-max="page.endt" attach-handle-values="true" data-show-values="true"></div></td>
+<td>
+</tr>
+</table>
+
 <div ng-show="page.store">
 <p>
 <table class="table table-striped table-hover auto-width">
