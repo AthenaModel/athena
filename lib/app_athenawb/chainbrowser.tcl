@@ -55,6 +55,7 @@ snit::widget chainbrowser {
     #   bmode   - Case B mode
     #   bfile   - case B scenario file, or ""
     #   btext   - Case B description
+    #   comp    - Comparison(n) object
     #   outvar  - Name of currently displayed output variable, or ""
     
     variable info -array {}
@@ -68,6 +69,7 @@ snit::widget chainbrowser {
         bmode    "none"
         bfile    ""
         btext    "???? @ ????"
+        comp     ""
         outvar   ""
         siglevel 20.0
     }
@@ -170,8 +172,13 @@ snit::widget chainbrowser {
         if {$info(a) ne "" && $info(a) ne "::adb"} {
             catch {$info(a) destroy}
         }
+
         if {$info(b) ne "" && $info(b) ne "::adb"} {
             catch {$info(b) destroy}
+        }
+
+        if {$info(comp) ne ""} {
+            catch {$info(comp) destroy}
         }
         array unset info
         array set info $defaultInfo
@@ -406,7 +413,18 @@ snit::widget chainbrowser {
         }
 
         # NEXT, create a comparison object, and display its contents.
-        # TBD
+        if {$bmode eq "none"} {
+            set info(ta) 0
+            set info(tb) [$info(a) clock now]
+        } else {
+            set info(ta) [$info(a) clock now]
+            set info(tb) [$info(b) clock now]
+        }
+
+        set info(comp) [::athena::comparison new \
+            $info(a) $info(ta) $info(b) $info(tb)]
+
+        $info(comp) compare
 
         return
     }
@@ -418,8 +436,15 @@ snit::widget chainbrowser {
     # Displays the errors in the body of the browser.
 
     method ShowErrors {errors} {
-        # For now, just print
-        puts [join $errors \n]
+        set info(atext) "???? @ ????"
+        set info(btext) "???? @ ????"
+
+        messagebox popup \
+            -parent     [app topwin]                  \
+            -icon       warning                       \
+            -title      "Could not compare scenarios" \
+            -wraplength 200                           \
+            -message    [join $errors \n]
     }
 
     # ClockTime scn
