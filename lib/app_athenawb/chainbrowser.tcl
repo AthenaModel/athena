@@ -42,6 +42,7 @@ snit::widget chainbrowser {
     # Components
 
     component olist   ;# Tablelist containing output variables
+    component ovar    ;# Output Variable pane
 
     #-------------------------------------------------------------------
     # Instance Variables
@@ -82,19 +83,21 @@ snit::widget chainbrowser {
     # +-----------------------------------------------------------------+
     # | Toolbar                                                         |
     # +-------------+---------------------------------------------------+
-    # | hpaner      | opane                                             |
-    # | +-------+-+ | +-----------------------------------------------+ |
-    # | |       | | | | Detail                                        | |
-    # | | OList |s| | |                                               | |
-    # | |       |c| | |                                               | |
-    # | |       |r| | +-----------------------------------------------+ |
+    # | hpaner      | data                                              |
+    # | +-------+-+ | +---------------------------------------------+-+ |
+    # | |       | | | | OVar: Output variable detail pane           | | |
+    # | | OList |s| | |                                             | | |
+    # | |       |c| | |                                             | | |
+    # | |       |r| | +---------------------------------------------+-+ |
     # | |       |o| | +---------------------------------------------+-+ |
-    # | |       |l| | | Chain                                       |s| |
-    # | |       |l| | |                                             |c| |
-    # | |       | | | |                                             |r| |
-    # | |       | | | |                                             |o| |
-    # | |       | | | |                                             |l| |
-    # | |       | | | |                                             |l| |
+    # | |       |l| | | Chain: Causality chain tree                 | | |
+    # | |       |l| | |                                             | | |
+    # | |       | | | |                                             | | |
+    # | |       | | | +---------------------------------------------+-+ |
+    # | |       | | | +---------------------------------------------+-+ |
+    # | |       | | | | IVar: Input variable detail pane            | | |
+    # | |       | | | |                                             | | |
+    # | |       | | | |                                             | | |
     # | +-------+-+ | +---------------------------------------------+-+ |
     # +-------------+---------------------------------------------------+ 
     #
@@ -105,7 +108,7 @@ snit::widget chainbrowser {
     # Containers:
     #     toolbar - The toolbar
     #     hpaner  - a panedwindow, split horizontally.
-    #     opane   - output variable pane: a frame containing information 
+    #     data   - output variable pane: a frame containing information 
     #               about the selected block.
     #
     # Content:
@@ -114,6 +117,8 @@ snit::widget chainbrowser {
     #     OVar    - A pane containing data about the selected output itself
     #     Chain   - A pane containing the causality chain for the selected
     #               output.
+    #     IVar    - A pane containing data about an input selected in the
+    #               Chain.
 
     constructor {args} {
         # FIRST, create the GUI containers, as listed above.
@@ -122,24 +127,25 @@ snit::widget chainbrowser {
         ttk::panedwindow $win.hpaner \
             -orient horizontal
 
-        # opane
-        ttk::frame $win.hpaner.opane
+        # data
+        ttk::frame $win.hpaner.data
 
         # NEXT, create the content components
         $self ToolbarCreate $win.toolbar
         ttk::separator $win.sep 
 
         $self OListCreate   $win.hpaner.olist
-        # $self DetailCreate  $win.hpaner.opane.detail
-        # $self ChainCreate   $win.hpaner.opane.chain
+        $self OVarCreate    $win.hpaner.data.ovar
+        # $self ChainCreate   $win.hpaner.data.chain
+        # $self IVarCreate    $win.hpaner.data.ivar
 
         # NEXT, manage geometry.
 
-        # pack $win.hpaner.opane.detail -side top -fill x
-        # pack $win.hpaner.opane.chain  -fill both -expand yes
+        pack $win.hpaner.data.ovar -side top -fill x
+        # pack $win.hpaner.data.chain  -fill both -expand yes
 
         $win.hpaner add $win.hpaner.olist 
-        $win.hpaner add $win.hpaner.opane -weight 1
+        $win.hpaner add $win.hpaner.data -weight 1
 
         pack $win.toolbar -side top -fill x
         pack $win.sep -side top -pady 2 -fill x
@@ -182,6 +188,8 @@ snit::widget chainbrowser {
         }
         array unset info
         array set info $defaultInfo
+
+        $self OListClear
     }
     
 
@@ -426,6 +434,9 @@ snit::widget chainbrowser {
 
         $info(comp) compare
 
+        # NEXT, Show the data
+        $self OListLoad
+
         return
     }
 
@@ -462,7 +473,7 @@ snit::widget chainbrowser {
     # The user has chosen a new significance level.
 
     method SigLevelCB {} {
-        puts "SigLevelCB $info(siglevel)"
+        $self OListLoad
     }
 
 
@@ -485,7 +496,7 @@ snit::widget chainbrowser {
             -background       white                          \
             -foreground       black                          \
             -font             codefont                       \
-            -width            25                             \
+            -width            30                             \
             -height           14                             \
             -state            normal                         \
             -stripebackground #CCFFBB                        \
@@ -498,7 +509,8 @@ snit::widget chainbrowser {
             -movablecolumns   no                             \
             -activestyle      none                           \
             -yscrollcommand   [list $pane.yscroll set]       \
-            -xscrollcommand   [list $pane.xscroll set]
+            -xscrollcommand   [list $pane.xscroll set]       \
+            -labelcommand     ::tablelist::sortByColumn
 
         ttk::scrollbar $pane.yscroll      \
             -orient  vertical             \
@@ -519,9 +531,10 @@ snit::widget chainbrowser {
         # NEXT, Columns
 
         $olist insertcolumns end 0 "Variable" left
-        $olist insertcolumns end 5 "Score"    right
+        $olist insertcolumns end 7 "Score"    right
 
-        $olist columnconfigure 0 -stretchable yes
+        $olist columnconfigure 0 -stretchable yes -sortmode ascii
+        $olist columnconfigure 1 -stretchable yes -sortmode real
 
 
         # NEXT, Behaviour
@@ -532,6 +545,63 @@ snit::widget chainbrowser {
         # Handle selections.
         bind $olist <<TablelistSelect>> [mymethod OListSelectCB]   
     }   
+
+    # OListLoad
+    #
+    # Loads the current data into the OList
+
+    method OListLoad {} {
+        $self OListClear
+
+        if {$info(comp) eq ""} {
+            return
+        }
+
+        foreach vardiff [$info(comp) list] {
+            set score [format %.2f [$info(comp) score $vardiff]]
+            if {$score != 0.0 && $score >= $info(siglevel)} {
+                $olist insert end [list [$vardiff name] $score]
+            }
+        }
+
+        $olist sortbycolumn 1 -decreasing
+    }
+
+    # OListClear
+    #
+    # Removes all data from the OList.
+
+    method OListClear {} {
+        $olist delete 0 end
+    }
+
+    # OListSelectCB
+    #
+    # Called when an output variable is selected in the OList.
+
+    method OListSelectCB {} {
+        set rindex [lindex [$olist curselection] 0]
+
+        if {$rindex ne ""} {
+            lassign [$olist get $rindex] varname score
+
+            $ovar layout "<h1>$varname ($score)</h1>"
+        }
+    }
+
+    #-------------------------------------------------------------------
+    # Output Variable Detail Pane (OVar)
+
+    # OVarCreate pane
+    #
+    # pane - The name of the output variable list's pane widget
+    #
+    # Creates the "ovar" component, which lists all of the
+    # output variables in order of signficance.
+
+    method OVarCreate {pane} {
+        install ovar using htmlframe $pane
+    }
 }
 
 #-----------------------------------------------------------------------

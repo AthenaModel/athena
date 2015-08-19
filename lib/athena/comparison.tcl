@@ -249,6 +249,15 @@ snit::type ::athena::comparison {
         }        
     }
 
+    # score vardiff
+    #
+    # For primary variables (e.g., significant outputs), returns the
+    # score.  
+
+    method score {vardiff} {
+        return $scores($vardiff)
+    }
+
     # exists varname
     #
     # varname  - A vardiff variable name
