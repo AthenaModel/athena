@@ -47,15 +47,26 @@ snit::widget chainbrowser {
     # Instance Variables
 
     # info array
-    #
+    #   a       - Case A scenario object
+    #   amode   - Case A mode
+    #   afile   - Case A scenario file, or ""
     #   atext   - Case A description
+    #   b       - Case B scenario object
+    #   bmode   - Case B mode
+    #   bfile   - case B scenario file, or ""
     #   btext   - Case B description
     #   outvar  - Name of currently displayed output variable, or ""
     
     variable info -array {}
 
-    typevariable defaultInfo -array {
+    typevariable defaultInfo {
+        a        ""
+        amode    "current"
+        afile    ""
         atext    "???? @ ????"
+        b        ""
+        bmode    "none"
+        bfile    ""
         btext    "???? @ ????"
         outvar   ""
         siglevel 20.0
@@ -140,8 +151,8 @@ snit::widget chainbrowser {
 
         # TBD: <Time>, <State>
 
-        # sNEXT, clear all content
-        $self clear
+        # NEXT, clear all content
+        array set info $defaultInfo
     }
 
     destructor {
@@ -156,8 +167,14 @@ snit::widget chainbrowser {
     # Reset the browser to display nothing.
 
     method clear {} {
+        if {$info(a) ne "" && $info(a) ne "::adb"} {
+            catch {$info(a) destroy}
+        }
+        if {$info(b) ne "" && $info(b) ne "::adb"} {
+            catch {$info(b) destroy}
+        }
         array unset info
-        array set info [array get defaultInfo]
+        array set info $defaultInfo
     }
     
 
@@ -219,10 +236,17 @@ snit::widget chainbrowser {
     # The user has pressed the "Select Cases" button.
 
     method SelectCasesCB {} {
+        set parmdict [dict create]
+
+        dict set parmdict amode $info(amode)
+        dict set parmdict afile $info(afile)
+        dict set parmdict bmode $info(bmode)
+        dict set parmdict bfile $info(bfile)
+
         set choice [dynabox popup \
             -formtype     ::chainbrowser::selectcases   \
             -parent       .main                         \
-            -initvalue    {amode current bmode none}    \
+            -initvalue    $parmdict                     \
             -oktext       "Analyze"                     \
             -title        "Analyze Significant Outputs" \
             -validatecmd  [mymethod ValidateCasesCB]]
@@ -242,18 +266,29 @@ snit::widget chainbrowser {
 
     method ValidateCasesCB {dict} {
         dict with dict {}
-        set s1 ""
-        set s2 ""
 
-        if {$amode eq "current" || $bmode eq "current"} {
-            if {[adb is locked]} {
-                set s1 ::adb 
-            } else {
-                return [outdent {
-                    The current scenario is unlocked, and has
-                    no outputs to analyze.
-                }]
-            }
+        set errdict [dict create]
+
+        if {$amode eq "current" && [adb is unlocked]} {
+            dict set errdict amode \
+                "The current scenario is unlocked, and has no outputs."      
+        }
+
+        if {$amode eq "external" && ![file isfile $afile]} {
+            dict set errdict afile "Specify a scenario file for Case A"
+        }
+
+        if {$bmode eq "current" && [adb is unlocked]} {
+            dict set errdict bmode \
+                "The current scenario is unlocked, and has no outputs."      
+        }
+
+        if {$bmode eq "external" && ![file isfile $bfile]} {
+            dict set errdict bfile "Specify a scenario file for Case B"
+        }
+
+        if {[dict size $errdict] > 0} {
+            throw REJECTED $errdict
         }
         return
     }
@@ -266,60 +301,135 @@ snit::widget chainbrowser {
     # body of the browser.
 
     method CompareCases {dict} {
+        # FIRST, set up the variables.
+        $self clear
         dict with dict {}
+        set errors [list]
 
-        try {
-            # FIRST, validate case A
-            if {$amode eq "current"} {
-                if {[adb is locked]} {
-                    set s1 ::adb 
-                } else {
-                    return "The current scenario is unlocked."
-                }
-            } elseif {$afile eq ""} {
-                return "Select the scenario for Case A."
-            } else {
-                set s1 [::athena::athena new]
-                try {
-                    $s1 load $afile
-                } on error {result} {
-                    return "Could not load file: [file tail $afile], $result"
-                }
-            }
-
-            # NEXT, validate case B if needed.
-            if {$mode eq "double"} {
-                if {$bfile eq ""} {
-                    return "Select the scenario for Case B."
-                } else {
-                    set s2 [::athena::athena new]
-                    try {
-                        $s2 load $bfile
-                    } on error {result} {
-                        return "Could not load file: [file tail $bfile], $result"
-                    }
-                }
-            }
-
-            # NEXT, if we have two scenarios check for comparability.
-            if {$s2 ne ""} {
-                try {
-                    ::athena::comparison check $s1 $s2
-                } trap {ATHENA INCOMPARABLE} {result} {
-                    return $result
-                }
-            }
-        } finally {
-            if {$s1 ne "" && $s1 ne "::adb"} {
-                $s1 destroy
-            }
-
-            if {$s2 ne ""} {
-                $s2 destroy
+        # NEXT, if case B is identical to case A we really have one case.
+        if {$amode eq $bmode} {
+            if {$amode eq "current" || 
+                $amode eq "external" && $afile eq $bfile
+            } {
+                # Just one case.
+                set bmode none
+                set bfile ""
             }
         }
 
+        set info(amode) $amode
+        set info(afile) $afile
+        set info(bmode) $bmode
+        set info(bfile) $bfile
+
+        # NEXT, get case A
+        switch $amode {
+            current {
+                set info(a) ::adb
+                set info(atext) "Current @ [ClockTime $info(a)]"
+            }
+            external {
+                set info(a) [::athena::athena new]
+                set info(atext) "[file tail $afile] @ "
+
+                try {
+                    $info(a) load $afile
+                    append info(atext) [ClockTime $info(a)]
+                } on error {result} {
+                    append info(atext) "???"
+                    lappend errors "Could not load Case A: $result"
+                }
+            }
+            default {
+                error "Unknown amode: \"$amode\""
+            }
+        }
+
+
+        # NEXT, get case B
+        switch $bmode {
+            none {
+                set info(b) $info(a)
+                set info(btext) "None"
+            }
+            current {
+                set info(b) ::adb
+                set info(atext) "Current @ [ClockTime $info(b)]"
+            }
+            external {
+                set info(b) [::athena::athena new]
+                set info(btext) "[file tail $bfile] @ "
+
+                try {
+                    $info(b) load $bfile
+                    append info(btext) [ClockTime $info(b)]
+                } on error {result} {
+                    append info(btext) "???"
+                    lappend errors "Could not load Case B: $result"
+                }
+            }
+            default {
+                error "Unknown bmode: \"$bmode\""
+            }
+        }
+
+        # NEXT, if there are errors display them.
+        if {[llength $errors] > 0} {
+            $self ShowErrors $errors
+            return
+        }
+
+
+        # NEXT, validate case A
+        if {[$info(a) is unlocked]} {
+            lappend errors "Case A is unlocked, and has no outputs."
+        }
+
+        # NEXT, if we have two cases verify that case B is unlocked and
+        # comparable to case A.
+        if {$bmode ne "none"} {
+            if {[$info(b) is unlocked]} {
+                lappend errors "Case B is unlocked, and has no outputs."
+            } else {
+                try {
+                    ::athena::comparison check $info(a) $info(b)
+                } trap {ATHENA INCOMPARABLE} {result} {
+                    lappend errors $result
+                }                
+            }
+        }
+
+        # NEXT, if there are errors display them.
+        if {[llength $errors] > 0} {
+            $self ShowErrors $errors
+            return
+        }
+
+        # NEXT, create a comparison object, and display its contents.
+        # TBD
+
         return
+    }
+
+    # ShowErrors errors
+    #
+    # errors   - A list of error messages
+    #
+    # Displays the errors in the body of the browser.
+
+    method ShowErrors {errors} {
+        # For now, just print
+        puts [join $errors \n]
+    }
+
+    # ClockTime scn
+    #
+    # scn  - A scenario object
+    #
+    # Gets the clock time string.
+
+    proc ClockTime {scn} {
+        return "[$scn clock asString] ([$scn clock now])"
     }
 
     # SigLevelCB
@@ -329,6 +439,7 @@ snit::widget chainbrowser {
     method SigLevelCB {} {
         puts "SigLevelCB $info(siglevel)"
     }
+
 
 
     #-------------------------------------------------------------------
@@ -412,7 +523,7 @@ dynaform define ::chainbrowser::selectcases {
     selector amode {
         case current "Current Scenario" {}
         case external "External Scenario" {
-            rcc "Scenario&nbsp;File:"
+            rcc "Scenario&nbsp;File:" -for afile
             file afile \
                 -title "Select a scenario file to compare" \
                 -width 30 \
@@ -429,7 +540,7 @@ dynaform define ::chainbrowser::selectcases {
         case none    "None" {}
         case current "Current Scenario" {}
         case external "External Scenario" {
-            rcc "Scenario&nbsp;File:"
+            rcc "Scenario&nbsp;File:" -for bfile
             file bfile \
                 -title "Select a scenario file to compare" \
                 -width 30 \
