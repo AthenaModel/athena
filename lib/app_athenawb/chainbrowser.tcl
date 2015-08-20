@@ -43,6 +43,8 @@ snit::widget chainbrowser {
 
     component olist   ;# Tablelist containing output variables
     component ovar    ;# Output Variable pane
+    component chain   ;# Tablelist containing chain
+    component ivar    ;# Input Variable pane
 
     #-------------------------------------------------------------------
     # Instance Variables
@@ -136,13 +138,14 @@ snit::widget chainbrowser {
 
         $self OListCreate   $win.hpaner.olist
         $self OVarCreate    $win.hpaner.data.ovar
-        # $self ChainCreate   $win.hpaner.data.chain
-        # $self IVarCreate    $win.hpaner.data.ivar
+        $self ChainCreate   $win.hpaner.data.chain
+        $self IVarCreate    $win.hpaner.data.ivar
 
         # NEXT, manage geometry.
 
-        pack $win.hpaner.data.ovar -side top -fill x
-        # pack $win.hpaner.data.chain  -fill both -expand yes
+        pack $win.hpaner.data.ovar  -fill x    -side top
+        pack $win.hpaner.data.ivar  -fill x    -side bottom
+        pack $win.hpaner.data.chain -fill both -expand yes
 
         $win.hpaner add $win.hpaner.olist 
         $win.hpaner add $win.hpaner.data -weight 1
@@ -161,6 +164,13 @@ snit::widget chainbrowser {
 
         # NEXT, clear all content
         array set info $defaultInfo
+
+        # NEXT, turn off size propagation, once it has displayed itself.
+        after 1 [format {
+            if {[winfo exists %s]} {
+                pack propagate %s off
+            }
+        } $win.hpaner.data $win.hpaner.data]
     }
 
     destructor {
@@ -190,6 +200,8 @@ snit::widget chainbrowser {
         array set info $defaultInfo
 
         $self OListClear
+        $ovar clear
+        $ivar clear
     }
     
 
@@ -585,7 +597,10 @@ snit::widget chainbrowser {
         if {$rindex ne ""} {
             lassign [$olist get $rindex] varname score
 
-            $ovar layout "<h1>$varname ($score)</h1>"
+            $ovar show [$info(comp) getdiff $varname] $score
+
+            # TBD: Temporary!
+            $ivar show [$info(comp) getdiff $varname] $score            
         }
     }
 
@@ -594,15 +609,255 @@ snit::widget chainbrowser {
 
     # OVarCreate pane
     #
-    # pane - The name of the output variable list's pane widget
+    # pane - The name of the output variable's pane widget
     #
-    # Creates the "ovar" component, which lists all of the
-    # output variables in order of signficance.
+    # Creates the "ovar" component, which displays detail about the
+    # selected output variable.
 
     method OVarCreate {pane} {
-        install ovar using htmlframe $pane
+        install ovar using vardisp $pane \
+            -prefix "Primary Output:" \
+            -prompt "Select an output variable from the left sidebar."
+    }
+
+    #-------------------------------------------------------------------
+    # Chain Pane (Chain)
+
+    # ChainCreate pane
+    #
+    # pane - The name of the chain list's pane widget
+    #
+    # Creates the "chain" component, which lists all of the
+    # input variables in a chain in order of signficance.
+
+    method ChainCreate {pane} {
+        install chain using tablelist::tablelist $pane
+    }
+
+    #-------------------------------------------------------------------
+    # Input Variable Detail Pane (IVar)
+
+    # IVarCreate pane
+    #
+    # pane - The name of the input variable's pane widget
+    #
+    # Creates the "ivar" component, which displays detail about the 
+    # selected input variable.
+
+    method IVarCreate {pane} {
+        install ivar using vardisp $pane \
+            -prefix "Input:" \
+            -prompt "Select an input variable from the list above."
     }
 }
+
+#-----------------------------------------------------------------------
+# vardisp widget
+
+snit::widget vardisp {
+    #-------------------------------------------------------------------
+    # Components
+
+    component triangle  ;# Triangle button
+    component detail    ;# An htmlframe containing the detailed info.
+    
+    #-------------------------------------------------------------------
+    # Options
+
+    # -prefix text
+    #
+    # Specify a prefix to display prior to the variable name at the
+    # top of the widget.
+    option -prefix \
+        -default "Variable:"
+
+    option -prompt \
+        -default "No variable selected."
+
+    # -prompt text
+    #
+    # Specify a string to use as a prompt when no vardiff is selected.
+
+    option -prompt \
+        -default "No variable selected."
+
+
+    #-------------------------------------------------------------------
+    # Instance Variables
+
+    # info array
+    #
+    #   open     - 1 if detail is open, 0 otherwise.
+    #   title    - Content of title widget
+    #   vardiff  - The vardiff object to display, or ""
+    #   score    - The score for this vardiff in this context. 
+
+    variable info -array {
+        open     0
+        title    ""
+        vardiff  ""
+        score    0.0
+    }
+
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    constructor {args} {
+        $self configurelist $args
+
+        install triangle using ArrowButton $win.triangle \
+            -relief             flat                     \
+            -clean              2                        \
+            -type               button                   \
+            -dir                right                    \
+            -width              20                       \
+            -height             20                       \
+            -highlightthickness 0                        \
+            -command            [mymethod toggle]
+
+        ttk::label $win.title \
+            -textvariable [myvar info(title)]
+
+        install detail using htmlframe $win.detail
+
+        grid $win.triangle  -row 0 -column 0
+        grid $win.title     -row 0 -column 1 -sticky ew
+        # $win.detail is hidden by default.
+
+        grid columnconfigure $win 1 -weight 1
+        grid rowconfigure    $win 2 -weight 1
+
+        $self clear
+    }
+
+    #-------------------------------------------------------------------
+    # Methods
+
+    # show vardiff score
+    #
+    # vardiff   - A vardiff to display
+    # score     - Its score in some particular context.
+
+    method show {vardiff score} {
+        set info(vardiff) $vardiff
+        set info(score)   $score
+
+        $triangle configure -state normal
+
+        $self Refresh
+    }
+
+    # clear
+    #
+    # Clears the current vardiff.
+
+    method clear {} {
+        set info(vardiff) ""
+        set info(score)   0.0
+
+        $triangle configure -state disabled
+
+        $self Refresh
+    }
+    
+
+    # toggle 
+    #
+    # Toggles the open/close state.  If there is no vardiff specified,
+    # closes the detail if it's open.
+
+    method toggle {} {
+        # FIRST, determine the detail open/close state
+        if {$info(vardiff) ne ""} {
+            # Toggle display of detail.
+            set info(open) [expr {!$info(open)}]
+        } else {
+            # Close detail if open.
+            set info(open) 0
+        }
+
+        # NEXT, update the triangle button accordingly.
+        set direction [expr {$info(open) ? "bottom" : "right"}]
+
+        $triangle configure \
+            -dir $direction
+
+        # NEXT, show/hide the detail pane
+        if {$info(open)} {
+            grid $win.detail -row 1 -column 0 -columnspan 2 -sticky nsew
+        } else {
+            grid forget $win.detail
+        }
+    }
+
+    #-------------------------------------------------------------------
+    # Private Methods
+
+    # Refresh
+    #
+    # Displays the current vardiff.
+
+    method Refresh {} {
+        # FIRST, if there's no vardiff clear the display.
+        if {$info(vardiff) eq ""} {
+            # FIRST, display the prompt instead of a vardiff name.
+            set info(title) $options(-prompt)
+
+            # NEXT, if the detail is open, close it.
+            if {$info(open)} {
+                $self toggle
+            }
+
+            return
+        }
+
+        # NEXT, set the title to the vardiff's name.
+        array set vinfo [$info(vardiff) view]
+
+        set info(title) "$vinfo(name): $vinfo(narrative)"
+
+
+        # NEXT, populate the detail pane
+        $detail layout [tsubst {
+            <p>$vinfo(narrative)</p>
+
+            <table>
+            <tr>
+            <td><b>Type:</b></td>
+            <td>$vinfo(category) / $vinfo(type)</td>
+            </tr>
+
+            <tr>
+            <td><b>Case A:</b></td>
+            <td>$vinfo(fancy1)</td>
+            </tr>
+
+            <tr>
+            <td><b>Case B:</b></td>
+            <td>$vinfo(fancy2)</td>
+            </tr>
+
+            <tr>
+            <td><b>Delta:</b></td>
+            <td>[format %.3f $vinfo(delta)]</td>
+            </tr>
+
+            [tif {$vinfo(context) ne ""} {
+            <tr>
+            <td><b>Context:</b></td>
+            <td>$vinfo(context)</td>
+            </tr>
+            }]
+
+
+            </table>
+        }]
+    }
+
+}
+
+
 
 #-----------------------------------------------------------------------
 # Dynaform: Select Cases
