@@ -41,7 +41,7 @@ snit::widget chainbrowser {
     #-------------------------------------------------------------------
     # Components
 
-    component olist   ;# Tablelist containing output variables
+    component olist   ;# Tablelist containing variables
     component ovar    ;# Output Variable pane
     component chain   ;# Tablelist containing chain
     component ivar    ;# Input Variable pane
@@ -201,6 +201,7 @@ snit::widget chainbrowser {
 
         $self OListClear
         $ovar clear
+        $self ChainClear
         $ivar clear
     }
     
@@ -542,11 +543,11 @@ snit::widget chainbrowser {
 
         # NEXT, Columns
 
-        $olist insertcolumns end 0 "Variable" left
-        $olist insertcolumns end 7 "Score"    right
+        $olist insertcolumns end 0 "Output Variable" left
+        $olist insertcolumns end 7 "Score"           right
 
         $olist columnconfigure 0 -stretchable yes -sortmode ascii
-        $olist columnconfigure 1 -stretchable yes -sortmode real
+        $olist columnconfigure 1 -sortmode real
 
 
         # NEXT, Behaviour
@@ -596,11 +597,10 @@ snit::widget chainbrowser {
 
         if {$rindex ne ""} {
             lassign [$olist get $rindex] varname score
+            set info(outvar) [$info(comp) getdiff $varname]
 
-            $ovar show [$info(comp) getdiff $varname] $score
-
-            # TBD: Temporary!
-            $ivar show [$info(comp) getdiff $varname] $score            
+            $ovar show $info(outvar) $score
+            $self ChainLoad
         }
     }
 
@@ -631,8 +631,111 @@ snit::widget chainbrowser {
     # input variables in a chain in order of signficance.
 
     method ChainCreate {pane} {
-        install chain using tablelist::tablelist $pane
+        ttk::frame $pane
+
+        ttk::label $pane.label \
+            -text "Causality Chain"
+
+        install chain using tablelist::tablelist $pane.tlist \
+            -treecolumn       0                              \
+            -treestyle        aqua                           \
+            -background       white                          \
+            -foreground       black                          \
+            -font             codefont                       \
+            -width            60                             \
+            -height           14                             \
+            -state            normal                         \
+            -stripebackground #CCFFBB                        \
+            -selectbackground black                          \
+            -selectforeground white                          \
+            -labelborderwidth 1                              \
+            -labelbackground  $::marsgui::defaultBackground  \
+            -selectmode       browse                         \
+            -exportselection  false                          \
+            -movablecolumns   no                             \
+            -activestyle      none                           \
+            -yscrollcommand   [list $pane.yscroll set]       \
+            -xscrollcommand   [list $pane.xscroll set]
+
+        ttk::scrollbar $pane.yscroll      \
+            -orient  vertical             \
+            -command [list $olist yview]
+
+        ttk::scrollbar $pane.xscroll      \
+            -orient  horizontal           \
+            -command [list $olist xview]
+
+        # NEXT, lay out the components.
+        grid $pane.label   -row 0 -column 0 -sticky w
+        grid $chain        -row 1 -column 0 -sticky nsew
+        grid $pane.yscroll -row 1 -column 1 -sticky ns -pady {1 0}
+        grid $pane.xscroll -row 2 -column 0 -sticky ew -padx {1 0}
+
+        grid columnconfigure $pane 0 -weight 1
+        grid rowconfigure    $pane 1 -weight 1
+
+        $chain insertcolumns end 0 "Input Variable" left
+        $chain insertcolumns end 0 "Narrative" left
+        $chain insertcolumns end 7 "Score"    right
+
+        $chain columnconfigure 1 -stretchable yes
+
+
+        # NEXT, Behaviour
+ 
+        # Force focus when the tablelist is clicked
+        bind [$chain bodytag] <1> [focus $chain]
+                
+        # Handle selections.
+        bind $chain <<TablelistSelect>> [mymethod ChainSelectCB]   
     }
+
+    # ChainLoad
+    #
+    # Loads the current data into the Chain
+
+    method ChainLoad {} {
+        $self ChainClear
+
+        if {$info(outvar) eq ""} {
+            return
+        }
+
+        if {[$info(outvar) leaf]} {
+            app puts "This output has no associated chain."
+            return
+        }
+
+        dict for {vardiff score} [$info(outvar) inputs] {
+            $chain insertchild root end \
+                [list [$vardiff name] [$vardiff narrative] [format %.2f $score]]
+        }
+    }
+
+    # ChainClear
+    #
+    # Removes all data from the Chain.
+
+    method ChainClear {} {
+        $chain delete 0 end
+    }
+
+    # ChainSelectCB
+    #
+    # Called when an output variable is selected in the Chain.
+
+    method ChainSelectCB {} {
+        set rindex [lindex [$chain curselection] 0]
+
+        if {$rindex ne ""} {
+            lassign [$chain get $rindex] varname narrative score
+            set varname [string trim $varname]
+
+            puts "Clicked on $varname; [$info(comp) getdiff $varname]"
+            $ivar show [$info(comp) getdiff $varname] $score
+        }
+    }
+
 
     #-------------------------------------------------------------------
     # Input Variable Detail Pane (IVar)
