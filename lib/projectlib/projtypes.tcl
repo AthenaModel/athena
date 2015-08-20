@@ -151,9 +151,9 @@ snit::type ::projectlib::typewrapper {
 
 # Bean State (or, really, anything with these three states.)
 ::projectlib::enumx create ::projectlib::ebeanstate {
-    normal     {color black    font codefont       }
-    disabled   {color #999999  font codefontstrike }
-    invalid    {color #C7001B  font codefontstrike }
+    normal     {color black    font datafont       }
+    disabled   {color #999999  font datafontstrike }
+    invalid    {color #C7001B  font datafontstrike }
 }
 
 # DAM Rule Sets

@@ -41,25 +41,24 @@ snit::widget chainbrowser {
     #-------------------------------------------------------------------
     # Components
 
-    component olist   ;# Tablelist containing variables
-    component ovar    ;# Output Variable pane
-    component chain   ;# Tablelist containing chain
-    component ivar    ;# Input Variable pane
+    component vlist   ;# Tablelist containing variables
+    component vpane   ;# Variable detail pane
 
     #-------------------------------------------------------------------
     # Instance Variables
 
     # info array
-    #   a       - Case A scenario object
-    #   amode   - Case A mode
-    #   afile   - Case A scenario file, or ""
-    #   atext   - Case A description
-    #   b       - Case B scenario object
-    #   bmode   - Case B mode
-    #   bfile   - case B scenario file, or ""
-    #   btext   - Case B description
-    #   comp    - Comparison(n) object
-    #   outvar  - Name of currently displayed output variable, or ""
+    #   a        - Case A scenario object
+    #   amode    - Case A mode
+    #   afile    - Case A scenario file, or ""
+    #   atext    - Case A description
+    #   b        - Case B scenario object
+    #   bmode    - Case B mode
+    #   bfile    - case B scenario file, or ""
+    #   btext    - Case B description
+    #   comp     - Comparison(n) object
+    #   selvar   - Currently selected vardiff, or ""
+    #   siglevel - Significance level, 0.0 to 100.0
     
     variable info -array {}
 
@@ -73,7 +72,7 @@ snit::widget chainbrowser {
         bfile    ""
         btext    "???? @ ????"
         comp     ""
-        outvar   ""
+        selvar   ""
         siglevel 20.0
     }
 
@@ -84,43 +83,17 @@ snit::widget chainbrowser {
     # The GUI appearance of this browser is as follows:
     # +-----------------------------------------------------------------+
     # | Toolbar                                                         |
-    # +-------------+---------------------------------------------------+
-    # | hpaner      | data                                              |
-    # | +-------+-+ | +---------------------------------------------+-+ |
-    # | |       | | | | OVar: Output variable detail pane           | | |
-    # | | OList |s| | |                                             | | |
-    # | |       |c| | |                                             | | |
-    # | |       |r| | +---------------------------------------------+-+ |
-    # | |       |o| | +---------------------------------------------+-+ |
-    # | |       |l| | | Chain: Causality chain tree                 | | |
-    # | |       |l| | |                                             | | |
-    # | |       | | | |                                             | | |
-    # | |       | | | +---------------------------------------------+-+ |
-    # | |       | | | +---------------------------------------------+-+ |
-    # | |       | | | | IVar: Input variable detail pane            | | |
-    # | |       | | | |                                             | | |
-    # | |       | | | |                                             | | |
-    # | +-------+-+ | +---------------------------------------------+-+ |
-    # +-------------+---------------------------------------------------+ 
+    # +-----------------------------------------------------------------+
+    # +-----------------------------------------------------------------+
+    # | VList                                                           |
+    # +-----------------------------------------------------------------+ 
+    # +-----------------------------------------------------------------+
+    # | VPane                                                           |
+    # +-----------------------------------------------------------------+ 
     #
     # Names with an initial cap are major components containing application
     # data.  Names beginning with a lower case letter are purely for
     # geometry management.
-    #
-    # Containers:
-    #     toolbar - The toolbar
-    #     hpaner  - a panedwindow, split horizontally.
-    #     data   - output variable pane: a frame containing information 
-    #               about the selected block.
-    #
-    # Content:
-    #     OList   - An sqlbrowser listing the significant outputs
-    #               and their scores.
-    #     OVar    - A pane containing data about the selected output itself
-    #     Chain   - A pane containing the causality chain for the selected
-    #               output.
-    #     IVar    - A pane containing data about an input selected in the
-    #               Chain.
 
     constructor {args} {
         # FIRST, create the GUI containers, as listed above.
@@ -136,23 +109,14 @@ snit::widget chainbrowser {
         $self ToolbarCreate $win.toolbar
         ttk::separator $win.sep 
 
-        $self OListCreate   $win.hpaner.olist
-        $self OVarCreate    $win.hpaner.data.ovar
-        $self ChainCreate   $win.hpaner.data.chain
-        $self IVarCreate    $win.hpaner.data.ivar
+        $self VListCreate   $win.vlist
+        $self VPaneCreate   $win.vpane
 
         # NEXT, manage geometry.
-
-        pack $win.hpaner.data.ovar  -fill x    -side top
-        pack $win.hpaner.data.ivar  -fill x    -side bottom
-        pack $win.hpaner.data.chain -fill both -expand yes
-
-        $win.hpaner add $win.hpaner.olist 
-        $win.hpaner add $win.hpaner.data -weight 1
-
-        pack $win.toolbar -side top -fill x
-        pack $win.sep -side top -pady 2 -fill x
-        pack $win.hpaner            -fill both -expand yes
+        pack $win.toolbar -fill x    -side top    
+        pack $win.sep     -fill x    -side top    
+        pack $win.vpane   -fill x    -side bottom 
+        pack $win.vlist   -fill both -expand yes
 
         # NEXT, configure the command-line options
         $self configurelist $args
@@ -170,7 +134,7 @@ snit::widget chainbrowser {
             if {[winfo exists %s]} {
                 pack propagate %s off
             }
-        } $win.hpaner.data $win.hpaner.data]
+        } $win $win]
     }
 
     destructor {
@@ -199,10 +163,8 @@ snit::widget chainbrowser {
         array unset info
         array set info $defaultInfo
 
-        $self OListClear
-        $ovar clear
-        $self ChainClear
-        $ivar clear
+        $self VListClear
+        $vpane clear
     }
     
 
@@ -448,7 +410,7 @@ snit::widget chainbrowser {
         $info(comp) compare
 
         # NEXT, Show the data
-        $self OListLoad
+        $self VListLoad
 
         return
     }
@@ -486,33 +448,35 @@ snit::widget chainbrowser {
     # The user has chosen a new significance level.
 
     method SigLevelCB {} {
-        $self OListLoad
+        $self VListLoad
     }
 
 
 
     #-------------------------------------------------------------------
-    # Output Variable List (OList)
+    # Variable List (VList)
 
-    # OListCreate pane
+    # VListCreate pane
     #
-    # pane - The name of the output variable list's pane widget
+    # pane - The name of the variable list's pane widget
     #
-    # Creates the "olist" component, which lists all of the
-    # output variables in order of signficance.
+    # Creates the "vlist" component, which lists all of the
+    # variables in order of signficance.
 
-    method OListCreate {pane} {
+    method VListCreate {pane} {
         ttk::frame $pane
 
         # FIRST, create the components
-        install olist using tablelist::tablelist $pane.tlist \
+        install vlist using tablelist::tablelist $pane.vlist \
+            -showseparators   yes                            \
+            -treecolumn       0                              \
+            -treestyle        aqua                           \
             -background       white                          \
             -foreground       black                          \
-            -font             codefont                       \
-            -width            30                             \
             -height           14                             \
+            -font             TkDefaultFont                  \
             -state            normal                         \
-            -stripebackground #CCFFBB                        \
+            -stripebackground #EEF9FF                        \
             -selectbackground black                          \
             -selectforeground white                          \
             -labelborderwidth 1                              \
@@ -521,50 +485,46 @@ snit::widget chainbrowser {
             -exportselection  false                          \
             -movablecolumns   no                             \
             -activestyle      none                           \
+            -expandcommand    [mymethod VListExpand]         \
             -yscrollcommand   [list $pane.yscroll set]       \
-            -xscrollcommand   [list $pane.xscroll set]       \
             -labelcommand     ::tablelist::sortByColumn
 
         ttk::scrollbar $pane.yscroll      \
             -orient  vertical             \
-            -command [list $olist yview]
-
-        ttk::scrollbar $pane.xscroll      \
-            -orient  horizontal           \
-            -command [list $olist xview]
+            -command [list $vlist yview]
 
         # NEXT, lay out the components.
-        grid $olist        -row 0 -column 0 -sticky nsew
+        grid $vlist        -row 0 -column 0 -sticky nsew
         grid $pane.yscroll -row 0 -column 1 -sticky ns -pady {1 0}
-        grid $pane.xscroll -row 1 -column 0 -sticky ew -padx {1 0}
 
         grid columnconfigure $pane 0 -weight 1
         grid rowconfigure    $pane 0 -weight 1
 
         # NEXT, Columns
 
-        $olist insertcolumns end 0 "Output Variable" left
-        $olist insertcolumns end 7 "Score"           right
+        $vlist insertcolumns end 0  "Variable"   left
+        $vlist insertcolumns end 0  "Score"      right
+        $vlist insertcolumns end 40 "Narrative"  left
 
-        $olist columnconfigure 0 -stretchable yes -sortmode ascii
-        $olist columnconfigure 1 -sortmode real
-
+        $vlist columnconfigure 0 -sortmode ascii -valign top
+        $vlist columnconfigure 1 -sortmode real  -valign top
+        $vlist columnconfigure 2 -sortmode ascii -stretchable yes
 
         # NEXT, Behaviour
  
         # Force focus when the tablelist is clicked
-        bind [$olist bodytag] <1> [focus $olist]
+        bind [$vlist bodytag] <1> [focus $vlist]
                 
         # Handle selections.
-        bind $olist <<TablelistSelect>> [mymethod OListSelectCB]   
+        bind $vlist <<TablelistSelect>> [mymethod VListSelectCB]   
     }   
 
-    # OListLoad
+    # VListLoad
     #
-    # Loads the current data into the OList
+    # Loads the significant outputs data into the VList
 
-    method OListLoad {} {
-        $self OListClear
+    method VListLoad {} {
+        $self VListClear
 
         if {$info(comp) eq ""} {
             return
@@ -573,184 +533,84 @@ snit::widget chainbrowser {
         foreach vardiff [$info(comp) list] {
             set score [format %.2f [$info(comp) score $vardiff]]
             if {$score != 0.0 && $score >= $info(siglevel)} {
-                $olist insert end [list [$vardiff name] $score]
+                $vlist insertchild root end \
+                    [list [$vardiff name] $score [$vardiff narrative]]
+                if {![$vardiff leaf]} {
+                    $vlist collapse end
+                }
             }
         }
 
-        $olist sortbycolumn 1 -decreasing
+        $vlist sortbycolumn 1 -decreasing
     }
 
-    # OListClear
+    # VListClear
     #
-    # Removes all data from the OList.
+    # Removes all data from the VList.
 
-    method OListClear {} {
-        $olist delete 0 end
+    method VListClear {} {
+        $vlist delete 0 end
     }
 
-    # OListSelectCB
+    # VListSelectCB
     #
-    # Called when an output variable is selected in the OList.
+    # Called when an output variable is selected in the VList.
 
-    method OListSelectCB {} {
-        set rindex [lindex [$olist curselection] 0]
+    method VListSelectCB {} {
+        set rindex [lindex [$vlist curselection] 0]
 
         if {$rindex ne ""} {
-            lassign [$olist get $rindex] varname score
-            set info(outvar) [$info(comp) getdiff $varname]
+            lassign [$vlist get $rindex] varname narrative score
+            set info(selvar) [$info(comp) getdiff $varname]
 
-            $ovar show $info(outvar) $score
-            $self ChainLoad
+            $vpane show $info(selvar) $score
         }
     }
 
-    #-------------------------------------------------------------------
-    # Output Variable Detail Pane (OVar)
-
-    # OVarCreate pane
+    # VListExpand tbl rindex
     #
-    # pane - The name of the output variable's pane widget
+    # tbl    - The vlist
+    # rindex - The rindex index
     #
-    # Creates the "ovar" component, which displays detail about the
-    # selected output variable.
+    # Called when the expand button is clicked.  If the data isn't loaded,
+    # load it.
 
-    method OVarCreate {pane} {
-        install ovar using vardisp $pane \
-            -prefix "Primary Output:" \
-            -prompt "Select an output variable from the left sidebar."
-    }
-
-    #-------------------------------------------------------------------
-    # Chain Pane (Chain)
-
-    # ChainCreate pane
-    #
-    # pane - The name of the chain list's pane widget
-    #
-    # Creates the "chain" component, which lists all of the
-    # input variables in a chain in order of signficance.
-
-    method ChainCreate {pane} {
-        ttk::frame $pane
-
-        ttk::label $pane.label \
-            -text "Causality Chain"
-
-        install chain using tablelist::tablelist $pane.tlist \
-            -treecolumn       0                              \
-            -treestyle        aqua                           \
-            -background       white                          \
-            -foreground       black                          \
-            -font             codefont                       \
-            -width            60                             \
-            -height           14                             \
-            -state            normal                         \
-            -stripebackground #CCFFBB                        \
-            -selectbackground black                          \
-            -selectforeground white                          \
-            -labelborderwidth 1                              \
-            -labelbackground  $::marsgui::defaultBackground  \
-            -selectmode       browse                         \
-            -exportselection  false                          \
-            -movablecolumns   no                             \
-            -activestyle      none                           \
-            -yscrollcommand   [list $pane.yscroll set]       \
-            -xscrollcommand   [list $pane.xscroll set]
-
-        ttk::scrollbar $pane.yscroll      \
-            -orient  vertical             \
-            -command [list $olist yview]
-
-        ttk::scrollbar $pane.xscroll      \
-            -orient  horizontal           \
-            -command [list $olist xview]
-
-        # NEXT, lay out the components.
-        grid $pane.label   -row 0 -column 0 -sticky w
-        grid $chain        -row 1 -column 0 -sticky nsew
-        grid $pane.yscroll -row 1 -column 1 -sticky ns -pady {1 0}
-        grid $pane.xscroll -row 2 -column 0 -sticky ew -padx {1 0}
-
-        grid columnconfigure $pane 0 -weight 1
-        grid rowconfigure    $pane 1 -weight 1
-
-        $chain insertcolumns end 0 "Input Variable" left
-        $chain insertcolumns end 0 "Narrative" left
-        $chain insertcolumns end 7 "Score"    right
-
-        $chain columnconfigure 1 -stretchable yes
-
-
-        # NEXT, Behaviour
- 
-        # Force focus when the tablelist is clicked
-        bind [$chain bodytag] <1> [focus $chain]
-                
-        # Handle selections.
-        bind $chain <<TablelistSelect>> [mymethod ChainSelectCB]   
-    }
-
-    # ChainLoad
-    #
-    # Loads the current data into the Chain
-
-    method ChainLoad {} {
-        $self ChainClear
-
-        if {$info(outvar) eq ""} {
+    method VListExpand {tbl rindex} {
+        if {[$vlist childcount $rindex] != 0} {
             return
         }
 
-        if {[$info(outvar) leaf]} {
-            app puts "This output has no associated chain."
-            return
-        }
+        lassign [$vlist get $rindex] varname narrative score
+        set vardiff [$info(comp) getdiff $varname]
 
-        dict for {vardiff score} [$info(outvar) inputs] {
-            $chain insertchild root end \
-                [list [$vardiff name] [$vardiff narrative] [format %.2f $score]]
-        }
-    }
+        dict for {child score} [$vardiff inputs] {
+            set score [format %.2f $score]
 
-    # ChainClear
-    #
-    # Removes all data from the Chain.
+            if {$score != 0.0 && $score >= $info(siglevel)} {
+                set key [$vlist insertchild $rindex end \
+                    [list [$child name] $score [$child narrative]]]
 
-    method ChainClear {} {
-        $chain delete 0 end
-    }
-
-    # ChainSelectCB
-    #
-    # Called when an output variable is selected in the Chain.
-
-    method ChainSelectCB {} {
-        set rindex [lindex [$chain curselection] 0]
-
-        if {$rindex ne ""} {
-            lassign [$chain get $rindex] varname narrative score
-            set varname [string trim $varname]
-
-            puts "Clicked on $varname; [$info(comp) getdiff $varname]"
-            $ivar show [$info(comp) getdiff $varname] $score
+                if {![$child leaf]} {
+                    $vlist collapse $key
+                }
+            }
         }
     }
 
 
     #-------------------------------------------------------------------
-    # Input Variable Detail Pane (IVar)
+    # Variable Detail Pane (VPane)
 
-    # IVarCreate pane
+    # VPaneCreate pane
     #
-    # pane - The name of the input variable's pane widget
+    # pane - The name of the variable detail pane widget
     #
-    # Creates the "ivar" component, which displays detail about the 
-    # selected input variable.
+    # Creates the "vpane" component, which displays detail about the
+    # selected variable.
 
-    method IVarCreate {pane} {
-        install ivar using vardisp $pane \
-            -prefix "Input:" \
-            -prompt "Select an input variable from the list above."
+    method VPaneCreate {pane} {
+        install vpane using vardisp $pane \
+            -prompt "Select a variable from list above."
     }
 }
 
@@ -766,16 +626,6 @@ snit::widget vardisp {
     
     #-------------------------------------------------------------------
     # Options
-
-    # -prefix text
-    #
-    # Specify a prefix to display prior to the variable name at the
-    # top of the widget.
-    option -prefix \
-        -default "Variable:"
-
-    option -prompt \
-        -default "No variable selected."
 
     # -prompt text
     #
@@ -918,7 +768,7 @@ snit::widget vardisp {
         # NEXT, set the title to the vardiff's name.
         array set vinfo [$info(vardiff) view]
 
-        set info(title) "$vinfo(name): $vinfo(narrative)"
+        set info(title) "Variable: $vinfo(name)"
 
 
         # NEXT, populate the detail pane
