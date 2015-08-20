@@ -14,10 +14,12 @@
 
 oo::class create ::athena::vardiff::goodscap {
     superclass ::athena::vardiff
-    meta type     goodscap
-    meta category economic
-    meta normfunc maxsum
-    meta leaf     1
+    meta type       goodscap
+    meta category   economic
+    meta normfunc   maxsum
+    meta primary    1
+    meta leaf       1
+    meta inputTypes {}
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_

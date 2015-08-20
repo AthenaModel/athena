@@ -14,10 +14,12 @@
 
 oo::class create ::athena::vardiff::population {
     superclass ::athena::vardiff
-    meta type     population
-    meta category social
-    meta normfunc maxsum
-    meta leaf     1
+    meta type       population
+    meta category   social
+    meta normfunc   maxsum
+    meta primary    0
+    meta leaf       1
+    meta inputTypes {}
 
     constructor {comp_ val1_ val2_ g_} {
         next $comp_ [list g $g_] $val1_ $val2_

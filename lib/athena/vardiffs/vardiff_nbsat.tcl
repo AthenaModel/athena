@@ -12,13 +12,11 @@
 
 oo::class create ::athena::vardiff::nbsat {
     superclass ::athena::vardiff
-    meta type     nbsat
-    meta category social
-    meta normfunc 100.0
-    meta afactors {
-        sat        1.0
-        population 1.0
-    }
+    meta type       nbsat
+    meta category   social
+    meta normfunc   100.0
+    meta primary    1
+    meta inputTypes {sat population}
 
     constructor {comp_ val1_ val2_ n_ c_} {
         next $comp_ [list n $n_ c $c_] $val1_ $val2_

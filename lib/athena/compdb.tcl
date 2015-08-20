@@ -52,7 +52,18 @@ snit::type ::athena::compdb {
         set initialized 1
 
         # FIRST, create and initialize parmset(n)
-        set ps [parmset %AUTO%]           
+        set ps [parmset %AUTO%]    
+
+        # main
+        $ps subset primary {
+            Comparison parameters that are at the highest level of output
+            variables.
+        } 
+
+        $ps subset primary.a {
+            Significance multipliers for the highest level output variables.
+            Nominally 1.0, these are used to adjust each outputs significance. 
+        }      
 
         foreach varclass [lsort [info commands ::athena::vardiff::*]] {
             set vartype [namespace tail $varclass]
@@ -65,132 +76,29 @@ snit::type ::athena::compdb {
                 variables of this type; and if not, not.
             }
 
-        }
+            if {[$varclass primary]} {
+                $ps define primary.a.$vartype ::projectlib::rgain 1.0 "
+                    Significance multiplier for output variables of type 
+                    $vartype. Setting it to 0.0 makes outputs of this type
+                    completely insignificant.
+                "
+            }
 
-        # bsysmood
-        $ps define bsysmood.limit ::athena::compdb::dlimit 20.0 {
-            Significant difference limit: minimum 
-            absolute difference, in satisfaction points.
-        }
+            if {[llength [$varclass inputTypes]]} {
+                $ps subset $vartype.a "
+                    Significance multipliers for input variables to variables 
+                    of type $vartype.  Nominally 1.0, these are used to adjust
+                    the significance of the various inputs to each output. 
+                "
 
-        # bsyssat
-        $ps define bsyssat.limit ::athena::compdb::dlimit 25.0 {
-            Significant difference limit: minimum absolute
-            difference, in satisfaction points.
-        }
-
-        # control
-        # None yet
-
-        # driversat
-        $ps define driversat.limit ::athena::compdb::dlimit 5.0 {
-            Significant difference limit: minimum absolute
-            difference, in satisfaction points.
-        }
-
-        # drivervrel
-        $ps define drivervrel.limit ::athena::compdb::dlimit 0.05 {
-            Significant difference limit: minimum absolute
-            difference, as a relationship delta.
-        }
-
-        # gdp
-        $ps define gdp.limit ::athena::compdb::dlimit 20.0 {
-            Significant difference limit: minimum absolute percentage
-            change, in percentage points.
-        }
-
-        # goodscap
-        $ps define goodscap.limit ::athena::compdb::dlimit 20.0 {
-            Significant difference limit: minimum absolute percentage
-            change, in percentage points.
-        }
-
-        # mood
-        $ps define mood.limit ::athena::compdb::dlimit 20.0 {
-            Significant difference limit: minimum absolute
-            difference, in satisfaction points.
-        }
-
-        # nbinfluence
-        # None yet
-
-        # nbmood
-        $ps define nbmood.limit ::athena::compdb::dlimit 15.0 {
-            Significant difference limit: minimum absolute
-            difference, in satisfaction points.
-        }
-
-        # nbsat
-        $ps define nbsat.limit ::athena::compdb::dlimit 20.0 {
-            Significant difference limit: minimum absolute
-            difference, in satisfaction points.
-        }
-
-        # nbsecurity
-        $ps define nbsecurity.limit ::athena::compdb::ilimit 20 {
-            Significant difference limit: minimum absolute
-            difference, in security points.
-        }
-
-        # nbunemp
-        $ps define nbunemp.limit ::athena::compdb::dlimit 4.0 {
-            Significant difference limit: minimum absolute
-            difference, in percentage points.
-        }
-
-        # pbmood
-        $ps define pbmood.limit ::athena::compdb::dlimit 10.0 {
-            Significant difference limit: minimum absolute
-            difference, in satisfaction points.
-        }
-
-        # pbsat
-        $ps define pbsat.limit ::athena::compdb::dlimit 15.0 {
-            Significant difference limit: minimum absolute
-            difference, in satisfaction points.
-        }
-
-        # personnel
-        $ps define personnel.limit ::athena::compdb::dlimit 5.0 {
-            Significant difference limit: minimum absolute
-            percentage change, in percentage points.
-        }
-
-        # population
-        $ps define population.limit ::athena::compdb::dlimit 5.0 {
-            Significant difference limit: minimum absolute
-            percentage change, in percentage points.
-        }
-
-        # sat
-        $ps define sat.limit ::athena::compdb::dlimit 25.0 {
-            Significant difference limit: minimum absolute
-            difference, in satisfaction points.
-        }
-
-        # security
-        $ps define security.limit ::athena::compdb::ilimit 25 {
-            Significant difference limit: minimum absolute
-            difference, in security points.
-        }
-
-        # support
-        $ps define support.limit ::athena::compdb::dlimit 5.0 {
-            Significant difference limit: minimum absolute
-            percentage change, in percentage points.
-        }
-
-        # unemp
-        $ps define unemp.limit ::athena::compdb::dlimit 4.0 {
-            Significant difference limit: minimum absolute
-            difference, in percentage points.
-        }
-
-        # vrel
-        $ps define vrel.limit ::athena::compdb::dlimit 0.05 {
-            Significant difference limit: minimum absolute
-            difference, as a relationship value.
+                foreach input [$varclass inputTypes] {
+                    $ps define $vartype.a.$input ::projectlib::rgain 1.0 "
+                        The significance multiplier for inputs of type $input to
+                        variables of type $vartype. Setting it to 0.0 makes inputs 
+                        of this type completely insignificant.
+                    "
+                }
+            }
         }
     }
 

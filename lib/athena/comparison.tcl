@@ -33,29 +33,24 @@ snit::type ::athena::comparison {
 
     # "A" values for comparing scores of significant
     # outputs of different types
-    # TBD: Should probably be in compdb
-    typevariable A -array {
-        bsysmood     1.0
-        bsyssat      1.0
-        control      1.0
-        gdp          1.0
-        goodscap     1.0
-        mood         1.0
-        nbinfluence  1.0
-        nbmood       1.0
-        nbsat        1.0
-        nbsecurity   1.0
-        nbunemp      1.0
-        pbmood       1.0
-        pbsat        1.0
-        sat          1.0
-        support      1.0
-        unemp        1.0
-        vrel         1.0
-    }
+    typevariable A -array {}
     
     #-------------------------------------------------------------------
     # Type Methods
+
+    # init
+    #
+    # Pulls out relevant compdb(5) parms
+
+    typemethod init {} {
+        # FIRST, extract tha "A" values for primary outputs
+        foreach varclass [info commands ::athena::vardiff::*] {
+            if {[$varclass primary]} {
+                set vartype [namespace tail $varclass]
+                set A($vartype) [::athena::compdb get primary.a.$vartype]
+            }
+        }
+    }
 
     # new s1 t1 s2 t2
     #

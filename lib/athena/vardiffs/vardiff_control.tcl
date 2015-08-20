@@ -15,10 +15,12 @@
 
 oo::class create ::athena::vardiff::control {
     superclass ::athena::vardiff
-    meta type     control
-    meta category political
-    meta normfunc 1.0
-    meta leaf     1
+    meta type       control
+    meta category   political
+    meta normfunc   1.0
+    meta leaf       1
+    meta primary    1
+    meta inputTypes {}
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_  

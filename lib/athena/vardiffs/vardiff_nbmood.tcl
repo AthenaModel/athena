@@ -15,13 +15,11 @@
 
 oo::class create ::athena::vardiff::nbmood {
     superclass ::athena::vardiff
-    meta type     nbmood
-    meta category social
-    meta normfunc 100.0
-    meta afactors {
-        sat        1.0
-        population 1.0
-    }
+    meta type       nbmood
+    meta category   social
+    meta normfunc   100.0
+    meta primary    1
+    meta inputTypes {sat population}
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_

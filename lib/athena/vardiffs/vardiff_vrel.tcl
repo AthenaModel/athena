@@ -14,12 +14,11 @@
 
 oo::class create ::athena::vardiff::vrel {
     superclass ::athena::vardiff
-    meta type     vrel
-    meta category political
-    meta normfunc 1.0
-    meta afactors {
-        drivervrel 1.0
-    }
+    meta type       vrel
+    meta category   political
+    meta normfunc   1.0
+    meta primary    1
+    meta inputTypes {drivervrel}
 
     constructor {comp_ val1_ val2_ g_ a_} {
         next $comp_ [list g $g_ a $a_] $val1_ $val2_

@@ -14,12 +14,11 @@
 
 oo::class create ::athena::vardiff::sat {
     superclass ::athena::vardiff
-    meta type     sat
-    meta category social
-    meta normfunc 100.0
-    meta afactors {
-        driversat 1.0
-    }
+    meta type       sat
+    meta category   social
+    meta normfunc   100.0
+    meta primary    1
+    meta inputTypes {driversat}
 
     constructor {comp_ val1_ val2_ g_ c_} {
         next $comp_ [list g $g_ c $c_] $val1_ $val2_

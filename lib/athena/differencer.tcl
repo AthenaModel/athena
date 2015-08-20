@@ -44,8 +44,9 @@ snit::type ::athena::differencer {
     # compatible.
 
     typemethod diff {s1 args} {
-        # FIRST, initialize the compdb(n) module, just in case.
-        athena::compdb init
+        # FIRST, initialize the compdb(n) and comparison(n) modules.
+        athena::compdb     init
+        athena::comparison init
 
         # NEXT, get the scenarios.
         if {![string match "-*" [lindex $args 0]]} {

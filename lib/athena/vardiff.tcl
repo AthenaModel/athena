@@ -12,13 +12,15 @@
 
 oo::class create ::athena::vardiff {
     meta type *            ;# Type is undefined; subclasses should override.
-    meta category "???"    ;# PMESII category is undefined; subclasses 
+    meta category   "???"  ;# PMESII category is undefined; subclasses 
                             # should override.
-    meta normfunc 1.0      ;# Default normalization function
-    meta afactors {}       ;# A factors, used to relate scores of different 
-                            # types
-    meta leaf     0        ;# Vardiffs that do not have or can't yet find
+    meta normfunc   1.0    ;# Default normalization function
+    meta inputTypes {}     ;# List of input variable types to a vardiff 
+                            # (if any); subclasses should override.
+    meta leaf       0      ;# Vardiffs that do not have or can't yet find
                             # their inputs should set this to 1.
+    meta primary    0      ;# Vardiffs that are primary outputs should
+                            # set this to 1.
 
     variable comp          ;# comparison object
     variable keydict       ;# Key dictionary
@@ -199,7 +201,7 @@ oo::class create ::athena::vardiff {
     method trivial {} {
         return 0
     }
-
+    
     # view
     #
     # Returns a view on the difference record.
@@ -287,7 +289,6 @@ oo::class create ::athena::vardiff {
         return
     }
 
-
     # AddInput vartype val1 val2 keys...
     #
     # vartype  - A vardiff type.
@@ -344,7 +345,10 @@ oo::class create ::athena::vardiff {
         }
 
         # NEXT, normalize the scores so that the max is 100.0
-        array set A [my afactors]
+        foreach input [my inputTypes] {
+            set A($input) [::athena::compdb get [my type].a.$input]
+        }
+
         $comp normalizeScores iscores A
     }
 

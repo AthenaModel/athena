@@ -14,10 +14,12 @@
 
 oo::class create ::athena::vardiff::nbunemp {
     superclass ::athena::vardiff
-    meta type     nbunemp
-    meta category economic
-    meta normfunc maxabs
-    meta leaf     1
+    meta type       nbunemp
+    meta category   economic
+    meta normfunc   maxabs
+    meta leaf       1
+    meta primary    1
+    meta inputTypes {}
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_

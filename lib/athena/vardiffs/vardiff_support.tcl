@@ -14,15 +14,11 @@
 
 oo::class create ::athena::vardiff::support {
     superclass ::athena::vardiff
-    meta type     support
-    meta category political
-    meta normfunc 1.0
-    meta afactors {
-        population 1.0
-        personnel  1.0
-        security   1.0
-        vrel       1.0
-    }
+    meta type       support
+    meta category   political
+    meta normfunc   1.0
+    meta primary    1
+    meta inputTypes {population personnel security vrel}
 
     constructor {comp_ val1_ val2_ n_ a_} {
         next $comp_ [list n $n_ a $a_] $val1_ $val2_

@@ -89,7 +89,7 @@ snit::type ::athena::bgslave {
     # Tells the slave to release the thread.
 
     typemethod shutdown {} {
-        $type log normal slave "Shutting down."
+        sdb log normal slave "Shutting down."
         thread::release
     }
 

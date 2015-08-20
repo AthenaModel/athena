@@ -14,10 +14,12 @@
 
 oo::class create ::athena::vardiff::security {
     superclass ::athena::vardiff
-    meta type     security
-    meta category political
-    meta normfunc 100.0
-    meta leaf     1
+    meta type       security
+    meta category   political
+    meta normfunc   100.0
+    meta primary    0
+    meta leaf       1
+    meta inputTypes {}
 
     constructor {comp_ val1_ val2_ n_ g_} {
         next $comp_ [list n $n_ g $g_] $val1_ $val2_

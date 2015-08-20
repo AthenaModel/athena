@@ -14,10 +14,12 @@
 
 oo::class create ::athena::vardiff::gdp {
     superclass ::athena::vardiff
-    meta type     gdp
-    meta category economic
-    meta normfunc maxabs
-    meta leaf     1
+    meta type       gdp
+    meta category   economic
+    meta normfunc   maxabs
+    meta primary    1
+    meta leaf       1
+    meta inputTypes {}
 
     constructor {comp_ val1_ val2_} {
         next $comp_ "" $val1_ $val2_
