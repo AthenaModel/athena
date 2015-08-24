@@ -7,7 +7,14 @@
 #
 # DESCRIPTION:
 #    chainbrowser(sim) package: Browser for significant outputs and
-#    causality chains
+#    causality chains.
+#
+# TBD:
+# 
+# * The list of categories is used only on the primary outputs.  Only
+#   include categories that are represented in the data.
+# * Indicate how many items are found and how many are filtered out.
+# * 
 #
 #-----------------------------------------------------------------------
 
@@ -30,6 +37,16 @@ snit::widget chainbrowser {
          20.0
          10.0
           0.0
+    }
+
+    typevariable categories {
+        "All"
+        "Political"
+        "Military"
+        "Economic"
+        "Social"
+        "Information"
+        "Infrastructure"
     }
     
     #-------------------------------------------------------------------
@@ -59,6 +76,7 @@ snit::widget chainbrowser {
     #   comp     - Comparison(n) object
     #   selvar   - Currently selected vardiff, or ""
     #   siglevel - Significance level, 0.0 to 100.0
+    #   cat      - Filter category, or "all"
     
     variable info -array {}
 
@@ -74,6 +92,7 @@ snit::widget chainbrowser {
         comp     ""
         selvar   ""
         siglevel 20.0
+        cat      "All"
     }
 
 
@@ -123,8 +142,8 @@ snit::widget chainbrowser {
 
         # NEXT, Monitor the application so that we know when the current
         # scenario has changed in some way.
-
-        # TBD: <Time>, <State>
+        notifier bind ::adb <Time>  $self [mymethod ClearIfCurrent]
+        notifier bind ::adb <State> $self [mymethod ClearIfCurrent]
 
         # NEXT, clear all content
         array set info $defaultInfo
@@ -140,6 +159,21 @@ snit::widget chainbrowser {
     destructor {
         notifier forget $self
     }
+
+    #-------------------------------------------------------------------
+    # Global event handlers
+
+    # ClearIfCurrent
+    #
+    # If the current scenario is one of those included in the comparison,
+    # and the current scenario changes, clear the browers.
+
+    method ClearIfCurrent {} {
+        if {$info(a) eq "::adb" || $info(b) eq "::adb"} {
+            $self clear
+        }
+    }
+    
 
     #-------------------------------------------------------------------
     # clear
@@ -197,6 +231,18 @@ snit::widget chainbrowser {
         ttk::label $w.btext \
             -textvariable [myvar info(btext)]
 
+        ttk::label $w.catlabel \
+            -text "Category:"
+
+        ttk::combobox $w.category \
+            -height       [llength $categories]   \
+            -width        15                      \
+            -state        readonly                \
+            -values       $categories             \
+            -textvariable [myvar info(cat)]
+
+        bind $w.category <<ComboboxSelected>> [mymethod VListRefilterCB]
+
         ttk::label $w.levlabel \
             -text "Significance Level:"
 
@@ -207,7 +253,7 @@ snit::widget chainbrowser {
             -values       $sigLevels             \
             -textvariable [myvar info(siglevel)]
 
-        bind $w.siglevel <<ComboboxSelected>> [mymethod SigLevelCB]
+        bind $w.siglevel <<ComboboxSelected>> [mymethod VListRefilterCB]
 
         # NEXT, pack them in.
         pack $w.select -side left -padx {0 10}
@@ -218,6 +264,8 @@ snit::widget chainbrowser {
 
         pack $w.siglevel -side right
         pack $w.levlabel -side right
+        pack $w.category -side right -padx {0 10}
+        pack $w.catlabel -side right
     } 
 
 
@@ -570,39 +618,48 @@ snit::widget chainbrowser {
 
         # NEXT, it should be hidden if it's score is too low, or if
         # its parent is hidden.
-        if {$parent eq "root"} {
-            set parentHidden 0
-        } else {
-            set parentHidden [$vlist rowcget $parent -hide]
-        }
-
-        if {$parentHidden || $score < $info(siglevel)} {
-            $vlist rowconfigure $key -hide true
-        }
+        $self VListFilter $key
 
         return
     }
 
-    # VListSigLevel
+    # VListRefilterCB
     #
-    # Hides/shows rows based on siglevel.
+    # Hides/shows rows when filter parameters change.
 
-    method VListSigLevel {} {
+    method VListRefilterCB {} {
         for {set i 0} {$i < [$vlist size]} {incr i} {
-            set p [$vlist parentkey $i]
-            set score [$vlist rowattrib $i score]
+            $self VListFilter $i
+        }
+    }
 
-            if {$p eq "root"} {
-                set parentHidden 0
-            } else {
-                set parentHidden [$vlist rowcget $p -hide]
-            }
+    # VListFilter rindex
+    #
+    # rindex   - A row to check against the filters.
+    #
+    # Hides the row if it is filtered out.
 
-            if {$parentHidden || $score < $info(siglevel)} {
-                $vlist rowconfigure $i -hide yes
-            } else {
-                $vlist rowconfigure $i -hide no                
-            }
+    method VListFilter {rindex} {
+        set vardiff [$vlist rowattrib $rindex vardiff]
+        set score   [$vlist rowattrib $rindex score]
+        set p       [$vlist parentkey $rindex]
+        set cat     [string tolower $info(cat)]
+
+        if {$p eq "root"} {
+            set parentHidden 0
+        } else {
+            set parentHidden [$vlist rowcget $p -hide]
+        }
+
+        set hide 0
+
+        if {($p eq "root" && $cat ne "all" && [$vardiff category] != $cat) 
+            || ($p ne "root" && [$vlist rowcget $p -hide])
+            || $score < $info(siglevel)
+        } {
+            $vlist rowconfigure $rindex -hide yes
+        } else {
+            $vlist rowconfigure $rindex -hide no                
         }
     }
 
