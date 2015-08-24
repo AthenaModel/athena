@@ -448,7 +448,7 @@ snit::widget chainbrowser {
     # The user has chosen a new significance level.
 
     method SigLevelCB {} {
-        $self VListLoad
+        $self VListSigLevel
     }
 
 
@@ -532,7 +532,7 @@ snit::widget chainbrowser {
 
         foreach vardiff [$info(comp) list] {
             set score [format %.2f [$info(comp) score $vardiff]]
-            if {$score != 0.0 && $score >= $info(siglevel)} {
+            if {$score > 0.0} {
                 $self VListInsert root $vardiff $score
             }
         }
@@ -547,31 +547,18 @@ snit::widget chainbrowser {
     # child    - A vardiff object to insert.
     # score    - The child's score relative to the parent's inputs.
     #
-    # Inserts the vardiff into the vlist, assigning it a -name.  For
-    # toplevel items, the -name is the vardiff name.  For other items,
-    # it's "<parent>|<name>".  This gives each row a unique name
-    # which doesn't change when we reload the vlist due to changes in
-    # the significance level.
-    #
-    # In addition, each row has a rowattrib, "varname", which is the
-    # vardiff's variable name.
+    # Inserts the vardiff into the vlist, attaching various metadata to
+    # it.
 
     method VListInsert {parent child score} {
         # FIRST, get the full name.
         set varname [$child name]
-
-        if {$parent eq "root"} {
-            set fullname $varname
-        } else {
-            set fullname "$parent|$varname"
-        }
 
         # NEXT, insert the child into the vlist, retaining its key.
         set key [$vlist insertchild $parent end \
                     [list [$child name] $score [$child narrative]]]
 
         # NEXT, configure the child.
-        $vlist rowconfigure $key -name $fullname
         $vlist rowattrib $key \
             varname $varname \
             vardiff $child   \
@@ -581,8 +568,42 @@ snit::widget chainbrowser {
             $vlist collapse $key
         }
 
-        puts "VListInsert $parent $child $score -> $fullname"
+        # NEXT, it should be hidden if it's score is too low, or if
+        # its parent is hidden.
+        if {$parent eq "root"} {
+            set parentHidden 0
+        } else {
+            set parentHidden [$vlist rowcget $parent -hide]
+        }
+
+        if {$parentHidden || $score < $info(siglevel)} {
+            $vlist rowconfigure $key -hide true
+        }
+
         return
+    }
+
+    # VListSigLevel
+    #
+    # Hides/shows rows based on siglevel.
+
+    method VListSigLevel {} {
+        for {set i 0} {$i < [$vlist size]} {incr i} {
+            set p [$vlist parentkey $i]
+            set score [$vlist rowattrib $i score]
+
+            if {$p eq "root"} {
+                set parentHidden 0
+            } else {
+                set parentHidden [$vlist rowcget $p -hide]
+            }
+
+            if {$parentHidden || $score < $info(siglevel)} {
+                $vlist rowconfigure $i -hide yes
+            } else {
+                $vlist rowconfigure $i -hide no                
+            }
+        }
     }
 
     # VListClear
@@ -620,13 +641,12 @@ snit::widget chainbrowser {
         }
 
         set vardiff [$vlist rowattrib $rindex vardiff]
-        set rowname [$vlist rowcget $rindex -name]
 
         dict for {child score} [$vardiff inputs] {
             set score [format %.2f $score]
 
-            if {$score != 0.0 && $score >= $info(siglevel)} {
-                $self VListInsert $rowname $child $score
+            if {$score != 0.0} {
+                $self VListInsert $rindex $child $score
             }
         }
     }
