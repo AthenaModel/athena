@@ -11,8 +11,6 @@
 #
 # TBD:
 # 
-# * The list of categories is used only on the primary outputs.  Only
-#   include categories that are represented in the data.
 # * Indicate how many items are found and how many are filtered out.
 # * 
 #
@@ -60,6 +58,7 @@ snit::widget chainbrowser {
 
     component vlist   ;# Tablelist containing variables
     component vpane   ;# Variable detail pane
+    component catbox  ;# Category combox box
 
     #-------------------------------------------------------------------
     # Instance Variables
@@ -234,14 +233,14 @@ snit::widget chainbrowser {
         ttk::label $w.catlabel \
             -text "Category:"
 
-        ttk::combobox $w.category \
-            -height       [llength $categories]   \
-            -width        15                      \
-            -state        readonly                \
-            -values       $categories             \
+        install catbox using ttk::combobox $w.catbox \
+            -height       [llength $categories]      \
+            -width        15                         \
+            -state        readonly                   \
+            -values       $categories                \
             -textvariable [myvar info(cat)]
 
-        bind $w.category <<ComboboxSelected>> [mymethod VListRefilterCB]
+        bind $w.catbox <<ComboboxSelected>> [mymethod VListRefilterCB]
 
         ttk::label $w.levlabel \
             -text "Significance Level:"
@@ -264,7 +263,7 @@ snit::widget chainbrowser {
 
         pack $w.siglevel -side right
         pack $w.levlabel -side right
-        pack $w.category -side right -padx {0 10}
+        pack $w.catbox   -side right -padx {0 10}
         pack $w.catlabel -side right
     } 
 
@@ -578,14 +577,30 @@ snit::widget chainbrowser {
             return
         }
 
+        # NEXT, insert all of the toplevel outputs.
+        set gotcats [list]
+
         foreach vardiff [$info(comp) list] {
             set score [format %.2f [$info(comp) score $vardiff]]
             if {$score > 0.0} {
                 $self VListInsert root $vardiff $score
+                ladd gotcats [$vardiff category]
             }
         }
 
         $vlist sortbycolumn 1 -decreasing
+
+        # NEXT, revise the categories in the catbox to match those
+        # available.
+        set catlist $categories
+
+        foreach cat [lrange $catlist 1 end] {
+            if {[string tolower $cat] ni $gotcats} {
+                ldelete catlist $cat
+            }
+        }
+
+        $catbox configure -values $catlist
     }
 
     # VListInsert parent child score
