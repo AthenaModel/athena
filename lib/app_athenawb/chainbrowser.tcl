@@ -623,8 +623,8 @@ snit::widget chainbrowser {
 
         # NEXT, configure the child.
         $vlist rowattrib $key \
-            varname $varname \
-            vardiff $child   \
+            varname $varname  \
+            vardiff $child    \
             score   $score
 
         if {![$child leaf]} {

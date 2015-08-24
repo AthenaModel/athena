@@ -410,21 +410,21 @@ snit::widget appwin {
             }
         }
 
-        scripts {
-            label "Scripts"
-            vistype scripts
-            parent ""
-            script {
-                scriptbrowser %W
-            }
-        }
-
         analysis {
             label   "Analysis"
             vistype *
             parent  ""
             script {
                 chainbrowser %W
+            }
+        }
+
+        scripts {
+            label "Scripts"
+            vistype scripts
+            parent ""
+            script {
+                scriptbrowser %W
             }
         }
     }
