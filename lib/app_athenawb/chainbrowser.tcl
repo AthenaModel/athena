@@ -533,15 +533,56 @@ snit::widget chainbrowser {
         foreach vardiff [$info(comp) list] {
             set score [format %.2f [$info(comp) score $vardiff]]
             if {$score != 0.0 && $score >= $info(siglevel)} {
-                $vlist insertchild root end \
-                    [list [$vardiff name] $score [$vardiff narrative]]
-                if {![$vardiff leaf]} {
-                    $vlist collapse end
-                }
+                $self VListInsert root $vardiff $score
             }
         }
 
         $vlist sortbycolumn 1 -decreasing
+    }
+
+    # VListInsert parent child score
+    #
+    # parent   - Parent node, by extended name, or "root" for toplevel
+    #            outputs.
+    # child    - A vardiff object to insert.
+    # score    - The child's score relative to the parent's inputs.
+    #
+    # Inserts the vardiff into the vlist, assigning it a -name.  For
+    # toplevel items, the -name is the vardiff name.  For other items,
+    # it's "<parent>|<name>".  This gives each row a unique name
+    # which doesn't change when we reload the vlist due to changes in
+    # the significance level.
+    #
+    # In addition, each row has a rowattrib, "varname", which is the
+    # vardiff's variable name.
+
+    method VListInsert {parent child score} {
+        # FIRST, get the full name.
+        set varname [$child name]
+
+        if {$parent eq "root"} {
+            set fullname $varname
+        } else {
+            set fullname "$parent|$varname"
+        }
+
+        # NEXT, insert the child into the vlist, retaining its key.
+        set key [$vlist insertchild $parent end \
+                    [list [$child name] $score [$child narrative]]]
+
+        # NEXT, configure the child.
+        $vlist rowconfigure $key -name $fullname
+        $vlist rowattrib $key \
+            varname $varname \
+            vardiff $child   \
+            score   $score
+
+        if {![$child leaf]} {
+            $vlist collapse $key
+        }
+
+        puts "VListInsert $parent $child $score -> $fullname"
+        return
     }
 
     # VListClear
@@ -560,10 +601,8 @@ snit::widget chainbrowser {
         set rindex [lindex [$vlist curselection] 0]
 
         if {$rindex ne ""} {
-            lassign [$vlist get $rindex] varname narrative score
-            set info(selvar) [$info(comp) getdiff $varname]
-
-            $vpane show $info(selvar) $score
+            set info(selvar) [$vlist rowattrib $rindex vardiff]
+            $vpane show $info(selvar) [$vlist rowattrib $rindex score]
         }
     }
 
@@ -580,19 +619,14 @@ snit::widget chainbrowser {
             return
         }
 
-        lassign [$vlist get $rindex] varname narrative score
-        set vardiff [$info(comp) getdiff $varname]
+        set vardiff [$vlist rowattrib $rindex vardiff]
+        set rowname [$vlist rowcget $rindex -name]
 
         dict for {child score} [$vardiff inputs] {
             set score [format %.2f $score]
 
             if {$score != 0.0 && $score >= $info(siglevel)} {
-                set key [$vlist insertchild $rindex end \
-                    [list [$child name] $score [$child narrative]]]
-
-                if {![$child leaf]} {
-                    $vlist collapse $key
-                }
+                $self VListInsert $rowname $child $score
             }
         }
     }
