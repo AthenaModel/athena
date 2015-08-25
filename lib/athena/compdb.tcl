@@ -52,6 +52,7 @@ snit::type ::athena::compdb {
     delegate typemethod names      to ps
     delegate typemethod manlinks   to ps
     delegate typemethod manpage    to ps
+    delegate typemethod save       to ps
 
     #-------------------------------------------------------------------
     # Initialization
@@ -197,6 +198,17 @@ snit::type ::athena::compdb {
         }
 
         return $result
+    }
+
+    # import filename
+    #
+    # filename   The name of a compdb(5) parameter file
+    #
+    # Imports the named file and saves the imported parms as user prefs.
+
+    typemethod import {filename} {
+        $ps load $filename -safe
+        $type SaveCompDB
     }
 
     # load

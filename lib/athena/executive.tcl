@@ -1576,23 +1576,23 @@ snit::type ::athena::executive {
 
         # compdb export
         $interp smartalias {compdb export} 1 1 {filename} \
-            [list ::athena::compdb save]
+            [list compdb save]
 
         # compdb list
         $interp smartalias {compdb list} 0 1 {?pattern?} \
-            [list ::athena::compdb list]
+            [list compdb list]
 
         # compdb get
         $interp smartalias {compdb get} 1 1 {parm} \
-            [list ::athena::compdb get]
+            [list compdb get]
 
         # compdb set
         $interp smartalias {compdb set} 2 2 {parm value} \
-            [list ::athena::compdb set]
+            [list compdb set]
 
         # compdb reset
         $interp smartalias {compdb reset} 0 0 {} \
-            [list ::athena::compdb reset]
+            [list compdb reset]
 
         # condition
         $interp ensemble condition
