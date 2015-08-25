@@ -3058,9 +3058,9 @@ tab "Time/Significant Events" {
 
 
 #=======================================================================
-# Orders
+# Time/Orders
 
-tab "Orders" {
+tab "Time/Orders" {
     <b>This tab can be made visible by selecting the
     <menu "View/Order History"> menu item.</b><p>
 
@@ -3105,6 +3105,186 @@ tab "Orders" {
     <control.filterbox>
     <control.headers>
     </topiclist>
+}
+
+
+#=======================================================================
+# Time/Log
+
+tab "Time/Log" {
+    <b>This tab can be made visible by selecting the
+    <menu "View/Scrolling Log"> menu item.</b><p>
+
+    As Athena runs, it produces a detailed log of its operation.  This
+    log is primarily intended for aid in debugging, but it can
+    sometimes be useful to the user as well.  The Log tab gives access
+    to this debugging log.<p>
+
+    The log browser contains the following elements:<p>
+
+    <ul>
+    <li> At the top, a tool bar containing the 
+         <seebelow controls "browser controls">.
+    <li> On the left, a 
+         <seebelow loglist "list of the log files">
+         created during this session.
+    <li> On the right, the 
+         <seebelow contents "contents">
+         of the currently-selected log.
+    </ul><p>
+
+    <b><anchor contents "Log Contents:"></b>  A log file contains a
+    sequence of log entries.  Each log entry begins with the 
+    <term jweek> string at which it was logged.  This is followed by the 
+    <term loglevel>, and then by the name of the application module
+    that wrote the entry to the log, e.g., <b>sim</b>.  Finally comes
+    the log text proper, which might wrap onto multiple lines if
+    appropriate.<p>
+
+    <b><anchor loglist "Log List:"></b> As Athena runs it produces
+    a series of log files; the log list lists these files in the order
+    of creation.  By default the most recent file is selected; click
+    on any file in the list to browse its contents.<p>
+
+    Athena opens a new log file whenever any of the following events
+    occur:<p>
+
+    <ul>
+    <li> At start-up (<b>start</b>)
+    <li> When a new scenario is created (<b>new</b>)
+    <li> When an existing scenario is opened (<b>open</b>)
+    <li> When saving the scenario under a new name (<b>saveas</b>)
+    <li> When the current log file grows too large.
+    </ul><p>
+
+    The log file name contains a serial number, starting at 
+    00001, and a suffix that indicates why the new log file was
+    opened; the suffixes are shown in parenthesis, above.  If the new
+    log file was created because the previous file was too large, the
+    new file's name will have no suffix.<p>
+
+    <b><anchor controls "Browser Controls:"></b>  The browser's
+    toolbar contains the following controls:<p>
+
+    <topiclist Control Description>
+    <topic [image control_loglevel]>
+    <b><term loglevel Log-Level></b>.  This control determines the
+    severity of the log entries that are displayed.  By default,
+    entries of severity <b>normal</b> and above are displayed, and
+    entries with severity of <b>detail</b> and <b>debug</b> are
+    not.<p>
+
+    The most common use of this control is to select <b>detail</b>
+    from the pulldown so that detailed log entries are displayed.
+    </topic>
+
+    <control.filterbox>
+
+    <topic [image control_logtar]> <b>Search Text.</b>  The
+    next control allows the user to enter a search text string.  The
+    browser will highlight all entries in the current log file that
+    match the search text.<p>
+
+    By default, the browser looks for an exact match of the text;
+    click on the magnifying glass icon to pop up a menu of other
+    options.<p>
+
+    Click on the "circle-x" icon to delete the search text and remove
+    the highlighting from the log entries.
+    </topic>
+
+    <topic [image control_logsrch]> <b>Search Back
+    Controls.</b>  By default, the browser searches for the search
+    text only in the current log file.  Use these controls to search
+    back through the list of log files (the upward-pointing triangles)
+    and back down again (the downward-pointing triangles).  Press the
+    stop button (the black square) if searching is taking too long.
+    </topic>
+
+    <topic [image control_logcnt]> <b>Found Entry Count.</b>
+    When the user enters search text, the browser shows the number of
+    found entries, as well as the index of the currently displayed
+    entry.
+    </topic>
+
+    <topic [image control_logvcr]> <b>VCR Controls.</b>
+    Use these controls to navigate to the entries containing the
+    search text in the current log file.
+    </topic>
+
+    <topic [image button_lock]>
+    <b>Auto-Scroll</b>.  Normally, the log browser automatically
+    jumps to the latest log entry as new entries are written.
+    Toggle this button to prevent the browser from jumping to the
+    latest log entry while you are looking at something else.
+    Untoggle the button to restore the usual behavior.
+    </topic>
+
+    </topiclist>
+}
+
+#=======================================================================
+# Analysis
+
+tab "Analysis" {
+    This tab is used to analyze an Athena run, comparing the outputs
+    at the end of the run with the values of the same variables at the
+    beginning of the run, and to compare the final outputs of two 
+    distinct runs.<p>
+
+    Further, it allows the user to drill down on an output to determine
+    its significant inputs, and then drill own on those inputs, so as
+    to trace the reasons for a given output's value back to through 
+    Athena's models.<p>
+
+    <b>The Tool Bar</b><p>
+
+    The tab's toolbar is used to request an analysis, and to filter the
+    outputs.  Begin by pressing the "Select Cases" button.  This pops up a
+    dialog that allows you to select the case or cases to compare.<p>
+
+    <b>TBD:</b> Display the dialog here.<p>
+
+    You
+    have the choice of the currently loaded scenario (which must be locked)
+    and any locked scenario on the disk.  The two scenarios must be 
+    comparable, i.e., they must have the same neighborhoods, groups, 
+    actors, and so forth.  Select the desired cases, and press "Analyze".<p>
+
+    The tool bar will then show the entity of the chosen case or cases, 
+    and display an significant outputs in the output tree, below.<p>
+
+    Use the "Category:" pull down to limit the list of outputs to a 
+    particular <term pmesii> category.<p>
+
+    Primary output variables are assigned a significance score from 0.0 to 
+    100.0; and inputs to variables are assigned a significance score 
+    from 0.0 to 100.0 relative to other inputs to that same variable.
+    Select a significance level from the "Significance Level" pulldown 
+    to limit the display to those variables that are significant at a 
+    particular level or higher.<p>
+
+    <b>Output Tree</b><p>
+
+    Below the tool bar is the output tree.  It lists the primary outputs
+    from the selected category that are significant given the chosen
+    significance level.  For each, it gives the variable name, its score,
+    and a narrative string that explains just what changed.<p>
+
+    Some variable names will have a small triangle next to them.  Click on
+    the triangle to see the inputs to the variable and how they changed
+    between the cases.  In many cases you can drill down several levels.<p>
+
+    <b>Variable Detail</b><p>
+
+    To see more information about a specific variable, select it in the 
+    output tree, and then click on the triangle at the left end of the
+    bottom line of the browser, next to the name of the selected variable.
+    This will display a set of information about the variable.<p>
+
+    <b>Controls</b>
+
+    <b>TBD:</b> Table of controls with descriptions.<p>
 }
 
 #=======================================================================
@@ -3269,121 +3449,4 @@ tab "Scripts" {
     </topiclist>
 
 }
-
-#=======================================================================
-# Log
-
-tab "Log" {
-    <b>This tab can be made visible by selecting the
-    <menu "View/Scrolling Log"> menu item.</b><p>
-
-    As Athena runs, it produces a detailed log of its operation.  This
-    log is primarily intended for aid in debugging, but it can
-    sometimes be useful to the user as well.  The Log tab gives access
-    to this debugging log.<p>
-
-    The log browser contains the following elements:<p>
-
-    <ul>
-    <li> At the top, a tool bar containing the 
-         <seebelow controls "browser controls">.
-    <li> On the left, a 
-         <seebelow loglist "list of the log files">
-         created during this session.
-    <li> On the right, the 
-         <seebelow contents "contents">
-         of the currently-selected log.
-    </ul><p>
-
-    <b><anchor contents "Log Contents:"></b>  A log file contains a
-    sequence of log entries.  Each log entry begins with the 
-    <term jweek> string at which it was logged.  This is followed by the 
-    <term loglevel>, and then by the name of the application module
-    that wrote the entry to the log, e.g., <b>sim</b>.  Finally comes
-    the log text proper, which might wrap onto multiple lines if
-    appropriate.<p>
-
-    <b><anchor loglist "Log List:"></b> As Athena runs it produces
-    a series of log files; the log list lists these files in the order
-    of creation.  By default the most recent file is selected; click
-    on any file in the list to browse its contents.<p>
-
-    Athena opens a new log file whenever any of the following events
-    occur:<p>
-
-    <ul>
-    <li> At start-up (<b>start</b>)
-    <li> When a new scenario is created (<b>new</b>)
-    <li> When an existing scenario is opened (<b>open</b>)
-    <li> When saving the scenario under a new name (<b>saveas</b>)
-    <li> When the current log file grows too large.
-    </ul><p>
-
-    The log file name contains a serial number, starting at 
-    00001, and a suffix that indicates why the new log file was
-    opened; the suffixes are shown in parenthesis, above.  If the new
-    log file was created because the previous file was too large, the
-    new file's name will have no suffix.<p>
-
-    <b><anchor controls "Browser Controls:"></b>  The browser's
-    toolbar contains the following controls:<p>
-
-    <topiclist Control Description>
-    <topic [image control_loglevel]>
-    <b><term loglevel Log-Level></b>.  This control determines the
-    severity of the log entries that are displayed.  By default,
-    entries of severity <b>normal</b> and above are displayed, and
-    entries with severity of <b>detail</b> and <b>debug</b> are
-    not.<p>
-
-    The most common use of this control is to select <b>detail</b>
-    from the pulldown so that detailed log entries are displayed.
-    </topic>
-
-    <control.filterbox>
-
-    <topic [image control_logtar]> <b>Search Text.</b>  The
-    next control allows the user to enter a search text string.  The
-    browser will highlight all entries in the current log file that
-    match the search text.<p>
-
-    By default, the browser looks for an exact match of the text;
-    click on the magnifying glass icon to pop up a menu of other
-    options.<p>
-
-    Click on the "circle-x" icon to delete the search text and remove
-    the highlighting from the log entries.
-    </topic>
-
-    <topic [image control_logsrch]> <b>Search Back
-    Controls.</b>  By default, the browser searches for the search
-    text only in the current log file.  Use these controls to search
-    back through the list of log files (the upward-pointing triangles)
-    and back down again (the downward-pointing triangles).  Press the
-    stop button (the black square) if searching is taking too long.
-    </topic>
-
-    <topic [image control_logcnt]> <b>Found Entry Count.</b>
-    When the user enters search text, the browser shows the number of
-    found entries, as well as the index of the currently displayed
-    entry.
-    </topic>
-
-    <topic [image control_logvcr]> <b>VCR Controls.</b>
-    Use these controls to navigate to the entries containing the
-    search text in the current log file.
-    </topic>
-
-    <topic [image button_lock]>
-    <b>Auto-Scroll</b>.  Normally, the log browser automatically
-    jumps to the latest log entry as new entries are written.
-    Toggle this button to prevent the browser from jumping to the
-    latest log entry while you are looking at something else.
-    Untoggle the button to restore the usual behavior.
-    </topic>
-
-    </topiclist>
-}
-
-
 

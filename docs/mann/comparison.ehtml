@@ -273,6 +273,12 @@ Called with no arguments, returns the <xref athena(n)> scenario
 object for scenario <i s2>.  Otherwise, the remaining arguments are
 passed along to <i s2> as a subcommand and the result is returned.<p>
 
+<defitem score {<i obj> score <i vardiff>}>
+
+Given the name of a <xref vardiff(n)> object representing a primary 
+output variable, returns the score of that variable relative to the rest
+of the primary outputs.<p>
+
 <defitem scoreByType {<i obj> scoreByType <i scoresVar normalizer diffs>}>
 
 Computes a score for each of the <xref vardiff(n)> objects in list 

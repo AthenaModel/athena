@@ -33,7 +33,7 @@ oo::class create ::athena::vardiff::vrel {
     }
 
     method context {} {
-        return {&minus;1.0 &le; <i>x</i> &le; &plus;1.0}
+        return {&minus;1.0 &le; <i>x</i> &le; +1.0}
     }
 
     method narrative {} {

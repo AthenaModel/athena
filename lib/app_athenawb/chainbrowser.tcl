@@ -7,7 +7,12 @@
 #
 # DESCRIPTION:
 #    chainbrowser(sim) package: Browser for significant outputs and
-#    causality chains
+#    causality chains.
+#
+# TBD:
+# 
+# * Indicate how many items are found and how many are filtered out.
+# * 
 #
 #-----------------------------------------------------------------------
 
@@ -31,6 +36,16 @@ snit::widget chainbrowser {
          10.0
           0.0
     }
+
+    typevariable categories {
+        "All"
+        "Political"
+        "Military"
+        "Economic"
+        "Social"
+        "Information"
+        "Infrastructure"
+    }
     
     #-------------------------------------------------------------------
     # Options
@@ -41,22 +56,26 @@ snit::widget chainbrowser {
     #-------------------------------------------------------------------
     # Components
 
-    component olist   ;# Tablelist containing output variables
+    component vlist   ;# Tablelist containing variables
+    component vpane   ;# Variable detail pane
+    component catbox  ;# Category combox box
 
     #-------------------------------------------------------------------
     # Instance Variables
 
     # info array
-    #   a       - Case A scenario object
-    #   amode   - Case A mode
-    #   afile   - Case A scenario file, or ""
-    #   atext   - Case A description
-    #   b       - Case B scenario object
-    #   bmode   - Case B mode
-    #   bfile   - case B scenario file, or ""
-    #   btext   - Case B description
-    #   comp    - Comparison(n) object
-    #   outvar  - Name of currently displayed output variable, or ""
+    #   a        - Case A scenario object
+    #   amode    - Case A mode
+    #   afile    - Case A scenario file, or ""
+    #   atext    - Case A description
+    #   b        - Case B scenario object
+    #   bmode    - Case B mode
+    #   bfile    - case B scenario file, or ""
+    #   btext    - Case B description
+    #   comp     - Comparison(n) object
+    #   selvar   - Currently selected vardiff, or ""
+    #   siglevel - Significance level, 0.0 to 100.0
+    #   cat      - Filter category, or "all"
     
     variable info -array {}
 
@@ -70,8 +89,9 @@ snit::widget chainbrowser {
         bfile    ""
         btext    "???? @ ????"
         comp     ""
-        outvar   ""
+        selvar   ""
         siglevel 20.0
+        cat      "All"
     }
 
 
@@ -81,39 +101,17 @@ snit::widget chainbrowser {
     # The GUI appearance of this browser is as follows:
     # +-----------------------------------------------------------------+
     # | Toolbar                                                         |
-    # +-------------+---------------------------------------------------+
-    # | hpaner      | opane                                             |
-    # | +-------+-+ | +-----------------------------------------------+ |
-    # | |       | | | | Detail                                        | |
-    # | | OList |s| | |                                               | |
-    # | |       |c| | |                                               | |
-    # | |       |r| | +-----------------------------------------------+ |
-    # | |       |o| | +---------------------------------------------+-+ |
-    # | |       |l| | | Chain                                       |s| |
-    # | |       |l| | |                                             |c| |
-    # | |       | | | |                                             |r| |
-    # | |       | | | |                                             |o| |
-    # | |       | | | |                                             |l| |
-    # | |       | | | |                                             |l| |
-    # | +-------+-+ | +---------------------------------------------+-+ |
-    # +-------------+---------------------------------------------------+ 
+    # +-----------------------------------------------------------------+
+    # +-----------------------------------------------------------------+
+    # | VList                                                           |
+    # +-----------------------------------------------------------------+ 
+    # +-----------------------------------------------------------------+
+    # | VPane                                                           |
+    # +-----------------------------------------------------------------+ 
     #
     # Names with an initial cap are major components containing application
     # data.  Names beginning with a lower case letter are purely for
     # geometry management.
-    #
-    # Containers:
-    #     toolbar - The toolbar
-    #     hpaner  - a panedwindow, split horizontally.
-    #     opane   - output variable pane: a frame containing information 
-    #               about the selected block.
-    #
-    # Content:
-    #     OList   - An sqlbrowser listing the significant outputs
-    #               and their scores.
-    #     OVar    - A pane containing data about the selected output itself
-    #     Chain   - A pane containing the causality chain for the selected
-    #               output.
 
     constructor {args} {
         # FIRST, create the GUI containers, as listed above.
@@ -122,44 +120,59 @@ snit::widget chainbrowser {
         ttk::panedwindow $win.hpaner \
             -orient horizontal
 
-        # opane
-        ttk::frame $win.hpaner.opane
+        # data
+        ttk::frame $win.hpaner.data
 
         # NEXT, create the content components
         $self ToolbarCreate $win.toolbar
         ttk::separator $win.sep 
 
-        $self OListCreate   $win.hpaner.olist
-        # $self DetailCreate  $win.hpaner.opane.detail
-        # $self ChainCreate   $win.hpaner.opane.chain
+        $self VListCreate   $win.vlist
+        $self VPaneCreate   $win.vpane
 
         # NEXT, manage geometry.
-
-        # pack $win.hpaner.opane.detail -side top -fill x
-        # pack $win.hpaner.opane.chain  -fill both -expand yes
-
-        $win.hpaner add $win.hpaner.olist 
-        $win.hpaner add $win.hpaner.opane -weight 1
-
-        pack $win.toolbar -side top -fill x
-        pack $win.sep -side top -pady 2 -fill x
-        pack $win.hpaner            -fill both -expand yes
+        pack $win.toolbar -fill x    -side top    
+        pack $win.sep     -fill x    -side top    
+        pack $win.vpane   -fill x    -side bottom 
+        pack $win.vlist   -fill both -expand yes
 
         # NEXT, configure the command-line options
         $self configurelist $args
 
         # NEXT, Monitor the application so that we know when the current
         # scenario has changed in some way.
-
-        # TBD: <Time>, <State>
+        notifier bind ::adb <Time>  $self [mymethod ClearIfCurrent]
+        notifier bind ::adb <State> $self [mymethod ClearIfCurrent]
 
         # NEXT, clear all content
         array set info $defaultInfo
+
+        # NEXT, turn off size propagation, once it has displayed itself.
+        after 1 [format {
+            if {[winfo exists %s]} {
+                pack propagate %s off
+            }
+        } $win $win]
     }
 
     destructor {
         notifier forget $self
     }
+
+    #-------------------------------------------------------------------
+    # Global event handlers
+
+    # ClearIfCurrent
+    #
+    # If the current scenario is one of those included in the comparison,
+    # and the current scenario changes, clear the browers.
+
+    method ClearIfCurrent {} {
+        if {$info(a) eq "::adb" || $info(b) eq "::adb"} {
+            $self clear
+        }
+    }
+    
 
     #-------------------------------------------------------------------
     # clear
@@ -182,6 +195,9 @@ snit::widget chainbrowser {
         }
         array unset info
         array set info $defaultInfo
+
+        $self VListClear
+        $vpane clear
     }
     
 
@@ -214,6 +230,18 @@ snit::widget chainbrowser {
         ttk::label $w.btext \
             -textvariable [myvar info(btext)]
 
+        ttk::label $w.catlabel \
+            -text "Category:"
+
+        install catbox using ttk::combobox $w.catbox \
+            -height       [llength $categories]      \
+            -width        15                         \
+            -state        readonly                   \
+            -values       $categories                \
+            -textvariable [myvar info(cat)]
+
+        bind $w.catbox <<ComboboxSelected>> [mymethod VListRefilterCB]
+
         ttk::label $w.levlabel \
             -text "Significance Level:"
 
@@ -224,7 +252,7 @@ snit::widget chainbrowser {
             -values       $sigLevels             \
             -textvariable [myvar info(siglevel)]
 
-        bind $w.siglevel <<ComboboxSelected>> [mymethod SigLevelCB]
+        bind $w.siglevel <<ComboboxSelected>> [mymethod VListRefilterCB]
 
         # NEXT, pack them in.
         pack $w.select -side left -padx {0 10}
@@ -235,6 +263,8 @@ snit::widget chainbrowser {
 
         pack $w.siglevel -side right
         pack $w.levlabel -side right
+        pack $w.catbox   -side right -padx {0 10}
+        pack $w.catlabel -side right
     } 
 
 
@@ -426,6 +456,9 @@ snit::widget chainbrowser {
 
         $info(comp) compare
 
+        # NEXT, Show the data
+        $self VListLoad
+
         return
     }
 
@@ -462,33 +495,35 @@ snit::widget chainbrowser {
     # The user has chosen a new significance level.
 
     method SigLevelCB {} {
-        puts "SigLevelCB $info(siglevel)"
+        $self VListSigLevel
     }
 
 
 
     #-------------------------------------------------------------------
-    # Output Variable List (OList)
+    # Variable List (VList)
 
-    # OListCreate pane
+    # VListCreate pane
     #
-    # pane - The name of the output variable list's pane widget
+    # pane - The name of the variable list's pane widget
     #
-    # Creates the "olist" component, which lists all of the
-    # output variables in order of signficance.
+    # Creates the "vlist" component, which lists all of the
+    # variables in order of signficance.
 
-    method OListCreate {pane} {
+    method VListCreate {pane} {
         ttk::frame $pane
 
         # FIRST, create the components
-        install olist using tablelist::tablelist $pane.tlist \
+        install vlist using tablelist::tablelist $pane.vlist \
+            -showseparators   yes                            \
+            -treecolumn       0                              \
+            -treestyle        aqua                           \
             -background       white                          \
             -foreground       black                          \
-            -font             codefont                       \
-            -width            25                             \
             -height           14                             \
+            -font             TkDefaultFont                  \
             -state            normal                         \
-            -stripebackground #CCFFBB                        \
+            -stripebackground #EEF9FF                        \
             -selectbackground black                          \
             -selectforeground white                          \
             -labelborderwidth 1                              \
@@ -497,42 +532,411 @@ snit::widget chainbrowser {
             -exportselection  false                          \
             -movablecolumns   no                             \
             -activestyle      none                           \
+            -expandcommand    [mymethod VListExpand]         \
             -yscrollcommand   [list $pane.yscroll set]       \
-            -xscrollcommand   [list $pane.xscroll set]
+            -labelcommand     ::tablelist::sortByColumn
 
         ttk::scrollbar $pane.yscroll      \
             -orient  vertical             \
-            -command [list $olist yview]
-
-        ttk::scrollbar $pane.xscroll      \
-            -orient  horizontal           \
-            -command [list $olist xview]
+            -command [list $vlist yview]
 
         # NEXT, lay out the components.
-        grid $olist        -row 0 -column 0 -sticky nsew
+        grid $vlist        -row 0 -column 0 -sticky nsew
         grid $pane.yscroll -row 0 -column 1 -sticky ns -pady {1 0}
-        grid $pane.xscroll -row 1 -column 0 -sticky ew -padx {1 0}
 
         grid columnconfigure $pane 0 -weight 1
         grid rowconfigure    $pane 0 -weight 1
 
         # NEXT, Columns
 
-        $olist insertcolumns end 0 "Variable" left
-        $olist insertcolumns end 5 "Score"    right
+        $vlist insertcolumns end 0  "Variable"   left
+        $vlist insertcolumns end 0  "Score"      right
+        $vlist insertcolumns end 40 "Narrative"  left
 
-        $olist columnconfigure 0 -stretchable yes
-
+        $vlist columnconfigure 0 -sortmode ascii -valign top
+        $vlist columnconfigure 1 -sortmode real  -valign top
+        $vlist columnconfigure 2 -sortmode ascii -stretchable yes
 
         # NEXT, Behaviour
  
         # Force focus when the tablelist is clicked
-        bind [$olist bodytag] <1> [focus $olist]
+        bind [$vlist bodytag] <1> [focus $vlist]
                 
         # Handle selections.
-        bind $olist <<TablelistSelect>> [mymethod OListSelectCB]   
+        bind $vlist <<TablelistSelect>> [mymethod VListSelectCB]   
     }   
+
+    # VListLoad
+    #
+    # Loads the significant outputs data into the VList
+
+    method VListLoad {} {
+        $self VListClear
+
+        if {$info(comp) eq ""} {
+            return
+        }
+
+        # NEXT, insert all of the toplevel outputs.
+        set gotcats [list]
+
+        foreach vardiff [$info(comp) list] {
+            set score [format %.2f [$info(comp) score $vardiff]]
+            if {$score > 0.0} {
+                $self VListInsert root $vardiff $score
+                ladd gotcats [$vardiff category]
+            }
+        }
+
+        $vlist sortbycolumn 1 -decreasing
+
+        # NEXT, revise the categories in the catbox to match those
+        # available.
+        set catlist $categories
+
+        foreach cat [lrange $catlist 1 end] {
+            if {[string tolower $cat] ni $gotcats} {
+                ldelete catlist $cat
+            }
+        }
+
+        $catbox configure -values $catlist
+    }
+
+    # VListInsert parent child score
+    #
+    # parent   - Parent node, by extended name, or "root" for toplevel
+    #            outputs.
+    # child    - A vardiff object to insert.
+    # score    - The child's score relative to the parent's inputs.
+    #
+    # Inserts the vardiff into the vlist, attaching various metadata to
+    # it.
+
+    method VListInsert {parent child score} {
+        # FIRST, get the full name.
+        set varname [$child name]
+
+        # NEXT, insert the child into the vlist, retaining its key.
+        set key [$vlist insertchild $parent end \
+                    [list [$child name] $score [$child narrative]]]
+
+        # NEXT, configure the child.
+        $vlist rowattrib $key \
+            varname $varname  \
+            vardiff $child    \
+            score   $score
+
+        if {![$child leaf]} {
+            $vlist collapse $key
+        }
+
+        # NEXT, it should be hidden if it's score is too low, or if
+        # its parent is hidden.
+        $self VListFilter $key
+
+        return
+    }
+
+    # VListRefilterCB
+    #
+    # Hides/shows rows when filter parameters change.
+
+    method VListRefilterCB {} {
+        for {set i 0} {$i < [$vlist size]} {incr i} {
+            $self VListFilter $i
+        }
+    }
+
+    # VListFilter rindex
+    #
+    # rindex   - A row to check against the filters.
+    #
+    # Hides the row if it is filtered out.
+
+    method VListFilter {rindex} {
+        set vardiff [$vlist rowattrib $rindex vardiff]
+        set score   [$vlist rowattrib $rindex score]
+        set p       [$vlist parentkey $rindex]
+        set cat     [string tolower $info(cat)]
+
+        if {$p eq "root"} {
+            set parentHidden 0
+        } else {
+            set parentHidden [$vlist rowcget $p -hide]
+        }
+
+        set hide 0
+
+        if {($p eq "root" && $cat ne "all" && [$vardiff category] != $cat) 
+            || ($p ne "root" && [$vlist rowcget $p -hide])
+            || $score < $info(siglevel)
+        } {
+            $vlist rowconfigure $rindex -hide yes
+        } else {
+            $vlist rowconfigure $rindex -hide no                
+        }
+    }
+
+    # VListClear
+    #
+    # Removes all data from the VList.
+
+    method VListClear {} {
+        $vlist delete 0 end
+    }
+
+    # VListSelectCB
+    #
+    # Called when an output variable is selected in the VList.
+
+    method VListSelectCB {} {
+        set rindex [lindex [$vlist curselection] 0]
+
+        if {$rindex ne ""} {
+            set info(selvar) [$vlist rowattrib $rindex vardiff]
+            $vpane show $info(selvar) [$vlist rowattrib $rindex score]
+        }
+    }
+
+    # VListExpand tbl rindex
+    #
+    # tbl    - The vlist
+    # rindex - The rindex index
+    #
+    # Called when the expand button is clicked.  If the data isn't loaded,
+    # load it.
+
+    method VListExpand {tbl rindex} {
+        if {[$vlist childcount $rindex] != 0} {
+            return
+        }
+
+        set vardiff [$vlist rowattrib $rindex vardiff]
+
+        dict for {child score} [$vardiff inputs] {
+            set score [format %.2f $score]
+
+            if {$score != 0.0} {
+                $self VListInsert $rindex $child $score
+            }
+        }
+    }
+
+
+    #-------------------------------------------------------------------
+    # Variable Detail Pane (VPane)
+
+    # VPaneCreate pane
+    #
+    # pane - The name of the variable detail pane widget
+    #
+    # Creates the "vpane" component, which displays detail about the
+    # selected variable.
+
+    method VPaneCreate {pane} {
+        install vpane using vardisp $pane \
+            -prompt "Select a variable from list above."
+    }
 }
+
+#-----------------------------------------------------------------------
+# vardisp widget
+
+snit::widget vardisp {
+    #-------------------------------------------------------------------
+    # Components
+
+    component triangle  ;# Triangle button
+    component detail    ;# An htmlframe containing the detailed info.
+    
+    #-------------------------------------------------------------------
+    # Options
+
+    # -prompt text
+    #
+    # Specify a string to use as a prompt when no vardiff is selected.
+
+    option -prompt \
+        -default "No variable selected."
+
+
+    #-------------------------------------------------------------------
+    # Instance Variables
+
+    # info array
+    #
+    #   open     - 1 if detail is open, 0 otherwise.
+    #   title    - Content of title widget
+    #   vardiff  - The vardiff object to display, or ""
+    #   score    - The score for this vardiff in this context. 
+
+    variable info -array {
+        open     0
+        title    ""
+        vardiff  ""
+        score    0.0
+    }
+
+
+    #-------------------------------------------------------------------
+    # Constructor
+
+    constructor {args} {
+        $self configurelist $args
+
+        install triangle using ArrowButton $win.triangle \
+            -relief             flat                     \
+            -clean              2                        \
+            -type               button                   \
+            -dir                right                    \
+            -width              20                       \
+            -height             20                       \
+            -highlightthickness 0                        \
+            -command            [mymethod toggle]
+
+        ttk::label $win.title \
+            -textvariable [myvar info(title)]
+
+        install detail using htmlframe $win.detail
+
+        grid $win.triangle  -row 0 -column 0
+        grid $win.title     -row 0 -column 1 -sticky ew
+        # $win.detail is hidden by default.
+
+        grid columnconfigure $win 1 -weight 1
+        grid rowconfigure    $win 2 -weight 1
+
+        $self clear
+    }
+
+    #-------------------------------------------------------------------
+    # Methods
+
+    # show vardiff score
+    #
+    # vardiff   - A vardiff to display
+    # score     - Its score in some particular context.
+
+    method show {vardiff score} {
+        set info(vardiff) $vardiff
+        set info(score)   $score
+
+        $triangle configure -state normal
+
+        $self Refresh
+    }
+
+    # clear
+    #
+    # Clears the current vardiff.
+
+    method clear {} {
+        set info(vardiff) ""
+        set info(score)   0.0
+
+        $triangle configure -state disabled
+
+        $self Refresh
+    }
+    
+
+    # toggle 
+    #
+    # Toggles the open/close state.  If there is no vardiff specified,
+    # closes the detail if it's open.
+
+    method toggle {} {
+        # FIRST, determine the detail open/close state
+        if {$info(vardiff) ne ""} {
+            # Toggle display of detail.
+            set info(open) [expr {!$info(open)}]
+        } else {
+            # Close detail if open.
+            set info(open) 0
+        }
+
+        # NEXT, update the triangle button accordingly.
+        set direction [expr {$info(open) ? "bottom" : "right"}]
+
+        $triangle configure \
+            -dir $direction
+
+        # NEXT, show/hide the detail pane
+        if {$info(open)} {
+            grid $win.detail -row 1 -column 0 -columnspan 2 -sticky nsew
+        } else {
+            grid forget $win.detail
+        }
+    }
+
+    #-------------------------------------------------------------------
+    # Private Methods
+
+    # Refresh
+    #
+    # Displays the current vardiff.
+
+    method Refresh {} {
+        # FIRST, if there's no vardiff clear the display.
+        if {$info(vardiff) eq ""} {
+            # FIRST, display the prompt instead of a vardiff name.
+            set info(title) $options(-prompt)
+
+            # NEXT, if the detail is open, close it.
+            if {$info(open)} {
+                $self toggle
+            }
+
+            return
+        }
+
+        # NEXT, set the title to the vardiff's name.
+        array set vinfo [$info(vardiff) view]
+
+        set info(title) "Variable: $vinfo(name)"
+
+
+        # NEXT, populate the detail pane
+        $detail layout [tsubst {
+            <p>$vinfo(narrative)</p>
+
+            <table>
+            <tr>
+            <td><b>Type:</b></td>
+            <td>$vinfo(category) / $vinfo(type)</td>
+            </tr>
+
+            <tr>
+            <td><b>Case A:</b></td>
+            <td>$vinfo(fancy1)</td>
+            </tr>
+
+            <tr>
+            <td><b>Case B:</b></td>
+            <td>$vinfo(fancy2)</td>
+            </tr>
+
+            <tr>
+            <td><b>Delta:</b></td>
+            <td>[format %.3f $vinfo(delta)]</td>
+            </tr>
+
+            [tif {$vinfo(context) ne ""} {
+            <tr>
+            <td><b>Context:</b></td>
+            <td>$vinfo(context)</td>
+            </tr>
+            }]
+
+
+            </table>
+        }]
+    }
+
+}
+
+
 
 #-----------------------------------------------------------------------
 # Dynaform: Select Cases

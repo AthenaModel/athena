@@ -107,7 +107,7 @@ snit::widget ::projectgui::linktree {
             -yscrollcommand [list $win.yscroll set]
 
         $tree element create elemText text \
-            -font codefont \
+            -font datafont \
             -fill black
         $tree element create elemIcon image
 
