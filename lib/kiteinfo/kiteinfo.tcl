@@ -21,6 +21,7 @@ namespace eval ::kiteinfo:: {
     array set kiteInfo {
         url-docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20150610.docx
         reqver-Tktable 2.11
+        mansec-5 {File Formats}
         apptype-athena exe
         exclude-athenawb {}
         local-json 0
@@ -29,8 +30,8 @@ namespace eval ::kiteinfo:: {
         local-Img 0
         local-kitedocs 1
         reqver-tdom 0.8
-        exclude-helptool {}
         reqver-comm 4.6
+        exclude-helptool {}
         local-Tktable 0
         local-simlib 1
         local-ncgi 0
@@ -68,7 +69,7 @@ namespace eval ::kiteinfo:: {
         icon-athenawb {}
         url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
         local-marsutil 1
-        reqver-marsgui 3.0.20
+        reqver-marsgui 3.0.21
         reqver-uri 1.2
         distpat-install-%platform {
     LICENSE
@@ -87,9 +88,9 @@ namespace eval ::kiteinfo:: {
         url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20150609.pptx
         reqver-tls 1.6.4
         icon-helptool {}
-        force-arachne 0
-        build-help {make clean all}
         local-snit 0
+        build-help {make clean all}
+        force-arachne 0
         reqver-treectrl 2.4
         local-marsgui 1
         reqver-md5 2.0.7
@@ -98,7 +99,7 @@ namespace eval ::kiteinfo:: {
         apptype-athenawb exe
         apptype-athena_log kit
         apptype-cellide exe
-        reqver-marsutil 3.0.20
+        reqver-marsutil 3.0.21
         local-tls 0
         provides {athena ahttpd}
         description {Athena Regional Stability Simulation}
@@ -109,13 +110,13 @@ namespace eval ::kiteinfo:: {
         binary-ahttpd 0
         local-ctext 0
         reqver-textutil::expander 1.3
+        reqver-snit 2.3
         shell {
     catch {rename echo ""}
     package require projectlib
     namespace import projectlib::*
 }
         icon-cellide {}
-        reqver-snit 2.3
         name athena
         reqver-counter 2.0
         gui-athena 0
@@ -148,9 +149,11 @@ namespace eval ::kiteinfo:: {
 }
         exclude-athena_log {}
         gui-helptool 1
-        reqver-simlib 3.0.20
+        reqver-simlib 3.0.21
+        mansecs {1 5 i n}
         binary-athena 0
         local-struct::set 0
+        mansec-i {Tcl Interfaces}
         distpat-src {
     project.kite
     LICENSE
@@ -174,6 +177,7 @@ namespace eval ::kiteinfo:: {
         reqver-Tkhtml 3.0
         requires {snit comm Img BWidget Tktable treectrl sqlite3 tablelist textutil::expander textutil::adjust Tkhtml uri fileutil ctext tls tdom struct::set json md5 counter ncgi html base64 kiteutils kitedocs marsutil marsgui simlib Marsbin}
         icon-athena_log {}
+        clean-help {make clean}
         exclude-arachne {
     Img
     BWidget
@@ -184,12 +188,13 @@ namespace eval ::kiteinfo:: {
     ctext
     marsgui
 }
-        clean-help {make clean}
         poc William.H.Duquette@jpl.nasa.gov
+        mansec-n {Tcl Commands}
         srcs help
         local-tdom 0
         local-comm 0
-        reqver-Marsbin 3.0.20
+        mansec-1 Executables
+        reqver-Marsbin 3.0.21
         local-kiteutils 1
         local-textutil::expander 0
         version 6.3.1a3

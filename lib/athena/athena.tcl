@@ -96,6 +96,9 @@ snit::type ::athena::athena {
         # NEXT, handle any additional options.
         $self configurelist $args
 
+        # NEXT, initialize the compdb
+        compdb init
+
         # NEXT, get subcomponents from athenadb(n).
         set rdb [$adb component rdb]
     } 

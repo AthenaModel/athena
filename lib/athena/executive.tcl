@@ -1571,6 +1571,29 @@ snit::type ::athena::executive {
         $interp smartalias {block last} 0 0 {} \
             [mymethod LastBean ::athena::block]
 
+        # compdb 
+        $interp ensemble compdb 
+
+        # compdb import
+        $interp smartalias {compdb import} 1 1 {filename} \
+            [mymethod CompDBImport]
+
+        # compdb list
+        $interp smartalias {compdb list} 0 1 {?pattern?} \
+            [mymethod CompDBList]
+
+        # compdb get
+        $interp smartalias {compdb get} 1 1 {parm} \
+            [list ::athena::compdb get]
+
+        # compdb set
+        $interp smartalias {compdb set} 2 2 {parm value} \
+            [list ::athena::compdb set]
+
+        # compdb reset
+        $interp smartalias {compdb reset} 0 0 {} \
+            [mymethod CompDBReset]
+
         # condition
         $interp ensemble condition
 
@@ -2149,6 +2172,66 @@ snit::type ::athena::executive {
         $adb log normal script $message
     }
 
+    # CompDBImport filename
+    #
+    # filename     A .compdb file
+    #
+    # Imports the .compdb file
+
+    method CompDBImport {filename} {
+        if {![file exists $filename]} {
+            error "File not found: \"$filename\""
+        }
+
+        compdb load $filename
+
+        $adb log normal compdb "Imported parms: $filename"
+    }
+ 
+    # CompDBList ?pattern?
+    #
+    # pattern  - A glob pattern
+    #
+    # Lists all compdb parameters with their values, or those matching the
+    # pattern.  If none are found, throws an error.
+
+    method CompDBList {{pattern *}} {
+        set result [compdb list $pattern]
+
+        if {$result eq ""} {
+            error "No matching parameters"
+        }
+
+        return $result
+    }
+
+    # CompDBReset
+    #
+    # Resets the values in the compdb to the current defaults.
+
+    method CompDBReset {} {
+        # FIRST, get the names and values of any locked parameters
+        set locked [compdb locked]
+
+        foreach parm $locked {
+            set saved($parm) [compdb get $parm]
+        }
+
+        compdb unlock *
+
+        # NEXT, reset values to defaults.
+        compdb reset
+
+        foreach parm $locked {
+            if {$saved($parm) ne [compdb get $parm]} {
+                compdb set $parm $saved($parm)
+            }
+
+            compdb lock $parm
+        }
+
+    }
+
     # parm import filename
     #
     # filename   A .parmdb file
@@ -2158,7 +2241,6 @@ snit::type ::athena::executive {
     method ParmImport {filename} {
         $self Send PARM:IMPORT -filename $filename
     }
-
 
     # parm list ?pattern?
     #
