@@ -33,7 +33,7 @@ oo::class create ::athena::vardiff::mood {
     }
 
     method context {} {
-        return {&minus;100.0 &le; <i>x</i> &le; &plus;100.0}
+        return {&minus;100.0 &le; <i>x</i> &le; +100.0}
     }
 
     method narrative {} {

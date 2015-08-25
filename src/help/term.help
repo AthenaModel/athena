@@ -152,7 +152,7 @@ term bsystem "belief system" {
 term bgerror "bgerror" {
     When Athena encounters an unexpected run-time error, it does not
     usually halt execution.  Instead, the error and a complete stack
-    trace are written to the <tab Log>, and the user is
+    trace are written to the <tab Time/Log>, and the user is
     notified.  This is called a <i>background error</i>, or 
     <i>bgerror</i> for short.<p>
 
@@ -703,7 +703,7 @@ term loglevel "log level" {
     </ul><p>
 
     Note that <b>debug</b> messages are only written to the log when
-    enabled by the developer.  By default, the <tab Log> shows
+    enabled by the developer.  By default, the <tab Time/Log> shows
     <b>normal</b> messages of severity <b>normal</b> and above.
 }
 
@@ -749,7 +749,7 @@ term order "order" {
     of methods; such orders can usually be 
     <menu Edit/Undo undone>.  The complete history of orders
     sent interactively to Athena is shown on the 
-    <tab Orders>.<p>
+    <tab Time/Orders>.<p>
 }
 
 

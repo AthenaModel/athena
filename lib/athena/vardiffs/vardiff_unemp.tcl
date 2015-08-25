@@ -34,7 +34,7 @@ oo::class create ::athena::vardiff::unemp {
     }
 
     method context {} {
-        return {<i>x</i> &ge; &plus;0.0%}
+        return {<i>x</i> &ge; +0.0%}
     }
 
 

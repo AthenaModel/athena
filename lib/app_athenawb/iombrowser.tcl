@@ -704,11 +704,11 @@ snit::widget iombrowser {
         $tree state define invalid    ;# Item is invalid.
 
         # Fonts
-        set overstrike [dict merge [font actual codefont] {-overstrike 1}]
+        set overstrike [dict merge [font actual datafont] {-overstrike 1}]
 
         set fontList [list \
                           $overstrike disabled \
-                          codefont    {}]
+                          datafont    {}]
 
         # Text fill
         set fillList [list \

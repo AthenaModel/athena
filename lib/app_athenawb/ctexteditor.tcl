@@ -55,7 +55,7 @@ snit::widget ctexteditor {
             -relief             flat     \
             -background         white    \
             -foreground         black    \
-            -font               codefont \
+            -font               TkFixedFont \
             -width              80       \
             -height             24       \
             -wrap               char     \

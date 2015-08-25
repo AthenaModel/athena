@@ -222,7 +222,7 @@ menu "Edit" {
 
 menuitem "Edit/Undo" {
     Undoes the most recent order, if possible.  The 
-    <tab Orders> shows the orders that can be
+    <tab Time/Orders> shows the orders that can be
     undone (among other things).<p>
 
     The undo stack is cleared when the scenario is saved, and when 
@@ -266,11 +266,11 @@ menu "View" {
 }
 
 menuitem "View/Order History" {
-    Selecting this item shows or hides the <tab Orders>.
+    Selecting this item shows or hides the <tab Time/Orders>.
 }
 
 menuitem "View/Scrolling Log" {
-    Selecting this item shows or hides the <tab Log>.
+    Selecting this item shows or hides the <tab Time/Log>.
 }
 
 menuitem "View/Scripts Editor" {

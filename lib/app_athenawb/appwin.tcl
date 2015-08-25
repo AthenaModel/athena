@@ -410,21 +410,21 @@ snit::widget appwin {
             }
         }
 
-        scripts {
-            label "Scripts"
-            vistype scripts
-            parent ""
-            script {
-                scriptbrowser %W
-            }
-        }
-
         analysis {
             label   "Analysis"
             vistype *
             parent  ""
             script {
                 chainbrowser %W
+            }
+        }
+
+        scripts {
+            label "Scripts"
+            vistype scripts
+            parent ""
+            script {
+                scriptbrowser %W
             }
         }
     }
@@ -975,7 +975,7 @@ snit::widget appwin {
             -text "State:"
 
         ttk::label $toolbar.simstate             \
-            -font         codefont               \
+            -font         datafont               \
             -width        26                     \
             -anchor       w                      \
             -textvariable [myvar info(simstate)]
@@ -985,7 +985,7 @@ snit::widget appwin {
             -text "Date:"
 
         ttk::label $toolbar.date                 \
-            -font         codefont               \
+            -font         datafont               \
             -width        7                      \
             -textvariable [myvar info(date)]
 
@@ -994,7 +994,7 @@ snit::widget appwin {
             -text "Week:"
 
         ttk::label $toolbar.tick                 \
-            -font         codefont               \
+            -font         datafont               \
             -width        4                      \
             -textvariable [myvar info(tick)]
 
