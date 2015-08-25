@@ -207,11 +207,13 @@ snit::type app {
             log normal app "No mods loaded."
         }
 
-        # NEXT, initialize and load the user preferences
-        prefs init
+        # NEXT, initialize and load the user/compdb preferences
+        prefs  init
+        ::athena::compdb init
         
         if {!$opts(-ignoreuser)} {
             prefs load
+            ::athena::compdb load
         }
 
         prefs configure -notifycmd \

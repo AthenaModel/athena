@@ -19,6 +19,8 @@ namespace eval :: {
 # parm
 
 snit::type ::athena::compdb {
+    pragma -hasinstances no
+
     #-------------------------------------------------------------------
     # Type Components
 
@@ -35,8 +37,21 @@ snit::type ::athena::compdb {
     #-------------------------------------------------------------------
     # Type Variables
 
-    typevariable initialized 0
+    typevariable compdbFile user.compdb
     
+
+    #-------------------------------------------------------------------
+    # Public Type Methods
+
+    delegate typemethod cget       to ps
+    delegate typemethod configure  to ps
+    delegate typemethod docstring  to ps
+    delegate typemethod get        to ps
+    delegate typemethod getdefault to ps
+    delegate typemethod items      to ps
+    delegate typemethod names      to ps
+    delegate typemethod manlinks   to ps
+    delegate typemethod manpage    to ps
 
     #-------------------------------------------------------------------
     # Initialization
@@ -46,10 +61,10 @@ snit::type ::athena::compdb {
     # Initializes the database.
 
     typemethod init {} {
-        if {$initialized} {
+        # Initialize only once
+        if {$ps ne ""} {
             return
         }
-        set initialized 1
 
         # FIRST, create and initialize parmset(n)
         set ps [parmset %AUTO%]    
@@ -102,11 +117,6 @@ snit::type ::athena::compdb {
         }
     }
 
-    #-------------------------------------------------------------------
-    # Public Type Methods
-
-    delegate typemethod * to ps
-
  
     #-------------------------------------------------------------------
     # Queries
@@ -149,6 +159,64 @@ snit::type ::athena::compdb {
         }
 
         return $result
+    }
+
+    # set parm value
+    #
+    # parm   A parameter name
+    # value  A value
+    #
+    # Sets the parms value, and save the compdb
+
+    typemethod set {parm value} {
+        $ps set $parm $value 
+        $type SaveCompDB
+    }
+
+    # reset
+    #
+    # Resets the compdb parameters and saves the result
+
+    typemethod reset {} {
+        $ps reset
+        $type SaveCompDB
+    }
+
+    # list ?pattern?
+    #
+    # pattern  - A glob pattern
+    #
+    # Lists all compdb parameters with their values, or those matching the
+    # pattern.  If none are found, throws an error.
+
+    typemethod list {{pattern *}} {
+        set result [$ps list $pattern]
+
+        if {$result eq ""} {
+            error "No matching parameters"
+        }
+
+        return $result
+    }
+
+    # load
+    #
+    # Loads the parameters safely from the compdbFile, if it exists.
+
+    typemethod load {} {
+        if {[file exists [prefsdir join $compdbFile]]} {
+            $ps load [prefsdir join $compdbFile] -safe
+        }
+    }
+
+    # SaveCompDB 
+    #
+    # Saves the compdb but only if prefdir is initialized
+
+    typemethod SaveCompDB {} {
+        if {[prefsdir initialized]} {
+            $ps save [prefsdir join $compdbFile]
+        }
     }
 }
 

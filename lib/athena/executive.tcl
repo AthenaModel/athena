@@ -1574,13 +1574,13 @@ snit::type ::athena::executive {
         # compdb 
         $interp ensemble compdb 
 
-        # compdb import
-        $interp smartalias {compdb import} 1 1 {filename} \
-            [mymethod CompDBImport]
+        # compdb export
+        $interp smartalias {compdb export} 1 1 {filename} \
+            [list ::athena::compdb save]
 
         # compdb list
         $interp smartalias {compdb list} 0 1 {?pattern?} \
-            [mymethod CompDBList]
+            [list ::athena::compdb list]
 
         # compdb get
         $interp smartalias {compdb get} 1 1 {parm} \
@@ -1592,7 +1592,7 @@ snit::type ::athena::executive {
 
         # compdb reset
         $interp smartalias {compdb reset} 0 0 {} \
-            [mymethod CompDBReset]
+            [list ::athena::compdb reset]
 
         # condition
         $interp ensemble condition
@@ -1811,7 +1811,10 @@ snit::type ::athena::executive {
             [list $adb version]
     }
 
-    
+ 
+    method CompDbList {{pattern *}} {
+        compdb list $pattern
+    }   
     #-------------------------------------------------------------------
     # Executive Command Implementations
 
@@ -2170,66 +2173,6 @@ snit::type ::athena::executive {
 
     method Log {message} {
         $adb log normal script $message
-    }
-
-    # CompDBImport filename
-    #
-    # filename     A .compdb file
-    #
-    # Imports the .compdb file
-
-    method CompDBImport {filename} {
-        if {![file exists $filename]} {
-            error "File not found: \"$filename\""
-        }
-
-        compdb load $filename
-
-        $adb log normal compdb "Imported parms: $filename"
-    }
- 
-    # CompDBList ?pattern?
-    #
-    # pattern  - A glob pattern
-    #
-    # Lists all compdb parameters with their values, or those matching the
-    # pattern.  If none are found, throws an error.
-
-    method CompDBList {{pattern *}} {
-        set result [compdb list $pattern]
-
-        if {$result eq ""} {
-            error "No matching parameters"
-        }
-
-        return $result
-    }
-
-    # CompDBReset
-    #
-    # Resets the values in the compdb to the current defaults.
-
-    method CompDBReset {} {
-        # FIRST, get the names and values of any locked parameters
-        set locked [compdb locked]
-
-        foreach parm $locked {
-            set saved($parm) [compdb get $parm]
-        }
-
-        compdb unlock *
-
-        # NEXT, reset values to defaults.
-        compdb reset
-
-        foreach parm $locked {
-            if {$saved($parm) ne [compdb get $parm]} {
-                compdb set $parm $saved($parm)
-            }
-
-            compdb lock $parm
-        }
-
     }
 
     # parm import filename
