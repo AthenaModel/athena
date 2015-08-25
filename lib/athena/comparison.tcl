@@ -38,20 +38,6 @@ snit::type ::athena::comparison {
     #-------------------------------------------------------------------
     # Type Methods
 
-    # init
-    #
-    # Pulls out relevant compdb(5) parms
-
-    typemethod init {} {
-        # FIRST, extract tha "A" values for primary outputs
-        foreach varclass [info commands ::athena::vardiff::*] {
-            if {[$varclass primary]} {
-                set vartype [namespace tail $varclass]
-                set A($vartype) [::athena::compdb get primary.a.$vartype]
-            }
-        }
-    }
-
     # new s1 t1 s2 t2
     #
     # s1    - A locked scenario
@@ -304,6 +290,8 @@ snit::type ::athena::comparison {
     # identify the significant outputs.
 
     method compare {} {
+        $self LoadParms
+
         $self CompareNbhoodOutputs
         $self CompareAttitudeOutputs
         $self ComparePoliticalOutputs
@@ -846,6 +834,22 @@ snit::type ::athena::comparison {
         return [huddle jsondump [$self chain huddle $varname]]
     }
     
+    # LoadParms
+    #
+    # Pulls out relevant compdb(5) parms and stores them in lookup array
+
+    method LoadParms {} {
+        # FIRST, clear the As 
+        array unset A
+
+        # NEXT, extract the "A" values for primary outputs
+        foreach varclass [info commands ::athena::vardiff::*] {
+            if {[$varclass primary]} {
+                set vartype [namespace tail $varclass]
+                set A($vartype) [::athena::compdb get primary.a.$vartype]
+            }
+        }
+    }
 
     #-------------------------------------------------------------------
     # Actual Comparisons

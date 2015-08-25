@@ -10,7 +10,7 @@
 #
 #-----------------------------------------------------------------------
 
-namespace eval :: {
+namespace eval ::athena:: {
     namespace export compdb
 }
 

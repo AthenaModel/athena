@@ -207,8 +207,9 @@ snit::type app {
             log normal app "No mods loaded."
         }
 
-        # NEXT, initialize and load the user preferences
+        # NEXT, initialize and load the user preferences and compdb parms
         prefs init
+        compdb init
         
         if {!$opts(-ignoreuser)} {
             prefs load
