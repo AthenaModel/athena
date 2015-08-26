@@ -2,6 +2,27 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.1a3, 26 August 2015</h3>
+
+This build introduces the Analysis Tab in the Athena Workbench and History
+request pages in the Athena Test Web App.  Comparison parameter database
+(compdb(5)) files are now managed by the workbench.  The help pages have 
+been updated to show what the parameters are and how you can change and 
+export them.  The Web App still needs to have a way to read in a comparison
+parameter database so, for now, it will still use the defaults.  A couple 
+of old bugs that did not get assigned milestones are included here even 
+though they were fixed in a previous build; they may still need to be tested.<p>
+
+<ul>
+<li> Issue #296: bgerror: compdb parameters not loaded properly 
+<li> Issue #295: Introduced compdb commands in workbench
+<li> Issue #294: Analysis Tab
+<li> Issue #293: Add significance coefficents to compdb(5) 
+<li> Issue #292: Angular hist
+<li> Issue #278: remove huddle requirements from Athena
+<li> Issue #277: Web App: case tabs are unresponsive
+</ul>
+
 <h3>Build 6.3.1a2, 27 July 2015</h3>
 
 This build contains some updates to Arachne and the Web App.  There is a

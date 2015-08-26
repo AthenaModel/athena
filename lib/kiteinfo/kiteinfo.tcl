@@ -47,7 +47,7 @@ namespace eval ::kiteinfo:: {
         force-athenawb 0
         force-athena_log 0
         dists {install-%platform src docs}
-        reqver-kitedocs 0.4.8
+        reqver-kitedocs 0.4.9
         local-textutil::adjust 0
         apptype-arachne exe
         reqver-ncgi 1.4.3
@@ -63,7 +63,7 @@ namespace eval ::kiteinfo:: {
         file copy -force docs/arachne.html htdocs/
     }
 }}
-        reqver-kiteutils 0.4.8
+        reqver-kiteutils 0.4.9
         reqver-fileutil 1.14
         icon-arachne {}
         icon-athenawb {}
