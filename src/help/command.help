@@ -670,6 +670,80 @@ command "clear" {
 }
 
 #=======================================================================
+# compdb commands
+
+command "compdb" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    The <b>compdb</b> command sets and queries <cref /compdb>.
+    Comparison parameters are distinct from the <cref /parmdb> edited
+    using the <command parm> command in that they apply to the application
+    rather than to individual scenarios. Therefore,<p>
+
+    <ul>
+    <li> They are not saved in scenario files.
+    <li> They do not affect the outcome of simulation runs. 
+    </ul>
+
+    This command has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb export" {
+    <syntax {<i>filename</i>}>
+    
+    Exports any changed comparison parameters to the specified file. 
+    Parameters with default values are not included.
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb import" {
+    <syntax {<i>filename</i>}>
+    
+    Imports a comparison parameter file from disk. 
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb get" {
+    <syntax {<i>parm</i>}>
+    
+    Retrieves the value of the named comparison parameter.
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb list" {
+    <syntax {?<i>pattern</i>?}>
+
+    When called with no argument, this command lists the names and
+    values of all comparison parameters.  If given, <i>pattern</i> is
+    a wild-card pattern; only matching parameters are included.
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb reset" {
+    <syntax>
+    
+    Resets all comparison parameters to their default
+    settings.
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb set" {
+    <syntax {<i>parm value</i>}>
+    
+    Sets the named comparison parameter to the specified
+    <i>value</i>.
+}
+
+#=======================================================================
 # condition commands
 
 command "condition" {
