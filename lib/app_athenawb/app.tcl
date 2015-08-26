@@ -213,6 +213,7 @@ snit::type app {
         
         if {!$opts(-ignoreuser)} {
             prefs load
+            ::athena::compdb load
         }
 
         prefs configure -notifycmd \

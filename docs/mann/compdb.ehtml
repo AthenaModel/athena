@@ -27,6 +27,11 @@ along with all of the subcommands provided by the underlying
 
 <deflist commands>
 
+<defitem "compdb init" {compdb init}>
+
+Initializes the module.  This should be called once, at application
+start-up.  It defines the full set of comparison parameters.<p>
+
 <defitem validate {compdb validate <i parm>}>
 
 Throws <b INVALID> if <i parm> isn't a defined parameter; otherwise
@@ -38,11 +43,45 @@ Returns a list of the names of the parameters with non-default values.
 If <i pattern> is given, it is a glob-style wildcard pattern; only
 names that match the pattern are included in the result.<p>
 
+<defitem "compdb get"      {compdb get <i>parm</i>}>
+<defitem "compdb names"    {compdb names ?<i>pattern</i>?}>
+<defitem "compdb manlinks" {compdb manlinks}>
+<defitem "compdb manpage"  {compdb manpage}>
+
+These commands are simply delegated to the underlying
+<xref parmset(n)>.<p>
+
+<defitem "compdb set" {compdb set <i>parm value</i>}>
+
+Sets the parameter's value and saves the compdb to disk.<p>
+
+<defitem "compdb reset" {compdb reset}>
+
+Resets all comparison parameters to their default values, and
+saves them to disk.<p>
+
+<defitem "compdb list" {compdb list ?<i>pattern</i>?}>
+
+Lists all parameters and their values.  If <i>pattern</i> is given,
+it's a wildcard pattern; only parameters whose names match the pattern
+are listed.<p>
+
+<defitem "compdb load" {compdb load}>
+
+Loads the compdb from disk, if the compdb file exists.  This
+is usually only done at application start-up.<p>
+
+<defitem "compdb save" {compdb save <i>filename</i>}>
+
+Saves any changes parameters to the file specified. No defaulted values
+are written, since that's unnecessary.
+
 </deflist commands>
 
 <section AUTHOR>
 
 Will Duquette<p>
+Dave Hanks<p>
 
 <section HISTORY>
 

@@ -52,47 +52,6 @@ namespace eval ::athena_test::tests:: {
     #-------------------------------------------------------------------
     # History URLs
 
-    test history.html-1.1 {all histvars HTML} -setup {
-    } -body {
-        ted get /case00/history/index.html
-    } -cleanup {
-        ted cleanup
-    } -match glob -result {*'case00': History Variables*}
-
-    test history.json-1.1 {all histvars JSON} -setup {
-    } -body {
-        ted get /case00/history/index.json
-    } -cleanup {
-        ted cleanup
-    } -match trim -result {
-[
-  "OK",
-  {
-    "sat": "g c",
-    "flow": "f g",
-    "vrel": "g a",
-    "volatility": "n",
-    "control": "n",
-    "coop": "f g",
-    "deploy_ng": "n g",
-    "hrel": "f g",
-    "plant_n": "n",
-    "support": "n a",
-    "plant_na": "n a",
-    "econ": "",
-    "npop": "n",
-    "pop": "g",
-    "plant_a": "a",
-    "security": "n g",
-    "service_sg": "s g",
-    "aam_battle": "n f g",
-    "activity_nga": "n g a",
-    "mood": "g",
-    "nbmood": "n",
-    "nbur": "n"
-  }
-]}    
-
     test histvar.json-1.1 {sat} -setup {
         setup 1
     } -body {
@@ -103,6 +62,7 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "saliency": 1.0,
   "sat": 0.0,
   "t": 0,
@@ -113,6 +73,7 @@ namespace eval ::athena_test::tests:: {
   "g": "C0000"
 },
 {
+  "week": "2012W02",
   "saliency": 1.0,
   "sat": 0.0,
   "t": 1,
@@ -148,6 +109,7 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "t": 0,
   "vrel": 1.0,
   "a": "A00",
@@ -156,6 +118,7 @@ namespace eval ::athena_test::tests:: {
   "g": "C0000"
 },
 {
+  "week": "2012W02",
   "t": 1,
   "vrel": 1.0,
   "a": "A00",
@@ -176,21 +139,25 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "t": 0,
   "volatility": 1,
   "n": "N00"
 },
 {
+  "week": "2012W01",
   "t": 0,
   "volatility": 1,
   "n": "N01"
 },
 {
+  "week": "2012W02",
   "t": 1,
   "volatility": 1,
   "n": "N00"
 },
 {
+  "week": "2012W02",
   "t": 1,
   "volatility": 1,
   "n": "N01"
@@ -209,21 +176,25 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "t": 0,
   "a": "A00",
   "n": "N00"
 },
 {
+  "week": "2012W01",
   "t": 0,
   "a": "A00",
   "n": "N01"
 },
 {
+  "week": "2012W02",
   "t": 1,
   "a": "A00",
   "n": "N00"
 },
 {
+  "week": "2012W02",
   "t": 1,
   "a": "A00",
   "n": "N01"
@@ -241,6 +212,7 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "t": 0,
   "coop": 50.0,
   "f": "C0000",
@@ -249,6 +221,7 @@ namespace eval ::athena_test::tests:: {
   "g": "F00"
 },
 {
+  "week": "2012W02",
   "t": 1,
   "coop": 50.0,
   "f": "C0000",
@@ -269,6 +242,7 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "t": 0,
   "unassigned": 0,
   "personnel": 50000,
@@ -276,6 +250,7 @@ namespace eval ::athena_test::tests:: {
   "g": "F00"
 },
 {
+  "week": "2012W01",
   "t": 0,
   "unassigned": 0,
   "personnel": 50000,
@@ -283,6 +258,7 @@ namespace eval ::athena_test::tests:: {
   "g": "O00"
 },
 {
+  "week": "2012W02",
   "t": 1,
   "unassigned": 0,
   "personnel": 50000,
@@ -290,6 +266,7 @@ namespace eval ::athena_test::tests:: {
   "g": "F00"
 },
 {
+  "week": "2012W02",
   "t": 1,
   "unassigned": 0,
   "personnel": 50000,
@@ -335,6 +312,7 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "t": 0,
   "influence": 0.0,
   "support": 0.0,
@@ -343,6 +321,7 @@ namespace eval ::athena_test::tests:: {
   "direct_support": 1.0
 },
 {
+  "week": "2012W01",
   "t": 0,
   "influence": 0.0,
   "support": 0.0,
@@ -351,6 +330,7 @@ namespace eval ::athena_test::tests:: {
   "direct_support": 1.0
 },
 {
+  "week": "2012W02",
   "t": 1,
   "influence": 0.0,
   "support": 0.0,
@@ -359,6 +339,7 @@ namespace eval ::athena_test::tests:: {
   "direct_support": 0.9860909090909091
 },
 {
+  "week": "2012W02",
   "t": 1,
   "influence": 0.0,
   "support": 0.0,
@@ -407,21 +388,25 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "t": 0,
   "n": "N00",
   "population": 10000
 },
 {
+  "week": "2012W01",
   "t": 0,
   "n": "N01",
   "population": 10000
 },
 {
+  "week": "2012W02",
   "t": 1,
   "n": "N00",
   "population": 10000
 },
 {
+  "week": "2012W02",
   "t": 1,
   "n": "N01",
   "population": 10000
@@ -439,11 +424,13 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "t": 0,
   "population": 0,
   "g": "C0000"
 },
 {
+  "week": "2012W02",
   "t": 1,
   "population": 0,
   "g": "C0000"
@@ -474,24 +461,28 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "security": 0,
   "t": 0,
   "n": "N00",
   "g": "C0000"
 },
 {
+  "week": "2012W01",
   "security": 0,
   "t": 0,
   "n": "N01",
   "g": "C0000"
 },
 {
+  "week": "2012W02",
   "security": 0,
   "t": 1,
   "n": "N00",
   "g": "C0000"
 },
 {
+  "week": "2012W02",
   "security": 0,
   "t": 1,
   "n": "N01",
@@ -510,28 +501,30 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
-  "saturation_funding": 0.0,
-  "t": 0,
-  "required": 0.0,
-  "expected": 0.0,
-  "actual": 0.0,
-  "needs": 0.0,
-  "expectf": 0.0,
+  "s": "ENI",
   "funding": 0.0,
+  "t": 0,
+  "saturation_funding": 0.0,
   "g": "C0000",
-  "s": "ENI"
+  "expectf": 0.0,
+  "needs": 0.0,
+  "required": 0.0,
+  "actual": 0.0,
+  "expected": 0.0,
+  "week": "2012W01"
 },
 {
-  "saturation_funding": 0.0,
-  "t": 1,
-  "required": 0.0,
-  "expected": 0.0,
-  "actual": 0.0,
-  "needs": 0.0,
-  "expectf": 0.0,
+  "s": "ENI",
   "funding": 0.0,
+  "t": 1,
+  "saturation_funding": 0.0,
   "g": "C0000",
-  "s": "ENI"
+  "expectf": 0.0,
+  "needs": 0.0,
+  "required": 0.0,
+  "actual": 0.0,
+  "expected": 0.0,
+  "week": "2012W02"
 }
 ]
 ]}
@@ -559,6 +552,7 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "coverage": 1.0,
   "can_do": 1,
   "t": 0,
@@ -570,6 +564,7 @@ namespace eval ::athena_test::tests:: {
   "g": "F00"
 },
 {
+  "week": "2012W01",
   "coverage": 1.0,
   "can_do": 1,
   "t": 0,
@@ -581,6 +576,7 @@ namespace eval ::athena_test::tests:: {
   "g": "O00"
 },
 {
+  "week": "2012W02",
   "coverage": 1.0,
   "can_do": 1,
   "t": 1,
@@ -592,6 +588,7 @@ namespace eval ::athena_test::tests:: {
   "g": "F00"
 },
 {
+  "week": "2012W02",
   "coverage": 1.0,
   "can_do": 1,
   "t": 1,
@@ -615,11 +612,13 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "t": 0,
   "mood": 0.0,
   "g": "C0000"
 },
 {
+  "week": "2012W02",
   "t": 1,
   "mood": 0.0,
   "g": "C0000"
@@ -637,21 +636,25 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "t": 0,
   "n": "N00",
   "nbmood": 10.09191919191919
 },
 {
+  "week": "2012W01",
   "t": 0,
   "n": "N01",
   "nbmood": 6.482954545454545
 },
 {
+  "week": "2012W02",
   "t": 1,
   "n": "N00",
   "nbmood": 10.918134043449012
 },
 {
+  "week": "2012W02",
   "t": 1,
   "n": "N01",
   "nbmood": 7.236773017820247
@@ -669,21 +672,25 @@ namespace eval ::athena_test::tests:: {
 ["OK",
 [
 {
+  "week": "2012W01",
   "t": 0,
   "n": "N00",
   "ur": 4.0
 },
 {
+  "week": "2012W01",
   "t": 0,
   "n": "N01",
   "ur": 0.0
 },
 {
+  "week": "2012W02",
   "t": 1,
   "n": "N00",
   "ur": 4.0
 },
 {
+  "week": "2012W02",
   "t": 1,
   "n": "N01",
   "ur": 0.0

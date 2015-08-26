@@ -218,4 +218,5 @@ include command.help
 include function.help
 include parmdb.help
 include prefs.help
+include compdb.help
 include term.help

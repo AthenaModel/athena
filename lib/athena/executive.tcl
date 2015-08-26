@@ -1571,6 +1571,29 @@ snit::type ::athena::executive {
         $interp smartalias {block last} 0 0 {} \
             [mymethod LastBean ::athena::block]
 
+        # compdb 
+        $interp ensemble compdb 
+
+        # compdb export
+        $interp smartalias {compdb export} 1 1 {filename} \
+            [list compdb save]
+
+        # compdb list
+        $interp smartalias {compdb list} 0 1 {?pattern?} \
+            [list compdb list]
+
+        # compdb get
+        $interp smartalias {compdb get} 1 1 {parm} \
+            [list compdb get]
+
+        # compdb set
+        $interp smartalias {compdb set} 2 2 {parm value} \
+            [list compdb set]
+
+        # compdb reset
+        $interp smartalias {compdb reset} 0 0 {} \
+            [list compdb reset]
+
         # condition
         $interp ensemble condition
 
@@ -1788,7 +1811,10 @@ snit::type ::athena::executive {
             [list $adb version]
     }
 
-    
+ 
+    method CompDbList {{pattern *}} {
+        compdb list $pattern
+    }   
     #-------------------------------------------------------------------
     # Executive Command Implementations
 
@@ -2158,7 +2184,6 @@ snit::type ::athena::executive {
     method ParmImport {filename} {
         $self Send PARM:IMPORT -filename $filename
     }
-
 
     # parm list ?pattern?
     #

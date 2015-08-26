@@ -1,0 +1,99 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    compdb.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Comparison Parameters
+#
+#    This file is included into athena.help.
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+
+page / compdb "Comparison Parameters" {
+    <title>
+    Comparison parameters are user-specific settings that modify the
+    behavior of scenario comparisons.  As such, comparison parameters
+    affect the output of the comparison of scenario cases, whether it
+    be the same scenario at different times or two different scenarios, 
+    but not the simulation outputs.
+    Comparison parameter values can be queried and set using the
+    <command compdb> executive command.<p>
+
+    <childlinks>
+}
+
+
+# compdbpage parm itemtype
+#
+# parm     The name of the parameter or subset
+# itemtype parm|subset
+#
+# Defines a parameter help page, defining the parent/child links properly.
+
+proc compdbpage {parm itemtype} {
+    # FIRST, get the parent and slug of this page.
+    lassign [name2path /compdb . $parm] parent slug
+
+    if {$itemtype eq "subset"} {
+        set title "$parm.*"
+    } else {
+        set title $parm
+    }
+
+    page $parent $slug $title "<compdbtext $parm $itemtype>"
+}
+
+macroproc compdbtext {parm itemtype} {
+    # FIRST, get the title.
+    if {$itemtype eq "subset"} {
+        set tlinks [name2pathlinks /compdb . $parm].*
+    } else {
+        set tlinks [name2pathlinks /compdb . $parm]
+    }
+
+    set toplink [link /compdb "Comparison Parameters"]
+
+    set text "[mktitle small $toplink $tlinks {}]\n\n"
+
+    if {$itemtype ne "subset"} {
+        append text \
+       "Default value: [super ::athena::compdb getdefault $parm]<p>\n\n"
+    }
+
+    set docstring [super ::athena::compdb docstring $parm]
+    append text [string map {& &amp; < &lt; > &gt;} $docstring]
+    append text "<p>"
+
+    if {$itemtype eq "subset"} {
+        append text "\n[childlinks]"
+    }
+
+    return $text
+}
+
+
+
+# compdbpages
+#
+# Creates a page called "pref.<parmname>" for each preference parameter.
+
+proc compdbpages {} {
+    super ::athena::compdb init
+
+    foreach {item itemtype} [super ::athena::compdb items] {
+        compdbpage $item $itemtype
+    }
+}
+
+
+#-----------------------------------------------------------------------
+
+compdbpages
+
+
