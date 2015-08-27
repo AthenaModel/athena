@@ -207,7 +207,7 @@ snit::type ::athena::compdb {
     # Imports the named file and saves the imported parms as user prefs.
 
     typemethod import {filename} {
-        $ps load $filename -safe
+        $ps load $filename
         $type SaveCompDB
     }
 

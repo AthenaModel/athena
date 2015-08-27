@@ -83,6 +83,7 @@ snit::type app {
         set adbfile ""
         set script ""
         set scratchdir ""
+        set compdb ""
 
         foroption opt argv -all {
             -scenariodir {
@@ -105,6 +106,13 @@ snit::type app {
                     throw fatal "-script does not exist: \"$script\""
                 }
             }
+            -compdb {
+                set compdb [file normalize [lshift argv]]
+
+                if {![file isfile $compdb]} {
+                    throw fatal "-compdb does not exist: \"$compdb\""
+                }
+            }
             -test {
                 set info(test) 1
             }
@@ -120,9 +128,18 @@ snit::type app {
         # NEXT, initialize the temp directory.
         $type InitTempDir
 
+        # NEXT, initialize 
+
         # NEXT, initialize other application modules.
         case init $scenariodir
         comp init
+
+        # NEXT, initialize compdb and load compdb parms
+        compdb init
+
+        if {$compdb ne ""} {
+            compdb import $compdb
+        } 
 
         $type InitializeBaseCase $adbfile $script
 
