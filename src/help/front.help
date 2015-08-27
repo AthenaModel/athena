@@ -1,59 +1,13 @@
-# -*-Tcl-*-
-#-----------------------------------------------------------------------
-# TITLE:
-#    workbench.help
-#
-# AUTHOR:
-#    Will Duquette
-#
-# DESCRIPTION:
-#    Main Athena Workbench help(5) file
-#
-#-----------------------------------------------------------------------
-
-#=======================================================================
-# Global Definitions
-
-include util/procs.help
-include util/macros.help
-include util/images.help
-include workbench/images.help
-
-#-----------------------------------------------------------------------
-
-page "" "" "Athena Workbench Help" {
-    <image athena right>
-
-    This is the on-line help for <b>Athena Workbench V<version></b>,
-    the desktop version of the Athena Stability & Recovery Operations 
-    Simulation.  Please see the <i>Athena User's Guide</i> for more 
-    information.<p>
-
-    <ul>
-    <li> <cref /changelog>
-    <li> <cref /about>
-    <li> <cref /release>
-    <li> <cref /object>
-    <li> <cref /menu>
-    <li> <cref /tab>
-    <li> <cref /order>
-    <li> <cref /gofer>
-    <li> <cref /var>
-    <li> <cref /command>
-    <li> <cref /function>
-    <li> <cref /parmdb>
-    <li> <cref /prefs>
-    <li> <cref /term>
-    </ul>
-}
-
 #-----------------------------------------------------------------------
 
 page / changelog "Change Log" {
     <title>
     <changelog>
+    <change 8/27/2015 New whd>
+    Changes for Athena 6.3.1 (final release)
+    </change>
     <change 6/9/2015 New whd>
-    Changes for interim release of Athena 6.3.x.
+    Changes for Athena 6.3.0 (interim release)
     </change>
     <change 10/7/2014 New whd>
     Final changes for Athena 6.2.
@@ -205,20 +159,3 @@ page / release "Release Notes" {
     all GOAL:*, TACTIC:* and CONDITION:* orders and rebuild the 
     actor's strategies by hand.
 }
-
-
-#======================================================================
-# The following sections are in separate files
-
-include athena/object.help
-include workbench/menu.help
-include workbench/tab.help
-include athena/order.help
-include athena/gofer.help
-include workbench/var.help
-include athena/command.help
-include athena/function.help
-include athena/parmdb.help
-include workbench/prefs.help
-include athena/compdb.help
-include athena/term.help
