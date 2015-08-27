@@ -167,6 +167,12 @@ button is displayed only if this option has a non-empty value.<p>
 The browser will access the named server when given a URL with a
 missing server name.  Defaults to "app".<p>
 
+<defopt {-help <i>url</i>}>
+
+Specifies the URL of the browser's "help" page.  If this option is
+given then the browser will display a "Help" button in the toolbar
+and will display this page when the button is pressed.<p>
+
 <defopt {-home <i>url</i>}>
 
 Specifies the URL of the browser's "home" page.  It will display

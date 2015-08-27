@@ -1,0 +1,34 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    arachne.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Main Arachne help(5) file
+#
+#-----------------------------------------------------------------------
+
+#=======================================================================
+# Global Definitions
+
+include util/procs.help
+include util/macros.help
+include util/images.help
+
+#-----------------------------------------------------------------------
+
+page "" "" "Arachne Help" {
+    <image athena right>
+
+    This is the on-line help for <b>Arachne V<version></b>, which is
+    part of the Athena Stability & Recovery Operations Simulation.  
+    Please see the <i>Athena User's Guide</i> for more information.<p>
+
+    Help Contents:<p>
+
+    <b>TBD.</b>
+}
+

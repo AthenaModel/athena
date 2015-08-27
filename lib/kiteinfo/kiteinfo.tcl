@@ -79,7 +79,7 @@ namespace eval ::kiteinfo:: {
     docs/*.png
     docs/man1/athenawb.html
     docs/man1/cellide.html
-    docs/athena.helpdb
+    docs/*.helpdb
     docs/*.docx
     docs/*.pptx
 }

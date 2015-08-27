@@ -6,8 +6,8 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    	all          Builds athena.helpdb.
-#       clean        Deletes athena.helpdb. 
+#    	all          Builds workbench.helpdb, arachne.helpdb.
+#       clean        Deletes target helpdb files. 
 #
 #---------------------------------------------------------------------
 
@@ -19,11 +19,13 @@ TOP_DIR = ../..
 
 .PHONY: all clean
 
-HELPTOOL = $(TOP_DIR)/bin/helptool.tcl
-HELPDB   = $(TOP_DIR)/docs/athena.helpdb
+HELPTOOL           = $(TOP_DIR)/bin/helptool.tcl
+WORKBENCH_HELPDB   = $(TOP_DIR)/docs/workbench.helpdb
+ARACHNE_HELPDB     = $(TOP_DIR)/docs/arachne.helpdb
 
 all:
-	$(HELPTOOL) athena.help $(HELPDB)
+	$(HELPTOOL) workbench.help $(WORKBENCH_HELPDB)
+	$(HELPTOOL) arachne.help $(ARACHNE_HELPDB)
 
 clean:
 	-rm $(HELPDB)

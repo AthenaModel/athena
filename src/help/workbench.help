@@ -1,31 +1,33 @@
 # -*-Tcl-*-
 #-----------------------------------------------------------------------
 # TITLE:
-#    athena.help
+#    workbench.help
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPTION:
-#    Main Athena help(5) file
+#    Main Athena Workbench help(5) file
 #
 #-----------------------------------------------------------------------
 
 #=======================================================================
 # Global Definitions
 
-include procs.help
-include macros.help
-include images.help
+include util/procs.help
+include util/macros.help
+include util/images.help
+include workbench/images.help
 
 #-----------------------------------------------------------------------
 
-page "" "" "Athena Help" {
+page "" "" "Athena Workbench Help" {
     <image athena right>
 
-    This is the on-line help for <b>V<version></b> of the
-    Athena Stability & Recovery Operations Simulation.  Please see the 
-    <i>Athena User's Guide</i> for more information.<p>
+    This is the on-line help for <b>Athena Workbench V<version></b>,
+    the desktop version of the Athena Stability & Recovery Operations 
+    Simulation.  Please see the <i>Athena User's Guide</i> for more 
+    information.<p>
 
     <ul>
     <li> <cref /changelog>
@@ -208,15 +210,15 @@ page / release "Release Notes" {
 #======================================================================
 # The following sections are in separate files
 
-include object.help
-include menu.help
-include tab.help
-include order.help
-include gofer.help
-include var.help
-include command.help
-include function.help
-include parmdb.help
-include prefs.help
-include compdb.help
-include term.help
+include athena/object.help
+include workbench/menu.help
+include workbench/tab.help
+include athena/order.help
+include athena/gofer.help
+include workbench/var.help
+include athena/command.help
+include athena/function.help
+include athena/parmdb.help
+include workbench/prefs.help
+include athena/compdb.help
+include athena/term.help
