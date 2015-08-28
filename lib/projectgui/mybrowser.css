@@ -1,0 +1,125 @@
+/*
+ * Standard mybrowser(n) styles.
+ *
+ * Ultimately we should pick a set of style class names that are consistent
+ * with bootstrap to the extent possible.
+ */
+
+/* Links */
+A[href] {
+    color: black;
+    text-decoration: none;
+}
+
+A[href]:link {
+    color: blue;
+    text-decoration: none;
+}
+
+A[href]:visited {
+    color: purple;
+    text-decoration: none;
+}
+
+/* Image Padding. 
+** Left and right aligned images get no padding at the top because
+** they usually appear at the beginning of paragraphs. */
+
+IMG[align="center"] {
+    padding-top:    0.4em;
+    padding-bottom: 0.4em;
+    
+}
+
+IMG[align="left"] {
+    padding-top:    0em;
+    padding-right:  1em;
+    padding-bottom: 0.4em;
+}
+
+IMG[align="right"] {
+    padding-top:    0em;
+    padding-left:   1em;
+    padding-bottom: 0.4em;
+}
+
+/* Inline image */
+IMG[align="middle"] {
+    vertical-align: middle;
+}
+
+/* Form input elements */
+INPUT {
+    border: 0px;
+    vertical-align: middle;
+}
+
+INPUT[type="text"] {
+    border: 0px;
+    vertical-align: middle;
+}
+
+
+INPUT[type="submit"] {
+    border: 0px;
+    padding: 0px;
+}
+
+/* Object elements */
+OBJECT {
+    vertical-align: middle;
+}
+
+/* List indentation */
+OL, UL, DD {
+    padding-left: 1em;
+}
+
+/* Spans for different entity states */
+
+SPAN.disabled {
+    text-decoration: line-through;
+    color: #999999;
+}
+
+SPAN.invalid {
+    text-decoration: line-through;
+    color: #C7001B;
+}
+
+SPAN.error {
+    color: #C7001B;
+}
+
+/* Table Formatting Classes: "pretty" 
+ * Border around the outside, even/odd striping, no internal
+ * border lines.
+ */
+TABLE.pretty {
+    border: 1px solid black;
+    border-spacing: 0;
+}
+
+TABLE.pretty TR.header {
+    font-weight: bold;
+    color: white;
+    background-color: #000099;
+}
+
+TABLE.pretty TR.oddrow {
+    color: black;
+    background-color: white;
+}
+
+TABLE.pretty TR.evenrow {
+    color: black;
+    background-color: #EEEEEE;
+}
+
+TABLE.pretty TD {
+    padding: 5px;
+}
+
+TABLE.pretty TH {
+    padding: 5px;
+}

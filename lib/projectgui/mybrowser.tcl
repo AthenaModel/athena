@@ -356,12 +356,14 @@ snit::widget ::projectgui::mybrowser {
         }
 
         # HTML Viewer
-        
-        install hv using htmlviewer $content.hv                \
-            -hovercmd            [mymethod HoverCmd]               \
-            -hyperlinkcmd        [mymethod HyperlinkCmd]           \
-            -imagecmd            [mymethod ImageCmd]               \
-            -isvisitedcmd        [mymethod IsVisitedCmd]           \
+        set styles [readfile [file join $::projectgui::library mybrowser.css]]
+
+        install hv using htmlviewer $content.hv              \
+            -styles              $styles                     \
+            -hovercmd            [mymethod HoverCmd]         \
+            -hyperlinkcmd        [mymethod HyperlinkCmd]     \
+            -imagecmd            [mymethod ImageCmd]         \
+            -isvisitedcmd        [mymethod IsVisitedCmd]     \
             -xscrollcommand      [list $content.xscroll set] \
             -yscrollcommand      [list $content.yscroll set]
 
