@@ -257,21 +257,6 @@ The column headers default to "Field" and
 "Description", but can be changed using the optional <i>h1</i> and
 <i>h2</i> parameters.<p>
 
-<defitem topiclist {&lt;&lt;topiclist ?<i>h1</i>? ?<i>h2</i>?&gt;&gt;}>
-<defitem topic {&lt;&lt;topic <i>topic</i>&gt;&gt;}>
-<defitem /topic {&lt;&lt;/topic&gt;&gt;}>
-<defitem /topiclist {&lt;&lt;/topiclist&gt;&gt;}>
-
-These macros are used together to produce a two-column table of topic
-names and descriptions.  The column headers default to "Topic" and
-"Description", but can be changed using the optional <i>h1</i> and
-<i>h2</i> parameters to &lt;&lt;topiclist&gt;&gt;.<p>
-
-Rows are added using the
-&lt;&lt;topic&gt;&gt;...&lt;&lt;/topic&gt;&gt; tags; the value of the
-<i>topic</i> argument to &lt;&lt;topic&gt;&gt; appears in the first
-column, and the text between the tags appears in the second.<p>
-
 <defitem version {&lt;&lt;version&gt;&gt;}>
 
 Returns the version number for the current project, as passed to
