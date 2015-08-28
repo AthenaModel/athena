@@ -327,7 +327,7 @@ the code for details of their APIs.  Note that <xref athena(n)> documents
 those component subcommands which are made available by the public 
 facade.<p>
 
-<topiclist>
+<topiclist "Component" "Subcommand">
 <topic aam>
 <topic abevent>
 <topic absit>

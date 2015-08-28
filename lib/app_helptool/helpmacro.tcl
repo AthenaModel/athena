@@ -107,9 +107,9 @@ snit::type helpmacro {
         $macro smartalias /topiclist 0 0 {} \
             [myproc /topiclist]
 
+
         $macro smartalias version 0 0 {} \
             [list project version]
-
     }
 
     # setinfo dict
