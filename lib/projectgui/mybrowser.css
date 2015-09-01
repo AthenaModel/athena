@@ -1,22 +1,22 @@
 /*
  * Standard mybrowser(n) styles.
- *
- * Ultimately we should pick a set of style class names that are consistent
- * with bootstrap to the extent possible.
  */
 
-/* Links */
-A[href] {
+/*
+ * Styles applying to all elements.
+ */
+
+a[href] {
     color: black;
     text-decoration: none;
 }
 
-A[href]:link {
+a[href]:link {
     color: blue;
     text-decoration: none;
 }
 
-A[href]:visited {
+a[href]:visited {
     color: purple;
     text-decoration: none;
 }
@@ -25,101 +25,116 @@ A[href]:visited {
 ** Left and right aligned images get no padding at the top because
 ** they usually appear at the beginning of paragraphs. */
 
-IMG[align="center"] {
+img[align="center"] {
     padding-top:    0.4em;
     padding-bottom: 0.4em;
     
 }
 
-IMG[align="left"] {
+img[align="left"] {
     padding-top:    0em;
     padding-right:  1em;
     padding-bottom: 0.4em;
 }
 
-IMG[align="right"] {
+img[align="right"] {
     padding-top:    0em;
     padding-left:   1em;
     padding-bottom: 0.4em;
 }
 
 /* Inline image */
-IMG[align="middle"] {
+img[align="middle"] {
     vertical-align: middle;
 }
 
 /* Form input elements */
-INPUT {
+input {
     border: 0px;
     vertical-align: middle;
 }
 
-INPUT[type="text"] {
+input[type="text"] {
     border: 0px;
     vertical-align: middle;
 }
 
 
-INPUT[type="submit"] {
+input[type="submit"] {
     border: 0px;
     padding: 0px;
 }
 
 /* Object elements */
-OBJECT {
+object {
     vertical-align: middle;
 }
 
 /* List indentation */
-OL, UL, DD {
+ol, ul, dd {
     padding-left: 1em;
 }
 
+/*
+ * CSS Class Definitions
+ */
+
+ /* Typography */
+.text-muted   { color: #777;    }
+.text-primary { color: #337ab7; }
+.text-success { color: #3c763d; }
+.text-info    { color: #31708f; }
+.text-warning { color: #8a6d3b; }
+.text-danger  { color: #a94442; }
+
+
+
 /* Spans for different entity states */
 
-SPAN.disabled {
+span.disabled {
     text-decoration: line-through;
     color: #999999;
 }
 
-SPAN.invalid {
+span.invalid {
     text-decoration: line-through;
     color: #C7001B;
 }
 
-SPAN.error {
+span.error {
     color: #C7001B;
 }
 
-/* Table Formatting Classes: "pretty" 
- * Border around the outside, even/odd striping, no internal
- * border lines.
+/*--------------------------------------------------
+ * Table Formatting Classes
  */
-TABLE.pretty {
+
+.table {  /* Replaces "pretty" */
     border: 1px solid black;
     border-spacing: 0;
-}
-
-TABLE.pretty TR.header {
-    font-weight: bold;
-    color: white;
-    background-color: #000099;
-}
-
-TABLE.pretty TR.oddrow {
     color: black;
     background-color: white;
 }
 
-TABLE.pretty TR.evenrow {
-    color: black;
+.table tr:first-child {  /* Replaces "header" */
+    font-weight: bold;
+    color: white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {      /* Replaces "evenrow" */
     background-color: #EEEEEE;
 }
 
-TABLE.pretty TD {
-    padding: 5px;
+.table tr.tr-even { }   /* Replaces "oddrow" */
+
+.table th {
+    padding:    5px;
+    text-align: left;
 }
 
-TABLE.pretty TH {
+.table td {
     padding: 5px;
+    vertical-align: baseline;
 }
+
