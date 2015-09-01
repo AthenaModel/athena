@@ -23,16 +23,6 @@ oo::class create ::projectlib::htmlbuffer {
     #-------------------------------------------------------------------
     # Lookup Tables
 
-    # defaultStyles
-    #
-    # These styles are put in page headers to support font handling;
-    # if -styles or -cssfile are given when the buffer is created,
-    # they are not used.
-
-    meta defaultStyles {
-        /* TBD */
-    }
-
     # Alignments for ht query.
     meta alignments {
         "" left
@@ -70,24 +60,24 @@ oo::class create ::projectlib::htmlbuffer {
     # Creates and initializes the buffer.
     #
     # Options:
-    #    -cssfile name   - The name of an external CSS file to be
-    #                      <link>ed in page headers.
-    #    -domain prefix  - A URL domain prefix, e.g., "/this/that",
-    #                      used as a prefix for iref links.
-    #    -footercmd cmd  - A callback that adds content to the page
-    #                      footer.  Called with one additional argument,
-    #                      the buffer itself, by "/page".
-    #    -headercmd cmd  - A callback that adds content to the page
-    #                      header.  Called with two additional arguments,
-    #                      the buffer and the page title, by "page".
-    #    -mode mode      - web|tk; the HTML generation mode.  Defaults to
-    #                      web.
-    #    -styles css     - CSS styles to be used in place of the default
-    #                      CSS styles.
+    #    -cssfiles namelist - Names of external CSS files to be
+    #                         <link>ed in page headers.
+    #    -domain prefix     - A URL domain prefix, e.g., "/this/that",
+    #                         used as a prefix for iref links.
+    #    -footercmd cmd     - A callback that adds content to the page
+    #                         footer.  Called with one additional argument,
+    #                         the buffer itself, by "/page".
+    #    -headercmd cmd     - A callback that adds content to the page
+    #                         header.  Called with two additional arguments,
+    #                         the buffer and the page title, by "page".
+    #    -mode mode         - web|tk; the HTML generation mode.  Defaults to
+    #                         web.
+    #    -styles css        - CSS styles to be included in the page.
+
     constructor {args} {
         # FIRST, initialize the options.
         array set options {
-            -cssfile   ""
+            -cssfiles  {}
             -domain    ""
             -footercmd {}
             -headercmd {}
@@ -304,11 +294,8 @@ oo::class create ::projectlib::htmlbuffer {
     # If the buffer -styles option is set, a <styles> clause is added to 
     # the <head>.
     #
-    # If the buffer -cssfile option is set, a <link> to the CSS file is 
+    # If the buffer -cssfiles option is set, <link>s to the CSS files are 
     # added to the <head>.
-    #
-    # If neither -styles nor -cssfile are given, module-specific styles
-    # are added.
     #
     # If the buffer -headercmd option is set, it is passed the buffer 
     # and the title.  Any output will appear after the <body> tag.
@@ -328,12 +315,11 @@ oo::class create ::projectlib::htmlbuffer {
         my putln <head>
         my wrapln title $title
 
-        if {$options(-cssfile) ne ""} {
-            my tagln link -rel stylesheet -href $options(-cssfile)
+        foreach filename $options(-cssfiles) {
+            my tagln link -rel stylesheet -href $filename
         }
 
         if {$options(-styles) ne ""} {
-            # TBD: Handling of defaultStyles!
             my wrapln style $options(-styles)
         }
 

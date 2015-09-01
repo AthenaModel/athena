@@ -148,7 +148,7 @@ snit::type app {
         set domains(/comparison) [/comparison new]
         set domains(/debug)    [/debug new]     ;# TBD: If -debug
 
-        set helpdb [appdir join docs athena.helpdb]
+        set helpdb [appdir join docs arachne.helpdb]
         set domains(/help)     \
             [::projectlib::helpdomain new /help "Athena Help" $helpdb]
 

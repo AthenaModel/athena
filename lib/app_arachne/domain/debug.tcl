@@ -30,7 +30,7 @@ oo::class create /debug {
 
         # FIRST, define helpers
         hb configure \
-            -cssfile   "/athena.css"         \
+            -cssfiles  {/athena.css}         \
             -headercmd [mymethod htmlHeader] \
             -footercmd [mymethod htmlFooter]
     }            

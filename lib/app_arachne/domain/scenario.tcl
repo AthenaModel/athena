@@ -38,7 +38,7 @@ oo::class create /scenario {
 
         # FIRST, configure the HTML buffer
         hb configure \
-            -cssfile   "/athena.css"         \
+            -cssfiles  {/athena.css}         \
             -headercmd [mymethod htmlHeader] \
             -footercmd [mymethod htmlFooter]
     }            
