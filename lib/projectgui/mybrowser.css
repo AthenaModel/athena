@@ -2,81 +2,12 @@
  * Standard mybrowser(n) styles.
  */
 
-/*
- * Styles applying to all elements.
- */
-
-a[href] {
-    color: black;
-    text-decoration: none;
-}
-
-a[href]:link {
-    color: blue;
-    text-decoration: none;
-}
-
-a[href]:visited {
-    color: purple;
-    text-decoration: none;
-}
-
-/* Image Padding. 
-** Left and right aligned images get no padding at the top because
-** they usually appear at the beginning of paragraphs. */
-
-img[align="center"] {
-    padding-top:    0.4em;
-    padding-bottom: 0.4em;
-    
-}
-
-img[align="left"] {
-    padding-top:    0em;
-    padding-right:  1em;
-    padding-bottom: 0.4em;
-}
-
-img[align="right"] {
-    padding-top:    0em;
-    padding-left:   1em;
-    padding-bottom: 0.4em;
-}
-
-/* Inline image */
-img[align="middle"] {
-    vertical-align: middle;
-}
-
-/* Form input elements */
-input {
-    border: 0px;
-    vertical-align: middle;
-}
-
-input[type="text"] {
-    border: 0px;
-    vertical-align: middle;
-}
-
-
-input[type="submit"] {
-    border: 0px;
-    padding: 0px;
-}
-
-/* Object elements */
-object {
-    vertical-align: middle;
-}
-
-/* List indentation */
-ol, ul, dd {
-    padding-left: 1em;
+table.table-wide {
+    width: 100%;    
 }
 
 /*
- * CSS Class Definitions
+ * Bootstrap-inspired Definitions
  */
 
  /* Typography */
@@ -86,55 +17,3 @@ ol, ul, dd {
 .text-info    { color: #31708f; }
 .text-warning { color: #8a6d3b; }
 .text-danger  { color: #a94442; }
-
-
-
-/* Spans for different entity states */
-
-span.disabled {
-    text-decoration: line-through;
-    color: #999999;
-}
-
-span.invalid {
-    text-decoration: line-through;
-    color: #C7001B;
-}
-
-span.error {
-    color: #C7001B;
-}
-
-/*--------------------------------------------------
- * Table Formatting Classes
- */
-
-.table {  /* Replaces "pretty" */
-    border: 1px solid black;
-    border-spacing: 0;
-    color: black;
-    background-color: white;
-}
-
-.table tr:first-child {  /* Replaces "header" */
-    font-weight: bold;
-    color: white;
-    background-color: #000099;    
-}
-
-.table tr.tr-odd {      /* Replaces "evenrow" */
-    background-color: #EEEEEE;
-}
-
-.table tr.tr-even { }   /* Replaces "oddrow" */
-
-.table th {
-    padding:    5px;
-    text-align: left;
-}
-
-.table td {
-    padding: 5px;
-    vertical-align: baseline;
-}
-
