@@ -1,57 +1,13 @@
-# -*-Tcl-*-
-#-----------------------------------------------------------------------
-# TITLE:
-#    athena.help
-#
-# AUTHOR:
-#    Will Duquette
-#
-# DESCRIPTION:
-#    Main Athena help(5) file
-#
-#-----------------------------------------------------------------------
-
-#=======================================================================
-# Global Definitions
-
-include procs.help
-include macros.help
-include images.help
-
-#-----------------------------------------------------------------------
-
-page "" "" "Athena Help" {
-    <image athena right>
-
-    This is the on-line help for <b>V<version></b> of the
-    Athena Stability & Recovery Operations Simulation.  Please see the 
-    <i>Athena User's Guide</i> for more information.<p>
-
-    <ul>
-    <li> <cref /changelog>
-    <li> <cref /about>
-    <li> <cref /release>
-    <li> <cref /object>
-    <li> <cref /menu>
-    <li> <cref /tab>
-    <li> <cref /order>
-    <li> <cref /gofer>
-    <li> <cref /var>
-    <li> <cref /command>
-    <li> <cref /function>
-    <li> <cref /parmdb>
-    <li> <cref /prefs>
-    <li> <cref /term>
-    </ul>
-}
-
 #-----------------------------------------------------------------------
 
 page / changelog "Change Log" {
     <title>
     <changelog>
+    <change 8/27/2015 New whd>
+    Changes for Athena 6.3.1 (final release)
+    </change>
     <change 6/9/2015 New whd>
-    Changes for interim release of Athena 6.3.x.
+    Changes for Athena 6.3.0 (interim release)
     </change>
     <change 10/7/2014 New whd>
     Final changes for Athena 6.2.
@@ -203,20 +159,3 @@ page / release "Release Notes" {
     all GOAL:*, TACTIC:* and CONDITION:* orders and rebuild the 
     actor's strategies by hand.
 }
-
-
-#======================================================================
-# The following sections are in separate files
-
-include object.help
-include menu.help
-include tab.help
-include order.help
-include gofer.help
-include var.help
-include command.help
-include function.help
-include parmdb.help
-include prefs.help
-include compdb.help
-include term.help

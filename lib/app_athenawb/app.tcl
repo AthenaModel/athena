@@ -241,7 +241,7 @@ snit::type app {
         myagent register ::appserver
         myagent register \
             [helpserver %AUTO% \
-                 -helpdb    [appdir join docs athena.helpdb] \
+                 -helpdb    [appdir join docs workbench.helpdb] \
                  -headercmd [mytypemethod HelpHeader]]
         myagent register \
             [rdbserver %AUTO% -domain /rdb -rdb ::adb]

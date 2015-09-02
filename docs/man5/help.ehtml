@@ -75,9 +75,14 @@ image using the normal HTML syntax:<p>
 Alternatively, the <iref image> macro creates the
 "<code>&lt;img&gt;</code>" take given the <i>slug</i>.<p>
 
+The <i filename> may be a relative or absolute path; if relative, it is
+relative to the directory of the help(5) file containing the 
+<iref image> command.<p>
+
 <defitem include {include <i>filename</i>}>
 
-Includes another help(5) file into this one.<p>
+Includes another help(5) file into this one.  The <i filename> may be
+absolute or relative to the directory of the including file.<p>
 
 <defitem macro {macro <i>name arglist</i> ?<i>initbody</i>? <i>template</i>}>
 
@@ -251,21 +256,6 @@ description, which is <xref ehtml(5)> input contained between
 The column headers default to "Field" and
 "Description", but can be changed using the optional <i>h1</i> and
 <i>h2</i> parameters.<p>
-
-<defitem topiclist {&lt;&lt;topiclist ?<i>h1</i>? ?<i>h2</i>?&gt;&gt;}>
-<defitem topic {&lt;&lt;topic <i>topic</i>&gt;&gt;}>
-<defitem /topic {&lt;&lt;/topic&gt;&gt;}>
-<defitem /topiclist {&lt;&lt;/topiclist&gt;&gt;}>
-
-These macros are used together to produce a two-column table of topic
-names and descriptions.  The column headers default to "Topic" and
-"Description", but can be changed using the optional <i>h1</i> and
-<i>h2</i> parameters to &lt;&lt;topiclist&gt;&gt;.<p>
-
-Rows are added using the
-&lt;&lt;topic&gt;&gt;...&lt;&lt;/topic&gt;&gt; tags; the value of the
-<i>topic</i> argument to &lt;&lt;topic&gt;&gt; appears in the first
-column, and the text between the tags appears in the second.<p>
 
 <defitem version {&lt;&lt;version&gt;&gt;}>
 

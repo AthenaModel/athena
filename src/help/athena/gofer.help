@@ -337,7 +337,7 @@ gofer_rule ACTORS BY_VALUE "Actors, By name" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>raw_value</i></tt> >
+    <topic {<tt><i>raw_value</i></tt>} >
     A list of <cref /object/actor> names.
     </topic>
 
@@ -357,7 +357,7 @@ gofer_rule ACTORS CONTROLLING "Actors, Controlling Neighborhood(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of <cref /object/nbhood> names.
     </topic>
 
@@ -377,12 +377,12 @@ gofer_rule ACTORS INFLUENCE_IN "Actors, With Influence in Neighborhoods(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve actors that have influence in <b>ANY</b> or <b>ALL</b> 
     of the listed neighborhoods.
     </topic>
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of <cref /object/nbhood> names.
     </topic>
 
@@ -403,7 +403,7 @@ gofer_rule ACTORS OWNING "Actors, Owning Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group/frc> and
     <cref /object/group/org> names.
     </topic>
@@ -424,12 +424,12 @@ gofer_rule ACTORS SUPPORTED_BY "Actors, Supported by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve actors that are supported by <b>ANY</b> or <b>ALL</b> 
     of the listed groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -449,12 +449,12 @@ gofer_rule ACTORS LIKED_BY_GROUP "Actors, Liked by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve actors that are liked by <b>ANY</b> or <b>ALL</b> 
     of the listed groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -474,12 +474,12 @@ gofer_rule ACTORS DISLIKED_BY_GROUP "Actors, Disliked by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve actors that are disliked by <b>ANY</b> or <b>ALL</b> 
     of the listed groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -515,7 +515,7 @@ gofer_rule CIVGROUPS BY_VALUE "Civilian groups, By name" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>raw_value</i></tt> >
+    <topic {<tt><i>raw_value</i></tt>}>
     A list of <cref /object/group/civ> names.
     </topic>
 
@@ -552,14 +552,14 @@ gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>base</i></tt> >
+    <topic {<tt><i>base</i></tt>}>
     The rule starts with a base set of civilian groups.  If <i>base</i> is
     <b>ALL</b> (the default), it starts with all civilian groups in the
     scenario.  If <i>base</i> is <b>THESE</b>, then it starts with the 
     specific civilian groups listed in <i>glist</i>.
     </topic>
 
-    <topic <tt><i>where</i></tt> >
+    <topic {<tt><i>where</i></tt>}>
     This parameter filters groups by where they live.<p>
 
     If <i>where</i> is <b>IN</b>, then the rule retains only those
@@ -575,13 +575,13 @@ gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
     </topic>
 
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     When <i>where</i> is set to something other than <b>IGNORE</b>, this
     parameter must be a list of neighborhood names.  Otherwise, it is
     ignored.
     </topic>
 
-    <topic <tt><i>livingby</i></tt> >
+    <topic {<tt><i>livingby</i></tt>}>
     This parameter filters groups depending on how they participate in the
     economy of the region.<p>
 
@@ -595,7 +595,7 @@ gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
     is ignored.
     </topic>
 
-    <topic <tt><i>mood</i></tt> >
+    <topic {<tt><i>mood</i></tt>}>
     This parameter filters groups depending on how their moods.<p>
 
     If <i>mood</i> is <b>GOOD</b>, the rule retains only those groups
@@ -611,7 +611,7 @@ gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
     is ignored.
     </topic>
     
-    <topic <tt><i>byactors</i></tt> >
+    <topic {<tt><i>byactors</i></tt>}>
     This parameter filters groups based on their relationships with one or
     more actors.<p>
 
@@ -634,7 +634,7 @@ gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
     </topic>
 
 
-    <topic <tt><i>awhich</i></tt> >
+    <topic {<tt><i>awhich</i></tt>}>
     This parameter can be <b>ALL</b> (the default) or <b>ANY</b>.<p>
 
     If <b>ALL</b>, then the relationship expressed by <i>byactors</i> must
@@ -647,12 +647,12 @@ gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
     irrelevant.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     When <i>byactors</i> is something other than <b>IGNORE</b>, this
     parameter must be a list of the names of one or more actors.
     </topic>
 
-    <topic <tt><i>bygroups</i></tt> >
+    <topic {<tt><i>bygroups</i></tt>}>
     This parameter filters groups based on their relationships with one or
     more other groups.<p>
 
@@ -676,7 +676,7 @@ gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
     is ignored.
     </topic>
 
-    <topic <tt><i>hwhich</i></tt> >
+    <topic {<tt><i>hwhich</i></tt>}>
     This parameter can be <b>ALL</b> (the default) or <b>ANY</b>.<p>
 
     If <b>ALL</b>, then the relationship expressed by <i>bygroups</i> must
@@ -689,7 +689,7 @@ gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
     irrelevant.
     </topic>
 
-    <topic <tt><i>hlist</i></tt> >
+    <topic {<tt><i>hlist</i></tt>}>
     When <i>bygroups</i> is something other than <b>IGNORE</b>, this
     parameter must be a list of the names of one or more groups.  The
     groups can be of any type (i.e., not just civilian groups).
@@ -712,7 +712,7 @@ gofer_rule CIVGROUPS RESIDENT_IN "Civilian groups, Resident in Neighborhood(s)" 
     
     <topiclist "Parameter">
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of <cref /object/nbhood> names.
     </topic>
 
@@ -733,7 +733,7 @@ gofer_rule CIVGROUPS NOT_RESIDENT_IN "Civilian groups, Not Resident in Neighborh
     
     <topiclist "Parameter">
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of <cref /object/nbhood> names.
     </topic>
 
@@ -797,12 +797,12 @@ gofer_rule CIVGROUPS SUPPORTING_ACTOR "Civilian groups, Supporting Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that support <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -824,12 +824,12 @@ gofer_rule CIVGROUPS LIKING_ACTOR "Civilian groups, Liking Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -851,12 +851,12 @@ gofer_rule CIVGROUPS DISLIKING_ACTOR "Civilian groups, Disliking Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -878,12 +878,12 @@ gofer_rule CIVGROUPS LIKING_GROUP "Civilian groups, Liking Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -905,12 +905,12 @@ gofer_rule CIVGROUPS DISLIKING_GROUP "Civilian groups, Disliking Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -932,12 +932,12 @@ gofer_rule CIVGROUPS LIKED_BY_GROUP "Civilian groups, Liked by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are liked by <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -959,12 +959,12 @@ gofer_rule CIVGROUPS DISLIKED_BY_GROUP "Civilian groups, Disliked by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are disliked by <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -994,7 +994,7 @@ gofer_rule FRCGROUPS BY_VALUE "Force groups, By name" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>raw_value</i></tt> >
+    <topic {<tt><i>raw_value</i></tt>}>
     A list of <cref /object/group/frc> names.
     </topic>
 
@@ -1015,7 +1015,7 @@ gofer_rule FRCGROUPS OWNED_BY "Force groups, Owned by Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1036,12 +1036,12 @@ gofer_rule FRCGROUPS DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are deployed to <b>ANY</b> or <b>ALL</b> of the listed
     neighborhoods.
     </topic>
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of <cref /object/nbhood> names.
     </topic>
 
@@ -1062,12 +1062,12 @@ gofer_rule FRCGROUPS NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhood
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are not deployed to <b>ANY</b> or <b>ALL</b> of the listed
     neighborhoods.
     </topic>
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of <cref /object/nbhood> names.
     </topic>
 
@@ -1091,12 +1091,12 @@ gofer_rule FRCGROUPS SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that support <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1118,12 +1118,12 @@ gofer_rule FRCGROUPS LIKING_ACTOR "Force groups, Liking Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1145,12 +1145,12 @@ gofer_rule FRCGROUPS DISLIKING_ACTOR "Force groups, Disliking Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1172,12 +1172,12 @@ gofer_rule FRCGROUPS LIKING_GROUP "Force groups, Liking Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1199,12 +1199,12 @@ gofer_rule FRCGROUPS DISLIKING_GROUP "Force groups, Disliking Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1226,12 +1226,12 @@ gofer_rule FRCGROUPS LIKED_BY_GROUP "Force groups, Liked by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are liked by <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1253,12 +1253,12 @@ gofer_rule FRCGROUPS DISLIKED_BY_GROUP "Force groups, Disliked by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are disliked by <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1289,7 +1289,7 @@ gofer_rule GROUPS BY_VALUE "Groups, By name" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>raw_value</i></tt> >
+    <topic {<tt><i>raw_value</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1311,12 +1311,12 @@ gofer_rule GROUPS SUPPORTING_ACTOR "Groups, Supporting Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that support <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1338,12 +1338,12 @@ gofer_rule GROUPS LIKING_ACTOR "Groups, Liking Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1365,12 +1365,12 @@ gofer_rule GROUPS DISLIKING_ACTOR "Groups, Disliking Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1392,12 +1392,12 @@ gofer_rule GROUPS LIKING_GROUP "Groups, Liking Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1419,12 +1419,12 @@ gofer_rule GROUPS DISLIKING_GROUP "Groups, Disliking Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1446,12 +1446,12 @@ gofer_rule GROUPS LIKED_BY_GROUP "Groups, Liked by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are liked by <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1473,12 +1473,12 @@ gofer_rule GROUPS DISLIKED_BY_GROUP "Groups, Disliked by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are disliked by <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1499,7 +1499,7 @@ gofer_rule GROUPS CIV_RESIDENT_IN "Civilian groups, Resident in Neighborhood(s)"
     
     <topiclist "Parameter">
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of <cref /object/nbhood> names.
     </topic>
 
@@ -1520,7 +1520,7 @@ gofer_rule GROUPS CIV_NOT_RESIDENT_IN "Civilian groups, Not Resident in Neighbor
     
     <topiclist "Parameter">
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of <cref /object/nbhood> names.
     </topic>
 
@@ -1584,12 +1584,12 @@ gofer_rule GROUPS CIV_SUPPORTING_ACTOR "Civilian groups, Supporting Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that support <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1611,12 +1611,12 @@ gofer_rule GROUPS CIV_LIKING_ACTOR "Civilian groups, Liking Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1638,12 +1638,12 @@ gofer_rule GROUPS CIV_DISLIKING_ACTOR "Civilian groups, Disliking Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1665,12 +1665,12 @@ gofer_rule GROUPS CIV_LIKING_GROUP "Civilian groups, Liking Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1692,12 +1692,12 @@ gofer_rule GROUPS CIV_DISLIKING_GROUP "Civilian groups, Disliking Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1719,12 +1719,12 @@ gofer_rule GROUPS CIV_LIKED_BY_GROUP "Civilian groups, Liked by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are liked by <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1746,12 +1746,12 @@ gofer_rule GROUPS CIV_DISLIKED_BY_GROUP "Civilian groups, Disliked by Group(s)" 
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are disliked by <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1772,7 +1772,7 @@ gofer_rule GROUPS FRC_OWNED_BY "Force groups, Owned by Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1793,12 +1793,12 @@ gofer_rule GROUPS FRC_DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are deployed to <b>ANY</b> or <b>ALL</b> of the listed
     neighborhoods.
     </topic>
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of <cref /object/nbhood> names.
     </topic>
 
@@ -1819,12 +1819,12 @@ gofer_rule GROUPS FRC_NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhoo
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are not deployed to <b>ANY</b> or <b>ALL</b> of the listed
     neighborhoods.
     </topic>
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of <cref /object/nbhood> names.
     </topic>
 
@@ -1848,12 +1848,12 @@ gofer_rule GROUPS FRC_SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that support <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1875,12 +1875,12 @@ gofer_rule GROUPS FRC_LIKING_ACTOR "Force groups, Liking Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1902,12 +1902,12 @@ gofer_rule GROUPS FRC_DISLIKING_ACTOR "Force groups, Disliking Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
     actors.
     </topic>
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -1929,12 +1929,12 @@ gofer_rule GROUPS FRC_LIKING_GROUP "Force groups, Liking Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that like <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1956,12 +1956,12 @@ gofer_rule GROUPS FRC_DISLIKING_GROUP "Force groups, Disliking Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that dislike <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -1983,12 +1983,12 @@ gofer_rule GROUPS FRC_LIKED_BY_GROUP "Force groups, Liked by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are liked by <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -2010,12 +2010,12 @@ gofer_rule GROUPS FRC_DISLIKED_BY_GROUP "Force groups, Disliked by Group(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve groups that are disliked by <b>ANY</b> or <b>ALL</b> of the listed
     groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group> names.
     </topic>
 
@@ -2045,7 +2045,7 @@ gofer_rule NBHOODS BY_VALUE "Neighborhoods, By name" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of <cref /object/nbhood> names.
     </topic>
 
@@ -2065,7 +2065,7 @@ gofer_rule NBHOODS CONTROLLED_BY "Neighborhoods, Controlled by Actor(s)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -2085,7 +2085,7 @@ gofer_rule NBHOODS NOT_CONTROLLED_BY "Neighborhoods, Not Controlled by Actor(s)"
     
     <topiclist "Parameter">
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of <cref /object/actor> names.
     </topic>
 
@@ -2105,12 +2105,12 @@ gofer_rule NBHOODS WITH_DEPLOYMENT "Neighborhoods, With Deployment of Group(s)" 
     
     <topiclist "Parameter">
 
-    <topic <tt><i>anyall</i></tt> >
+    <topic {<tt><i>anyall</i></tt>}>
     Retrieve neighborhoods with deployments of <b>ANY</b> or <b>ALL</b> 
     of the listed groups.
     </topic>
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group/frc> names.
     </topic>
 
@@ -2130,7 +2130,7 @@ gofer_rule NBHOODS WITHOUT_DEPLOYMENT "Neighborhoods, Without Deployment of Grou
     
     <topiclist "Parameter">
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of <cref /object/group/frc> names.
     </topic>
 
@@ -2160,7 +2160,7 @@ gofer_rule NUMBER BY_VALUE "specific number" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>raw_value</i></tt> >
+    <topic {<tt><i>raw_value</i></tt>}>
     A number in any normal numeric format.
     </topic>
 
@@ -2178,7 +2178,7 @@ gofer_rule NUMBER EXPR "TCL expression" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>expr_value</i></tt> >
+    <topic {<tt><i>expr_value</i></tt>}>
     A TCL boolean expression.
     </topic>
 
@@ -2198,11 +2198,11 @@ gofer_rule NUMBER AFFINITY "affinity(x,y)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>x</i></tt> >
+    <topic {<tt><i>x</i></tt>}>
     ID of a <term group> or <term actor>.
     </topic>
 
-    <topic <tt><i>y</i></tt> >
+    <topic {<tt><i>y</i></tt>}>
     ID of a <term group> or <term actor>.
     </topic>
 
@@ -2221,7 +2221,7 @@ gofer_rule NUMBER AGENT_PLANTS "aplants(a)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>a</i></tt> >
+    <topic {<tt><i>a</i></tt>}>
     ID of a <term agent>.
     </topic>
 
@@ -2242,15 +2242,15 @@ gofer_rule NUMBER ASSIGNED "assigned(g,activity,n)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term frcgroup> or <term orggroup>.
     </topic>
 
-    <topic <tt><i>activity</i></tt> >
+    <topic {<tt><i>activity</i></tt>}>
     ID of an explicit <term activity>.
     </topic>
 
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>.
     </topic>
 
@@ -2270,7 +2270,7 @@ gofer_rule NUMBER GROUP_CONSUMERS "consumers(g,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of the IDs of one or more <term civgroup>s.
     </topic>
 
@@ -2290,11 +2290,11 @@ gofer_rule NUMBER COOP "coop(f,g)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>f</i></tt> >
+    <topic {<tt><i>f</i></tt>}>
     ID of a <term civgroup>.
     </topic>
 
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term frcgroup>.
     </topic>
 
@@ -2316,15 +2316,15 @@ gofer_rule NUMBER COVERAGE "coverage(g,activity,n)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term frcgroup> or <term orggroup>.
     </topic>
 
-    <topic <tt><i>activity</i></tt> >
+    <topic {<tt><i>activity</i></tt>}>
     ID of an implicit or explicit <term activity>.
     </topic>
 
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>.
     </topic>
 
@@ -2344,11 +2344,11 @@ gofer_rule NUMBER DEPLOYED "deployed(g,n,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term frcgroup> or <term orggroup>.
     </topic>
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of the IDs of one or more <term nbhood>s.
     </topic>
 
@@ -2378,7 +2378,7 @@ gofer_rule NUMBER GOODS_CAP "goodscap(a)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>a</i></tt> >
+    <topic {<tt><i>a</i></tt>}>
     ID of a <term agent>.
     </topic>
 
@@ -2407,11 +2407,11 @@ gofer_rule NUMBER HREL "hrel(f,g)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>f</i></tt> >
+    <topic {<tt><i>f</i></tt>}>
     ID of a <term group>.
     </topic>
 
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term group>.
     </topic>
 
@@ -2431,7 +2431,7 @@ gofer_rule NUMBER INCOME "income(a,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of the IDs of one or more <term actor>s.
     </topic>
 
@@ -2451,7 +2451,7 @@ gofer_rule NUMBER INCOME_BLACK "income_black(a,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of the IDs of one or more <term actor>s.
     </topic>
 
@@ -2471,7 +2471,7 @@ gofer_rule NUMBER INCOME_GOODS "income_goods(a,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of the IDs of one or more <term actor>s.
     </topic>
 
@@ -2491,7 +2491,7 @@ gofer_rule NUMBER INCOME_POP "income_pop(a,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of the IDs of one or more <term actor>s.
     </topic>
 
@@ -2511,7 +2511,7 @@ gofer_rule NUMBER INCOME_REGION "income_region(a,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of the IDs of one or more <term actor>s.
     </topic>
 
@@ -2531,7 +2531,7 @@ gofer_rule NUMBER INCOME_WORLD "income_world(a,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of the IDs of one or more <term actor>s.
     </topic>
 
@@ -2551,11 +2551,11 @@ gofer_rule NUMBER INFLUENCE "influence(a,n)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>a</i></tt> >
+    <topic {<tt><i>a</i></tt>}>
     ID of an <term actor>.
     </topic>
 
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>.
     </topic>
 
@@ -2614,7 +2614,7 @@ gofer_rule NUMBER MOBILIZED "mobilized(g,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of the IDs of one or more <term frcgroup> or <term orggroup>.
     </topic>
 
@@ -2634,7 +2634,7 @@ gofer_rule NUMBER MOOD "mood(g)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term civgroup>.
     </topic>
 
@@ -2654,7 +2654,7 @@ gofer_rule NUMBER NBCONSUMERS "nbconsumers(n,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of the IDs of one or more <term nbhood>s
     </topic>
 
@@ -2674,11 +2674,11 @@ gofer_rule NUMBER NBCOOP "nbcoop(n,g)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>.
     </topic>
 
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term frcgroup>.
     </topic>
 
@@ -2698,7 +2698,7 @@ gofer_rule NUMBER NB_GOODS_CAP "nbgoodscap(n)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>.
     </topic>
 
@@ -2718,7 +2718,7 @@ gofer_rule NUMBER NBMOOD "nbmood(n)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>.
     </topic>
 
@@ -2737,7 +2737,7 @@ gofer_rule NUMBER NB_PLANTS "nbplants(n)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>.
     </topic>
 
@@ -2756,7 +2756,7 @@ gofer_rule NUMBER NBPOPULATION "nbpop(n,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of the IDs of one or more <term nbhood>s
     </topic>
 
@@ -2777,11 +2777,11 @@ gofer_rule NUMBER NBSUPPORT "nbsupport(a,n)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>a</i></tt> >
+    <topic {<tt><i>a</i></tt>}>
     ID of a <term actor>.
     </topic>
 
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>.
     </topic>
 
@@ -2801,7 +2801,7 @@ gofer_rule NUMBER NB_UNEMPLOYMENT_RATE "nbunemp(n,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of the IDs of one or more <term nbhood>s
     </topic>
 
@@ -2821,7 +2821,7 @@ gofer_rule NUMBER NBWORKERS "nbworkers(n,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>nlist</i></tt> >
+    <topic {<tt><i>nlist</i></tt>}>
     A list of the IDs of one or more <term nbhood>s
     </topic>
 
@@ -2846,7 +2846,7 @@ gofer_rule NUMBER CASH_ON_HAND "onhand(a)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>a</i></tt> >
+    <topic {<tt><i>a</i></tt>}>
     ID of a <term actor>.
     </topic>
 
@@ -2924,7 +2924,7 @@ gofer_rule NUMBER PCTCONTROL "pctcontrol(a,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>alist</i></tt> >
+    <topic {<tt><i>alist</i></tt>}>
     A list of the IDs of one or more <term actor>s.
     </topic>
 
@@ -2944,11 +2944,11 @@ gofer_rule NUMBER PLANTS "plants(a,n)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>a</i></tt> >
+    <topic {<tt><i>a</i></tt>}>
     ID of a <term agent>.
     </topic>
 
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>.
     </topic>
 
@@ -2968,7 +2968,7 @@ gofer_rule NUMBER GROUP_POPULATION "pop(g,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of the IDs of one or more <term civgroup>s.
     </topic>
 
@@ -2988,11 +2988,11 @@ gofer_rule NUMBER REPAIR "repair(a,n)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>a</i></tt> >
+    <topic {<tt><i>a</i></tt>}>
     ID of a <term actor>.
     </topic>
 
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>.
     </topic>
 
@@ -3017,7 +3017,7 @@ gofer_rule NUMBER CASH_RESERVE "reserve(a)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>a</i></tt> >
+    <topic {<tt><i>a</i></tt>}>
     ID of a <term actor>.
     </topic>
 
@@ -3037,11 +3037,11 @@ gofer_rule NUMBER SAT "sat(g,c)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term civgroup>.
     </topic>
 
-    <topic <tt><i>c</i></tt> >
+    <topic {<tt><i>c</i></tt>}>
     ID of a <term concern>:<p>
 
     <enumdoc ::projectlib::econcern>
@@ -3063,7 +3063,7 @@ gofer_rule NUMBER SECURITY_CIV "security(g)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term group>.
     </topic>
 
@@ -3083,11 +3083,11 @@ gofer_rule NUMBER SECURITY "security(g,n)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term group>.
     </topic>
 
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>:<p>
     </topic>
 
@@ -3108,11 +3108,11 @@ gofer_rule NUMBER SUPPORT_CIV "support(a,g)" {
     
     <topiclist "Parameter">
     
-    <topic <tt><i>a</i></tt> >
+    <topic {<tt><i>a</i></tt>}>
     ID of a <term actor>.
     </topic>
     
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term civgroup>.
     </topic>
     
@@ -3133,15 +3133,15 @@ gofer_rule NUMBER SUPPORT "support(a,g,n)" {
     
     <topiclist "Parameter">
     
-    <topic <tt><i>a</i></tt> >
+    <topic {<tt><i>a</i></tt>}>
     ID of a <term actor>.
     </topic>
     
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term group>.
     </topic>
     
-    <topic <tt><i>n</i></tt> >
+    <topic {<tt><i>n</i></tt>}>
     ID of a <term nbhood>.
     </topic>
     
@@ -3161,7 +3161,7 @@ gofer_rule NUMBER GROUP_UNEMPLOYMENT_RATE "unemp(g,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of the IDs of one or more <term civgroup>s.
     </topic>
 
@@ -3181,11 +3181,11 @@ gofer_rule NUMBER VREL "vrel(g,a)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>g</i></tt> >
+    <topic {<tt><i>g</i></tt>}>
     ID of a <term group>.
     </topic>
 
-    <topic <tt><i>a</i></tt> >
+    <topic {<tt><i>a</i></tt>}>
     ID of a <term actor>.
     </topic>
 
@@ -3205,7 +3205,7 @@ gofer_rule NUMBER GROUP_WORKERS "workers(g,...)" {
     
     <topiclist "Parameter">
 
-    <topic <tt><i>glist</i></tt> >
+    <topic {<tt><i>glist</i></tt>}>
     A list of the IDs of one or more <term civgroup>s.
     </topic>
 

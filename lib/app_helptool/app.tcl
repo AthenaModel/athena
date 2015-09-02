@@ -185,7 +185,13 @@ snit::type app {
 
     typemethod CompileInputFile {infile} {
         # FIRST, compile the input
-        $compiler invokehidden -global source $infile
+        set thisDir [pwd]
+        try {
+            cd [file dirname [file normalize $infile]]
+            $compiler invokehidden -global source $infile
+        } finally {
+            cd $thisDir
+        }
 
         # NEXT, translate the pages from ehtml(5) to html.
         hdb eval {
@@ -398,7 +404,16 @@ snit::type app {
     # Includes the filename into the current file name
 
     typemethod Compiler_include {filename} {
-        $compiler invokehidden -global source $filename
+        set thisDir [pwd]
+        try {
+            set newdir [file dirname $filename]
+            if {$newdir ne ""} {
+                cd $newdir
+            }
+            $compiler invokehidden -global source [file tail $filename]
+        } finally {
+            cd $thisDir
+        }
     }
 
     # Compiler_macro name arglist ?initbody? template

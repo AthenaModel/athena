@@ -59,7 +59,8 @@ snit::widget detailbrowser {
     constructor {args} {
         # FIRST, Install the browser
         install browser using mybrowser $win.browser  \
-            -home         /app/                   \
+            -home         /app/                       \
+            -help         /help/index.html            \
             -unknowncmd   [mymethod GuiLinkCmd]       \
             -searchcmd    [mymethod FormatSearchURL]  \
             -messagecmd   {app puts}                  \

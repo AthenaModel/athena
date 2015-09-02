@@ -1,0 +1,17 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    image.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Image definitions for use in all Athena help documents.
+#
+#-----------------------------------------------------------------------
+
+#=======================================================================
+# Images
+
+image athena "Sculpture of Athena" images/athena.png

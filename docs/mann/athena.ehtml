@@ -48,22 +48,22 @@ middle; other tasks must run to completion.<p>
 
 This leads to the following four states:<p>
 
-<topiclist>
-<topic {<b PREP>}>
+<topiclist "State">
+<topic [b PREP]>
 Scenario preparation.  The scenario <iref is idle> and <iref is unlocked>,
 and most orders can be used to edit the scenario.
 </topic>
 
-<topic {<b PAUSED>}>
+<topic [b PAUSED]>
 The scenario <iref is idle> and <iref is locked>; simulation time can be
 advanced.
 </topic>
 
-<topic {<b BUSY>}>
+<topic [b BUSY]>
 The scenario <iref is busy> with a non-<iref is interruptible> task.
 </topic>
 
-<topic {<b RUNNING>}>
+<topic [b RUNNING]>
 The scenario <iref is busy> with an <iref is interruptible> task.
 </topic>
 </topiclist><p>

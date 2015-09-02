@@ -52,7 +52,7 @@ oo::class create ::projectlib::helpdomain {
 
         # FIRST, configure the HTML buffer
         hb configure \
-            -cssfile   "/athena.css"         \
+            -cssfiles  {/athena.css}         \
             -headercmd [mymethod htmlHeader] \
             -footercmd [mymethod htmlFooter]
 

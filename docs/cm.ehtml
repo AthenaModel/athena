@@ -123,20 +123,20 @@ specific repositories are as follows:<p>
 
 <topiclist>
 
-<topic {<xref github-athena>}>
+<topic [xref github-athena]>
 The Athena Simulation and related tools.
 </topic>
 
-<topic {<xref github-mars>}>
+<topic [xref github-mars]>
 The Mars Simulation Infrastructure Library, Athena's infrastructure
 layer.
 </topic>
 
-<topic {<xref github-kite>}>
+<topic [xref github-kite]>
 The Kite project automatation tool and related libraries.
 </topic>
 
-<topic {<xref github-boxkite>}>
+<topic [xref github-boxkite]>
 The Boxkite server client, used to save and retrieve documents and
 software releases.
 </topic>
@@ -246,6 +246,7 @@ These projects should be checked out into sibling directories, usually
 under the <tt "~/github"> directory:<p>
 
 <table tab.siblings "Sibling Project Layout">
+<tr><td>Path</td> <td>Description</td></tr>
 <treedir ~/github/ >  Location for project trees</treedir>
 <treedir +athena/  >  Athena project tree</treedir>
 <treedir +mars/    >  Mars project tree</treedir>
@@ -265,7 +266,7 @@ for (some of) its external dependencies.<p>
 The project directory tree is as follows:<p>
 
 <table tab.tree "Project Directory Tree">
-
+<tr><td>Path</td> <td>Description</td></tr>
 <treedir athena/       >  Root of project tree</treedir>
 <treedir +project.kite >  Kite project file</treedir>
 <treedir +README.md    >  Project README file</treedir>

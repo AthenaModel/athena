@@ -41,6 +41,7 @@ snit::widget ::projectgui::mybrowser {
     component backbtn   ;# Back one page button
     component fwdbtn    ;# Forward one page button
     component homebtn   ;# Home button
+    component helpbtn   ;# Help button
     component reloadbtn ;# Reload button
     component bookbtn   ;# Bookmark Button
     component address   ;# Address box
@@ -77,6 +78,13 @@ snit::widget ::projectgui::mybrowser {
             }
         }
     }
+
+    # -help
+    #
+    # The help URL
+
+    option -help \
+        -readonly yes
 
     # -messagecmd
     #
@@ -294,10 +302,25 @@ snit::widget ::projectgui::mybrowser {
                     -returncmd [mymethod DoSearch]
             }
 
-            pack $backbtn   -side left                      -padx 1 -pady 1
-            pack $fwdbtn    -side left                      -padx 1 -pady 1
-            pack $homebtn   -side left                      -padx 1 -pady 1
-            pack $reloadbtn -side left                      -padx 1 -pady 1
+            set options(-help) [from args -help]
+            if {$options(-help) ne ""} {
+                install helpbtn using ttk::button $bar.help          \
+                    -style   Toolbutton                              \
+                    -image   ::marsgui::icon::question22             \
+                    -command [mymethod help]
+
+                DynamicHelp::add $helpbtn -text "Display application help page"
+            }
+
+
+            pack $backbtn   -side left -padx 1 -pady 1
+            pack $fwdbtn    -side left -padx 1 -pady 1
+            pack $homebtn   -side left -padx 1 -pady 1
+            pack $reloadbtn -side left -padx 1 -pady 1
+
+            if {$options(-help) ne ""} {
+                pack $helpbtn -side right  -padx 1 -pady 1
+            }
 
             if {$options(-bookmarkcmd) ne ""} {
                 pack $bookbtn -side left -padx 1 -pady 1
@@ -333,12 +356,14 @@ snit::widget ::projectgui::mybrowser {
         }
 
         # HTML Viewer
-        
-        install hv using htmlviewer $content.hv                \
-            -hovercmd            [mymethod HoverCmd]               \
-            -hyperlinkcmd        [mymethod HyperlinkCmd]           \
-            -imagecmd            [mymethod ImageCmd]               \
-            -isvisitedcmd        [mymethod IsVisitedCmd]           \
+        set styles [readfile [file join $::projectgui::library mybrowser.css]]
+
+        install hv using htmlviewer $content.hv              \
+            -styles              $styles                     \
+            -hovercmd            [mymethod HoverCmd]         \
+            -hyperlinkcmd        [mymethod HyperlinkCmd]     \
+            -imagecmd            [mymethod ImageCmd]         \
+            -isvisitedcmd        [mymethod IsVisitedCmd]     \
             -xscrollcommand      [list $content.xscroll set] \
             -yscrollcommand      [list $content.yscroll set]
 
@@ -795,6 +820,14 @@ snit::widget ::projectgui::mybrowser {
 
     method home {} {
         $self show $options(-home)
+    }
+
+    # help
+    #
+    # Go to the help page
+
+    method help {} {
+        $self show $options(-help)
     }
 
     # show uri

@@ -95,21 +95,8 @@ snit::type helpmacro {
         $macro smartalias /parmlist 0 0 {} \
             [myproc /parmlist]
 
-        $macro smartalias topiclist 0 2 {?h1? ?h2?} \
-            [myproc topiclist]
-
-        $macro smartalias topic 1 1 {topic} \
-            [myproc topic]
-
-        $macro smartalias /topic 0 0 {} \
-            [myproc /topic]
-
-        $macro smartalias /topiclist 0 0 {} \
-            [myproc /topiclist]
-
         $macro smartalias version 0 0 {} \
             [list project version]
-
     }
 
     # setinfo dict
@@ -297,13 +284,13 @@ snit::type helpmacro {
     # Begins a list of order parameters
 
     template proc parmlist {{h1 Field} {h2 Description}} {
-        set itemCounter 0
+        set itemCounter 1
     } {
         |<--
-        <table class="pretty" width="100%" cellpadding="5"> 
-        <tr class="header">
-        <th align="left">$h1</th> 
-        <th align="left">$h2</th>
+        <table class="table table-wide"> 
+        <tr>
+        <th>$h1</th> 
+        <th>$h2</th>
         </tr>
     }
 
@@ -316,13 +303,13 @@ snit::type helpmacro {
 
     template proc parm {parm field} {
         if {[incr itemCounter] % 2 == 0} {
-            set rowclass evenrow
+            set rowclass tr-even
         } else {
-            set rowclass oddrow
+            set rowclass tr-odd
         }
     } {
         |<--
-        <tr class="$rowclass" valign="baseline">
+        <tr class="$rowclass">
         <td style="white-space: nowrap"><b>$field</b><br>(<tt>$parm</tt>)</td>
         <td>
     }
@@ -348,13 +335,13 @@ snit::type helpmacro {
     # Begins a list of command options.
 
     template proc optionlist {} {
-        set itemCounter 0
+        set itemCounter 1
     } {
         |<--
-        <table class="pretty" width="100%" cellpadding="5"> 
-        <tr class="header">
-        <th align="left">Option</th> 
-        <th align="left">Description</th>
+        <table class="table table-wide"> 
+        <tr>
+        <th>Option</th> 
+        <th>Description</th>
         </tr>
     }
 
@@ -366,13 +353,13 @@ snit::type helpmacro {
 
     template proc option {name} {
         if {[incr itemCounter] % 2 == 0} {
-            set rowclass evenrow
+            set rowclass tr-even
         } else {
-            set rowclass oddrow
+            set rowclass tr-odd
         }
     } {
         |<--
-        <tr class="$rowclass" valign="baseline">
+        <tr class="$rowclass">
         <td style="white-space: nowrap"><b><code>$name</code></b></td>
         <td>
     }
@@ -393,66 +380,13 @@ snit::type helpmacro {
         </table><p>
     }
 
-    # topiclist ?h1 ?h2?
-    #
-    # h1    - Header for column 1; defaults to Topic
-    # h2    - Header for column 2; defaults to Description
-    #
-    # Begins a table of topics and descriptions
-
-    template proc topiclist {{h1 Topic} {h2 Description}} {
-        set itemCounter 0
-    } {
-        |<--
-        <table class="pretty" width="100%" cellpadding="5"> 
-        <tr class="header">
-        <th align="left">$h1</th> 
-        <th align="left">$h2</th>
-        </tr>
-    }
-
-    # topic topic
-    #
-    # topic    - The topic label
-    #
-    # Begins a topic description.
-
-    template proc topic {topic} {
-        if {[incr itemCounter] % 2 == 0} {
-            set rowclass evenrow
-        } else {
-            set rowclass oddrow
-        }
-    } {
-        |<--
-        <tr class="$rowclass" valign="baseline">
-        <td><b>$topic</b></td>
-        <td>
-    }
-
-    # /topic
-    #
-    # Ends a topic description
-    template proc /topic {} {
-        </td>
-        </tr>
-    }
-
-    # /topiclist
-    #
-    # Ends a list of topics
-    template proc /topiclist {} {
-        |<--
-        </table><p>
-    }
-
     # itemlist
     #
     # Begins a table of labeled items
 
     template proc itemlist {} {
         |<--
-        <table border="0" width="100%" cellspacing="0" cellpadding="4"> 
+        <table border="0" cellspacing="0" cellpadding="4"> 
     }
 
     # item label
