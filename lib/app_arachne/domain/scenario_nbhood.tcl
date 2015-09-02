@@ -24,7 +24,8 @@
 # General Content
 
 smarturl /scenario /{case}/nbhoods/index.json {
-    Returns a JSON list of nbhood entities in the <i>case</i> specified.
+    Returns a JSON list of neighborhood entities in the <i>case</i> specified.
+    (<link "/arachne.html#/scenario/case/nbhoods/index.json" spec>)    
 } {
     set case [my ValidateCase $case]
 
@@ -48,8 +49,9 @@ smarturl /scenario /{case}/nbhoods/index.json {
 }
 
 smarturl /scenario /{case}/nbhood/{n}/index.json {
-    Returns JSON list of actor data for scenario <i>case</i> and neighborhood 
+    Returns JSON list of neighborhood data for scenario <i>case</i> and neighborhood 
     <i>n</i>.
+    (<link "/arachne.html#/scenario/case/nbhood/n/index.json" spec>)    
 } {
     set n [my ValidateNbhood $case $n]
 

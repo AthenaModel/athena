@@ -110,7 +110,7 @@ oo::define /scenario {
 # URL Handlers
 
 smarturl /scenario /{case}/sigevent/index.html {
-    Displays information about scenario {case}.
+    Displays information about scenario <i case>.
 } {
     # FIRST, get the URL placeholder variables
     set case [my ValidateCase $case]

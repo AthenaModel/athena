@@ -23,7 +23,7 @@
 # files; this section has the general mechanism pages.
 
 smarturl /scenario /{case}/index.html {
-    Displays information about scenario {case}.
+    Displays information about scenario <i case>.
 } {
     # FIRST, get the URL placeholder variables
     set case [my ValidateCase $case]
@@ -42,7 +42,8 @@ smarturl /scenario /{case}/index.html {
 }
 
 smarturl /scenario /{case}/index.json {
-    Returns metadata for scenario {case}.
+    Returns metadata for scenario <i case>.
+    (<link "/arachne.html#/scenario/case/index.json" spec>)
 } {
     # FIRST, get the URL placeholder variables
     set case [my ValidateCase $case]
@@ -54,9 +55,8 @@ smarturl /scenario /{case}/index.json {
 # lock.json
 
 smarturl /scenario /{case}/lock.json {
-    Locks scenario {case} if it is unlocked.  On success, returns a list 
-    <pre>["OK", ""]</pre>, and on failure returns a list
-    <pre>["ERROR","message",""]
+    Locks scenario <i case> if it is unlocked.  
+    (<link "/arachne.html#/scenario/case/lock.json" spec>)
 } {
     set case [my ValidateCase $case]
 
@@ -72,9 +72,8 @@ smarturl /scenario /{case}/lock.json {
 # unlock.json
 
 smarturl /scenario /{case}/unlock.json {
-    Unlocks scenario {case} if it is locked.  On success, returns a list 
-    <pre>["OK", ""]</pre>, and on failure returns a list
-    <pre>["ERROR","message",""]
+    Unlocks scenario <i case> if it is locked. 
+    (<link "/arachne.html#/scenario/case/unlock.json" spec>)
 } {
     set case [my ValidateCase $case]
 
@@ -90,11 +89,9 @@ smarturl /scenario /{case}/unlock.json {
 # advance.json
 
 smarturl /scenario /{case}/advance.json {
-    Asks for an advance of simulation time in scenario {case} by {weeks}, 
-    locking the scenario if necessary.  The scenario will be <b>BUSY</b> 
-    until the time advance is complete.  On success, returns a list 
-    <pre>["OK", ""]</pre>, and on failure returns a list
-    <pre>["ERROR","message",""]
+    Asks for an advance of simulation time in scenario <i case> by <i weeks>, 
+    locking the scenario if necessary.
+    (<link "/arachne.html#/scenario/case/advance.json" spec>)
 } {
     set case [my ValidateCase $case]
 
@@ -116,7 +113,7 @@ smarturl /scenario /{case}/advance.json {
 # Sanity Checking
 
 smarturl /scenario /{case}/sanity/onlock.html {
-    Displays a sanity check for scenario {case}.  
+    Displays a sanity check for scenario <i case>.  
 } {
     set case [my ValidateCase $case]
 
@@ -185,6 +182,7 @@ smarturl /scenario /{case}/sanity/onlock.json {
     problems.  If the list contains a record with a "severity" of
     "error", then the scenario cannot be locked.  The JSON result
     is a list of failure objects.
+    (<link "/arachne.html#/scenario/case/sanity/onlock.json" spec>)    
 } {
     set case [my ValidateCase $case]
 
@@ -202,12 +200,12 @@ smarturl /scenario /{case}/sanity/onlock.json {
 
 smarturl /scenario /{case}/order.html {
     Allows the user to select an order and view its order form.
-    If {order_} is given, the page tries to send the order, and 
+    If <i order_> is given, the page tries to send the order, and 
     displays an order form.  Error messages are displayed in the
     order form.  The other query parameters are the order parameters.<p>
 
     <b>TBD:</b> Ultimately, we should recast this as a page that 
-    requires an {order_} and a {url} to redirect to on success.  Then
+    requires an <i order_> and a <i url> to redirect to on success.  Then
     an actor page (say) could have a button that goes to the order form
     for that URL and return afterwards.<p>
 } {
@@ -307,11 +305,7 @@ smarturl /scenario /{case}/order.html {
 
 smarturl /scenario /{case}/order.json {
     Accepts an order and its parameters.
-    The query parameters are the order name as <tt>order_</tt>
-    and the order-specific parameters as indicated in the on-line
-    help.  The result of the order is returned as a JSON list 
-    indicating the success of the request with related 
-    information.<p>
+    (<link "/arachne.html#/scenario/case/order.json" spec>)    
 } {
     set case [my ValidateCase $case]
 
@@ -332,9 +326,8 @@ smarturl /scenario /{case}/order.json {
 # Parmdb parameters
 
 smarturl /scenario /{case}/parmdb.json {
-    Requests the contents of the parameter database.  The database
-    is returned as an array of JSON objects with parameter names,
-    doc strings, current and default values.<p>
+    Requests the contents of the parameter database.
+    (<link "/arachne.html#/scenario/case/parmdb.json" spec>)    
 } {
     set case [my ValidateCase $case]
 
@@ -410,6 +403,7 @@ smarturl /scenario /{case}/script.json {
     The query data should be just the script itself with a
     content-type of text/plain.  The result of running the script 
     is returned in JSON format.
+    (<link "/arachne.html#/scenario/case/script.json" spec>)    
 } {
     set case [my ValidateCase $case]
 

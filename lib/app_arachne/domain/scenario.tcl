@@ -662,7 +662,7 @@ smarturl /scenario /index.html {
 
 smarturl /scenario /index.json {
     Returns a JSON list of scenario metadata objects.
-    TBD: Help link.
+    (<link "/arachne.html#/scenario/index.json" spec>)
 } {
     set table [list]
 
@@ -677,7 +677,8 @@ smarturl /scenario /index.json {
 }
 
 smarturl /scenario /files.json {
-    Returns a JSON list of scenario file objects.
+    Returns a JSON array of scenario file objects.
+    (<link "/arachne.html#/scenario/files.json" spec>)
 } {
     set table [dictlist new {id size mtime}]
 
@@ -705,16 +706,7 @@ smarturl /scenario /files.json {
 
 smarturl /scenario /new.json {
     Creates a new, empty scenario, assigning it an id and longname.
-    If {target} is given, it must be the case ID of an existing 
-    scenario; the scenario's contents will be reset to the empty state.
-    If {longname} is given, the scenario will be given the new
-    name.  On success, returns a list 
-    <pre class="example">
-    ["OK", "{case}"]
-    </pre>
-
-    where the <i>case</i> is either the selected <i>target</i> or a 
-    newly generated case ID.
+    (<link "/arachne.html#/scenario/new.json" spec>)    
 } {
     qdict prepare case -tolower -in [case names]
     qdict prepare longname
@@ -732,20 +724,9 @@ smarturl /scenario /new.json {
 # Clone Scenario
 
 
-smarturl /scenario /clone.json {
-    Clones existing scenario {source} as a new scenario, assigning
-    it an id and longname.  If {target} is given, it must be an 
-    existing scenario other than {source}; the clone will replace
-    the previous state of scenario {target}.  Otherwise, a 
-    case ID will be chosen automatically.
-    If {longname} is given, the scenario will be given the new
-    name.  On success, returns a list 
-    <pre class="example">
-    ["OK", "{case}"]
-    </pre>
-
-    where the <i>case</i> is either the selected <i>target</i> or a 
-    newly generated case ID.
+smarturl /scenario /clone.json { 
+    Clones existing scenario <i>source</i> as a new scenario, assigning
+    it an id and longname. (<link "/arachne.html#/scenario/clone.json" spec>)
 } {
     qdict prepare source    -required -tolower -in [case names]
     qdict prepare target    -tolower -in [case names]
@@ -772,19 +753,9 @@ smarturl /scenario /clone.json {
 # Import Scenario
 
 smarturl /scenario /import.json {
-    Imports scenario {filename} and loads it into memory.
-    The {filename} must name a file in the 
-    <tt>-scenariodir</tt>.  If the {case} is given,
-    the scenario will replace the existing scenario with that 
-    ID; otherwise a new ID will be assigned.  
-    If the {longname} is given, the scenario will
-    be assigned that name.  On success, returns a list 
-    <pre class="example">
-    ["OK", "{case}"]
-    </pre>
-
-    where the <i>case</i> is either the selected <i>target</i> or a 
-    newly generated case ID.
+    Imports a scenario from disk and loads it into memory.
+    The file must be a file in the <tt>-scenariodir</tt>. 
+    (<link "/arachne.html#/scenario/import.json" spec>) 
 } {
     qdict prepare filename -required
     qdict prepare case -tolower -in [case names]
@@ -813,15 +784,9 @@ smarturl /scenario /import.json {
 
 
 
-smarturl /scenario /export.json {
-    Exports scenario {case} to the <tt>-scenariodir</tt> as
-    {filename}.  The file type may be "<tt>.adb</tt>" for a
-    standard Athena scenario file or "<tt>.tcl</tt>" for a
-    scenario script.  If no file type is given, "<tt>.adb</tt>"
-    is assumed.   On success, returns a list 
-    <pre class="example">
-    ["OK", "{filename}"]
-    </pre>
+smarturl /scenario /export.json {  
+    Exports scenario <i>case</i> to the <tt>-scenariodir</tt> as
+    <i>filename</i>. (<link "/arachne.html#/scenario/export.json" spec>)
 } {
     qdict prepare case -required -tolower -in [case names]
     qdict prepare filename -required
@@ -845,14 +810,9 @@ smarturl /scenario /export.json {
 #-----------------------------------------------------------------------
 # Remove Scenario
 
-
-
 smarturl /scenario /remove.json {
-    Removes scenario {case} from the current session; export it first
-    if you wish to keep the data.  On success, returns a list 
-    <pre class="example">
-    ["OK", "{message}"]
-    </pre>
+    Removes a scenario from the current session.
+    (<link "/arachne.html#/scenario/remove.json" spec>)
 } {
     qdict prepare case -required -tolower -in [case names]
 
@@ -879,6 +839,7 @@ smarturl /scenario /remove.json {
 smarturl /scenario /json.html {
     Given query parameter "jsonurl", retrieves the data at the URL
     and displays it in a textarea.  "backto" is the URL to return to.
+    This URL is for use by the Athena development team.
 } {
     qdict prepare jsonurl -required
     qdict prepare backto 

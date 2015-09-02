@@ -748,6 +748,7 @@ smarturl /scenario /{case}/history/index.html {
 smarturl /scenario /{case}/history/index.json {
     Returns a list of history variables and keys to be used when 
     requesting data for a particular history variable.   
+    DEPRECATED.
 } {
     set case [my ValidateCase $case]
 
@@ -764,8 +765,9 @@ smarturl /scenario /{case}/history/index.json {
 }
 
 smarturl /scenario /{case}/history/meta.json {
-    Returns all meta data associated with history variables as an
-    array of JSON objects.
+    Returns all meta data associated with history variables contained
+    in <i>case</i> as an array of JSON objects.
+    (<link "/arachne.html#/scenario/case/history/meta.json" spec>)    
 } {
     set case [my ValidateCase $case]
 

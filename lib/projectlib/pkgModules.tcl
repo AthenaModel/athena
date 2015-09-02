@@ -34,7 +34,8 @@ package require fileutil 1.14
 package require tls 1.6.4
 package require tdom 0.8
 package require struct::set 2.2
-package require kiteutils 0.4.9
+package require kiteutils 0.4.10
+package require kitedocs 0.4.10
 package require marsutil 3.0.21
 package require simlib 3.0.21
 # -kite-require-end

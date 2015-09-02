@@ -26,6 +26,7 @@
 
 smarturl /scenario /{case}/group/index.json {
     Returns JSON data for all groups in scenario <i>case</i>.
+    (<link "/arachne.html#/scenario/case/group/index.json" spec>)    
 } {
     set case [my ValidateCase $case]
 
@@ -49,8 +50,9 @@ smarturl /scenario /{case}/group/index.json {
 }
 
 smarturl /scenario /{case}/group/{g}/index.json {
-    Returns JSON list of civilian group data for scenario <i>case</i> and 
+    Returns JSON list of group data for scenario <i>case</i> and 
     group <i>g</i>.
+    (<link "/arachne.html#/scenario/case/group/g/index.json" spec>)    
 } {
     set g [my ValidateGroup $case $g]
 
@@ -96,6 +98,7 @@ smarturl /scenario /{case}/group/{g}/index.json {
 smarturl /scenario /{case}/group/civ.json {
     Returns a JSON list of civilian group entities in the <i>case</i> 
     specified.
+    (<link "/arachne.html#/scenario/case/group/civ.json" spec>)    
 } {
     set case [my ValidateCase $case]
 
@@ -121,6 +124,7 @@ smarturl /scenario /{case}/group/civ.json {
 
 smarturl /scenario /{case}/group/frc.json {
     Returns a JSON list of force group entities in the <i>case</i> specified.
+    (<link "/arachne.html#/scenario/case/group/frc.json" spec>)    
 } {
     set case [my ValidateCase $case]
 
@@ -149,6 +153,7 @@ smarturl /scenario /{case}/group/frc.json {
 smarturl /scenario /{case}/group/org.json {
     Returns a JSON list of organization group entities in the <i>case</i> 
     specified.
+    (<link "/arachne.html#/scenario/case/group/org.json" spec>)    
 } {
     set case [my ValidateCase $case]
 
