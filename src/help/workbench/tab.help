@@ -59,7 +59,7 @@ macroproc tabtitle {name} {
 
 macro control.filterbox {} {
     |<--
-    [topic [image filterbox]]
+    [topic [img filterbox]]
     The [term filterbox] filters the contents of the browser; only
     entries that match or do not match a given text string are displayed.
     [/topic]
@@ -106,29 +106,29 @@ tab "Detail" {
 
     <topiclist Control Description>
 
-    <topic [image button_backward]>
+    <topic [img button_backward]>
     Press to go back to the previously displayed page.
     </topic>
 
-    <topic [image button_forward]>
+    <topic [img button_forward]>
     After pressing the back button, press this to return to the page
     that was left.
     </topic>
 
-    <topic [image button_home]>
+    <topic [img button_home]>
     Go to the application's home page.
     </topic>
 
-    <topic [image button_reload]>
+    <topic [img button_reload]>
     Reload the current page.  (This is not usually necessary, as
     Athena will usually reload the displayed page when data changes.)
     </topic>
 
-    <topic [image control_addressbar]>
+    <topic [img control_addressbar]>
     The address bar; enter a page's URL here to go straight to that page.
     </topic>
 
-    <topic [image control_search]>
+    <topic [img control_search]>
     The search box; enter a search string to find the related on-line help.
     </topic>
 
@@ -141,7 +141,7 @@ page /tab/detail sidebar "Detail Browser Sidebar" {
     The <cref /tab/detail "Detail Browser's"> sidebar contains links
     to various useful pages.<p>
 
-    <image control_dbsidebar><p>
+    <img control_dbsidebar><p>
 
     The sidebar has two tabs, the "Objects" tab, which has pages
     related to the simulation objects and outputs, and the "?" tab,
@@ -250,35 +250,35 @@ page /tab/strategy blocks "Blocks List" {
 
     <topiclist Control Description>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Creates a new block.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     Pops up the update dialog for the selected block.
     </topic>
 
-    <topic [image button_power]>
+    <topic [img button_power]>
     Toggles the selected block's state from <b>normal</b> or
     <b>invalid</b> to <b>disabled</b>, and back again.
     </topic>
 
-    <topic [image button_totop]>
+    <topic [img button_totop]>
     Gives the selected block top priority over all other blocks
     for the selected agent.
     </topic>
 
-    <topic [image button_raise]>
+    <topic [img button_raise]>
     Raises the priority of the selected block by one notch, 
     putting it just above its immediate predecessor.
     </topic>
 
-    <topic [image button_lower]>
+    <topic [img button_lower]>
     Lowers the priority of the selected block by one notch, 
     putting it just below its immediate successor.
     </topic>
 
-    <topic [image button_tobottom]>
+    <topic [img button_tobottom]>
     Gives the selected block bottom priority below all other blocks
     scheduled for the same agent.
     </topic>
@@ -289,7 +289,7 @@ page /tab/strategy blocks "Blocks List" {
     with the blocks and strategies containing them.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     Deletes the selected block, with all of its attached conditions
     and tactics.
     </topic>
@@ -355,20 +355,20 @@ page /tab/strategy conditions "Conditions Subtab" {
     conditions are met) or to <b>ANY</b> (Any condition is met).
     </topic>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Create a new condition.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     Pops up the update dialog for the selected condition.
     </topic>
 
-    <topic [image button_power]>
+    <topic [img button_power]>
     Toggles the selected condition's state from <b>normal</b> or
     <b>invalid</b> to <b>disabled</b>, and back again.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     Deletes the selected condition.
     </topic>
 
@@ -414,40 +414,40 @@ page /tab/strategy tactics "Tactics Subtab" {
     tactics or none) or to <b>SOME</b> (As many tactics as possible).
     </topic>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Create a new tactic.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     Pops up the update dialog for the selected tactic.
     </topic>
 
-    <topic [image button_power]>
+    <topic [img button_power]>
     Toggles the selected tactic's state from <b>normal</b> or
     <b>invalid</b> to <b>disabled</b>, and back again.
     </topic>
 
-    <topic [image button_totop]>
+    <topic [img button_totop]>
     Gives the selected tactic item top priority over all other tactics
     for the selected agent.
     </topic>
 
-    <topic [image button_raise]>
+    <topic [img button_raise]>
     Raises the priority of the selected tactic by one notch, 
     putting it just above its immediate predecessor.
     </topic>
 
-    <topic [image button_lower]>
+    <topic [img button_lower]>
     Lowers the priority of the selected tactic by one notch, 
     putting it just below its immediate successor.
     </topic>
 
-    <topic [image button_tobottom]>
+    <topic [img button_tobottom]>
     Gives the selected tactic bottom priority below all other tactics
     scheduled for the same agent.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     Deletes the selected tactic.
     </topic>
 
@@ -485,7 +485,7 @@ tab "Physical/Map" {
 
     <topiclist Control Description>
 
-    <topic [image button_arrow]>
+    <topic [img button_arrow]>
     Press this button to enable selection mode.  In this mode,
     clicking on an object prints a brief description of the object to
     the message line at the bottom of the window.  In addition, you
@@ -495,19 +495,19 @@ tab "Physical/Map" {
     object to its new location.
     </topic>
 
-    <topic [image button_pan]>
+    <topic [img button_pan]>
     Press this button to enable panning mode.  In panning mode, click
     and drag the map to pan from one part of the map to another.
     Alternatively, use the scroll bars.
     </topic>
 
 
-    <topic [image button_nbhood]>
+    <topic [img button_nbhood]>
     Press this button to pop up the 
     <cref /order/nbhood/create> order dialog.
     </topic>
 
-    <topic [image button_absit]>
+    <topic [img button_absit]>
     Press this button to pop up the 
     <cref /order/absit/create> order
     dialog.  Alternatively, right-click on the map and select
@@ -519,37 +519,37 @@ tab "Physical/Map" {
     the appearance of abstract situation icons.
     </topic>
 
-    <topic [image control_mapref]>
+    <topic [img control_mapref]>
     This control shows the <term mapref> and lat/long pair of the location 
     under the mouse pointer. 
     </topic>
 
-    <topic [image control_civicon]>
+    <topic [img control_civicon]>
     This control toggles the appearance of civilian unit icons.
     </topic>
 
-    <topic [image control_frcicon]>
+    <topic [img control_frcicon]>
     This control toggles the appearance of force unit icons.
     </topic>
 
-    <topic [image control_orgicon]>
+    <topic [img control_orgicon]>
     This control toggles the appearance of organization unit icons.
     </topic>
 
-    <topic [image control_iconnames]>
+    <topic [img control_iconnames]>
     This control toggles the appearance of unit names. When unit names are 
     off, the unit icons are considerably smaller which may make the overall
     map displayless cluttered.
     </topic>
 
-    <topic [image button_nbfill]>
+    <topic [img button_nbfill]>
     By default, neighborhood polygons are transparent, revealing the
     map background beneath.  If this button is selected, the polygons
     will be filled with some color, nominally white.  See the
     neighborhood fill type control, next, for other choices.
     </topic>
 
-    <topic [image control_filltype]>
+    <topic [img control_filltype]>
     When the neighborhood fill button is selected, neighborhood
     polygons are filled with color based on some 
     <cref /var/n "Neighborhood Variable">.  This pulldown determines the
@@ -562,7 +562,7 @@ tab "Physical/Map" {
 
     </topic>
 
-    <topic [image control_zoom]>
+    <topic [img control_zoom]>
     This pulldown controls the zoom level.  By default, the map is
     drawn at 100%, its actual size.  Select one of the other zoom
     levels to scale it up or down.  <b>Note:</b> the first time a
@@ -605,24 +605,24 @@ tab "Physical/Neighborhoods" {
 
     <topiclist Control Description>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     If one or more neighborhoods are selected, pops up the 
     <cref /order/nbhood/update> or 
     <cref /order/nbhood/update:multi> dialog for
     the selected neighborhood(s).
     </topic>
 
-    <topic [image button_totop]>
+    <topic [img button_totop]>
     If a neighborhood is selected, moves the neighborhood to the top
     of the stacking order using the <cref /order/nbhood/raise> order.
     </topic>
 
-    <topic [image button_tobottom]>
+    <topic [img button_tobottom]>
     If a neighborhood is selected, moves the neighborhood to the bottom
     of the stacking order using the <cref /order/nbhood/lower> order.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     If a single neighborhood is selected, deletes it using the
     <cref /order/nbhood/delete> order.
     </topic>
@@ -665,7 +665,7 @@ tab "Physical/Proximities" {
 
     <topiclist Control Description>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     If one or more editable relationships are selected, pops up the 
     <cref /order/nbrel/update> or 
     <cref /order/nbrel/update:multi> dialog for
@@ -737,27 +737,27 @@ tab "Physical/Absits" {
 
     <topiclist Control Description>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Pops up the <cref /order/absit/create> dialog.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     If a single <b>INITIAL</b> situation is selected, pops up the 
     <cref /order/absit/update> dialog for
     the selected situation.
     </topic>
 
-    <topic [image button_check]>
+    <topic [img button_check]>
     If a single unresolved situation is selected, resolves it
     using the <cref /order/absit/resolve> order.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     If a single <b>INITIAL</b> situation is selected, deletes it
     using the <cref /order/absit/delete> order.
     </topic>
 
-    <topic [image viewbox]>
+    <topic [img viewbox]>
     The view box determines which set of entities is to be displayed.
     The following sets may be selected from the pulldown:<p>
 
@@ -824,31 +824,31 @@ tab "Physical/Curses" {
 
     <topiclist Control Description>
 
-    <topic [image button_plusc]>
+    <topic [img button_plusc]>
     Pops up the <cref /order/curse/create> dialog.
     </topic>
 
-    <topic [image button_plusi]>
+    <topic [img button_plusi]>
     Pops up a dialog to create a new CURSE inject.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     Depending on which row is selected, pops up either the 
     <cref /order/curse/update> dialog or the appropriate <term inject> 
     update dialog for the selected row.
     </topic>
 
-    <topic [image button_power]>
+    <topic [img button_power]>
     Depending on which row is selected, toggles the selected CURSE or
     inject on and off.  Disabled CURSEs will not have any of thier injects
     executed.  Disabled injects will not be executed.  
     </topic>
 
-    <topic [image button_checktxt]>
+    <topic [img button_checktxt]>
     Force a sanity check of CURSEs and injects.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     Depending on the selected row, either deletes a CURSE using the
     <cref /order/curse/delete> order or the <cref /order/inject/delete>
     order.
@@ -1076,17 +1076,17 @@ tab "Political/Actors" {
 
  <topiclist Control Description>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Pops up the <cref /order/actor/create> dialog.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     If a single row is selected, pops up the 
     <cref /order/actor/update> dialog for
     the selected row.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     If a single row is selected, deletes it using the
     <cref /order/actor/delete> order.
     </topic>
@@ -1227,19 +1227,19 @@ tab "Political/VRel" {
 
     <topiclist Control Description>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     <b>Scenario Mode only.</b> If one or more rows are selected, pops up the 
     <cref /order/vrel/override> or 
     <cref /order/vrel/override:multi> dialog for
     the selected row(s).
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     <b>Scenario Mode only.</b> If an overridden relationship is selected, 
     deletes the override and restores the computed relationship.
     </topic>
 
-    <topic [image viewbox]>
+    <topic [img viewbox]>
     <b>Scenario Mode only.</b> 
     The view box determines which set of entities is to be displayed.
     The following sets may be selected from the pulldown:<p>
@@ -1293,18 +1293,18 @@ tab "Military/Force Groups" {
 
     <topiclist Control Description>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Pops up the <cref /order/frcgroup/create> dialog.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     If one or more rows are selected, pops up the 
     <cref /order/frcgroup/update> or 
     <cref /order/frcgroup/update:multi> dialog for
     the selected row(s).
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     If a single row is selected, deletes it using the
     <cref /order/frcgroup/delete> order.
     </topic>
@@ -1337,7 +1337,7 @@ tab "Economics/SAM" {
     in spreadsheet form. The diagram below shows this tab when Athena
     is in <term prep> mode.<p>
 
-    <image econ_sam><p>
+    <img econ_sam><p>
 
     <b>SAM Inputs</b><p>
 
@@ -1396,7 +1396,7 @@ tab "Economics/SAM" {
     no longer editable unless the user returns to the <term prep> state.
     The diagram below shows this tab when Athena is <term lock>ed.<p>
 
-    <image econ_sam_locked><p>
+    <img econ_sam_locked><p>
 
     After lock, there are three views of the SAM data available: the input
     flows, the balancing flows and the Base SAM.<p>
@@ -1491,7 +1491,7 @@ page /tab/economics samexample "SAM Example" {
     in detail in the following sections.<p>
     
 
-    <image econ_simple_sam><p>
+    <img econ_simple_sam><p>
 
     <b>NOTE:</b> Users can only change the values of green cells; the other
     cells are calculated, including those in the actors sector.<p>
@@ -1563,7 +1563,7 @@ page /tab/economics samexample "SAM Example" {
     The diagram below illustrates the "Other Inputs" required for this
     simple economy.<p>
 
-    <image econ_ss_inputs><p>
+    <img econ_ss_inputs><p>
 
     The inputs required are:<p>
 
@@ -1619,7 +1619,7 @@ tab "Economics/Overview" {
     Below the "Dollars" and "Quantities" matrices are inputs to the economy
     that contribute to the size of it and the most salient outputs.<p>
 
-    <image econ_current><p>
+    <img econ_current><p>
 
     The size of the economy is driven by the
     number of consumers, the size of the labor force, the wage index of
@@ -1705,7 +1705,7 @@ tab "Economics/Expenditures" {
 
     <topiclist Control Description>
 
-    <topic [image viewbox]>
+    <topic [img viewbox]>
     The view box determines which view of expenditures is to be 
     displayed. The following views may be selected from the 
     pulldown:<p>
@@ -1940,22 +1940,22 @@ page /tab/social/beliefs systems "Belief Systems List" {
 
     <topiclist Control Description>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Adds a new belief system to the list.  The new belief system 
     will have an automatically generated name and a commonality of 1.0.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     Pops up the <cref /order/bsys/system/update> dialog for the
     selected system, allowing the name and commonality to be changed.
     Note that the "Neutral" belief system cannot be modified.<p>
     </topic>
 
-    <topic [image control_scommon]>
+    <topic [img control_scommon]>
     This slider sets the commonality level for the selected system.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     If a single belief system is selected, deletes it using the
     <cref /order/bsys/system/delete> order.  Note that belief systems
     cannot be deleted if they are in use by some actor or group, and
@@ -2013,33 +2013,33 @@ page /tab/social/beliefs topics "Topics and Beliefs List" {
 
     <topiclist Control Description>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Adds a new topic with default settings.
     </topic>
 
-    <topic [image button_pencilt]>
+    <topic [img button_pencilt]>
     Pops up the <cref /order/bsys/topic/update> dialog for the
     selected topic.
     </topic>
 
-    <topic [image button_pencilb]>
+    <topic [img button_pencilb]>
     Pops up the <cref /order/bsys/belief/update> dialog for the
     selected belief system and topic.
     </topic>
 
-    <topic [image control_affinity]>
+    <topic [img control_affinity]>
     Sets the "Affinity?" flag for the currently selected topic.
     </topic>
 
-    <topic [image control_position]>
+    <topic [img control_position]>
     Sets the position for the currently selected system and topic.
     </topic>
 
-    <topic [image control_emphasis]>
+    <topic [img control_emphasis]>
     Sets the emphasis for the currently selected system and topic.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     If a single topic is selected, deletes it using the
     <cref /order/bsys/topic/delete> order.  A topic cannot be
     deleted if it is in use by a <cref /object/hook>.
@@ -2063,7 +2063,7 @@ page /tab/social/beliefs affinity "Affinities Pane" {
 
     <topiclist Control Description>
 
-    <topic [image control_pcommon]>
+    <topic [img control_pcommon]>
     Sets the playbox "gamma" value.  The "gamma" value is a number from
     0.0 to 2.0, and it indicates the commonality of the dominant culture
     in the playbox.  In general, increasing "gamma" will increase 
@@ -2108,17 +2108,17 @@ tab "Social/CivGroups" {
 
     <topiclist Control Description>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Pops up the <cref /order/civgroup/create> dialog.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     When a row is selected, pops up the 
     <cref /order/civgroup/update> dialog for
     the selected row.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     If a single row is selected, deletes it using the
     <cref /order/civgroup/delete> order.
     </topic>
@@ -2153,18 +2153,18 @@ tab "Social/OrgGroups" {
 
     <topiclist Control Description>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Pops up the <cref /order/orggroup/create> dialog.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     If one or more rows are selected, pops up the 
     <cref /order/orggroup/update> or 
     <cref /order/orggroup/update:multi> dialog for
     the selected row(s).
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     If a single row is selected, deletes it using the
     <cref /order/orggroup/delete> order.
     </topic>
@@ -2276,7 +2276,7 @@ tab "Social/Satisfaction" {
 
     <topiclist Control Description>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     <b>Scenario Mode only.</b> If one or more rows are selected, pops up the 
     <cref /order/sat/update> or <cref /order/sat/update:multi> dialog for
     the selected row(s).
@@ -2424,7 +2424,7 @@ tab "Social/HRel" {
 
     <topiclist Control Description>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     <b>Scenario Mode only.</b>
     If one or more rows are selected, pops up the 
     <cref /order/hrel/override> or 
@@ -2432,13 +2432,13 @@ tab "Social/HRel" {
     the selected row(s).
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     <b>Scenario Mode only.</b>
     If an overridden relationship is selected, deletes the
     override and restores the computed relationship.
     </topic>
 
-    <topic [image viewbox]>
+    <topic [img viewbox]>
     <b>Scenario Mode only.</b>
     The view box determines which set of entities is to be displayed.
     The following sets may be selected from the pulldown:<p>
@@ -2565,11 +2565,11 @@ page /tab/infrastructure/caps caps "CAPS Pane" {
 
     <topiclist Control Description>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Pops up the <cref /order/cap/create> dialog.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     If one or more rows are selected, pops up an order dialog for 
     the selected rows, allow the user to edit the data.  During 
     <term prep>, any CAP data but the ID can be edited;
@@ -2579,7 +2579,7 @@ page /tab/infrastructure/caps caps "CAPS Pane" {
     orders are used, as appropriate.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     If a single row is selected, deletes it using the
     <cref /order/cap/delete> order.
     </topic>
@@ -2614,14 +2614,14 @@ page /tab/infrastructure/caps nbhood "Coverage Area Pane" {
 
     <topiclist Control Description>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     If one or more rows are selected, pops up the 
     <cref /order/cap/nbcov/set> or 
     <cref /order/cap/nbcov/set:multi> 
     dialog for the selected rows, allowing the data to be edited.
     </topic>
 
-    <topic [image control_knview]>
+    <topic [img control_knview]>
     Selects the set of neighborhood coverage records to display: 
     <b>All</b> records, or only those that are <b>Non-Zero</b>.
     </topic>
@@ -2681,7 +2681,7 @@ page /tab/infrastructure/caps group "Group Penetration Pane" {
 
     <topiclist Control Description>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     If one or more rows are selected, pops up the 
     <cref /order/cap/pen/set> or 
     <cref /order/cap/pen/set:multi> 
@@ -2689,7 +2689,7 @@ page /tab/infrastructure/caps group "Group Penetration Pane" {
     to be edited.
     </topic>
 
-    <topic [image control_knview]>
+    <topic [img control_knview]>
     Selects the set of group penetration records to display: 
     <b>All</b> records, or only those that are <b>Non-Zero</b>, or
     only those that are <b>Orphans</b>, i.e., those groups for which the
@@ -2740,11 +2740,11 @@ tab "Infrastructure/GOODS Plants" {
 
     <topiclist Control Description>
 
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Pops up the <cref /order/plant/shares:create> dialog.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     If one or more share definitions are selected, pops up the
     <cref /order/plant/shares:update> or
     <cref /order/plant/shares:update:multi> dialog for
@@ -2752,7 +2752,7 @@ tab "Infrastructure/GOODS Plants" {
 
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     If a single definition is selected, deletes it
     using the <cref /order/plant/shares:delete> order.
     </topic>
@@ -2862,7 +2862,7 @@ tab "Information/Cooperation" {
 
     <topiclist Control Description>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     <b>Scenario Mode only</b>.  If one or more rows are selected, pops up the 
     <cref /order/coop/update> or <cref /order/coop/update:multi> dialog for
     the selected row(s).
@@ -2944,28 +2944,28 @@ tab "Information/Semantic Hooks" {
     contains the following controls:<p>
 
     <topiclist Control Description>
-    <topic [image button_plush]>
+    <topic [img button_plush]>
     Create a new semantic hook.
     </topic>
 
-    <topic [image button_plust]>
+    <topic [img button_plust]>
     Add a topic and position on that topic for the selected semantic hook.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     Pops up the update dialog for the selected semantic hook or topic.
     </topic>
 
-    <topic [image button_power]>
+    <topic [img button_power]>
     Toggles the selected hook topic on and off.  Disabled topics are
     grayed out with an overstrike.
     </topic>
 
-    <topic [image button_checktxt]>
+    <topic [img button_checktxt]>
     Force a sanity check of the semantic hooks. 
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     Deletes the selected semantic hook or hook topic. 
     </topic>
 
@@ -3006,28 +3006,28 @@ tab "Information/Info Ops Messages" {
 
     <topiclist Control Description>
 
-    <topic [image button_plusi]>
+    <topic [img button_plusi]>
     Create a new IOM.
     </topic>
 
-    <topic [image button_plusp]>
+    <topic [img button_plusp]>
     Create a new payload for the currently selected IOM.
     </topic>
 
-    <topic [image button_pencil]>
+    <topic [img button_pencil]>
     Pops up the update dialog for the selected IOM or payload.
     </topic>
 
-    <topic [image button_power]>
+    <topic [img button_power]>
     Toggles the selected IOM or payload on and off.  Disabled items are
     grayed out with an overstrike.
     </topic>
 
-    <topic [image button_checktxt]>
+    <topic [img button_checktxt]>
     Force a sanity check of the IOMs and payloads. 
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     Deletes the selected IOM or payload.
     </topic>
 
@@ -3167,7 +3167,7 @@ tab "Time/Log" {
     toolbar contains the following controls:<p>
 
     <topiclist Control Description>
-    <topic [image control_loglevel]>
+    <topic [img control_loglevel]>
     <b><term loglevel Log-Level></b>.  This control determines the
     severity of the log entries that are displayed.  By default,
     entries of severity <b>normal</b> and above are displayed, and
@@ -3180,7 +3180,7 @@ tab "Time/Log" {
 
     <control.filterbox>
 
-    <topic [image control_logtar]> <b>Search Text.</b>  The
+    <topic [img control_logtar]> <b>Search Text.</b>  The
     next control allows the user to enter a search text string.  The
     browser will highlight all entries in the current log file that
     match the search text.<p>
@@ -3193,7 +3193,7 @@ tab "Time/Log" {
     the highlighting from the log entries.
     </topic>
 
-    <topic [image control_logsrch]> <b>Search Back
+    <topic [img control_logsrch]> <b>Search Back
     Controls.</b>  By default, the browser searches for the search
     text only in the current log file.  Use these controls to search
     back through the list of log files (the upward-pointing triangles)
@@ -3201,18 +3201,18 @@ tab "Time/Log" {
     stop button (the black square) if searching is taking too long.
     </topic>
 
-    <topic [image control_logcnt]> <b>Found Entry Count.</b>
+    <topic [img control_logcnt]> <b>Found Entry Count.</b>
     When the user enters search text, the browser shows the number of
     found entries, as well as the index of the currently displayed
     entry.
     </topic>
 
-    <topic [image control_logvcr]> <b>VCR Controls.</b>
+    <topic [img control_logvcr]> <b>VCR Controls.</b>
     Use these controls to navigate to the entries containing the
     search text in the current log file.
     </topic>
 
-    <topic [image button_lock]>
+    <topic [img button_lock]>
     <b>Auto-Scroll</b>.  Normally, the log browser automatically
     jumps to the latest log entry as new entries are written.
     Toggle this button to prevent the browser from jumping to the
@@ -3330,10 +3330,10 @@ tab "Scripts" {
     Script List, the Editor proper, and the Output area.<p>
 
     The Script List contains a list of the names of the currently defined
-    scripts.  To create a new script, press the <image button_plus>
-    or <image button_import> buttons.  To edit or browse a particular
+    scripts.  To create a new script, press the <img button_plus>
+    or <img button_import> buttons.  To edit or browse a particular
     script, select it in the list.  To make the selected script auto-executing, 
-    press the <image button_power> button.<p>
+    press the <img button_power> button.<p>
 
     The body of the selected script is shown in the Editor, to the
     right of the script list.  This is a normal text editor, with 
@@ -3345,13 +3345,13 @@ tab "Scripts" {
     There are many controls; read the following table carefully.<p>
 
     <topiclist Control Description>
-    <topic [image button_plus]>
+    <topic [img button_plus]>
     Create a new script.  Athena will prompt you for the script's name, and
     will add the script to the script list.  Edit the script's body in the
     Editor.
     </topic>
 
-    <topic [image button_import]>
+    <topic [img button_import]>
     Imports a script from the disk into the scenario.  Athena will prompt
     you to select a ".tcl" file from the disk; the new stored script's
     name will be the name of the disk file minus the ".tcl" extension.
@@ -3368,35 +3368,35 @@ tab "Scripts" {
     imported scripts will probably require some editing to be useful.
     </topic>
 
-    <topic [image button_export]>
+    <topic [img button_export]>
     Prompts the user to save the selected script as a disk file.
     </topic>
 
-    <topic [image button_power]>
+    <topic [img button_power]>
     Toggles the selected script's auto-execute flag.
     </topic>
 
-    <topic [image button_totop]>
+    <topic [img button_totop]>
     Moves the selected script to the top of the list; it will be executed
     first on executive <command reset>.
     </topic>
 
-    <topic [image button_raise]>
+    <topic [img button_raise]>
     Moves the selected script one spot up in the execution sequence;
     it will be executed earlier on executive <command reset>.
     </topic>
 
-    <topic [image button_lower]>
+    <topic [img button_lower]>
     Moves the selected script one slot down in the execution sequence;
     it will be executed later on executive <command reset>.
     </topic>
 
-    <topic [image button_tobottom]>
+    <topic [img button_tobottom]>
     Moves the selected script to the end of the list; it will be
     executed last on executive <command reset>.
     </topic>
 
-    <topic [image button_trash]>
+    <topic [img button_trash]>
     Deletes the selected script.
     </topic>
 

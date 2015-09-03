@@ -38,6 +38,23 @@ snit::type app {
     typecomponent compiler ;# Slave interpreter used to parse the input
 
     #-------------------------------------------------------------------
+    # Transient Data
+
+    # trans array
+    #
+    #    dicts - List of paths of pages that are marked as dictionaries
+    
+    typevariable trans -array {
+        dicts {}
+    }
+
+    # symbols array
+    #
+    # Array of user-defined symbols and their values.
+
+    typevariable symbols -array {}
+
+    #-------------------------------------------------------------------
     # Application Initializer
 
     # init argv
@@ -166,7 +183,12 @@ snit::type app {
         # files.
         set compiler [interp create -safe]
 
+        $compiler alias log        $type log
+        $compiler alias define     $type define
+        $compiler alias defined    $type defined
+        $compiler alias getsym     $type getsym
         $compiler alias page       $type Compiler_page
+        $compiler alias dictionary $type Compiler_dictionary
         $compiler alias alias      $type Compiler_alias
         $compiler alias include    $type Compiler_include
         $compiler alias image      $type Compiler_image
@@ -191,6 +213,27 @@ snit::type app {
             $compiler invokehidden -global source $infile
         } finally {
             cd $thisDir
+        }
+
+        # NEXT, reset the rowid's for the children of dictionaries.
+        set idcounter [hdb eval {SELECT max(rowid) FROM helpdb_pages}]
+
+        foreach dpath $trans(dicts) {
+            set children [hdb eval {
+                SELECT path FROM helpdb_pages
+                WHERE parent=$dpath
+                ORDER BY title COLLATE NOCASE
+            }]
+
+            foreach cpath $children {
+                set id [incr idcounter]
+
+                hdb eval {
+                    UPDATE helpdb_pages
+                    SET rowid = $id
+                    WHERE path=$cpath
+                }
+            }
         }
 
         # NEXT, translate the pages from ehtml(5) to html.
@@ -219,13 +262,12 @@ snit::type app {
         }
     }
 
-
     # Compiler_page parent slug title text
     #
-    # parent      Path of parent page, or "" for root
-    # slug        The page's name, or "" for the root
-    # title       The page title
-    # text        The raw text of the page.
+    # parent      - Path of parent page, or "" for root
+    # slug        - The page's name, or "" for the root
+    # title       - The page title
+    # text        - The raw text of the page.
     #
     # Defines a help page.
 
@@ -240,12 +282,37 @@ snit::type app {
         $type MakePage $parent $slug $title "" $text
     }
 
+    # Compiler_dictionary parent slug title text
+    #
+    # parent      - Path of parent page, or "" for root
+    # slug        - The page's name, or "" for the root
+    # title       - The page title
+    # text        - The raw text of the page.
+    #
+    # Defines a dictionary page, one whose children should
+    # always retrieved in dictionary order by title.  In all other
+    # ways, it's a normal page.
+
+    typemethod Compiler_dictionary {parent slug title text} {
+        # FIRST, get the path.
+        lassign [$type MakePath $parent $slug] path url
+
+        # NEXT, validate the input
+        require {$text  ne ""} "Page \"$path\" has no text"
+
+        # NEXT, remember that this is a dictionary
+        lappend trans(dicts) $path
+
+        # NEXT, make the page
+        $type MakePage $parent $slug $title "" $text
+    }
+
     # Compiler_alias parent slug title alias
     #
-    # parent      Path of parent page, or "" for root
-    # slug        The page's name, or "" for the root
-    # title       The page title
-    # alias       path of page to which this is an alias.
+    # parent      - Path of parent page, or "" for root
+    # slug        - The page's name, or "" for the root
+    # title       - The page title
+    # alias       - path of page to which this is an alias.
     #
     # Defines a help page.
 
@@ -263,11 +330,11 @@ snit::type app {
 
     # MakePage parent slug title alias text
     #
-    # parent      Path of parent page, or "" for root
-    # slug        The page's name, or "" for the root
-    # title       The page title
-    # alias       Path of page to which this is an alias.
-    # text        The raw text of the page.
+    # parent      - Path of parent page, or "" for root
+    # slug        - The page's name, or "" for the root
+    # title       - The page title
+    # alias       - Path of page to which this is an alias.
+    # text        - The raw text of the page.
     #
     # Creates a help page for the "page" and "alias" commands.
 
@@ -531,6 +598,56 @@ snit::type app {
     typemethod {page title} {path} {
         hdb onecolumn {SELECT title FROM helpdb_pages WHERE path=$path}
     }
+
+    # log text
+    #
+    # text  - A text string
+    #
+    # Logs the text to the console.  Used for debugging compilation.
+
+    typemethod log {text} {
+        puts "$text"
+    }
+    
+    # define symbol ?value?
+    #
+    # symbol - A symbol name, conventionally all uppercase
+    # value  - A value; defaults to ""
+    #
+    # Defines a compilation symbol.
+
+    typemethod define {symbol {value ""}} {
+        # FIRST, remember the symbol
+        set symbols($symbol) $value
+    }
+
+    # defined symbol
+    #
+    # symbol - A symbol name
+    #
+    # Returned 1 if the symbol is defined, and 0 otherwise.
+
+    typemethod defined {symbol} {
+        return [info exists symbols($symbol)]
+    }
+
+    # getsym symbol
+    #
+    # symbol - A symbol name
+    #
+    # Returns the value of the symbol.  Throws an error if it isn't
+    # defined.
+
+    typemethod getsym {symbol} {
+        if {![info exists symbols($symbol)]} {
+            throw SYNTAX "Undefined symbol: \"$symbol\""
+        }
+
+        return $symbols($symbol)
+    }
+
+
+
 
 }
 

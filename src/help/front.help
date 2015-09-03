@@ -38,7 +38,7 @@ page / changelog "Change Log" {
 #-----------------------------------------------------------------------
 
 page / about "About Athena" {
-    <image athena right>
+    <img athena right>
 
     <mktitle normal "" "Athena V[version]" {
         Stability and Recovery Operations Simulation

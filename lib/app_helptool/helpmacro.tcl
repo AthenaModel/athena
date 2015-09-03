@@ -56,8 +56,26 @@ snit::type helpmacro {
         $macro smartalias footer 0 0 {} \
             [myproc footer]
 
-        $macro smartalias image 1 2 {slug ?align?} \
-            [myproc image]
+        $macro proc ifdef {symbol body} {
+            if {[symdef $symbol]} {
+                return [expand $body]
+            }
+        }
+
+        $macro proc ifndef {symbol body} {
+            if {![symdef $symbol]} {
+                return [expand $body]
+            }
+        }
+
+        $macro proc ifsym {symbol value body} {
+            if {[sym $symbol] eq $value} {
+                return [expand $body]
+            }
+        }
+
+        $macro smartalias img 1 2 {slug ?align?} \
+            [myproc img]
 
         $macro smartalias itemlist 0 0 {} \
             [myproc itemlist]
@@ -95,8 +113,17 @@ snit::type helpmacro {
         $macro smartalias /parmlist 0 0 {} \
             [myproc /parmlist]
 
+        $macro smartalias symdef 1 1 {symbol} \
+            [list app defined]
+
+        $macro smartalias sym 1 1 {symbol} \
+            [list app getsym]
+
         $macro smartalias version 0 0 {} \
             [list project version]
+
+        $macro smartalias log 1 1 {text} \
+            [list app log]
     }
 
     # setinfo dict
@@ -214,14 +241,14 @@ snit::type helpmacro {
     }
 
 
-    # image slug ?align?
+    # img slug ?align?
     #
     # slug    - An image slug
     # align   - Alignment, left | center | right; default is no alignment
     #
     # Adds <img> tag
 
-    proc image {slug {align ""}} {
+    proc img {slug {align ""}} {
         set path /image/$slug
         set url $path.png
 
@@ -417,5 +444,4 @@ snit::type helpmacro {
         |<--
         </table><p>
     }
-
 }

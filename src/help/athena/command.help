@@ -17,7 +17,7 @@
 #
 #-----------------------------------------------------------------------
 
-page / command "Executive Commands" {
+dictionary / command "Executive Commands" {
     <title>
     Athena provides a command-line interface (CLI) at the bottom on
     the main window.  The CLI is primarily used during testing and

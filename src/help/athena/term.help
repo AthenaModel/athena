@@ -14,7 +14,7 @@
 #
 #-----------------------------------------------------------------------
 
-page / term "Glossary" {
+dictionary / term "Glossary" {
     <title>
     This page describes terms and concepts used by the
     Athena models and software.<p>
@@ -521,7 +521,7 @@ term executive "executive" {
 #-----------------------------------------------------------------------
 
 term filterbox "filter box" {
-    <image "filterbox"><p>
+    <img "filterbox"><p>
 
     The various Athena data browsers all feature a filter box, which
     is a control used to limit what is shown in the browser to some

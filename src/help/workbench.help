@@ -14,7 +14,7 @@
 #=======================================================================
 # Global Definitions
 
-set TARGET WORKBENCH
+define WORKBENCH   ;# We're defining the Athena Workbench helpdb.
 
 include util/procs.help
 include util/macros.help
@@ -24,7 +24,7 @@ include workbench/images.help
 #-----------------------------------------------------------------------
 
 page "" "" "Athena Workbench Help" {
-    <image athena right>
+    <img athena right>
 
     This is the on-line help for <b>Athena Workbench V<version></b>,
     the desktop version of the Athena Stability & Recovery Operations 

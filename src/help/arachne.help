@@ -14,7 +14,7 @@
 #=======================================================================
 # Global Definitions
 
-set TARGET ARACHNE
+define ARACHNE  ;# We're defining the Arachne helpdb.
 
 include util/procs.help
 include util/macros.help
@@ -23,7 +23,7 @@ include util/images.help
 #-----------------------------------------------------------------------
 
 page "" "" "Arachne Help" {
-    <image athena right>
+    <img athena right>
 
     This is the on-line help for <b>Arachne V<version></b>, which is
     part of the Athena Stability & Recovery Operations Simulation.  
