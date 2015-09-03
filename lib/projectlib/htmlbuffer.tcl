@@ -70,6 +70,8 @@ oo::class create ::projectlib::htmlbuffer {
     #    -headercmd cmd     - A callback that adds content to the page
     #                         header.  Called with two additional arguments,
     #                         the buffer and the page title, by "page".
+    #    -metacmd cmd       - A callback back that adds content to the
+    #                         HTML <head> element.
     #    -mode mode         - web|tk; the HTML generation mode.  Defaults to
     #                         web.
     #    -styles css        - CSS styles to be included in the page.
@@ -79,6 +81,7 @@ oo::class create ::projectlib::htmlbuffer {
         array set options {
             -cssfiles  {}
             -domain    ""
+            -metacmd   {}
             -footercmd {}
             -headercmd {}
             -mode      web
@@ -313,7 +316,7 @@ oo::class create ::projectlib::htmlbuffer {
 
         my putln <html>
         my putln <head>
-        my wrapln title $title
+        callwith $options(-metacmd) [self]
 
         foreach filename $options(-cssfiles) {
             my tagln link -rel stylesheet -href $filename
@@ -326,6 +329,8 @@ oo::class create ::projectlib::htmlbuffer {
         if {$refreshAfter ne ""} {
             my tagln meta -http-equiv refresh -content $refreshAfter
         }
+
+        my wrapln title $title
 
         my putln </head>
         my tagln body {*}$args

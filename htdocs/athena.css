@@ -70,8 +70,49 @@ DIV.tagline {
     margin-top:58px;
 }
 
+/*--------------------------------------------------
+ * Table Formatting Classes
+ *
+ * Use class "table" for standard table formatting, 
+ * with "tr-odd" on odd body rows and "tr-even" on even 
+ * body rows.  The header is row 1 so the first body row
+ * is even.
+ */
 
-/* Table Formatting Classes: "pretty" 
+.table {  /* Replaces "pretty" */
+    border: 1px solid black;
+    border-spacing: 0;
+    color: black;
+    background-color: white;
+}
+
+.table tr:first-child {  /* Replaces "header" */
+    font-weight: bold;
+    color: white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {      /* Replaces "evenrow" */
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }   /* Replaces "oddrow" */
+
+.table th {
+    padding:    5px;
+    text-align: left;
+}
+
+.table td {
+    padding: 5px;
+    vertical-align: baseline;
+}
+
+table.table-wide {
+    width: 100%;    
+}
+
+/* OBSOLETE: Old-style Table Formatting Classes: "pretty" 
  * Border around the outside, even/odd striping, no internal
  * border lines.
  */

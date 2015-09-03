@@ -239,9 +239,20 @@ is ignored.<p>
 
 <defopt {-headercmd <i>command</i>}>
 
-Defines a command that is called by <iref page> to generate a page
-header.  It is called with two additional argument, the name of the
+Defines a command that is called by <iref page> to generate a standard
+header at the top of the page's <tag body>.
+It is called with two additional arguments, the name of the
 htmlbuffer(n) itself, and the title passed to <iref page>.
+The command may add any desired content to the 
+buffer using the various instance commands.  The command's return value 
+is ignored.<p>
+
+<defopt {-metacmd <i>command</i>}>
+
+Defines a command that is called by <iref page> to add content
+to the page's <tag head> element.
+It is called with one additional argument, the name of the
+htmlbuffer(n) itself.
 The command may add any desired content to the 
 buffer using the various instance commands.  The command's return value 
 is ignored.<p>
