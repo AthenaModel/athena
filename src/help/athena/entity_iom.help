@@ -28,8 +28,10 @@ object iom_ {
         analyst.  See the <i>Athena User's Guide</i> for details on
         how to make the best use of IOMs.<p>
         
-        IOMs are created and edited on the 
-        <cref /tab/information/info_ops_messages>.<p>
+        <ifdef WORKBENCH {
+            IOMs are created and edited on the 
+            <cref /tab/information/info_ops_messages>.<p>
+        }>
 
     }
 
@@ -51,8 +53,12 @@ object iom_ {
 
     attribute hook_id "Semantic Hook" {
         The message appeals to the belief systems of the targetted
-        civilians by means of its <term hook>.  Semantic hooks are
-        created and edited on the <cref /tab/information/semantic_hooks> tab.<p>
+        civilians by means of its <term hook>.  
+        <ifdef WORKBENCH {
+            Semantic hooks are
+            created and edited on the 
+            <cref /tab/information/semantic_hooks> tab.
+        }><p>
         
         This parameter may remain unset during
         <term prep>, but must be specified before time can be

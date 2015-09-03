@@ -39,9 +39,11 @@ object inject_ {
         <cref /entity/inject/vrel VREL> inject must have a role for one
         or more <term actor>s and one or more <term group>s.<p>
 
-        There are several different types of inject; they are all 
-        created, edited, and browsed on the 
-        <cref /tab/physical/curses>.<p>
+        There are several different types of inject.
+        <ifdef WORKBENCH {
+            All of them are created, edited, and browsed on the 
+            <cref /tab/physical/curses>.
+        }><p>
     }
 
     attribute curse_id "CURSE ID" {

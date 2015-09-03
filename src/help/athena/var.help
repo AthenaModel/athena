@@ -42,8 +42,9 @@ page / var "Output Variables" {
 
     Every display variable name consists of a variable type, possibly 
     followed by one or more index values.  For example, the
-    neighborhood variable <b>mood.NB1</b> is the <term mood> of 
-    of the civilians in neighborhood NB1.<p>
+    neighborhood variable <b>sat.SHIA.SFT</b> is the <term satisfaction> of 
+    of the SHIA group with respect to its SFT concern across
+    neighborhoods.<p>
 
     The valid index values generally vary from scenario to scenario;
     thus, this documentation describes families of variables like
@@ -174,7 +175,7 @@ page /var t "History Variables" {
     runs, as well as additional variables that are computable from the
     saved history on demand.  History variables are time-stamped, and
     their values vary with the simulation time.  For example, the
-    history variable <b>sat.SHIA.SFT</b> is the <term satisfaction>
+    time series variable <b>sat.SHIA.SFT</b> is the <term satisfaction>
     of the SHIA group with respect to its SFT
     concern over time.<p>
 

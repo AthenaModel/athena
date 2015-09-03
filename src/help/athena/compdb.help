@@ -22,8 +22,19 @@ page / compdb "Comparison Parameters" {
     affect the output of the comparison of scenario cases, whether it
     be the same scenario at different times or two different scenarios, 
     but not the simulation outputs.
-    Comparison parameter values can be queried and set using the
-    <command compdb> executive command.<p>
+
+    The mechanism for setting comparison parameters is 
+    application-dependent.
+    <ifdef WORKBENCH {
+        In the Athena Workbench, comparison parameter values can be 
+        queried and set using the
+        <command compdb> executive command.
+    }>
+    <ifdef ARACHNE {
+        In Arachne, use Arachne's <tt -compdb> option to specify a 
+        compdb(5) file of comparison parameters.
+    }>
+    <p>
 
     <childlinks>
 }

@@ -53,6 +53,7 @@ page "" "" "Workbench Help" {
     <li> <cref /entity>
     <li> <cref /order>
     <li> <cref /gofer>
+    <li> <cref /var>
     <li> <cref /parmdb>
     <li> <cref /compdb>
     </ul>
@@ -81,8 +82,15 @@ include workbench/prefs.help
 include athena/entity.help
 include athena/order.help
 include athena/gofer.help
+include athena/var.help
 include athena/parmdb.help
 include athena/compdb.help
+
+include command.help
 include athena/command.help
+include workbench/command.help
 include athena/function.help
+
+include term.help
 include athena/term.help
+include workbench/term.help

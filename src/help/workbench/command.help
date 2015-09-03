@@ -1,0 +1,348 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    workbench/command.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Executive Commands defined by the
+#    Workbench.
+#
+#-----------------------------------------------------------------------
+
+
+#=======================================================================
+# clear command
+
+command "clear" {
+    <syntax>
+
+    <b Workbench-specific.> 
+    Clears the contents of the CLI's scrollback buffer.
+}
+
+#=======================================================================
+# compdb commands
+
+command "compdb" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    <b Workbench-specific.> 
+    The <b>compdb</b> command sets and queries <cref /compdb>.
+    Comparison parameters are distinct from the <cref /parmdb> edited
+    using the <command parm> command in that they apply to the application
+    rather than to individual scenarios. Therefore,<p>
+
+    <ul>
+    <li> They are not saved in scenario files.
+    <li> They do not affect the outcome of simulation runs. 
+    </ul>
+
+    This command has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb export" {
+    <syntax {<i>filename</i>}>
+    
+    <b Workbench-specific.> 
+    Exports any changed comparison parameters to the specified file. 
+    Parameters with default values are not included.
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb import" {
+    <syntax {<i>filename</i>}>
+    
+    <b Workbench-specific.> 
+    Imports a comparison parameter file from disk. 
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb get" {
+    <syntax {<i>parm</i>}>
+    
+    <b Workbench-specific.> 
+    Retrieves the value of the named comparison parameter.
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb list" {
+    <syntax {?<i>pattern</i>?}>
+
+    <b Workbench-specific.> 
+    When called with no argument, this command lists the names and
+    values of all comparison parameters.  If given, <i>pattern</i> is
+    a wild-card pattern; only matching parameters are included.
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb reset" {
+    <syntax>
+    
+    <b Workbench-specific.> 
+    Resets all comparison parameters to their default
+    settings.
+}
+
+#-----------------------------------------------------------------------
+
+command "compdb set" {
+    <syntax {<i>parm value</i>}>
+    
+    <b Workbench-specific.> 
+    Sets the named comparison parameter to the specified
+    <i>value</i>.
+}
+
+#=======================================================================
+# debug command
+
+command "debug" {
+    <syntax>
+    <caution.debugging>
+    <b Workbench-specific.> 
+    Invokes a debugger window. The debugger is simply a Tcl interpreter
+    with full access to the application's code and data; it's intended
+    for developer use only. 
+}
+
+#=======================================================================
+# enter command
+
+command "enter" {
+    <syntax {<i>order</i> ?<i>parm value...</i>?}>
+    <caution.debugging>
+    <b Workbench-specific.> 
+    Pops up an order dialog for the named <i order>, populating it 
+    with the given values.  Note that some orders have no useful order
+    dialog.
+}
+
+#=======================================================================
+# help command
+
+command "help" {
+    <syntax {?-info? ?<i>command...</i>?}>
+
+    <b Workbench-specific.> 
+    This command accesses the on-line help for Athena's
+    <cref /command>.  To display a list of all commands, enter this
+    command with no arguments:<p>
+
+    <cli {
+        > help
+        >
+    }>
+
+    To request help for a particular command, enter it on the command
+    line.  For example, to see the help page for the 
+    <command parm set> command, enter the following:<p>
+
+    <cli {
+        > help parm set
+        >
+    }>
+
+    The <b>-info</b> option is for use in debugging the Athena
+    Executive; if specified, the <b>help</b> command will dump
+    implementation info to the CLI.
+}
+
+#=======================================================================
+# load command
+
+command "load" {
+    <syntax {<i>filename</i>}>
+
+    <b Workbench-specific.> 
+    Loads the scenario data (including simulation results, if any)
+    from the given <i>filename</i>, overwriting any existing scenario.
+    If the requested scenario cannot be loaded, the application will be
+    left with an empty scenario.
+}
+
+#=======================================================================
+# nbfill command
+
+command "nbfill" {
+    <syntax {<i>varname</i>}>
+
+    <b Workbench-specific.> 
+    This command directs the <tab Physical/Map> tab to fill neighborhood
+    polygons with a color based on the value of a particular 
+    <cref /var/n "Neighborhood Variable">.  See the link for a list
+    of the available variables.
+}
+
+#=======================================================================
+# new command
+
+command "new" {
+    <syntax>
+
+    <b Workbench-specific.> 
+    Creates a new, empty scenario, throwing away any loaded scenario
+    data (including simulation results).
+}
+
+
+#=======================================================================
+# prefs commands
+
+command "prefs" {
+    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
+
+    <b Workbench-specific.> 
+    The <b>prefs</b> command sets and queries <cref /prefs>.
+    Preference parameters are distinct from the <cref /parmdb> edited
+    using the <command parm> command in that they apply to the application
+    rather than to individual scenarios. Therefore,<p>
+
+    <ul>
+    <li> They are not saved in scenario files.
+    <li> They do not affect the outcome of simulation runs. 
+    </ul>
+
+    This command has the following subcommands:<p>
+
+    <childlinks>
+}
+
+#-----------------------------------------------------------------------
+
+command "prefs get" {
+    <syntax {<i>parm</i>}>
+    
+    <b Workbench-specific.> 
+    Retrieves the value of the named preference parameter.
+}
+
+#-----------------------------------------------------------------------
+
+command "prefs help" {
+    <syntax {<i>parm</i>}>
+    
+    <b Workbench-specific.> 
+    Displays the help string for the named preference parameter.
+}
+
+#-----------------------------------------------------------------------
+
+command "prefs list" {
+    <syntax {?<i>pattern</i>?}>
+
+    <b Workbench-specific.> 
+    When called with no argument, this command lists the names and
+    values of all preference parameters.  If given, <i>pattern</i> is
+    a wild-card pattern; only matching parameters are included.
+}
+
+#-----------------------------------------------------------------------
+
+command "prefs names" {
+    <syntax {?<i>pattern</i>?}>
+
+    <b Workbench-specific.> 
+    When called with no argument, this command lists the names of all
+    preference parameters.  If given, <i>pattern</i> is a wild-card
+    pattern; only matching parameters are included.
+}
+
+
+#-----------------------------------------------------------------------
+
+command "prefs reset" {
+    <syntax>
+    
+    <b Workbench-specific.> 
+    Resets all preference parameters to their default
+    settings.
+}
+
+
+#-----------------------------------------------------------------------
+
+command "prefs set" {
+    <syntax {<i>parm value</i>}>
+    
+    <b Workbench-specific.> 
+    Sets the named preference parameter to the specified
+    <i>value</i>.
+}
+
+#=======================================================================
+# save command
+
+command "save" {
+    <syntax {<i>filename</i>}>
+
+    <b Workbench-specific.> 
+    Saves the current scenario to disk, including simulation
+    results if the scenario is <cref /command/lock>ed,
+    using the given <i>filename</i>.  The saved scenario 
+    can be loaded again using the <cref /command/load> command.<p>
+}
+
+#=======================================================================
+# show command
+
+command "show" {
+    <syntax {<i>url</i>}>
+
+    <b Workbench-specific.> 
+    Displays the requested URL in the <tab detail>.
+}
+
+#=======================================================================
+# super command
+
+command "super" {
+    <syntax {<i>args...</i>}>
+    <caution.debugging>
+    <b Workbench-specific.> 
+    Concatenates its arguments into a single command, and executes
+    that command in the context of the application rather than in the
+    Athena <term executive>.
+}
+
+#=======================================================================
+# usermode command
+
+command "usermode" {
+    <syntax {?<i>mode</i>?}>
+    <caution.debugging>
+    <b Workbench-specific.> 
+    Sets and queries the user mode.<p>
+
+    Athena's executive runs in two modes, <b>normal</b> and
+    <b>super</b>. In normal mode, user command entry is prevented from
+    affecting application internals, i.e., the user can't kill or
+    corrupt the application by mis-typing. Caution: In super mode, the
+    CLI is attached directly to the application. Anything is possible,
+    including damage to the user's scenario. <p>
+
+    The <b>super</b> mode is intended primarily for use by the Athena
+    developers; other users should consider using the <command super>
+    command in the rare case that evading the normal protections is
+    required.<p>
+
+    <b>Note:</b> in <b>super</b> mode, the CLI's command prompt
+    changes, as shown:<p>
+
+    <cli {
+        > usermode super
+        super> usermode normal
+        >
+    }>
+}
+

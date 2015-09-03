@@ -33,8 +33,10 @@ object curse_ {
         SYSTEM agent can be given a strategy that employs CURSE tactics
         to cause the CURSE to happen whenever the analyst likes.<p>
 
-        CURSEs are created and edited on the 
-        <cref /tab/physical/curses>.<p>
+        <ifdef WORKBENCH {
+            CURSEs are created and edited on the 
+            <cref /tab/physical/curses>.<p>
+        }>
 
     }
 

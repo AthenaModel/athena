@@ -326,29 +326,9 @@ menuitem "Help/Help Contents" {
     <cref / "table of contents">.
 }
 
-menuitem "Help/Application Menus" {
-    This menu item pops up the on-line help for the <cref /menu>, 
-    which you are currently reading.
-}
-
-menuitem "Help/Application Tabs" {
-    This menu item pops up the on-line help for the various <cref /tab>
-    used to browse the current state of the simulation.
-}
-
-menuitem "Help/Orders" {
-    This menu item pops up the reference material for each of
-    Athena's simulation <cref /order>.
-}
-
-menuitem "Help/Executive Commands" {
-    This menu item pops up the reference material for each of 
-    Athena's <cref /command>.
-}
-
-menuitem "Help/Model Parameters" {
-    This menu item pops up the reference material for each of 
-    the <cref /parmdb> used to calibrate Athena's models.
+menuitem "Help/About Athena" {
+    This menu item displays basic information <cref /main/about>,
+    including the copyright.
 }
 
 menuitem "Help/Release Notes" {
@@ -356,10 +336,57 @@ menuitem "Help/Release Notes" {
     of Athena.
 }
 
-menuitem "Help/About Athena" {
-    This menu item displays basic information <cref /main/about>,
-    including the copyright.
+menuitem "Help/Application Menus" {
+    This menu item displays the help for the <cref /menu>, 
+    which you are currently reading.
 }
+
+menuitem "Help/Application Tabs" {
+    This menu item displays the help for the various <cref /tab>
+    used to browse the current state of the simulation.
+}
+
+menuitem "Help/User Preferences" {
+    This menu item displays the help for the application's
+    <cref /prefs>.
+}
+
+menuitem "Help/Entity Types" {
+    This menu item displays information about the 
+    <cref /entity> in the Athena simulation.
+}
+
+menuitem "Help/Orders" {
+    This menu item displays the reference material for each of
+    Athena's scenario <cref /order>.
+}
+
+menuitem "Help/Model Parameters" {
+    This menu item displays the reference material for each of 
+    the <cref /parmdb> used to calibrate Athena's models.
+}
+
+menuitem "Help/Comparison Parameters" {
+    This menu item displays the reference material for each of 
+    the <cref /compdb> used when analyzing the results of 
+    Athena scenarios.
+}
+
+menuitem "Help/Executive Commands" {
+    This menu item displays the reference material for each of 
+    Athena's <cref /command>.
+}
+
+menuitem "Help/Executive Functions" {
+    This menu item displays the reference material for each of 
+    Athena's <cref /function>.
+}
+
+menuitem "Help/Glossary of Terms" {
+    This menu item displays a <cref /term> for the Athena simulation
+    and the Workbench application.
+}
+
 
 
 

@@ -191,8 +191,11 @@ page /order/cap pen "Group Penetration Orders" {
     civilian group in the playbox.  Note that it is possible to give
     a group a positive penetration fraction even if its neighborhood
     is not in the CAP's coverage area; such a group is called an
-    "orphan" group.  Orphan groups are highlighted in the 
-    <cref /tab/infrastructure/caps/group>.<p>
+    "orphan" group.
+    <ifdef WORKBENCH {
+        Orphan groups are highlighted in the 
+        <cref /tab/infrastructure/caps/group>.
+    }><p>
 
     The following orders are used to set group penetration.<p>
 

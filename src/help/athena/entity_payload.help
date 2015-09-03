@@ -36,9 +36,11 @@ object payload_ {
         defined in terms of their effect on "the covered civilian
         groups".<p>
 
-        There are several different types of payload; they are all 
-        created, edited, and browsed on the 
-        <cref /tab/information/info_ops_messages>.<p>
+        There are several different types of payload.
+        <ifdef WORKBENCH {
+            All of them are created, edited, and browsed on the 
+            <cref /tab/information/info_ops_messages>.
+        }><p>
     }
 
     attribute iom_id "Message ID" {

@@ -14,7 +14,7 @@
 #=======================================================================
 # Global Definitions
 
-define ARACHNE  ;# We're defining the Arachne helpdb.
+define ARACHNE   ;# We're defining the Athena Workbench helpdb.
 
 include util/procs.help
 include util/macros.help
@@ -25,37 +25,60 @@ include util/images.help
 page "" "" "Arachne Help" {
     <img athena right>
 
-    This is the on-line help for <b>Arachne V<version></b>, which is
-    part of the Athena Stability & Recovery Operations Simulation.  
-    Please see the <i>Athena User's Guide</i> for additional
+    This is the on-line help for <b>Athena Arachne V<version></b>,
+    web back-end for the Athena Stability & Recovery Operations 
+    Simulation.  Please see the <i>Athena User's Guide</i> for additional 
     information.<p>
 
-    Help Contents:<p>
+    <h4>This Release</h4>
 
     <ul>
-    <li> <cref /changelog>
-    <li> <cref /about>
-    <li> <cref /release>
-    <li> <cref /object>
+    <li> <cref /main/about>
+    <li> <cref /main/release>
+    <li> <cref /main/changelog>
+    </ul>
+
+    <h4>Arache</h4>
+
+    For details about Arachne, see the 
+    <i Arachne Interface Specification>.<p>
+
+    <h4>Athena Scenarios</h4>
+
+    <ul>
+    <li> <cref /entity>
     <li> <cref /order>
     <li> <cref /gofer>
+    <li> <cref /parmdb>
+    <li> <cref /compdb>
+    </ul>
+
+    <h4>Additional Information</h4>
+
+    <ul>
     <li> <cref /command>
     <li> <cref /function>
-    <li> <cref /parmdb>
     <li> <cref /term>
     </ul>
 }
 
 
+alias / main "Arachne Help" /
+
 #======================================================================
 # The following sections are in separate files
 
 include front.help
-include athena/object.help
+
+include athena/entity.help
 include athena/order.help
 include athena/gofer.help
-include athena/command.help
-include athena/function.help
 include athena/parmdb.help
 include athena/compdb.help
+
+include command.help
+include athena/command.help
+include athena/function.help
+
+include term.help
 include athena/term.help

@@ -1,0 +1,40 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    command.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Executive Commands
+#
+#    Command pages have paths like /command/{name}.  If the command's 
+#    name has multiple tokens, they are connected by "/", as in 
+#    "/command/parm/set".
+#
+#    This file defines the top-level /command page.  Executive commands
+#    are defined by both the Athena library and by specific applications,
+#    so the actual commands are defined in subdirectories.
+#
+#    The commands and macros used to define command pages are defined
+#    in util/procs.help.
+#
+#-----------------------------------------------------------------------
+
+dictionary / command "Executive Commands" {
+    <title>
+    Athena provides a command-line interface (CLI) at the bottom on
+    the main window.  The CLI is primarily used during testing and
+    development, as most user tasks are done via 
+    <cref /order "order dialogs"> and other GUI interactions.  However,
+    there are a small number of tasks that the user can do by typing
+    <i>executive commands</i> at the CLI.  Most of these are low-level
+    tasks, such as calibrating the Athena models by setting model
+    parameters.<p>
+
+    This page lists the available commands.<p>
+
+    <childlinks>
+}
+

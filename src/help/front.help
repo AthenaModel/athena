@@ -24,7 +24,7 @@ page /main about "About Athena" {
 #-----------------------------------------------------------------------
 
 page /main release "Release Notes" {
-    <title Athena v[version] Release notes>
+    <title Athena v[version] Release Notes>
 
     The <i>Athena Users's Guide</i> gives a complete list of 
     changes for Athena V<version>. Here is a summary:<p>
@@ -32,16 +32,6 @@ page /main release "Release Notes" {
     <h3>Athena 6.3</h3>
 
     <ul>
-    <li> Athena includes a new attrition model supporting 
-         Lanchester-based attrition between arbitrary force groups in 
-         combat.
-    <li> Actors can now provide three infrastructure-based services
-         to the civilian groups: energy, water, and transport.  The 
-         current model focusses on levels of service and civilian
-         reactions, as for the ENI services model; the infrastructure 
-         remains unmodeled.  The new services replace the NOWATER,
-         POWEROUT, and TRANSPORT abstract situations.
-    <li> All maps used in Athena must now be geo-referenced.
     <li> Athena's internals have been re-architected to allow Athena's
          code to be used in multiple applications, and to allow a single
          application to load multiple scenarios.
@@ -59,6 +49,29 @@ page /main release "Release Notes" {
               <i Arachne Interface Specification> in the Athena
               documentation set.
          </ul>
+    <li> Athena has a new tool for analyzing simulation results.  The tool
+         will compare the results of two scenarios (or the results of a 
+         single scenario with its starting point):
+         <ul>
+         <li> The tool identifies significant outputs.
+         <li> On request, the tool will trace the causes of a change in
+              a particular output back through the models, and present
+              the resulting chain.
+         <li> At present the analysis is partial; much more remains to be
+              done, but the basic approach has been proven.
+         <li> The tool is available on the <tab "Analysis"> in 
+              Athena Workbench, and through Arachne's JSON API.
+         </ul>
+    <li> Athena includes a new attrition model supporting 
+         Lanchester-based attrition between arbitrary force groups in 
+         combat.
+    <li> Actors can now provide three infrastructure-based services
+         to the civilian groups: energy, water, and transport.  The 
+         current model focusses on levels of service and civilian
+         reactions, as for the ENI services model; the infrastructure 
+         remains unmodeled.  The new services replace the NOWATER,
+         POWEROUT, and TRANSPORT abstract situations.
+    <li> All maps used in Athena must now be geo-referenced.
     <li> The prototype intel ingestion wizard has been removed from the
          production software.
     </ul>
@@ -80,7 +93,7 @@ page /main release "Release Notes" {
          building scenarios.
     <li> Environment situations are now called abstract situations.
     <li> There are a number of new tactics; in particular, the
-         <cref /object/tactic/absit> creates abstract situations.
+         <cref /entity/tactic/absit> creates abstract situations.
     <li> There are a number of new abstract situation and event types;
          see the <i>Athena Rules Document</i>
     </ul><p>
@@ -107,7 +120,7 @@ page /main release "Release Notes" {
          playbox now determines the distribution of employment and also
          the consumption of <b>goods</b> by civilians.  
     <li> Athena now has much better edit-time syntax checking for TCL 
-         expressions entered with the <cref /object/condition/expr>, and for
+         expressions entered with the <cref /entity/condition/expr>, and for
          TCL scripts written in the <tab Scripts>.
     <li> Athena can now <cref /command/export> scenario order scripts in 
          "minimal" form, i.e.,

@@ -89,29 +89,45 @@ macro command {args} {
 
 # menu name ?link?
 #
-# name   The name of a menu or menu item, e.g., Edit/Undo
-# link   Link text, which defaults to the name.
+# name   - The name of a menu or menu item, e.g., Edit/Undo
+# link   - Link text, which defaults to the name.
 #
-# Returns a cref-link to the help page.
+# In the WORKBENCH helpdb, adds a cref-link to the menu's help page.
+# In other helpdb's, just adds the tab's name in bold face.
 
 macro menu {name {link ""}} {
-    set replist [list " " "_" . ""]
-    
-    set path "/menu/[string tolower [string map $replist $name]]"
-} {[cref $path $link]}
+    if {[symdef "WORKBENCH"]} { 
+        set replist [list " " "_" . ""]
+        set path "/menu/[string tolower [string map $replist $name]]"
+
+        set result [cref $path $link]
+    } else {
+        if {$link ne ""} {
+            set result $link
+        } else {
+            set result "<b>$name</b>"
+        }
+    }
+} {$result}
 
 
 # tab args
 #
-# args    The name of a tab or tab item
+# args   - The name of a tab from tab.help
 #
-# Returns a cref-link to the help page.
+# In the WORKBENCH helpdb, adds a cref-link to the tab's help page.
+# In other helpdb's, just adds the tab's name in bold face.
 
 macro tab {args} {
-    set replist [list " " "_" ( "" ) ""]
+    if {[symdef "WORKBENCH"]} {
+        set replist [list " " "_" ( "" ) ""]
     
-    set path "/tab/[string tolower [string map $replist $args]]"
-} {[cref $path "$args Tab"]}
+        set path "/tab/[string tolower [string map $replist $args]]"
+        set result [cref $path "$args Tab"]
+    } else {
+        set result "<b>$args Tab</b>"
+    }
+} {$result}
 
 # term slug ?link?
 #

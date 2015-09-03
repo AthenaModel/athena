@@ -12,12 +12,105 @@
 #    (Macros are for use in page bodies; procs for use in creating
 #    pages, and in macros.)
 #
-# TODO: These should probably be supplied by helptool, and documented.
-#
 #-----------------------------------------------------------------------
 
 #=======================================================================
 # Procs
+
+# command name text
+#
+# name     The name of the command, e.g., "parm set"
+#
+# Defines a command page, defining the parent/child links properly.
+
+proc command {name text} {
+    set parent [join [linsert [lrange $name 0 end-1] 0 /command] /]
+    set slug   [lindex $name end]
+
+    page $parent $slug $name $text
+}
+
+
+# syntax ?arglist?
+#
+# arglist      The command's argument spec
+#
+# Formats the header for the command, including a link to the parent
+# commands, if any.
+
+macro syntax {{arglist ""}} {
+    set fullname [pageinfo title]
+    set prefix [lrange $fullname 0 end-1]
+    set name   [lindex $fullname end]
+
+    set ancestor "/command"
+    set nametext ""
+
+    foreach token $prefix {
+        append ancestor /$token
+        append nametext "[cref $ancestor $token] "
+    }
+
+    append nametext $name
+    set toplink [cref /command "Executive Command"]
+} {
+    |<--
+    [mktitle small $toplink "$nametext $arglist" ""]
+}
+
+# cli text
+#
+# text    A CLI script
+#
+# Formats a CLI dialog properly.
+
+macro cli {text} {
+    set text [string map {& &amp; < &lt; > &gt;} $text]
+} {
+    |<--
+    <pre>[super outdent $text]</pre><p>
+}
+
+# caution.debugging
+
+macro caution.debugging {} {
+    |<--
+    <b>Caution:</b>  This command is intended for use by the Athena
+    developers while debugging the simulation.  Careless use can
+    corrupt the application.<p>
+}
+
+# defopt text
+#
+# text   - Text defining an option, e.g., "-foo <i>bar</i>"
+#
+# An item in a list that defines an option to a command
+
+macro defopt {text} {
+    |<--
+    <dt><tt>$text</tt></dt>
+    <dd>
+}
+
+# term slug term text
+#
+# slug     The term's slug, e.g., "mapref", used in references.
+# term     The full term, e.g., "map reference string".
+# text     The documentation of the term.
+#
+# Defines a help page for the term.
+
+proc term {slug term text} {
+    set text "<term.header>\n\n$text"
+    page /term $slug $term $text
+}
+
+# Formats the title for a glossary term
+macro term.header {} {
+    |<--
+    [mktitle normal [cref /term] [pageinfo title] ""]
+}
+
 
 # splitname name sep
 #

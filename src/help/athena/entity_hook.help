@@ -26,9 +26,10 @@ object hook_ {
         hook along with one or more <term payload>s make up an Information
         Operations Message or <term iom>.
 
-        Semantic Hooks are created and edited on the 
-        <cref /tab/information/semantic_hooks>.<p>
-
+        <ifdef WORKBENCH {
+            Semantic Hooks are created and edited on the 
+            <cref /tab/information/semantic_hooks>.<p>
+        }>
     }
 
     attribute hook_id "Hook ID" {

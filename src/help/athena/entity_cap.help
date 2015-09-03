@@ -40,11 +40,14 @@ object cap_ {
         penetration into one or more groups.  Penetration is also a
         fraction from 0.0 to 1.0.  <b>Note:</b> It is possible
         (though not useful) for group penetration to be positive for
-        groups outside of the CAP's coverage area.  Such "orphan"
-        groups are highlighted on the 
-        <cref /tab/infrastructure/caps/group>.<p>
-        
-        CAPs are edited on the <cref /tab/infrastructure/caps>.<p>
+        groups outside of the CAP's coverage area.  
+        <ifdef WORKBENCH {
+            Such "orphan" groups are highlighted on the 
+            <cref /tab/infrastructure/caps/group>.<p>
+
+            CAPs are edited on the <cref /tab/infrastructure/caps>.<p>
+
+        }>
     }
 
     attribute k "CAP" {

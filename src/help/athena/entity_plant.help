@@ -38,8 +38,10 @@ object plant_ {
         allocated any infrastructure in neighborhoods that do not have 
         any consumers (ie. consist only of subsisters).<p>
 
-        Shares of GOODS Production Plants are defined and edited on the 
-        <cref /tab/infrastructure/goods_plants>.<p>
+        <ifdef WORKBENCH {
+            Shares of GOODS Production Plants are defined and edited on the 
+            <cref /tab/infrastructure/goods_plants>.<p>
+        }>
 
         Unless an actor is automatically maintaining his infrastructure, money
         must be spent during <term strategy> execution to maintain it by
@@ -85,7 +87,7 @@ object plant_ {
     } -tags {create update}
 }
 
-page /entity plant "GOODS Production Plants" {
+page /entity plant "Plant" {
     <sotitle>
 
     <plant_ overview><p>

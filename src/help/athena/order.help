@@ -33,11 +33,11 @@
 
 page / order "Orders" {
     <title>
-    The analyst communicates with Athena by means of <i>orders</i>.
-    Most orders are sent by means of an order dialog; some are sent
-    implicitly by the GUI.  Order dialogs can be invoked in a number 
-    of ways, e.g., by pressing a button in a browser or by 
-    selecting an order from the <cref /menu/orders>.<p>
+    The analyst creates an Athena scenario by means of <i>orders</i>.
+    Usually this is done through the user interface's order dialogs
+    or entry forms, but orders can also be sent by scripts 
+    <ifdef WORKBENCH {or via the <term cli>}>
+    using the <cref /command/send> executive command.<p>
 
     Orders are grouped in the following categories:<p>
 

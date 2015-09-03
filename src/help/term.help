@@ -1,0 +1,26 @@
+#-----------------------------------------------------------------------
+# TITLE:
+#    term.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPETION:
+#    Athena Help Documentation: Glossary
+#   
+#    This file defines the glossary page, "/term"; the actual terms
+#    are filled in by the athena/ and workbench/ help pages.
+#
+#    Terms should be defined using the "term" command, which is defined
+#    in util/procs.help.
+#
+#-----------------------------------------------------------------------
+
+dictionary / term "Glossary" {
+    <title>
+    This page describes terms and concepts used by the
+    Athena models and software.<p>
+
+    <childlinks>
+}
+

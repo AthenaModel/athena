@@ -7,106 +7,9 @@
 #    Will Duquette
 #
 # DESCRIPTION:
-#    Athena Help Documentation: Executive Commands
-#
-#    This file is included into athena.help.
-#
-#    Command pages have paths like /command/{name}.  If the command's 
-#    name has multiple tokens, they are connected by "/", as in 
-#    "/command/parm/set".
+#    Athena Help Documentation: Executive Commands defined by athena(n).
 #
 #-----------------------------------------------------------------------
-
-dictionary / command "Executive Commands" {
-    <title>
-    Athena provides a command-line interface (CLI) at the bottom on
-    the main window.  The CLI is primarily used during testing and
-    development, as most user tasks are done via 
-    <cref /order "order dialogs"> and other GUI interactions.  However,
-    there are a small number of tasks that the user can do by typing
-    <i>executive commands</i> at the CLI.  Most of these are low-level
-    tasks, such as calibrating the Athena models by setting model
-    parameters.<p>
-
-    This page lists the available commands.<p>
-
-    <childlinks>
-}
-
-# command name text
-#
-# name     The name of the command, e.g., "parm set"
-#
-# Defines a command page, defining the parent/child links properly.
-
-proc command {name text} {
-    set parent [join [linsert [lrange $name 0 end-1] 0 /command] /]
-    set slug   [lindex $name end]
-
-    page $parent $slug $name $text
-}
-
-
-# syntax ?arglist?
-#
-# arglist      The command's argument spec
-#
-# Formats the header for the command, including a link to the parent
-# commands, if any.
-
-macro syntax {{arglist ""}} {
-    set fullname [pageinfo title]
-    set prefix [lrange $fullname 0 end-1]
-    set name   [lindex $fullname end]
-
-    set ancestor "/command"
-    set nametext ""
-
-    foreach token $prefix {
-        append ancestor /$token
-        append nametext "[cref $ancestor $token] "
-    }
-
-    append nametext $name
-    set toplink [cref /command "Executive Command"]
-} {
-    |<--
-    [mktitle small $toplink "$nametext $arglist" ""]
-}
-
-# cli text
-#
-# text    A CLI script
-#
-# Formats a CLI dialog properly.
-
-macro cli {text} {
-    set text [string map {& &amp; < &lt; > &gt;} $text]
-} {
-    |<--
-    <pre>[super outdent $text]</pre><p>
-}
-
-# caution.debugging
-
-macro caution.debugging {} {
-    |<--
-    <b>Caution:</b>  This command is intended for use by the Athena
-    developers while debugging the simulation.  Careless use can
-    corrupt the application.<p>
-}
-
-# defopt text
-#
-# text   - Text defining an option, e.g., "-foo <i>bar</i>"
-#
-# An item in a list that defines an option to a command
-
-macro defopt {text} {
-    |<--
-    <dt><tt>$text</tt></dt>
-    <dd>
-}
 
 #=======================================================================
 # = command
@@ -660,88 +563,6 @@ command "call" {
     <i>argv</i>'s value.<p>
 }
 
-#=======================================================================
-# clear command
-
-command "clear" {
-    <syntax>
-
-    Clears the contents of the CLI's scrollback buffer.
-}
-
-#=======================================================================
-# compdb commands
-
-command "compdb" {
-    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
-
-    The <b>compdb</b> command sets and queries <cref /compdb>.
-    Comparison parameters are distinct from the <cref /parmdb> edited
-    using the <command parm> command in that they apply to the application
-    rather than to individual scenarios. Therefore,<p>
-
-    <ul>
-    <li> They are not saved in scenario files.
-    <li> They do not affect the outcome of simulation runs. 
-    </ul>
-
-    This command has the following subcommands:<p>
-
-    <childlinks>
-}
-
-#-----------------------------------------------------------------------
-
-command "compdb export" {
-    <syntax {<i>filename</i>}>
-    
-    Exports any changed comparison parameters to the specified file. 
-    Parameters with default values are not included.
-}
-
-#-----------------------------------------------------------------------
-
-command "compdb import" {
-    <syntax {<i>filename</i>}>
-    
-    Imports a comparison parameter file from disk. 
-}
-
-#-----------------------------------------------------------------------
-
-command "compdb get" {
-    <syntax {<i>parm</i>}>
-    
-    Retrieves the value of the named comparison parameter.
-}
-
-#-----------------------------------------------------------------------
-
-command "compdb list" {
-    <syntax {?<i>pattern</i>?}>
-
-    When called with no argument, this command lists the names and
-    values of all comparison parameters.  If given, <i>pattern</i> is
-    a wild-card pattern; only matching parameters are included.
-}
-
-#-----------------------------------------------------------------------
-
-command "compdb reset" {
-    <syntax>
-    
-    Resets all comparison parameters to their default
-    settings.
-}
-
-#-----------------------------------------------------------------------
-
-command "compdb set" {
-    <syntax {<i>parm value</i>}>
-    
-    Sets the named comparison parameter to the specified
-    <i>value</i>.
-}
 
 #=======================================================================
 # condition commands
@@ -914,18 +735,6 @@ command "csvfile" {
 }
 
 
-
-#=======================================================================
-# debug command
-
-command "debug" {
-    <syntax>
-    <caution.debugging>
-    Invokes a debugger window. The debugger is simply a Tcl interpreter
-    with full access to the application's code and data; it's intended
-    for developer use only. 
-}
-
 #=======================================================================
 # dump commands
 
@@ -978,8 +787,11 @@ command "export" {
 
     Exports the current scenario as an <term executive> script;
     execute the script in a new, empty scenario via the
-    <code>-script</code> start-up option or the <command call>
-    command at the <term cli>.<p>
+    <code>-script</code> start-up option
+    <ifdef WORKBENCH {
+        or the <command call>
+        command at the <term cli>
+    }>.<p>
 
     By default, the scenario must be exported while in 
     scenario preparation; the result will be a minimal script that
@@ -1064,35 +876,6 @@ command "gofer" {
 
 
 #=======================================================================
-# help command
-
-command "help" {
-    <syntax {?-info? ?<i>command...</i>?}>
-
-    This command accesses the on-line help for Athena's
-    <cref /command>.  To display a list of all commands, enter this
-    command with no arguments:<p>
-
-    <cli {
-        > help
-        >
-    }>
-
-    To request help for a particular command, enter it on the command
-    line.  For example, to see the help page for the 
-    <command parm set> command, enter the following:<p>
-
-    <cli {
-        > help parm set
-        >
-    }>
-
-    The <b>-info</b> option is for use in debugging the Athena
-    Executive; if specified, the <b>help</b> command will dump
-    implementation info to the CLI.
-}
-
-#=======================================================================
 # last commands
 
 command "last" {
@@ -1144,18 +927,6 @@ command "last tactic" {
 }
 
 #=======================================================================
-# load command
-
-command "load" {
-    <syntax {<i>filename</i>}>
-
-    Loads the scenario data (including simulation results, if any)
-    from the given <i>filename</i>, overwriting any existing scenario.
-    If the requested scenario cannot be loaded, the application will be
-    left with an empty scenario.
-}
-
-#=======================================================================
 # lock command
 
 command "lock" {
@@ -1180,29 +951,6 @@ command "log" {
     <cref /command/sigevent>, which writes a message to the
     significant events log.<p>
 }
-
-#=======================================================================
-# nbfill command
-
-command "nbfill" {
-    <syntax {<i>varname</i>}>
-
-    This command directs the <tab Physical/Map> tab to fill neighborhood
-    polygons with a color based on the value of a particular 
-    <cref /var/n "Neighborhood Variable">.  See the link for a list
-    of the available variables.
-}
-
-#=======================================================================
-# new command
-
-command "new" {
-    <syntax>
-
-    Creates a new, empty scenario, throwing away any loaded scenario
-    data (including simulation results).
-}
-
 
 #=======================================================================
 # parm commands
@@ -1321,83 +1069,6 @@ command "parm set" {
     <term prep> state, and cannot be changed.<p>
 
     This command works by sending the <cref /order/parm/set> order.
-}
-
-#=======================================================================
-# prefs commands
-
-command "prefs" {
-    <syntax {<i>subcommand</i> ?<i>args...</i>?}>
-
-    The <b>prefs</b> command sets and queries <cref /prefs>.
-    Preference parameters are distinct from the <cref /parmdb> edited
-    using the <command parm> command in that they apply to the application
-    rather than to individual scenarios. Therefore,<p>
-
-    <ul>
-    <li> They are not saved in scenario files.
-    <li> They do not affect the outcome of simulation runs. 
-    </ul>
-
-    This command has the following subcommands:<p>
-
-    <childlinks>
-}
-
-#-----------------------------------------------------------------------
-
-command "prefs get" {
-    <syntax {<i>parm</i>}>
-    
-    Retrieves the value of the named preference parameter.
-}
-
-#-----------------------------------------------------------------------
-
-command "prefs help" {
-    <syntax {<i>parm</i>}>
-    
-    Displays the help string for the named preference parameter.
-}
-
-#-----------------------------------------------------------------------
-
-command "prefs list" {
-    <syntax {?<i>pattern</i>?}>
-
-    When called with no argument, this command lists the names and
-    values of all preference parameters.  If given, <i>pattern</i> is
-    a wild-card pattern; only matching parameters are included.
-}
-
-#-----------------------------------------------------------------------
-
-command "prefs names" {
-    <syntax {?<i>pattern</i>?}>
-
-    When called with no argument, this command lists the names of all
-    preference parameters.  If given, <i>pattern</i> is a wild-card
-    pattern; only matching parameters are included.
-}
-
-
-#-----------------------------------------------------------------------
-
-command "prefs reset" {
-    <syntax>
-    
-    Resets all preference parameters to their default
-    settings.
-}
-
-
-#-----------------------------------------------------------------------
-
-command "prefs set" {
-    <syntax {<i>parm value</i>}>
-    
-    Sets the named preference parameter to the specified
-    <i>value</i>.
 }
 
 #=======================================================================
@@ -1568,18 +1239,6 @@ command "reset" {
 
 
 #=======================================================================
-# save command
-
-command "save" {
-    <syntax {<i>filename</i>}>
-
-    Saves the current scenario to disk, including simulation
-    results if the scenario is <cref /command/lock>ed,
-    using the given <i>filename</i>.  The saved scenario 
-    can be loaded again using the <cref /command/load> command.<p>
-}
-
-#=======================================================================
 # script commands
 
 command "script" {
@@ -1747,15 +1406,6 @@ command "send" {
 
 
 #=======================================================================
-# show command
-
-command "show" {
-    <syntax {<i>url</i>}>
-
-    Displays the requested URL in the <tab detail>.
-}
-
-#=======================================================================
 # set command
 
 command "set" {
@@ -1793,19 +1443,6 @@ command "sigevent" {
 }
 
  
-#=======================================================================
-# super command
-
-command "super" {
-    <syntax {<i>args...</i>}>
-    <caution.debugging>
-    Concatenates its arguments into a single command, and executes
-    that command in the context of the application rather than in the
-    Athena <term executive>.
-}
-
-
-
 #=======================================================================
 # tactic commands
 
@@ -1984,37 +1621,6 @@ command "unlock" {
 
     The scenario can be locked again using the 
     <cref /command/lock> command.<p>
-}
-
-
-#=======================================================================
-# usermode command
-
-command "usermode" {
-    <syntax {?<i>mode</i>?}>
-    <caution.debugging>
-    Sets and queries the user mode.<p>
-
-    Athena's executive runs in two modes, <b>normal</b> and
-    <b>super</b>. In normal mode, user command entry is prevented from
-    affecting application internals, i.e., the user can't kill or
-    corrupt the application by mis-typing. Caution: In super mode, the
-    CLI is attached directly to the application. Anything is possible,
-    including damage to the user's scenario. <p>
-
-    The <b>super</b> mode is intended primarily for use by the Athena
-    developers; other users should consider using the <command super>
-    command in the rare case that evading the normal protections is
-    required.<p>
-
-    <b>Note:</b> in <b>super</b> mode, the CLI's command prompt
-    changes, as shown:<p>
-
-    <cli {
-        > usermode super
-        super> usermode normal
-        >
-    }>
 }
 
 #=======================================================================

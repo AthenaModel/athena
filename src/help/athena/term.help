@@ -1,47 +1,16 @@
 #-----------------------------------------------------------------------
 # TITLE:
-#    term.help
+#    athena/term.help
 #
 # AUTHOR:
 #    Will Duquette
 #
 # DESCRIPETION:
-#    Athena Help Documentation: Glossary.  Terms defined in the
-#    glossary have an ID like "term.<tag>", and are referenced
-#    using the <term <tag> > macro.
-#
-#    This file is included into athena.help.
+#    Athena Help Documentation: Glossary, Athena Scenario terms.
+#    These pages are folded into the main glossary.
 #
 #-----------------------------------------------------------------------
 
-dictionary / term "Glossary" {
-    <title>
-    This page describes terms and concepts used by the
-    Athena models and software.<p>
-
-    <childlinks>
-}
-
-# term slug term text
-#
-# slug     The term's slug, e.g., "mapref", used in references.
-# term     The full term, e.g., "map reference string".
-# text     The documentation of the term.
-#
-# Defines a help page for the term.
-
-proc term {slug term text} {
-    set text "<term.header>\n\n$text"
-    page /term $slug $term $text
-}
-
-# Formats the title for a glossary term
-macro term.header {} {
-    |<--
-    [mktitle normal [cref /term] [pageinfo title] ""]
-}
-
-#-----------------------------------------------------------------------
 
 term absit "abstract situation" {
     An <i>abstract situation</i> or <i>absit</i> is an on-going 
@@ -149,40 +118,6 @@ term bsystem "belief system" {
 
 #-----------------------------------------------------------------------
 
-term bgerror "bgerror" {
-    When Athena encounters an unexpected run-time error, it does not
-    usually halt execution.  Instead, the error and a complete stack
-    trace are written to the <tab Time/Log>, and the user is
-    notified.  This is called a <i>background error</i>, or 
-    <i>bgerror</i> for short.<p>
-
-    It's usually wise to save the scenario under a new name after a 
-    bgerror, and then restart the application.  However, the only 
-    consequence of most bgerrors is that a particular feature is 
-    unavailable, or unavailable in certain circumstances.<p>
-
-    Background errors should be reported to the development team.  The
-    report should include the following items, insofar as this is
-    possible given security considerations:<p>
-
-    <ul>
-    <li> The bgerror and stack trace from the debugging log.  This is
-         the text with the orange background.
-    <li> The complete text of the log file, if possible.  Select
-         <b>detail</b> on the <b>Log</b> pulldown on the Log Browser
-         toolbar before cutting and pasting the log text.
-    <li> A description of what was happening immediately before the
-         bgerror occurred (if known).
-    <li> A detailed procedure for reproducing the error, if known.
-    </ul><p>
-
-    It is often wise to contact the development team with the bare
-    fact of the error prior to gathering all of the information, in
-    case it is a known problem.<p>
-}
-
-#-----------------------------------------------------------------------
-
 alias /term block "block" /entity/block
 
 
@@ -256,16 +191,6 @@ term cause "cause" {
 #-----------------------------------------------------------------------
 
 alias /term civgroup "civilian group" /entity/group/civ
-
-#-----------------------------------------------------------------------
-
-term cli CLI {
-    Athena has a command-line interface, or "CLI", where 
-    <term executive> <cref /command commands> and scripts can be
-    executed.  The CLI is hidden by default; to make it visible, 
-    select <menu "View/Command Line"> from the 
-    <cref /menu>.
-}
 
 #-----------------------------------------------------------------------
 
@@ -518,73 +443,6 @@ term executive "executive" {
     <i>Athena User's Guide</i> for more information.
 }
 
-#-----------------------------------------------------------------------
-
-term filterbox "filter box" {
-    <img "filterbox"><p>
-
-    The various Athena data browsers all feature a filter box, which
-    is a control used to limit what is shown in the browser to some
-    <i>ad hoc</i> set chosen by the user.<p>
-
-    For example, enter "FRED" in the filter box to show only rows that
-    contain the name "FRED" somewhere in the row.  To see all of the
-    rows again, click the "circle-X" icon at the right-hand end of the
-    filter box.<p>
-
-    The filter box's behavior can be modified in two ways.  First, you
-    can change the criteria that determines a "match"; in
-    every case, what's being matched is some portion of the text on
-    the row.  Second, you can
-    tell it to display only those rows that <b>do not</b> match.<p>
-
-    To modify the filter box's behavior, click on the "sieve" icon at
-    the left-hand of the filter box.  This pops up a menu with the
-    following choices:<p>
-
-    <topiclist "Menu Item" "Description">
-
-    <topic "Exact">
-    This item and the three that follow determine how the filter text
-    is used.<p>
-
-    Selects rows that match the filter text exactly; filters when the
-    user presses Enter. Choose this option if <b>Incremental</b> is
-    too slow.
-    </topic>
-
-    <topic "Incremental">
-    <b>Default.</b> Selects rows that match the filter text exactly;
-    filters as the user types the filter text.
-    </topic>
-
-    <topic "Wildcard">
-    Selects rows that match the filter text, using "*" as a wildcard
-    character; filters when the user presses Enter.
-    </topic>
-
-    <topic "Regexp">
-    Selects rows that match a regular expression; filters when the user
-    presses Enter.
-    </topic>
-
-    <topic "Ignore Case">
-    <b>Default.</b> If this item is selected, all matches ignore case.
-    Deselect this option for case-sensitive matching.
-    </topic>
-
-    <topic "Include Matches">
-    <b>Default.</b> If this item is selected, rows that match the filter
-    text will be displayed.
-    </topic>
-
-    <topic "Exclude Matches">
-    If this item is selected, rows that <b>do not</b>
-    match the filter text will be displayed.
-    </topic>
-
-    </topiclist>
-}
 
 #-----------------------------------------------------------------------
 
@@ -682,29 +540,6 @@ term lock "lock" {
     initialize the simulation, and make it possible for simulation
     time to advance.  Many scenario inputs are fixed once the 
     scenario is locked.  See also <term unlock>.
-}
-
-#-----------------------------------------------------------------------
-
-term loglevel "log level" {
-    Every entry written to the debugging log has an associated <i>log
-    level</i>, as follows:<p>
-
-    <ul>
-    <li> <b>fatal</b>:    Used when the prouram is about to halt.
-                          Displayed with a red background.
-    <li> <b>error</b>:    Used only for <term bgerror>s. Displayed
-                          with an orange background.
-    <li> <b>warning</b>:  Used when a potential problem is
-                          noticed. Displayed with a yellow background.
-    <li> <b>normal</b>:   Normal informational message.
-    <li> <b>detail</b>:   Detailed informational message.
-    <li> <b>debug</b>:    Debugging message, low-level details.
-    </ul><p>
-
-    Note that <b>debug</b> messages are only written to the log when
-    enabled by the developer.  By default, the <tab Time/Log> shows
-    <b>normal</b> messages of severity <b>normal</b> and above.
 }
 
 #-----------------------------------------------------------------------
