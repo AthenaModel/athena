@@ -59,7 +59,7 @@ object group_ {
     } -tags {create update}
 }
 
-page /object group "Group" {
+page /entity group "Group" {
     <sotitle>
 
     <group_ overview><p>
@@ -154,7 +154,7 @@ object group_civ {
 
 }
 
-page /object/group civ "Civilian Group" {
+page /entity/group civ "Civilian Group" {
     <sotitle>
 
     <group_civ overview><p>
@@ -244,7 +244,7 @@ object group_frc {
     } -tags {create update multi}
 }
 
-page /object/group frc "Force Group" {
+page /entity/group frc "Force Group" {
     <sotitle>
 
     <group_frc overview><p>
@@ -313,7 +313,7 @@ object group_org {
     } -tags {create update multi}
 }
 
-page /object/group org "Organization Group" {
+page /entity/group org "Organization Group" {
     <sotitle>
 
     <group_org overview><p>

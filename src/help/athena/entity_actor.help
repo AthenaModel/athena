@@ -65,7 +65,7 @@ object actor_ {
 
         This kind of support applies to each neighborhood separately;
         the actor can explicitly specify who to support in each
-        neighborhood using the <cref /object/tactic/support>.  In
+        neighborhood using the <cref /entity/tactic/support>.  In
         the absence of such a tactic for a particular neighborhood,
         the actor will support the actor specified here.<p>
     } -tags {create update browser}
@@ -93,7 +93,7 @@ object actor_ {
         <b>INCOME actors only!</b>
         Every actor has some amount of cash in reserve for future needs
         that can be released for use via the 
-        <cref /object/tactic/withdraw>.  The actor is given an initial 
+        <cref /entity/tactic/withdraw>.  The actor is given an initial 
         reserve as part of the scenario; once
         the simulation begins, the level of the reserve can fluctuate.
     } -tags {create_opt update browser}
@@ -104,8 +104,8 @@ object actor_ {
         has available to fund tactics.  The actor receives income
         into his cash-on-hand every week, and may also move money
         between his cash-on-hand and cash reserve using the
-        <cref /object/tactic/deposit> and 
-        <cref /object/tactic/withdraw>.  Cash-on-hand that is unspent
+        <cref /entity/tactic/deposit> and 
+        <cref /entity/tactic/withdraw>.  Cash-on-hand that is unspent
         during a given week automatically carries over to the next week.<p>
 
         The actor is given an initial amount of cash-on-hand as part
@@ -222,7 +222,7 @@ object actor_ {
     } -tags {create_opt update browser income}
 }
 
-page /object actor "Actor" {
+page /entity actor "Actor" {
     <sotitle>
 
     <actor_ overview><p>

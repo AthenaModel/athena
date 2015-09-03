@@ -69,7 +69,7 @@ object iom_ {
     } -tags {object state}
 }
 
-page /object iom "IOM" {
+page /entity iom "IOM" {
     <sotitle>
 
     <iom_ overview><p>

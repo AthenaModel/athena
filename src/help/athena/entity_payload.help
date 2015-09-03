@@ -24,7 +24,7 @@ macro PAYLOAD.mag {} {
 object payload_ {
     noun "payload"
     overview {
-        Payloads are the <cref /object> by which an
+        Payloads are the <cref /entity> by which an
         <term iom> has its effect on the civilian population.
         Each IOM has one or more payloads, each of which affects
         a specific set of civilian attitudes.  For example, an
@@ -60,7 +60,7 @@ object payload_ {
 
     attribute payload_type "Payload Type" {
         The payload's type, e.g., 
-        <b><cref /object/payload/vrel VREL></b>.
+        <b><cref /entity/payload/vrel VREL></b>.
     } -tags object
 
     attribute state "State" {
@@ -73,7 +73,7 @@ object payload_ {
     } -tags {object state}
 }
 
-page /object payload "Payload" {
+page /entity payload "Payload" {
     <sotitle>
 
     <payload_ overview><p>
@@ -109,7 +109,7 @@ object payload_coop {
     } -tags {create update}
 }
 
-page /object/payload coop "COOP payload" {
+page /entity/payload coop "COOP payload" {
     <sotitle>
 
     <payload_coop overview><p>
@@ -140,7 +140,7 @@ object payload_hrel {
     } -tags {create update}
 }
 
-page /object/payload hrel "HREL payload" {
+page /entity/payload hrel "HREL payload" {
     <sotitle>
 
     <payload_hrel overview><p>
@@ -171,7 +171,7 @@ object payload_sat {
     } -tags {create update}
 }
 
-page /object/payload sat "SAT payload" {
+page /entity/payload sat "SAT payload" {
     <sotitle>
 
     <payload_sat overview><p>
@@ -202,7 +202,7 @@ object payload_vrel {
     } -tags {create update}
 }
 
-page /object/payload vrel "VREL payload" {
+page /entity/payload vrel "VREL payload" {
     <sotitle>
 
     <payload_vrel overview><p>

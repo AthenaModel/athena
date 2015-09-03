@@ -20,7 +20,7 @@ page / function "Executive Functions" {
     Athena provides a number of functions that can be used in math
     expressions in Athena <cref /command executive> scripts, at the
     Athena command-line interface (CLI), and in 
-    <cref /object/condition/expr>s.  For example, the 
+    <cref /entity/condition/expr>s.  For example, the 
     <cref /function/mood> function retrieves a group's mood given
     its name:<p>
 
@@ -773,7 +773,7 @@ function supports(a,b,?n...?) {
     These supporters (i.e., group members) contribute to the second
     actor's influence rather than to the first actor's influence.  See
     also the <term actor> object, and the 
-    <cref /object/tactic/support>.<p>
+    <cref /entity/tactic/support>.<p>
 }
 
 #=======================================================================

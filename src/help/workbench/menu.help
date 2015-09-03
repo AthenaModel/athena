@@ -341,12 +341,6 @@ menuitem "Help/Orders" {
     Athena's simulation <cref /order>.
 }
 
-menuitem "Help/Display Variables" {
-    This menu item pops up the reference material for each of the
-    neighborhood and time-related <cref /var> that can be plotted
-    or used to color neighborhoods on the <tab Physical/Map>.
-}
-
 menuitem "Help/Executive Commands" {
     This menu item pops up the reference material for each of 
     Athena's <cref /command>.
@@ -358,12 +352,12 @@ menuitem "Help/Model Parameters" {
 }
 
 menuitem "Help/Release Notes" {
-    This menu item displays the <cref /release> for this release
+    This menu item displays the <cref /main/release> for this release
     of Athena.
 }
 
 menuitem "Help/About Athena" {
-    This menu item displays basic information <cref /about>,
+    This menu item displays basic information <cref /main/about>,
     including the copyright.
 }
 

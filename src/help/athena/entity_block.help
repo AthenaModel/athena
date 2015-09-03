@@ -155,7 +155,7 @@ object block_ {
     } -tags {cget}
 }
 
-page /object block "Block" {
+page /entity block "Block" {
     <sotitle>
 
     <block_ overview><p>

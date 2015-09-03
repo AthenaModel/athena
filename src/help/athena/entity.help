@@ -1,0 +1,53 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    entity.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Simulation Entity Types
+#
+#    Entity types have help pages with names like
+#
+#        /entity/?.../?<type>/
+#
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+
+page / entity "Entity Types" {
+    <title>
+    This section of the help documents the significant entity types
+    in the Athena simulation, e.g., 
+    <term actor>s, <term group>s, 
+    <term nbhood>s, and so forth.  The full set of 
+    entity types is as follows:<p>
+
+    <childlinks>
+}
+
+macro sotitle {} {
+    |<--
+    [mktitle normal [cref /entity "Entity Type"] [pageinfo title] ""]
+}
+
+#-----------------------------------------------------------------------
+# Object Types
+
+include entity_actor.help
+include entity_agent.help
+include entity_block.help
+include entity_cap.help
+include entity_condition.help
+include entity_curse.help
+include entity_hook.help
+include entity_inject.help
+include entity_iom.help
+include entity_group.help
+include entity_nbhood.help
+include entity_payload.help
+include entity_plant.help
+include entity_tactic.help
+

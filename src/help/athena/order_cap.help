@@ -103,7 +103,7 @@ order CAP:CAPACITY "Set CAP Capacity" {
     </parmlist>
 
     This order can be <cref /command/send sent> by the
-    <cref /object/tactic/executive>.<p>
+    <cref /entity/tactic/executive>.<p>
 }
 
 #-----------------------------------------------------------------------
@@ -121,7 +121,7 @@ order CAP:CAPACITY+MULTI "Set Multiple CAP Capacities" {
     </parmlist>
 
     This order can be <cref /command/send sent> by the
-    <cref /object/tactic/executive>.<p>
+    <cref /entity/tactic/executive>.<p>
 }
 
 #-----------------------------------------------------------------------
@@ -157,7 +157,7 @@ order CAP:NBCOV:SET "Set CAP Neighborhood Coverage" {
     </parmlist><p>
 
     This order can be <cref /command/send sent> by the
-    <cref /object/tactic/executive>.<p>
+    <cref /entity/tactic/executive>.<p>
 }
 
 #-----------------------------------------------------------------------
@@ -219,7 +219,7 @@ order CAP:PEN:SET "Set CAP Group Penetration" {
     </parmlist><p>
 
     This order can be <cref /command/send sent> by the
-    <cref /object/tactic/executive>.<p>
+    <cref /entity/tactic/executive>.<p>
 }
 
 #-----------------------------------------------------------------------

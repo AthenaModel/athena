@@ -54,13 +54,13 @@ page /order/inject coop INJECT:COOP:* {
     <title>
 
     The following orders are used to create and update
-    <cref /object/inject/coop>s.<p>
+    <cref /entity/inject/coop>s.<p>
 
     <childlinks>
 }
 
 order INJECT:COOP:CREATE "Create Inject: Cooperation" {
-    Creates a <cref /object/inject/coop>.<p>
+    Creates a <cref /entity/inject/coop>.<p>
 
     <parmlist>
     <inject_ parms -required -tags create>
@@ -69,7 +69,7 @@ order INJECT:COOP:CREATE "Create Inject: Cooperation" {
 }
 
 order INJECT:COOP:UPDATE "Update Inject: Cooperation" {
-    Updates an existing <cref /object/inject/coop>.<p>
+    Updates an existing <cref /entity/inject/coop>.<p>
 
     <parmlist>
     <inject_ parm id -required>
@@ -85,13 +85,13 @@ page /order/inject hrel INJECT:HREL:* {
     <title>
 
     The following orders are used to create and update
-    <cref /object/inject/hrel>s.<p>
+    <cref /entity/inject/hrel>s.<p>
 
     <childlinks>
 }
 
 order INJECT:HREL:CREATE "Create Inject: Horizontal Relationship" {
-    Creates a <cref /object/inject/hrel>.<p>
+    Creates a <cref /entity/inject/hrel>.<p>
 
     <parmlist>
     <inject_ parms -required -tags create>
@@ -100,7 +100,7 @@ order INJECT:HREL:CREATE "Create Inject: Horizontal Relationship" {
 }
 
 order INJECT:HREL:UPDATE "Update Inject: Horizontal Relationship" {
-    Updates an existing <cref /object/inject/hrel>.<p>
+    Updates an existing <cref /entity/inject/hrel>.<p>
 
     <parmlist>
     <inject_ parm id -required>
@@ -116,13 +116,13 @@ page /order/inject sat INJECT:SAT:* {
     <title>
 
     The following orders are used to create and update
-    <cref /object/inject/sat>s.<p>
+    <cref /entity/inject/sat>s.<p>
 
     <childlinks>
 }
 
 order INJECT:SAT:CREATE "Create Inject: Satisfaction" {
-    Creates a <cref /object/inject/sat>.<p>
+    Creates a <cref /entity/inject/sat>.<p>
 
     <parmlist>
     <inject_ parms -required -tags create>
@@ -131,7 +131,7 @@ order INJECT:SAT:CREATE "Create Inject: Satisfaction" {
 }
 
 order INJECT:SAT:UPDATE "Update Inject: Satisfaction" {
-    Updates an existing <cref /object/inject/sat>.<p>
+    Updates an existing <cref /entity/inject/sat>.<p>
 
     <parmlist>
     <inject_ parm id -required>
@@ -147,13 +147,13 @@ page /order/inject vrel INJECT:VREL:* {
     <title>
 
     The following orders are used to create and update
-    <cref /object/inject/vrel>s.<p>
+    <cref /entity/inject/vrel>s.<p>
 
     <childlinks>
 }
 
 order INJECT:VREL:CREATE "Create Inject: Vertical Relationship" {
-    Creates a <cref /object/inject/vrel>.<p>
+    Creates a <cref /entity/inject/vrel>.<p>
 
     <parmlist>
     <inject_ parms -required -tags create>
@@ -162,7 +162,7 @@ order INJECT:VREL:CREATE "Create Inject: Vertical Relationship" {
 }
 
 order INJECT:VREL:UPDATE "Update Inject: Vertical Relationship" {
-    Updates an existing <cref /object/inject/vrel>.<p>
+    Updates an existing <cref /entity/inject/vrel>.<p>
 
     <parmlist>
     <inject_ parm id -required>

@@ -217,7 +217,7 @@ page / gofer "Gofers" {
     given a description of the data you want.  This is best explained using
     an example.<p>
 
-    The <cref /object/tactic/fundeni> is used to fund Essential
+    The <cref /entity/tactic/fundeni> is used to fund Essential
     Non-Infrastructure services for civilian groups; one of its inputs
     is the list of groups for which the services are funded.  In Athena 4
     this list had to be specified explicitly.  In Athena 5, 
@@ -318,7 +318,7 @@ page / gofer "Gofers" {
 # ACTORS
 
 gofer ACTORS "A list of actors" {
-    This gofer retrieves a list of <cref /object/actor> names
+    This gofer retrieves a list of <cref /entity/actor> names
     according to one of the following rules:<p>
 
     <gofer.rules>
@@ -326,7 +326,7 @@ gofer ACTORS "A list of actors" {
 
 gofer_rule ACTORS BY_VALUE "Actors, By name" {
     Retrieves an arbitrary list of 
-    <cref /object/actor "actors">
+    <cref /entity/actor "actors">
     selected by name.<p>
 
     <itemlist>
@@ -338,16 +338,16 @@ gofer_rule ACTORS BY_VALUE "Actors, By name" {
     <topiclist "Parameter">
 
     <topic {<tt><i>raw_value</i></tt>} >
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
 }
 
 gofer_rule ACTORS CONTROLLING "Actors, Controlling Neighborhood(s)" {
-    Retrieves a list of <cref /object/actor "actors"> who are
+    Retrieves a list of <cref /entity/actor "actors"> who are
     in control of a specified list of 
-    <cref /object/nbhood neighborhoods>.<p>
+    <cref /entity/nbhood neighborhoods>.<p>
 
     <itemlist>
     <gofer.details nlist {N1 N2}>
@@ -358,16 +358,16 @@ gofer_rule ACTORS CONTROLLING "Actors, Controlling Neighborhood(s)" {
     <topiclist "Parameter">
 
     <topic {<tt><i>nlist</i></tt>}>
-    A list of <cref /object/nbhood> names.
+    A list of <cref /entity/nbhood> names.
     </topic>
 
     </topiclist>
 }
 
 gofer_rule ACTORS INFLUENCE_IN "Actors, With Influence in Neighborhoods(s)" {
-    Retrieves a list of <cref /object/actor "actors"> who
+    Retrieves a list of <cref /entity/actor "actors"> who
     have <term influence> in any or all of 
-    a specified list of <cref /object/nbhood neighborhoods>.<p>
+    a specified list of <cref /entity/nbhood neighborhoods>.<p>
 
     <itemlist>
     <gofer.details anyall ANY nlist {N1 N2}>
@@ -383,7 +383,7 @@ gofer_rule ACTORS INFLUENCE_IN "Actors, With Influence in Neighborhoods(s)" {
     </topic>
 
     <topic {<tt><i>nlist</i></tt>}>
-    A list of <cref /object/nbhood> names.
+    A list of <cref /entity/nbhood> names.
     </topic>
 
     </topiclist>
@@ -391,9 +391,9 @@ gofer_rule ACTORS INFLUENCE_IN "Actors, With Influence in Neighborhoods(s)" {
 
 
 gofer_rule ACTORS OWNING "Actors, Owning Group(s)" {
-    Retrieves a list of <cref /object/actor "actors"> who own
-    a specified list of <cref /object/group/frc "force groups">
-    and <cref /object/group/org "organization groups">.<p>
+    Retrieves a list of <cref /entity/actor "actors"> who own
+    a specified list of <cref /entity/group/frc "force groups">
+    and <cref /entity/group/org "organization groups">.<p>
 
     <itemlist>
     <gofer.details glist {BLUE BRIT}>
@@ -404,17 +404,17 @@ gofer_rule ACTORS OWNING "Actors, Owning Group(s)" {
     <topiclist "Parameter">
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group/frc> and
-    <cref /object/group/org> names.
+    A list of <cref /entity/group/frc> and
+    <cref /entity/group/org> names.
     </topic>
 
     </topiclist>
 }
 
 gofer_rule ACTORS SUPPORTED_BY "Actors, Supported by Group(s)" {
-    Retrieves a list of <cref /object/actor "actors"> who are
+    Retrieves a list of <cref /entity/actor "actors"> who are
     actively <term support>ed by any or all of 
-    a specified list of <cref /object/group groups>.<p>
+    a specified list of <cref /entity/group groups>.<p>
 
     <itemlist>
     <gofer.details glist {BLUE BRIT}>
@@ -430,15 +430,15 @@ gofer_rule ACTORS SUPPORTED_BY "Actors, Supported by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
 }
 
 gofer_rule ACTORS LIKED_BY_GROUP "Actors, Liked by Group(s)" {
-    Retrieves a list of <cref /object/actor "actors">
-    for whom any or all of a specified list of <cref /object/group groups>
+    Retrieves a list of <cref /entity/actor "actors">
+    for whom any or all of a specified list of <cref /entity/group groups>
     have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>.<p>
 
     <itemlist>
@@ -455,15 +455,15 @@ gofer_rule ACTORS LIKED_BY_GROUP "Actors, Liked by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
 }
 
 gofer_rule ACTORS DISLIKED_BY_GROUP "Actors, Disliked by Group(s)" {
-    Retrieves a list of <cref /object/actor "actors">
-    for whom any or all of a specified list of <cref /object/group groups>
+    Retrieves a list of <cref /entity/actor "actors">
+    for whom any or all of a specified list of <cref /entity/group groups>
     have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
 
     <itemlist>
@@ -480,7 +480,7 @@ gofer_rule ACTORS DISLIKED_BY_GROUP "Actors, Disliked by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -492,7 +492,7 @@ gofer_rule ACTORS DISLIKED_BY_GROUP "Actors, Disliked by Group(s)" {
 # CIVGROUPS
 
 gofer CIVGROUPS "A list of civilian groups" {
-    This gofer retrieves a list of <cref /object/group/civ> names
+    This gofer retrieves a list of <cref /entity/group/civ> names
     according to one of the following rules.  The retrieved list will
     not include any empty civilian groups (groups with a population of
     zero).<p>
@@ -502,7 +502,7 @@ gofer CIVGROUPS "A list of civilian groups" {
 
 gofer_rule CIVGROUPS BY_VALUE "Civilian groups, By name" {
     Retrieves an arbitrary list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     selected by name.  The user is free to select any civilian group,
     including groups with zero population; however, no empty groups
     will be included in the retrieved list.<p>
@@ -516,14 +516,14 @@ gofer_rule CIVGROUPS BY_VALUE "Civilian groups, By name" {
     <topiclist "Parameter">
 
     <topic {<tt><i>raw_value</i></tt>}>
-    A list of <cref /object/group/civ> names.
+    A list of <cref /entity/group/civ> names.
     </topic>
 
     </topiclist>
 }
 
 gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
-    Retrieves a list of <cref /object/group/civ "civilian groups">,
+    Retrieves a list of <cref /entity/group/civ "civilian groups">,
     subject to any number of constraints.  The rule begins with the
     set of all civilian groups (or some arbitrary subset) and then 
     applies filters to that set, winnowing it down according to the
@@ -700,9 +700,9 @@ gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
 
 gofer_rule CIVGROUPS RESIDENT_IN "Civilian groups, Resident in Neighborhood(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     resident in a particular 
-    <cref /object/nbhood "neighborhood or neighborhoods">.<p>
+    <cref /entity/nbhood "neighborhood or neighborhoods">.<p>
 
     <itemlist>
     <gofer.details nlist {NB1 NB2}>
@@ -713,7 +713,7 @@ gofer_rule CIVGROUPS RESIDENT_IN "Civilian groups, Resident in Neighborhood(s)" 
     <topiclist "Parameter">
 
     <topic {<tt><i>nlist</i></tt>}>
-    A list of <cref /object/nbhood> names.
+    A list of <cref /entity/nbhood> names.
     </topic>
 
     </topiclist>
@@ -721,9 +721,9 @@ gofer_rule CIVGROUPS RESIDENT_IN "Civilian groups, Resident in Neighborhood(s)" 
 
 gofer_rule CIVGROUPS NOT_RESIDENT_IN "Civilian groups, Not Resident in Neighborhood(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who do not reside in a particular 
-    <cref /object/nbhood "neighborhood or neighborhoods">.<p>
+    <cref /entity/nbhood "neighborhood or neighborhoods">.<p>
 
     <itemlist>
     <gofer.details nlist {NB1 NB2}>
@@ -734,7 +734,7 @@ gofer_rule CIVGROUPS NOT_RESIDENT_IN "Civilian groups, Not Resident in Neighborh
     <topiclist "Parameter">
 
     <topic {<tt><i>nlist</i></tt>}>
-    A list of <cref /object/nbhood> names.
+    A list of <cref /entity/nbhood> names.
     </topic>
 
     </topiclist>
@@ -742,7 +742,7 @@ gofer_rule CIVGROUPS NOT_RESIDENT_IN "Civilian groups, Not Resident in Neighborh
 
 gofer_rule CIVGROUPS MOOD_IS_GOOD "Civilian groups, Mood is Good" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Satisfied</b> or <b>Very Satisfied</b>.<p>
 
     <itemlist>
@@ -756,7 +756,7 @@ gofer_rule CIVGROUPS MOOD_IS_GOOD "Civilian groups, Mood is Good" {
 
 gofer_rule CIVGROUPS MOOD_IS_BAD "Civilian groups, Mood is Bad" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Dissatisfied</b> or <b>Very Dissatisfied</b>.<p>
 
     <itemlist>
@@ -770,7 +770,7 @@ gofer_rule CIVGROUPS MOOD_IS_BAD "Civilian groups, Mood is Bad" {
 
 gofer_rule CIVGROUPS MOOD_IS_AMBIVALENT "Civilian groups, Mood is Ambivalent" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Ambivalent</b>.<p>
 
     <itemlist>
@@ -784,10 +784,10 @@ gofer_rule CIVGROUPS MOOD_IS_AMBIVALENT "Civilian groups, Mood is Ambivalent" {
 
 gofer_rule CIVGROUPS SUPPORTING_ACTOR "Civilian groups, Supporting Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who are actively <term support>ing any or all of 
     a specified list of 
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -803,7 +803,7 @@ gofer_rule CIVGROUPS SUPPORTING_ACTOR "Civilian groups, Supporting Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -811,10 +811,10 @@ gofer_rule CIVGROUPS SUPPORTING_ACTOR "Civilian groups, Supporting Actor(s)" {
 
 gofer_rule CIVGROUPS LIKING_ACTOR "Civilian groups, Liking Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>
     with any or all of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -830,7 +830,7 @@ gofer_rule CIVGROUPS LIKING_ACTOR "Civilian groups, Liking Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -838,10 +838,10 @@ gofer_rule CIVGROUPS LIKING_ACTOR "Civilian groups, Liking Actor(s)" {
 
 gofer_rule CIVGROUPS DISLIKING_ACTOR "Civilian groups, Disliking Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
     with any or all of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -857,7 +857,7 @@ gofer_rule CIVGROUPS DISLIKING_ACTOR "Civilian groups, Disliking Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -865,10 +865,10 @@ gofer_rule CIVGROUPS DISLIKING_ACTOR "Civilian groups, Disliking Actor(s)" {
 
 gofer_rule CIVGROUPS LIKING_GROUP "Civilian groups, Liking Group(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who have a <term hrel> of <b>LIKE</b> or <b>SUPPORT</b>
     with any or all of a specified list of
-    <cref /object/group groups>.<p>
+    <cref /entity/group groups>.<p>
 
     <itemlist>
     <gofer.details anyall ANY glist {SHIA SUNN}>
@@ -884,7 +884,7 @@ gofer_rule CIVGROUPS LIKING_GROUP "Civilian groups, Liking Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -892,10 +892,10 @@ gofer_rule CIVGROUPS LIKING_GROUP "Civilian groups, Liking Group(s)" {
 
 gofer_rule CIVGROUPS DISLIKING_GROUP "Civilian groups, Disliking Group(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who have a <term hrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
     with any or all of a specified list of
-    <cref /object/group groups>.<p>
+    <cref /entity/group groups>.<p>
 
     <itemlist>
     <gofer.details anyall ANY glist {SHIA SUNN}>
@@ -911,7 +911,7 @@ gofer_rule CIVGROUPS DISLIKING_GROUP "Civilian groups, Disliking Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -919,9 +919,9 @@ gofer_rule CIVGROUPS DISLIKING_GROUP "Civilian groups, Disliking Group(s)" {
 
 gofer_rule CIVGROUPS LIKED_BY_GROUP "Civilian groups, Liked by Group(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     for whom any or all of a specified list of
-    <cref /object/group groups> have a <term hrel> 
+    <cref /entity/group groups> have a <term hrel> 
     of <b>LIKE</b> or <b>SUPPORT</b>.<p>
 
     <itemlist>
@@ -938,7 +938,7 @@ gofer_rule CIVGROUPS LIKED_BY_GROUP "Civilian groups, Liked by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -946,9 +946,9 @@ gofer_rule CIVGROUPS LIKED_BY_GROUP "Civilian groups, Liked by Group(s)" {
 
 gofer_rule CIVGROUPS DISLIKED_BY_GROUP "Civilian groups, Disliked by Group(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     for whom any or all of a specified list of
-    <cref /object/group groups> have a <term hrel> 
+    <cref /entity/group groups> have a <term hrel> 
     of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
 
     <itemlist>
@@ -965,7 +965,7 @@ gofer_rule CIVGROUPS DISLIKED_BY_GROUP "Civilian groups, Disliked by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -975,7 +975,7 @@ gofer_rule CIVGROUPS DISLIKED_BY_GROUP "Civilian groups, Disliked by Group(s)" {
 # FRCGROUPS
 
 gofer FRCGROUPS "A list of force groups" {
-    This gofer retrieves a list of <cref /object/group/frc> names
+    This gofer retrieves a list of <cref /entity/group/frc> names
     according to one of the following rules:<p>
 
     <gofer.rules>
@@ -983,7 +983,7 @@ gofer FRCGROUPS "A list of force groups" {
 
 gofer_rule FRCGROUPS BY_VALUE "Force groups, By name" {
     Retrieves an arbitrary list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     selected by name.<p>
 
     <itemlist>
@@ -995,7 +995,7 @@ gofer_rule FRCGROUPS BY_VALUE "Force groups, By name" {
     <topiclist "Parameter">
 
     <topic {<tt><i>raw_value</i></tt>}>
-    A list of <cref /object/group/frc> names.
+    A list of <cref /entity/group/frc> names.
     </topic>
 
     </topiclist>
@@ -1003,9 +1003,9 @@ gofer_rule FRCGROUPS BY_VALUE "Force groups, By name" {
 
 gofer_rule FRCGROUPS OWNED_BY "Force groups, Owned by Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who are owned by any of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details alist {JOE BOB}>
@@ -1016,7 +1016,7 @@ gofer_rule FRCGROUPS OWNED_BY "Force groups, Owned by Actor(s)" {
     <topiclist "Parameter">
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1024,9 +1024,9 @@ gofer_rule FRCGROUPS OWNED_BY "Force groups, Owned by Actor(s)" {
 
 gofer_rule FRCGROUPS DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     that are deployed to any or all of a specified list of
-    <cref /object/nbhood neighborhoods>.<p>
+    <cref /entity/nbhood neighborhoods>.<p>
 
     <itemlist>
     <gofer.details anyall ANY nlist {N1 N2}>
@@ -1042,7 +1042,7 @@ gofer_rule FRCGROUPS DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
     </topic>
 
     <topic {<tt><i>nlist</i></tt>}>
-    A list of <cref /object/nbhood> names.
+    A list of <cref /entity/nbhood> names.
     </topic>
 
     </topiclist>
@@ -1050,9 +1050,9 @@ gofer_rule FRCGROUPS DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
 
 gofer_rule FRCGROUPS NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhood(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     that are not deployed to any or all of a specified list of
-    <cref /object/nbhood neighborhoods>.<p>
+    <cref /entity/nbhood neighborhoods>.<p>
 
     <itemlist>
     <gofer.details anyall ANY nlist {N1 N2}>
@@ -1068,7 +1068,7 @@ gofer_rule FRCGROUPS NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhood
     </topic>
 
     <topic {<tt><i>nlist</i></tt>}>
-    A list of <cref /object/nbhood> names.
+    A list of <cref /entity/nbhood> names.
     </topic>
 
     </topiclist>
@@ -1078,10 +1078,10 @@ gofer_rule FRCGROUPS NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhood
 
 gofer_rule FRCGROUPS SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who are actively <term support>ing any or all of 
     a specified list of 
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1097,7 +1097,7 @@ gofer_rule FRCGROUPS SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1105,10 +1105,10 @@ gofer_rule FRCGROUPS SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
 
 gofer_rule FRCGROUPS LIKING_ACTOR "Force groups, Liking Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>
     with any or all of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1124,7 +1124,7 @@ gofer_rule FRCGROUPS LIKING_ACTOR "Force groups, Liking Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1132,10 +1132,10 @@ gofer_rule FRCGROUPS LIKING_ACTOR "Force groups, Liking Actor(s)" {
 
 gofer_rule FRCGROUPS DISLIKING_ACTOR "Force groups, Disliking Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
     with any or all of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1151,7 +1151,7 @@ gofer_rule FRCGROUPS DISLIKING_ACTOR "Force groups, Disliking Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1159,10 +1159,10 @@ gofer_rule FRCGROUPS DISLIKING_ACTOR "Force groups, Disliking Actor(s)" {
 
 gofer_rule FRCGROUPS LIKING_GROUP "Force groups, Liking Group(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who have a <term hrel> of <b>LIKE</b> or <b>SUPPORT</b>
     with any or all of a specified list of
-    <cref /object/group groups>.<p>
+    <cref /entity/group groups>.<p>
 
     <itemlist>
     <gofer.details anyall ANY glist {SHIA SUNN}>
@@ -1178,7 +1178,7 @@ gofer_rule FRCGROUPS LIKING_GROUP "Force groups, Liking Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1186,10 +1186,10 @@ gofer_rule FRCGROUPS LIKING_GROUP "Force groups, Liking Group(s)" {
 
 gofer_rule FRCGROUPS DISLIKING_GROUP "Force groups, Disliking Group(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who have a <term hrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
     with any or all of a specified list of
-    <cref /object/group groups>.<p>
+    <cref /entity/group groups>.<p>
 
     <itemlist>
     <gofer.details anyall ANY glist {SHIA SUNN}>
@@ -1205,7 +1205,7 @@ gofer_rule FRCGROUPS DISLIKING_GROUP "Force groups, Disliking Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1213,9 +1213,9 @@ gofer_rule FRCGROUPS DISLIKING_GROUP "Force groups, Disliking Group(s)" {
 
 gofer_rule FRCGROUPS LIKED_BY_GROUP "Force groups, Liked by Group(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     for whom any or all of a specified list of
-    <cref /object/group groups> have a <term hrel> 
+    <cref /entity/group groups> have a <term hrel> 
     of <b>LIKE</b> or <b>SUPPORT</b>.<p>
 
     <itemlist>
@@ -1232,7 +1232,7 @@ gofer_rule FRCGROUPS LIKED_BY_GROUP "Force groups, Liked by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1240,9 +1240,9 @@ gofer_rule FRCGROUPS LIKED_BY_GROUP "Force groups, Liked by Group(s)" {
 
 gofer_rule FRCGROUPS DISLIKED_BY_GROUP "Force groups, Disliked by Group(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     for whom any or all of a specified list of
-    <cref /object/group groups> have a <term hrel> 
+    <cref /entity/group groups> have a <term hrel> 
     of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
 
     <itemlist>
@@ -1259,7 +1259,7 @@ gofer_rule FRCGROUPS DISLIKED_BY_GROUP "Force groups, Disliked by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1270,7 +1270,7 @@ gofer_rule FRCGROUPS DISLIKED_BY_GROUP "Force groups, Disliked by Group(s)" {
 # GROUPS
 
 gofer GROUPS "A list of groups" {
-    This gofer retrieves a list of <cref /object/group> names
+    This gofer retrieves a list of <cref /entity/group> names
     according to one of the following rules:<p>
 
     <gofer.rules>
@@ -1278,7 +1278,7 @@ gofer GROUPS "A list of groups" {
 
 gofer_rule GROUPS BY_VALUE "Groups, By name" {
     Retrieves an arbitrary list of 
-    <cref /object/group "groups">
+    <cref /entity/group "groups">
     selected by name.<p>
 
     <itemlist>
@@ -1290,7 +1290,7 @@ gofer_rule GROUPS BY_VALUE "Groups, By name" {
     <topiclist "Parameter">
 
     <topic {<tt><i>raw_value</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1298,10 +1298,10 @@ gofer_rule GROUPS BY_VALUE "Groups, By name" {
 
 gofer_rule GROUPS SUPPORTING_ACTOR "Groups, Supporting Actor(s)" {
     Retrieves a list of 
-    <cref /object/group "groups">
+    <cref /entity/group "groups">
     who are actively <term support>ing any or all of 
     a specified list of 
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1317,7 +1317,7 @@ gofer_rule GROUPS SUPPORTING_ACTOR "Groups, Supporting Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1325,10 +1325,10 @@ gofer_rule GROUPS SUPPORTING_ACTOR "Groups, Supporting Actor(s)" {
 
 gofer_rule GROUPS LIKING_ACTOR "Groups, Liking Actor(s)" {
     Retrieves a list of 
-    <cref /object/group "groups">
+    <cref /entity/group "groups">
     who have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>
     with any or all of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1344,7 +1344,7 @@ gofer_rule GROUPS LIKING_ACTOR "Groups, Liking Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1352,10 +1352,10 @@ gofer_rule GROUPS LIKING_ACTOR "Groups, Liking Actor(s)" {
 
 gofer_rule GROUPS DISLIKING_ACTOR "Groups, Disliking Actor(s)" {
     Retrieves a list of 
-    <cref /object/group "groups">
+    <cref /entity/group "groups">
     who have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
     with any or all of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1371,7 +1371,7 @@ gofer_rule GROUPS DISLIKING_ACTOR "Groups, Disliking Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1379,10 +1379,10 @@ gofer_rule GROUPS DISLIKING_ACTOR "Groups, Disliking Actor(s)" {
 
 gofer_rule GROUPS LIKING_GROUP "Groups, Liking Group(s)" {
     Retrieves a list of 
-    <cref /object/group "groups">
+    <cref /entity/group "groups">
     who have a <term hrel> of <b>LIKE</b> or <b>SUPPORT</b>
     with any or all of a specified list of
-    <cref /object/group groups>.<p>
+    <cref /entity/group groups>.<p>
 
     <itemlist>
     <gofer.details anyall ANY glist {SHIA SUNN}>
@@ -1398,7 +1398,7 @@ gofer_rule GROUPS LIKING_GROUP "Groups, Liking Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1406,10 +1406,10 @@ gofer_rule GROUPS LIKING_GROUP "Groups, Liking Group(s)" {
 
 gofer_rule GROUPS DISLIKING_GROUP "Groups, Disliking Group(s)" {
     Retrieves a list of 
-    <cref /object/group "groups">
+    <cref /entity/group "groups">
     who have a <term hrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
     with any or all of a specified list of
-    <cref /object/group groups>.<p>
+    <cref /entity/group groups>.<p>
 
     <itemlist>
     <gofer.details anyall ANY glist {SHIA SUNN}>
@@ -1425,7 +1425,7 @@ gofer_rule GROUPS DISLIKING_GROUP "Groups, Disliking Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1433,9 +1433,9 @@ gofer_rule GROUPS DISLIKING_GROUP "Groups, Disliking Group(s)" {
 
 gofer_rule GROUPS LIKED_BY_GROUP "Groups, Liked by Group(s)" {
     Retrieves a list of 
-    <cref /object/group "groups">
+    <cref /entity/group "groups">
     for whom any or all of a specified list of
-    <cref /object/group groups> have a <term hrel> 
+    <cref /entity/group groups> have a <term hrel> 
     of <b>LIKE</b> or <b>SUPPORT</b>.<p>
 
     <itemlist>
@@ -1452,7 +1452,7 @@ gofer_rule GROUPS LIKED_BY_GROUP "Groups, Liked by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1460,9 +1460,9 @@ gofer_rule GROUPS LIKED_BY_GROUP "Groups, Liked by Group(s)" {
 
 gofer_rule GROUPS DISLIKED_BY_GROUP "Groups, Disliked by Group(s)" {
     Retrieves a list of 
-    <cref /object/group "groups">
+    <cref /entity/group "groups">
     for whom any or all of a specified list of
-    <cref /object/group groups> have a <term hrel> 
+    <cref /entity/group groups> have a <term hrel> 
     of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
 
     <itemlist>
@@ -1479,7 +1479,7 @@ gofer_rule GROUPS DISLIKED_BY_GROUP "Groups, Disliked by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1487,9 +1487,9 @@ gofer_rule GROUPS DISLIKED_BY_GROUP "Groups, Disliked by Group(s)" {
 
 gofer_rule GROUPS CIV_RESIDENT_IN "Civilian groups, Resident in Neighborhood(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     resident in a particular 
-    <cref /object/nbhood "neighborhood or neighborhoods">.<p>
+    <cref /entity/nbhood "neighborhood or neighborhoods">.<p>
 
     <itemlist>
     <gofer.details nlist {NB1 NB2}>
@@ -1500,7 +1500,7 @@ gofer_rule GROUPS CIV_RESIDENT_IN "Civilian groups, Resident in Neighborhood(s)"
     <topiclist "Parameter">
 
     <topic {<tt><i>nlist</i></tt>}>
-    A list of <cref /object/nbhood> names.
+    A list of <cref /entity/nbhood> names.
     </topic>
 
     </topiclist>
@@ -1508,9 +1508,9 @@ gofer_rule GROUPS CIV_RESIDENT_IN "Civilian groups, Resident in Neighborhood(s)"
 
 gofer_rule GROUPS CIV_NOT_RESIDENT_IN "Civilian groups, Not Resident in Neighborhood(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who do not reside in a particular 
-    <cref /object/nbhood "neighborhood or neighborhoods">.<p>
+    <cref /entity/nbhood "neighborhood or neighborhoods">.<p>
 
     <itemlist>
     <gofer.details nlist {NB1 NB2}>
@@ -1521,7 +1521,7 @@ gofer_rule GROUPS CIV_NOT_RESIDENT_IN "Civilian groups, Not Resident in Neighbor
     <topiclist "Parameter">
 
     <topic {<tt><i>nlist</i></tt>}>
-    A list of <cref /object/nbhood> names.
+    A list of <cref /entity/nbhood> names.
     </topic>
 
     </topiclist>
@@ -1529,7 +1529,7 @@ gofer_rule GROUPS CIV_NOT_RESIDENT_IN "Civilian groups, Not Resident in Neighbor
 
 gofer_rule GROUPS CIV_MOOD_IS_GOOD "Civilian groups, Mood is Good" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Satisfied</b> or <b>Very Satisfied</b>.<p>
 
     <itemlist>
@@ -1543,7 +1543,7 @@ gofer_rule GROUPS CIV_MOOD_IS_GOOD "Civilian groups, Mood is Good" {
 
 gofer_rule GROUPS CIV_MOOD_IS_BAD "Civilian groups, Mood is Bad" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Dissatisfied</b> or <b>Very Dissatisfied</b>.<p>
 
     <itemlist>
@@ -1557,7 +1557,7 @@ gofer_rule GROUPS CIV_MOOD_IS_BAD "Civilian groups, Mood is Bad" {
 
 gofer_rule GROUPS CIV_MOOD_IS_AMBIVALENT "Civilian groups, Mood is Ambivalent" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Ambivalent</b>.<p>
 
     <itemlist>
@@ -1571,10 +1571,10 @@ gofer_rule GROUPS CIV_MOOD_IS_AMBIVALENT "Civilian groups, Mood is Ambivalent" {
 
 gofer_rule GROUPS CIV_SUPPORTING_ACTOR "Civilian groups, Supporting Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who are actively <term support>ing any or all of 
     a specified list of 
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1590,7 +1590,7 @@ gofer_rule GROUPS CIV_SUPPORTING_ACTOR "Civilian groups, Supporting Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1598,10 +1598,10 @@ gofer_rule GROUPS CIV_SUPPORTING_ACTOR "Civilian groups, Supporting Actor(s)" {
 
 gofer_rule GROUPS CIV_LIKING_ACTOR "Civilian groups, Liking Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>
     with any or all of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1617,7 +1617,7 @@ gofer_rule GROUPS CIV_LIKING_ACTOR "Civilian groups, Liking Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1625,10 +1625,10 @@ gofer_rule GROUPS CIV_LIKING_ACTOR "Civilian groups, Liking Actor(s)" {
 
 gofer_rule GROUPS CIV_DISLIKING_ACTOR "Civilian groups, Disliking Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
     with any or all of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1644,7 +1644,7 @@ gofer_rule GROUPS CIV_DISLIKING_ACTOR "Civilian groups, Disliking Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1652,10 +1652,10 @@ gofer_rule GROUPS CIV_DISLIKING_ACTOR "Civilian groups, Disliking Actor(s)" {
 
 gofer_rule GROUPS CIV_LIKING_GROUP "Civilian groups, Liking Group(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who have a <term hrel> of <b>LIKE</b> or <b>SUPPORT</b>
     with any or all of a specified list of
-    <cref /object/group groups>.<p>
+    <cref /entity/group groups>.<p>
 
     <itemlist>
     <gofer.details anyall ANY glist {SHIA SUNN}>
@@ -1671,7 +1671,7 @@ gofer_rule GROUPS CIV_LIKING_GROUP "Civilian groups, Liking Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1679,10 +1679,10 @@ gofer_rule GROUPS CIV_LIKING_GROUP "Civilian groups, Liking Group(s)" {
 
 gofer_rule GROUPS CIV_DISLIKING_GROUP "Civilian groups, Disliking Group(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     who have a <term hrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
     with any or all of a specified list of
-    <cref /object/group groups>.<p>
+    <cref /entity/group groups>.<p>
 
     <itemlist>
     <gofer.details anyall ANY glist {SHIA SUNN}>
@@ -1698,7 +1698,7 @@ gofer_rule GROUPS CIV_DISLIKING_GROUP "Civilian groups, Disliking Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1706,9 +1706,9 @@ gofer_rule GROUPS CIV_DISLIKING_GROUP "Civilian groups, Disliking Group(s)" {
 
 gofer_rule GROUPS CIV_LIKED_BY_GROUP "Civilian groups, Liked by Group(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     for whom any or all of a specified list of
-    <cref /object/group groups> have a <term hrel> 
+    <cref /entity/group groups> have a <term hrel> 
     of <b>LIKE</b> or <b>SUPPORT</b>.<p>
 
     <itemlist>
@@ -1725,7 +1725,7 @@ gofer_rule GROUPS CIV_LIKED_BY_GROUP "Civilian groups, Liked by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1733,9 +1733,9 @@ gofer_rule GROUPS CIV_LIKED_BY_GROUP "Civilian groups, Liked by Group(s)" {
 
 gofer_rule GROUPS CIV_DISLIKED_BY_GROUP "Civilian groups, Disliked by Group(s)" {
     Retrieves a list of 
-    <cref /object/group/civ "civilian groups">
+    <cref /entity/group/civ "civilian groups">
     for whom any or all of a specified list of
-    <cref /object/group groups> have a <term hrel> 
+    <cref /entity/group groups> have a <term hrel> 
     of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
 
     <itemlist>
@@ -1752,7 +1752,7 @@ gofer_rule GROUPS CIV_DISLIKED_BY_GROUP "Civilian groups, Disliked by Group(s)" 
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1760,9 +1760,9 @@ gofer_rule GROUPS CIV_DISLIKED_BY_GROUP "Civilian groups, Disliked by Group(s)" 
 
 gofer_rule GROUPS FRC_OWNED_BY "Force groups, Owned by Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who are owned by any of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details alist {JOE BOB}>
@@ -1773,7 +1773,7 @@ gofer_rule GROUPS FRC_OWNED_BY "Force groups, Owned by Actor(s)" {
     <topiclist "Parameter">
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1781,9 +1781,9 @@ gofer_rule GROUPS FRC_OWNED_BY "Force groups, Owned by Actor(s)" {
 
 gofer_rule GROUPS FRC_DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     that are deployed to any or all of a specified list of
-    <cref /object/nbhood neighborhoods>.<p>
+    <cref /entity/nbhood neighborhoods>.<p>
 
     <itemlist>
     <gofer.details anyall ANY nlist {N1 N2}>
@@ -1799,7 +1799,7 @@ gofer_rule GROUPS FRC_DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
     </topic>
 
     <topic {<tt><i>nlist</i></tt>}>
-    A list of <cref /object/nbhood> names.
+    A list of <cref /entity/nbhood> names.
     </topic>
 
     </topiclist>
@@ -1807,9 +1807,9 @@ gofer_rule GROUPS FRC_DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
 
 gofer_rule GROUPS FRC_NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhood(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     that are not deployed to any or all of a specified list of
-    <cref /object/nbhood neighborhoods>.<p>
+    <cref /entity/nbhood neighborhoods>.<p>
 
     <itemlist>
     <gofer.details anyall ANY nlist {N1 N2}>
@@ -1825,7 +1825,7 @@ gofer_rule GROUPS FRC_NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhoo
     </topic>
 
     <topic {<tt><i>nlist</i></tt>}>
-    A list of <cref /object/nbhood> names.
+    A list of <cref /entity/nbhood> names.
     </topic>
 
     </topiclist>
@@ -1835,10 +1835,10 @@ gofer_rule GROUPS FRC_NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhoo
 
 gofer_rule GROUPS FRC_SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who are actively <term support>ing any or all of 
     a specified list of 
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1854,7 +1854,7 @@ gofer_rule GROUPS FRC_SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1862,10 +1862,10 @@ gofer_rule GROUPS FRC_SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
 
 gofer_rule GROUPS FRC_LIKING_ACTOR "Force groups, Liking Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who have a <term vrel> of <b>LIKE</b> or <b>SUPPORT</b>
     with any or all of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1881,7 +1881,7 @@ gofer_rule GROUPS FRC_LIKING_ACTOR "Force groups, Liking Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1889,10 +1889,10 @@ gofer_rule GROUPS FRC_LIKING_ACTOR "Force groups, Liking Actor(s)" {
 
 gofer_rule GROUPS FRC_DISLIKING_ACTOR "Force groups, Disliking Actor(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who have a <term vrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
     with any or all of a specified list of
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
@@ -1908,7 +1908,7 @@ gofer_rule GROUPS FRC_DISLIKING_ACTOR "Force groups, Disliking Actor(s)" {
     </topic>
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
@@ -1916,10 +1916,10 @@ gofer_rule GROUPS FRC_DISLIKING_ACTOR "Force groups, Disliking Actor(s)" {
 
 gofer_rule GROUPS FRC_LIKING_GROUP "Force groups, Liking Group(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who have a <term hrel> of <b>LIKE</b> or <b>SUPPORT</b>
     with any or all of a specified list of
-    <cref /object/group groups>.<p>
+    <cref /entity/group groups>.<p>
 
     <itemlist>
     <gofer.details anyall ANY glist {SHIA SUNN}>
@@ -1935,7 +1935,7 @@ gofer_rule GROUPS FRC_LIKING_GROUP "Force groups, Liking Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1943,10 +1943,10 @@ gofer_rule GROUPS FRC_LIKING_GROUP "Force groups, Liking Group(s)" {
 
 gofer_rule GROUPS FRC_DISLIKING_GROUP "Force groups, Disliking Group(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     who have a <term hrel> of <b>DISLIKE</b> or <b>OPPOSE</b>
     with any or all of a specified list of
-    <cref /object/group groups>.<p>
+    <cref /entity/group groups>.<p>
 
     <itemlist>
     <gofer.details anyall ANY glist {SHIA SUNN}>
@@ -1962,7 +1962,7 @@ gofer_rule GROUPS FRC_DISLIKING_GROUP "Force groups, Disliking Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1970,9 +1970,9 @@ gofer_rule GROUPS FRC_DISLIKING_GROUP "Force groups, Disliking Group(s)" {
 
 gofer_rule GROUPS FRC_LIKED_BY_GROUP "Force groups, Liked by Group(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     for whom any or all of a specified list of
-    <cref /object/group groups> have a <term hrel> 
+    <cref /entity/group groups> have a <term hrel> 
     of <b>LIKE</b> or <b>SUPPORT</b>.<p>
 
     <itemlist>
@@ -1989,7 +1989,7 @@ gofer_rule GROUPS FRC_LIKED_BY_GROUP "Force groups, Liked by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -1997,9 +1997,9 @@ gofer_rule GROUPS FRC_LIKED_BY_GROUP "Force groups, Liked by Group(s)" {
 
 gofer_rule GROUPS FRC_DISLIKED_BY_GROUP "Force groups, Disliked by Group(s)" {
     Retrieves a list of 
-    <cref /object/group/frc "force groups">
+    <cref /entity/group/frc "force groups">
     for whom any or all of a specified list of
-    <cref /object/group groups> have a <term hrel> 
+    <cref /entity/group groups> have a <term hrel> 
     of <b>DISLIKE</b> or <b>OPPOSE</b>.<p>
 
     <itemlist>
@@ -2016,7 +2016,7 @@ gofer_rule GROUPS FRC_DISLIKED_BY_GROUP "Force groups, Disliked by Group(s)" {
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group> names.
+    A list of <cref /entity/group> names.
     </topic>
 
     </topiclist>
@@ -2026,7 +2026,7 @@ gofer_rule GROUPS FRC_DISLIKED_BY_GROUP "Force groups, Disliked by Group(s)" {
 # NBHOODS
 
 gofer NBHOODS "A list of neighborhoods" {
-    This gofer retrieves a list of <cref /object/nbhood> names
+    This gofer retrieves a list of <cref /entity/nbhood> names
     according to one of the following rules:<p>
 
     <gofer.rules>
@@ -2034,7 +2034,7 @@ gofer NBHOODS "A list of neighborhoods" {
 
 gofer_rule NBHOODS BY_VALUE "Neighborhoods, By name" {
     Retrieves an arbitrary list of 
-    <cref /object/nbhood "nbhoods">
+    <cref /entity/nbhood "nbhoods">
     selected by name.<p>
 
     <itemlist>
@@ -2046,16 +2046,16 @@ gofer_rule NBHOODS BY_VALUE "Neighborhoods, By name" {
     <topiclist "Parameter">
 
     <topic {<tt><i>nlist</i></tt>}>
-    A list of <cref /object/nbhood> names.
+    A list of <cref /entity/nbhood> names.
     </topic>
 
     </topiclist>
 }
 
 gofer_rule NBHOODS CONTROLLED_BY "Neighborhoods, Controlled by Actor(s)" {
-    Retrieves a list of <cref /object/nbhood "neighborhoods"> that are
+    Retrieves a list of <cref /entity/nbhood "neighborhoods"> that are
     controlled by any of a specified list of 
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details alist {GOV USA}>
@@ -2066,16 +2066,16 @@ gofer_rule NBHOODS CONTROLLED_BY "Neighborhoods, Controlled by Actor(s)" {
     <topiclist "Parameter">
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
 }
 
 gofer_rule NBHOODS NOT_CONTROLLED_BY "Neighborhoods, Not Controlled by Actor(s)" {
-    Retrieves a list of <cref /object/nbhood "neighborhoods"> that are
+    Retrieves a list of <cref /entity/nbhood "neighborhoods"> that are
     not controlled by any of a specified list of 
-    <cref /object/actor actors>.<p>
+    <cref /entity/actor actors>.<p>
 
     <itemlist>
     <gofer.details alist {GOV USA}>
@@ -2086,14 +2086,14 @@ gofer_rule NBHOODS NOT_CONTROLLED_BY "Neighborhoods, Not Controlled by Actor(s)"
     <topiclist "Parameter">
 
     <topic {<tt><i>alist</i></tt>}>
-    A list of <cref /object/actor> names.
+    A list of <cref /entity/actor> names.
     </topic>
 
     </topiclist>
 }
 
 gofer_rule NBHOODS WITH_DEPLOYMENT "Neighborhoods, With Deployment of Group(s)" {
-    Retrieves a list of <cref /object/nbhood "neighborhoods"> in which
+    Retrieves a list of <cref /entity/nbhood "neighborhoods"> in which
     any or all of a specified list of <term frcgroup "force groups">
     are deployed.<p>
 
@@ -2111,14 +2111,14 @@ gofer_rule NBHOODS WITH_DEPLOYMENT "Neighborhoods, With Deployment of Group(s)" 
     </topic>
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group/frc> names.
+    A list of <cref /entity/group/frc> names.
     </topic>
 
     </topiclist>
 }
 
 gofer_rule NBHOODS WITHOUT_DEPLOYMENT "Neighborhoods, Without Deployment of Group(s)" {
-    Retrieves a list of <cref /object/nbhood "neighborhoods"> in which
+    Retrieves a list of <cref /entity/nbhood "neighborhoods"> in which
     none of a specified list of <term frcgroup "force groups">
     are deployed.<p>
 
@@ -2131,7 +2131,7 @@ gofer_rule NBHOODS WITHOUT_DEPLOYMENT "Neighborhoods, Without Deployment of Grou
     <topiclist "Parameter">
 
     <topic {<tt><i>glist</i></tt>}>
-    A list of <cref /object/group/frc> names.
+    A list of <cref /entity/group/frc> names.
     </topic>
 
     </topiclist>

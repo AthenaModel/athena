@@ -60,7 +60,7 @@ object condition_ {
 
     attribute typename "Condition Type" {
         The condition's type, e.g., 
-        <b><cref /object/condition/compare COMPARE></b>.
+        <b><cref /entity/condition/compare COMPARE></b>.
     } -tags {object cget}
 
     attribute parent "Parent" {
@@ -82,7 +82,7 @@ object condition_ {
     } -tags {cget}
 }
 
-page /object condition "Condition" {
+page /entity condition "Condition" {
     <sotitle>
 
     <condition_ overview><p>
@@ -129,7 +129,7 @@ object condition_compare {
     } -tags {update}
 }
 
-page /object/condition compare "COMPARE condition" {
+page /entity/condition compare "COMPARE condition" {
     <sotitle>
 
     <condition_compare overview><p>
@@ -175,7 +175,7 @@ object condition_control {
     } -tags {update}
 }
 
-page /object/condition control "CONTROL condition" {
+page /entity/condition control "CONTROL condition" {
     <sotitle>
 
     <condition_control overview><p>
@@ -225,7 +225,7 @@ object condition_expr {
     } -tags {update}
 }
 
-page /object/condition expr "EXPR condition" {
+page /entity/condition expr "EXPR condition" {
     <sotitle>
 
     <condition_expr overview><p>

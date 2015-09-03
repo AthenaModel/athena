@@ -945,7 +945,7 @@ tab "Physical/Activity" {
 
     This tab shows the coverage of the various activities assigned to
     units in the neighborhoods of the playbox. Group personnel can be 
-    assigned activities via the <cref /object/tactic/assign>.  This 
+    assigned activities via the <cref /entity/tactic/assign>.  This 
     browser is populated only after Athena leaves <term prep>.  The 
     browser controls are described <seebelow controls>; the data fields
     are as follows:<p>
@@ -1058,7 +1058,7 @@ tab "Political" {
 
 tab "Political/Actors" {
     This tab shows basic data about each 
-    <cref /object/actor "actor">, as entered
+    <cref /entity/actor "actor">, as entered
     during <term prep>.
     The browser controls are described 
     <seebelow controls>; the data fields are as follows:<p>
@@ -2042,7 +2042,7 @@ page /tab/social/beliefs topics "Topics and Beliefs List" {
     <topic [img button_trash]>
     If a single topic is selected, deletes it using the
     <cref /order/bsys/topic/delete> order.  A topic cannot be
-    deleted if it is in use by a <cref /object/hook>.
+    deleted if it is in use by a <cref /entity/hook>.
     </topic>
 
     </topiclist>
@@ -3299,13 +3299,13 @@ tab "Scripts" {
     Athena's <term executive>
     can execute individual <cref /command commands>, and also longer
     scripts of commands.  It is exposed by the <term cli>, and is also
-    used by the <cref /object/tactic/executive> and the
-    <cref /object/condition/expr>.
+    used by the <cref /entity/tactic/executive> and the
+    <cref /entity/condition/expr>.
     The scripts are written in the TCL programming
     language; see the <i>Athena User's Guide</i> for a brief introduction.<p>
 
     Prior to Athena 5, it was usual to use the 
-    <cref /object/tactic/executive> by writing executive scripts as
+    <cref /entity/tactic/executive> by writing executive scripts as
     ".tcl" files in the host file system.  The tactic would then execute
     an executive command like this one:<p>
 
@@ -3322,7 +3322,7 @@ tab "Scripts" {
     scripts can be called exactly like external script files, and can also be
     executed automatically.  Auto-executed scripts will often define Tcl
     procedures (see <command proc>) for use by the
-    <cref /object/tactic/executive> and <cref /object/condition/expr>.<p>
+    <cref /entity/tactic/executive> and <cref /entity/condition/expr>.<p>
 
     <b>User Interface</b>
 
@@ -3361,10 +3361,10 @@ tab "Scripts" {
     <b>NOTE:</b> Most existing script files are designed to be 
     used with the <command call> command, and do their work as soon as
     they are loaded; i.e., a script file designed for use with the
-    <cref /object/tactic/executive> expects to be called only by
+    <cref /entity/tactic/executive> expects to be called only by
     the tactic.  Stored scripts are expected to define Tcl procedures
     using the <command proc> command; these procedures can then be
-    used by the <cref /object/tactic/executive> tactic.  Thus, most
+    used by the <cref /entity/tactic/executive> tactic.  Thus, most
     imported scripts will probably require some editing to be useful.
     </topic>
 

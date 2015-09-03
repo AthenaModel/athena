@@ -18,12 +18,12 @@
 object tactic_ {
     noun "tactic"
     overview {
-        Tactics are the <cref /object> by which an
+        Tactics are the <cref /entity> by which an
         <term agent> implements his <term strategy>.  For
         example, an <term actor> may use the 
-        <cref /object/tactic/deploy>
+        <cref /entity/tactic/deploy>
         to position troops in a neighborhood, and then use the
-        <cref /object/tactic/assign> activities to them.  
+        <cref /entity/tactic/assign> activities to them.  
         Tactics may have <term condition>s attached
         to them.  Tactics are browsed and 
         edited on the <tab Strategy>.
@@ -62,7 +62,7 @@ object tactic_ {
 
     attribute typename "Tactic Type" {
         The tactic's type, e.g., 
-        <b><cref /object/tactic/deploy DEPLOY></b>.
+        <b><cref /entity/tactic/deploy DEPLOY></b>.
     } -tags {object cget}
 
     attribute parent "Parent" {
@@ -85,7 +85,7 @@ object tactic_ {
 
 }
 
-page /object tactic "Tactic" {
+page /entity tactic "Tactic" {
     <sotitle>
 
     <tactic_ overview><p>
@@ -115,7 +115,7 @@ object tactic_absit {
 
         Note that this tactic is semantically equivalent to sending
         the <cref /order/absit/create> order in an
-        <cref /object/tactic/executive>.<p>
+        <cref /entity/tactic/executive>.<p>
 
         If multiple tactics attempt to create absits of the same type in 
         the same neighborhood with overlapping durations, only the first
@@ -164,7 +164,7 @@ object tactic_absit {
 
 }
 
-page /object/tactic absit "ABSIT tactic" {
+page /entity/tactic absit "ABSIT tactic" {
     <sotitle>
 
     <tactic_absit overview><p>
@@ -209,7 +209,7 @@ object tactic_accident {
 
 }
 
-page /object/tactic accident "ACCIDENT tactic" {
+page /entity/tactic accident "ACCIDENT tactic" {
     <sotitle>
 
     <tactic_accident overview><p>
@@ -232,7 +232,7 @@ object tactic_assign {
         abstract <term activity> to an <term actor>'s
         <term frcgroup> or <term orggroup> personnel
         in a particular <term nbhood>.  The personnel must already
-        be <cref /object/tactic/deploy deployed> in the
+        be <cref /entity/tactic/deploy deployed> in the
         neighborhood.  Athena will create a <term unit> containing
         the assigned personnel; the unit will be visible on the
         <tab Physical/Map>.<p>
@@ -342,7 +342,7 @@ object tactic_assign {
     } -tags {update}
 }
 
-page /object/tactic assign "ASSIGN tactic" {
+page /entity/tactic assign "ASSIGN tactic" {
     <sotitle>
 
     <tactic_assign overview><p>
@@ -423,7 +423,7 @@ object tactic_attrit {
     } -tags {update}
 }
 
-page /object/tactic attrit "ATTRIT tactic" {
+page /entity/tactic attrit "ATTRIT tactic" {
     <sotitle>
 
     <tactic_attrit overview><p>
@@ -484,7 +484,7 @@ object tactic_broadcast {
     } -tags {update}
 }
 
-page /object/tactic broadcast "BROADCAST tactic" {
+page /entity/tactic broadcast "BROADCAST tactic" {
     <sotitle>
 
     <tactic_broadcast overview><p>
@@ -563,7 +563,7 @@ object tactic_build {
     } -tags {update}
 }
 
-page /object/tactic build "BUILD tactic" {
+page /entity/tactic build "BUILD tactic" {
     <sotitle>
 
     <tactic_build overview><p>
@@ -606,7 +606,7 @@ object tactic_curse {
 
 }
 
-page /object/tactic curse "CURSE tactic" {
+page /entity/tactic curse "CURSE tactic" {
     <sotitle>
 
     <tactic_curse overview><p>
@@ -653,7 +653,7 @@ object tactic_damage {
     } -tags {update}
 }
 
-page /object/tactic damage "DAMAGE tactic" {
+page /entity/tactic damage "DAMAGE tactic" {
     <sotitle>
 
     <tactic_damage overview><p>
@@ -703,7 +703,7 @@ object tactic_demo {
 
 }
 
-page /object/tactic demo "DEMO tactic" {
+page /entity/tactic demo "DEMO tactic" {
     <sotitle>
 
     <tactic_demo overview><p>
@@ -785,7 +785,7 @@ object tactic_demob {
     } -tags {update}
 }
 
-page /object/tactic demob "DEMOB tactic" {
+page /entity/tactic demob "DEMOB tactic" {
     <sotitle>
 
     <tactic_demob overview><p>
@@ -940,7 +940,7 @@ object tactic_deploy {
 
 }
 
-page /object/tactic deploy "DEPLOY tactic" {
+page /entity/tactic deploy "DEPLOY tactic" {
     <sotitle>
 
     <tactic_deploy overview><p>
@@ -962,7 +962,7 @@ object tactic_deposit {
         This <term tactic> allows the <term actor> to deposit
         a sum of money from his cash-on-hand into his cash reserve.
         The funds can then be withdrawn for spending using the
-        <cref /object/tactic/withdraw>.
+        <cref /entity/tactic/withdraw>.
 
         There are several ways to select how much money should be 
         deposited to cash-on-hand; see the "Mode" parameter below.
@@ -1021,7 +1021,7 @@ object tactic_deposit {
     } -tags {update}
 }
 
-page /object/tactic deposit "DEPOSIT tactic" {
+page /entity/tactic deposit "DEPOSIT tactic" {
     <sotitle>
 
     <tactic_deposit overview><p>
@@ -1060,7 +1060,7 @@ object tactic_executive {
     } -tags {update}
 }
 
-page /object/tactic executive "EXECUTIVE tactic" {
+page /entity/tactic executive "EXECUTIVE tactic" {
     <sotitle>
 
     <tactic_executive overview><p>
@@ -1104,7 +1104,7 @@ object tactic_explosion {
 
 }
 
-page /object/tactic explosion "EXPLOSION tactic" {
+page /entity/tactic explosion "EXPLOSION tactic" {
     <sotitle>
 
     <tactic_explosion overview><p>
@@ -1190,7 +1190,7 @@ object tactic_flow {
 
 }
 
-page /object/tactic flow "FLOW tactic" {
+page /entity/tactic flow "FLOW tactic" {
     <sotitle>
 
     <tactic_flow overview><p>
@@ -1275,7 +1275,7 @@ object tactic_fund {
     } -tags {update}
 }
 
-page /object/tactic fund "FUND tactic" {
+page /entity/tactic fund "FUND tactic" {
     <sotitle>
 
     <tactic_fund overview><p>
@@ -1402,7 +1402,7 @@ object tactic_fundeni {
     } -tags {update}
 }
 
-page /object/tactic fundeni "FUNDENI tactic" {
+page /entity/tactic fundeni "FUNDENI tactic" {
     <sotitle>
 
     <tactic_fundeni overview><p>
@@ -1423,7 +1423,7 @@ object tactic_grant {
         This <term tactic> grants one or more <term actor>s access to
         one or more of the tactic owner's <term cap>s.  The actors 
         granted access can then 
-        <cref /object/tactic/broadcast broadcast> 
+        <cref /entity/tactic/broadcast broadcast> 
         <term iom>s via any of the listed <term cap>s.<p>
 
         This tactic can execute on lock.  It never fails due to lack of 
@@ -1447,7 +1447,7 @@ object tactic_grant {
 
 }
 
-page /object/tactic grant "GRANT tactic" {
+page /entity/tactic grant "GRANT tactic" {
     <sotitle>
 
     <tactic_grant overview><p>
@@ -1487,7 +1487,7 @@ object tactic_hide {
     } -tags {update}    
 }
 
-page /object/tactic hide "HIDE tactic" {
+page /entity/tactic hide "HIDE tactic" {
     <sotitle>
 
     <tactic_hide overview><p>
@@ -1615,7 +1615,7 @@ object tactic_maintain {
     } -tags {update}
 }
 
-page /object/tactic maintain "MAINTAIN tactic" {
+page /entity/tactic maintain "MAINTAIN tactic" {
     <sotitle>
 
     <tactic_maintain overview><p>
@@ -1706,7 +1706,7 @@ object tactic_mobilize {
     } -tags {update}
 }
 
-page /object/tactic mobilize "MOBILIZE tactic" {
+page /entity/tactic mobilize "MOBILIZE tactic" {
     <sotitle>
 
     <tactic_mobilize overview><p>
@@ -1750,7 +1750,7 @@ object tactic_riot {
 
 }
 
-page /object/tactic riot "RIOT tactic" {
+page /entity/tactic riot "RIOT tactic" {
     <sotitle>
 
     <tactic_riot overview><p>
@@ -1828,7 +1828,7 @@ object tactic_roe {
 
 }
 
-page /object/tactic roe "ROE tactic" {
+page /entity/tactic roe "ROE tactic" {
     <sotitle>
 
     <tactic_roe overview><p>
@@ -1904,7 +1904,7 @@ object tactic_service {
     } -tags {update}
 }
 
-page /object/tactic service "SERVICE tactic" {
+page /entity/tactic service "SERVICE tactic" {
     <sotitle>
 
     <tactic_service overview><p>
@@ -1939,7 +1939,7 @@ object tactic_sigevent {
     } -tags {update}
 }
 
-page /object/tactic sigevent "SIGEVENT tactic" {
+page /entity/tactic sigevent "SIGEVENT tactic" {
     <sotitle>
 
     <tactic_sigevent overview><p>
@@ -2048,7 +2048,7 @@ object tactic_spend {
     } -tags {update}
 }
 
-page /object/tactic spend "SPEND tactic" {
+page /entity/tactic spend "SPEND tactic" {
     <sotitle>
 
     <tactic_spend overview><p>
@@ -2115,7 +2115,7 @@ object tactic_stance {
     } -tags {update}
 }
 
-page /object/tactic stance "STANCE tactic" {
+page /entity/tactic stance "STANCE tactic" {
     <sotitle>
 
     <tactic_stance overview><p>
@@ -2172,7 +2172,7 @@ object tactic_support {
 
 }
 
-page /object/tactic support "SUPPORT tactic" {
+page /entity/tactic support "SUPPORT tactic" {
     <sotitle>
 
     <tactic_support overview><p>
@@ -2216,7 +2216,7 @@ object tactic_violence {
 
 }
 
-page /object/tactic violence "VIOLENCE tactic" {
+page /entity/tactic violence "VIOLENCE tactic" {
     <sotitle>
 
     <tactic_violence overview><p>
@@ -2239,7 +2239,7 @@ object tactic_withdraw {
         This <term tactic> allows the <term actor> to withdraw
         a sum of money from his cash reserve into his cash-on-hand
         so that it can be spent on other tactics.  Funds are deposited
-        into the cash reserve using the <cref /object/tactic/deposit>.<p>
+        into the cash reserve using the <cref /entity/tactic/deposit>.<p>
         
         Actors are frequently in the position of borrowing money.  Athena
         does not explicitly model any kind of banking system; as a work
@@ -2303,7 +2303,7 @@ object tactic_withdraw {
     } -tags {update}
 }
 
-page /object/tactic withdraw "WITHDRAW tactic" {
+page /entity/tactic withdraw "WITHDRAW tactic" {
     <sotitle>
 
     <tactic_withdraw overview><p>

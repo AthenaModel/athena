@@ -849,15 +849,41 @@ snit::widget appwin {
 
         bind $win <F1> [list app show /help/index.html]
 
+        $helpmenu add separator
+
+        $helpmenu add command                    \
+            -label       "About Athena"          \
+            -underline   0                       \
+            -command     [list app show /help/main/about.html]
+
+        $helpmenu add command                    \
+            -label       "Release Notes"         \
+            -underline   0                       \
+            -command     [list app show /help/main/release.html]
+
+        $helpmenu add separator
+
         $helpmenu add command                           \
             -label       "Application Menus"            \
-            -underline   0                              \
+            -underline   12                              \
             -command     [list app show /help/menu.html]
 
         $helpmenu add command                    \
             -label       "Application Tabs"      \
-            -underline   0                       \
+            -underline   12                       \
             -command     [list app show /help/tab.html]
+
+        $helpmenu add command                    \
+            -label       "User Preferences"      \
+            -underline   5                       \
+            -command     [list app show /help/prefs.html]
+
+        $helpmenu add separator
+
+        $helpmenu add command                    \
+            -label       "Entity Types"          \
+            -underline   0                       \
+            -command     [list app show /help/entity.html]
 
         $helpmenu add command                    \
             -label       "Orders"                \
@@ -865,31 +891,32 @@ snit::widget appwin {
             -command     [list app show /help/order.html]
 
         $helpmenu add command                    \
-            -label       "Display Variables"     \
-            -underline   0                       \
-            -command     [list app show /help/var.html]
-
-        $helpmenu add command                    \
-            -label       "Executive Commands"    \
-            -underline   0                       \
-            -command     [list app show /help/command.html]
-
-        $helpmenu add command                    \
             -label       "Model Parameters"      \
             -underline   0                       \
             -command     [list app show /help/parmdb.html]
 
+        $helpmenu add command                    \
+            -label       "Comparison Parameters" \
+            -underline   0                       \
+            -command     [list app show /help/compdb.html]
+
         $helpmenu add separator
 
         $helpmenu add command                    \
-            -label       "Release Notes"         \
-            -underline   0                       \
-            -command     [list app show /help/release.html]
+            -label       "Executive Commands"    \
+            -underline   10                      \
+            -command     [list app show /help/command.html]
 
         $helpmenu add command                    \
-            -label       "About Athena"          \
+            -label       "Executive Functions"   \
+            -underline   10                      \
+            -command     [list app show /help/function.html]
+
+        $helpmenu add command                    \
+            -label       "Glossary of Terms"     \
             -underline   0                       \
-            -command     [list app show /help/about.html]
+            -command     [list app show /help/term.html]
+
 
 
     }

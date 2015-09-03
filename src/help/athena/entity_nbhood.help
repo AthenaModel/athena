@@ -110,7 +110,7 @@ object nbhood_ {
     } -tags {create raw update}
 }
 
-page /object nbhood "Neighborhood" {
+page /entity nbhood "Neighborhood" {
     <sotitle>
 
     <nbhood_ overview><p>

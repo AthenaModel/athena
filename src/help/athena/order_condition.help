@@ -45,7 +45,7 @@ order CONDITION:STATE "Set Condition State" {
 
 order CONDITION:COMPARE "Condition: Compare Numbers" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/condition/compare>.<p>
+    Updates an existing <cref /entity/condition/compare>.<p>
 
     <parmlist>
     <condition_ parm condition_id -required>
@@ -56,7 +56,7 @@ order CONDITION:COMPARE "Condition: Compare Numbers" {
 
 order CONDITION:CONTROL "Condition: Control of Neighborhoods" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/condition/control>.<p>
+    Updates an existing <cref /entity/condition/control>.<p>
 
     <parmlist>
     <condition_ parm condition_id -required>
@@ -67,7 +67,7 @@ order CONDITION:CONTROL "Condition: Control of Neighborhoods" {
 
 order CONDITION:EXPR "Condition: Boolean Expression" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/condition/expr>.<p>
+    Updates an existing <cref /entity/condition/expr>.<p>
 
     <parmlist>
     <condition_ parm condition_id -required>

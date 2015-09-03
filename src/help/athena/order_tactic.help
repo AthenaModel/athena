@@ -40,7 +40,7 @@ order TACTIC:STATE "Set Tactic State" {
 
 order TACTIC:ABSIT "Tactic: Abstract Situation" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/absit>.<p>
+    Updates an existing <cref /entity/tactic/absit>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -51,7 +51,7 @@ order TACTIC:ABSIT "Tactic: Abstract Situation" {
 
 order TACTIC:ACCIDENT "Tactic: ACCIDENT Event" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/accident>.<p>
+    Updates an existing <cref /entity/tactic/accident>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -63,7 +63,7 @@ order TACTIC:ACCIDENT "Tactic: ACCIDENT Event" {
 
 order TACTIC:ASSIGN "Tactic: Assign Personnel" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/assign>.<p>
+    Updates an existing <cref /entity/tactic/assign>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -74,7 +74,7 @@ order TACTIC:ASSIGN "Tactic: Assign Personnel" {
 
 order TACTIC:ATTRIT "Tactic: Magic Attrition" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/attrit>.<p>
+    Updates an existing <cref /entity/tactic/attrit>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -85,7 +85,7 @@ order TACTIC:ATTRIT "Tactic: Magic Attrition" {
 
 order TACTIC:BROADCAST "Tactic: Broadcast an IOM" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/broadcast>.<p>
+    Updates an existing <cref /entity/tactic/broadcast>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -96,7 +96,7 @@ order TACTIC:BROADCAST "Tactic: Broadcast an IOM" {
 
 order TACTIC:BUILD "Tactic: Build Infrastructure" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/build>.<p>
+    Updates an existing <cref /entity/tactic/build>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -107,7 +107,7 @@ order TACTIC:BUILD "Tactic: Build Infrastructure" {
 
 order TACTIC:CURSE "Tactic: CURSE" {
     <b><term prep> Only.</b>  
-    Updates and existing <cref /object/tactic/curse>.<p>
+    Updates and existing <cref /entity/tactic/curse>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -118,7 +118,7 @@ order TACTIC:CURSE "Tactic: CURSE" {
 
 order TACTIC:DAMAGE "Tactic: Damage Infrastructure" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/damage>.<p>
+    Updates an existing <cref /entity/tactic/damage>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -129,7 +129,7 @@ order TACTIC:DAMAGE "Tactic: Damage Infrastructure" {
 
 order TACTIC:DEMO "Tactic: DEMO Event" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/demo>.<p>
+    Updates an existing <cref /entity/tactic/demo>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -141,7 +141,7 @@ order TACTIC:DEMO "Tactic: DEMO Event" {
 
 order TACTIC:DEMOB "Tactic: Demobilize Forces" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/demob>.<p>
+    Updates an existing <cref /entity/tactic/demob>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -152,7 +152,7 @@ order TACTIC:DEMOB "Tactic: Demobilize Forces" {
 
 order TACTIC:DEPLOY "Tactic: Deploy Troops" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/deploy>.<p>
+    Updates an existing <cref /entity/tactic/deploy>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -163,7 +163,7 @@ order TACTIC:DEPLOY "Tactic: Deploy Troops" {
 
 order TACTIC:DEPOSIT "Tactic: Deposit Money" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/deposit>.<p>
+    Updates an existing <cref /entity/tactic/deposit>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -174,7 +174,7 @@ order TACTIC:DEPOSIT "Tactic: Deposit Money" {
 
 order TACTIC:EXECUTIVE "Tactic: Executive Command" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/executive>.<p>
+    Updates an existing <cref /entity/tactic/executive>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -185,7 +185,7 @@ order TACTIC:EXECUTIVE "Tactic: Executive Command" {
 
 order TACTIC:EXPLOSION "Tactic: EXPLOSION Event" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/explosion>.<p>
+    Updates an existing <cref /entity/tactic/explosion>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -196,7 +196,7 @@ order TACTIC:EXPLOSION "Tactic: EXPLOSION Event" {
 
 order TACTIC:FLOW "Tactic: Flow Personnel" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/flow>.<p>
+    Updates an existing <cref /entity/tactic/flow>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -207,7 +207,7 @@ order TACTIC:FLOW "Tactic: Flow Personnel" {
 
 order TACTIC:FUND "Tactic: Fund Actor" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/fund>.<p>
+    Updates an existing <cref /entity/tactic/fund>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -218,7 +218,7 @@ order TACTIC:FUND "Tactic: Fund Actor" {
 
 order TACTIC:FUNDENI "Tactic: Fund Essential Non-infrastructure Services" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/fundeni>.<p>
+    Updates an existing <cref /entity/tactic/fundeni>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -229,7 +229,7 @@ order TACTIC:FUNDENI "Tactic: Fund Essential Non-infrastructure Services" {
 
 order TACTIC:GRANT "Tactic: Grant Access to CAP" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/grant>.<p>
+    Updates an existing <cref /entity/tactic/grant>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -240,7 +240,7 @@ order TACTIC:GRANT "Tactic: Grant Access to CAP" {
 
 order TACTIC:MAINTAIN "Tactic: Maintain Infrastructure" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/maintain>.<p>
+    Updates an existing <cref /entity/tactic/maintain>.<p>
     <parmlist>
     <tactic_ parm tactic_id -required>
     <tactic_ parm name -optional>
@@ -250,7 +250,7 @@ order TACTIC:MAINTAIN "Tactic: Maintain Infrastructure" {
 
 order TACTIC:MOBILIZE "Tactic: Mobilize Forces" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/mobilize>.<p>
+    Updates an existing <cref /entity/tactic/mobilize>.<p>
     <parmlist>
     <tactic_ parm tactic_id -required>
     <tactic_ parm name -optional>
@@ -260,7 +260,7 @@ order TACTIC:MOBILIZE "Tactic: Mobilize Forces" {
 
 order TACTIC:RIOT "Tactic: RIOT Event" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/riot>.<p>
+    Updates an existing <cref /entity/tactic/riot>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -271,7 +271,7 @@ order TACTIC:RIOT "Tactic: RIOT Event" {
 
 order TACTIC:SERVICE "Tactic: Update Level of Service" {
     <b><term prep> Only.</b>
-    Updates an existing <cref /object/tactic/service>.<p>
+    Updates an existing <cref /entity/tactic/service>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -282,7 +282,7 @@ order TACTIC:SERVICE "Tactic: Update Level of Service" {
 
 order TACTIC:SIGEVENT "Tactic: Log Significant Event" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/sigevent>.<p>
+    Updates an existing <cref /entity/tactic/sigevent>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -293,7 +293,7 @@ order TACTIC:SIGEVENT "Tactic: Log Significant Event" {
 
 order TACTIC:SPEND "Tactic: Spend Money" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/spend>.<p>
+    Updates an existing <cref /entity/tactic/spend>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -304,7 +304,7 @@ order TACTIC:SPEND "Tactic: Spend Money" {
 
 order TACTIC:STANCE "Tactic: Force Group Stance" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/stance>.<p>
+    Updates an existing <cref /entity/tactic/stance>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -315,7 +315,7 @@ order TACTIC:STANCE "Tactic: Force Group Stance" {
 
 order TACTIC:SUPPORT "Tactic: Support Actor" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/support>.<p>
+    Updates an existing <cref /entity/tactic/support>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -326,7 +326,7 @@ order TACTIC:SUPPORT "Tactic: Support Actor" {
 
 order TACTIC:VIOLENCE "Tactic: VIOLENCE Event" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/violence>.<p>
+    Updates an existing <cref /entity/tactic/violence>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>
@@ -337,7 +337,7 @@ order TACTIC:VIOLENCE "Tactic: VIOLENCE Event" {
 
 order TACTIC:WITHDRAW "Tactic: Withdraw Money" {
     <b><term prep> Only.</b>  
-    Updates an existing <cref /object/tactic/withdraw>.<p>
+    Updates an existing <cref /entity/tactic/withdraw>.<p>
 
     <parmlist>
     <tactic_ parm tactic_id -required>

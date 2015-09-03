@@ -91,7 +91,7 @@ order ABSIT:CREATE "Create Abstract Situation" {
     become active, i.e., up until the next time advance.<p>
 
     This order can be <cref /command/send sent> by the
-    <cref /object/tactic/executive>.<p>
+    <cref /entity/tactic/executive>.<p>
 
     <parmlist>
     <parm n "Neighborhood">
@@ -209,7 +209,7 @@ order ABSIT:RESOLVE "Resolve Abstract Situation" {
 
 
     This order can be <cref /command/send sent> by the
-    <cref /object/tactic/executive>.
+    <cref /entity/tactic/executive>.
 }
 
 

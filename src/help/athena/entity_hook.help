@@ -46,7 +46,7 @@ object hook_ {
     } -tags {create update browser}
 }
 
-page /object hook "Semantic Hook" {
+page /entity hook "Semantic Hook" {
     <sotitle>
 
     <hook_ overview><p>
@@ -100,7 +100,7 @@ object hook_topic {
     } -tags {create update browser}
 }
 
-page /object/hook topic "Semantic Hook Topic" {
+page /entity/hook topic "Semantic Hook Topic" {
     <sotitle>
 
     <hook_topic overview><p>

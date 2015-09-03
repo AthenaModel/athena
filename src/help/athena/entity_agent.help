@@ -14,10 +14,10 @@
 #-----------------------------------------------------------------------
 
 
-page /object agent "Agent" {
+page /entity agent "Agent" {
     <sotitle>
 
-    An agent is a <cref /object "simulation object"> that can own a 
+    An agent is a <cref /entity "simulation object"> that can own a 
     <term strategy>: that is, it is an object that can execute
     <term tactic>s subject to certain <term condition>s to
     achieve its goals.<p>
@@ -25,18 +25,18 @@ page /object agent "Agent" {
     Political <term actor>s are the primary kind of agent in
     Athena; actors have financial and personnel assets that they
     use to achieve their political goals.  In addition, there is also
-    the <cref /object/agent/system>, which uses a strategy to drive 
+    the <cref /entity/agent/system>, which uses a strategy to drive 
     other parts of the simulation, e.g., to displace civilian groups
     or to make events happen at particular times.
 }
 
-page /object/agent system "SYSTEM agent" {
+page /entity/agent system "SYSTEM agent" {
     <sotitle>
 
     The SYSTEM is an <term agent> that uses its strategy to drive
     parts of the simulation that are not owned by 
     <term actor>s.  For example, the SYSTEM can make things happen 
     at pre-determined times, or use the
-    <cref /object/tactic/flow> to move civilian populations
+    <cref /entity/tactic/flow> to move civilian populations
     around the playbox.
 }

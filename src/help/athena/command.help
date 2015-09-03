@@ -433,18 +433,18 @@ command "autogen strategy" {
     </ul>
 
     Currently there are only three tactic types automatically created.
-    They are the <cref /object/tactic/deploy>, the 
-    <cref /object/tactic/assign> and the <cref /object/tactic/fundeni>.  
+    They are the <cref /entity/tactic/deploy>, the 
+    <cref /entity/tactic/assign> and the <cref /entity/tactic/fundeni>.  
     In the future there may be more automatically generated tactics.<p>
 
-    By default, the <cref /object/tactic/deploy> is created for each
+    By default, the <cref /entity/tactic/deploy> is created for each
     group owned by each actor in each neighborhood with the personnel in 
     groups being evenly distributed among the several neighborhoods. Then,
-    for each deployed group, the <cref /object/tactic/assign> is used to 
+    for each deployed group, the <cref /entity/tactic/assign> is used to 
     assign activities in turn depending on whether the owned group is a 
     force group or an organization group.<p>
 
-    Also by default, the <cref /object/tactic/fundeni> is created for
+    Also by default, the <cref /entity/tactic/fundeni> is created for
     each actor to fund ENI for all civilians in every neighborhood.  The
     amount of money spent for each tactic is one thousand dollars.<p>
 
@@ -491,7 +491,7 @@ command "autogen assign" {
     <syntax {<i>owner</i> ?<i>args...</i>?}>
 
     This command automatically generates one or more 
-    <cref /object/tactic/assign>s for force or organization groups
+    <cref /entity/tactic/assign>s for force or organization groups
     that belong to the specified owner.  By default all activities are
     assigned in turn for each neighborhood.  For each tactic created,
     100 personnel are specified to be doing the activity.  The list
@@ -839,7 +839,7 @@ command "condition configure" {
     in addition, the type-specific parameters of the given condition type's
     <cref /order/condition> update order may be also be used by
     prefixing their names with a hyphen, e.g., "<code>-expression</code>"
-    for the <cref /object/condition/expr>.<p>
+    for the <cref /entity/condition/expr>.<p>
 
     <optionlist>
     <condition_ parms -tags configure -asoption>
@@ -1028,7 +1028,7 @@ command "gofer" {
     be used to evaluate gofer values.<p>
 
     For example, suppose you are using the <command send> command
-    to create a <cref /object/tactic/fundeni>.  You want to fund
+    to create a <cref /entity/tactic/fundeni>.  You want to fund
     all civilian groups resident in neighborhood N1.  The order's 
     <i>glist</i> parameter uses the <cref /gofer/civgroups> gofer type,
     and you see that <cref /gofer/civgroups> has a rule called 
@@ -1902,7 +1902,7 @@ command "tactic configure" {
     in addition, the type-specific parameters of the given tactic type's
     <cref /order/tactic> update order may be also be used by
     prefixing their names with a hyphen, e.g., "<code>-msg</code>"
-    for the <cref /object/tactic/sigevent>.<p>
+    for the <cref /entity/tactic/sigevent>.<p>
 
     <optionlist>
     <tactic_ parms -tags configure -asoption>

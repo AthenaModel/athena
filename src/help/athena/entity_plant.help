@@ -85,7 +85,7 @@ object plant_ {
     } -tags {create update}
 }
 
-page /object plant "GOODS Production Plants" {
+page /entity plant "GOODS Production Plants" {
     <sotitle>
 
     <plant_ overview><p>

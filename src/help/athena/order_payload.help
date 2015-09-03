@@ -54,13 +54,13 @@ page /order/payload coop PAYLOAD:COOP:* {
     <title>
 
     The following orders are used to create and update
-    <cref /object/payload/coop>s.<p>
+    <cref /entity/payload/coop>s.<p>
 
     <childlinks>
 }
 
 order PAYLOAD:COOP:CREATE "Create Payload: Cooperation" {
-    Creates a <cref /object/payload/coop>.<p>
+    Creates a <cref /entity/payload/coop>.<p>
 
     <parmlist>
     <payload_coop parm iom_id -required>
@@ -69,7 +69,7 @@ order PAYLOAD:COOP:CREATE "Create Payload: Cooperation" {
 }
 
 order PAYLOAD:COOP:UPDATE "Update Payload: Cooperation" {
-    Updates an existing <cref /object/payload/coop>.<p>
+    Updates an existing <cref /entity/payload/coop>.<p>
 
     <parmlist>
     <payload_coop parm id -required>
@@ -84,13 +84,13 @@ page /order/payload hrel PAYLOAD:HREL:* {
     <title>
 
     The following orders are used to create and update
-    <cref /object/payload/hrel>s.<p>
+    <cref /entity/payload/hrel>s.<p>
 
     <childlinks>
 }
 
 order PAYLOAD:HREL:CREATE "Create Payload: Horizontal Relationship" {
-    Creates a <cref /object/payload/hrel>.<p>
+    Creates a <cref /entity/payload/hrel>.<p>
 
     <parmlist>
     <payload_hrel parm iom_id -required>
@@ -99,7 +99,7 @@ order PAYLOAD:HREL:CREATE "Create Payload: Horizontal Relationship" {
 }
 
 order PAYLOAD:HREL:UPDATE "Update Payload: Horizontal Relationship" {
-    Updates an existing <cref /object/payload/hrel>.<p>
+    Updates an existing <cref /entity/payload/hrel>.<p>
 
     <parmlist>
     <payload_hrel parm id -required>
@@ -114,13 +114,13 @@ page /order/payload sat PAYLOAD:SAT:* {
     <title>
 
     The following orders are used to create and update
-    <cref /object/payload/sat>s.<p>
+    <cref /entity/payload/sat>s.<p>
 
     <childlinks>
 }
 
 order PAYLOAD:SAT:CREATE "Create Payload: Satisfaction" {
-    Creates a <cref /object/payload/sat>.<p>
+    Creates a <cref /entity/payload/sat>.<p>
 
     <parmlist>
     <payload_sat parm iom_id -required>
@@ -129,7 +129,7 @@ order PAYLOAD:SAT:CREATE "Create Payload: Satisfaction" {
 }
 
 order PAYLOAD:SAT:UPDATE "Update Payload: Satisfaction" {
-    Updates an existing <cref /object/payload/sat>.<p>
+    Updates an existing <cref /entity/payload/sat>.<p>
 
     <parmlist>
     <payload_sat parm id -required>
@@ -145,13 +145,13 @@ page /order/payload vrel PAYLOAD:VREL:* {
     <title>
 
     The following orders are used to create and update
-    <cref /object/payload/vrel>s.<p>
+    <cref /entity/payload/vrel>s.<p>
 
     <childlinks>
 }
 
 order PAYLOAD:VREL:CREATE "Create Payload: Vertical Relationship" {
-    Creates a <cref /object/payload/vrel>.<p>
+    Creates a <cref /entity/payload/vrel>.<p>
 
     <parmlist>
     <payload_vrel parm iom_id -required>
@@ -160,7 +160,7 @@ order PAYLOAD:VREL:CREATE "Create Payload: Vertical Relationship" {
 }
 
 order PAYLOAD:VREL:UPDATE "Update Payload: Vertical Relationship" {
-    Updates an existing <cref /object/payload/vrel>.<p>
+    Updates an existing <cref /entity/payload/vrel>.<p>
 
     <parmlist>
     <payload_vrel parm id -required>

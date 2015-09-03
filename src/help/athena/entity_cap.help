@@ -96,7 +96,7 @@ object cap_ {
 
 }
 
-page /object cap "CAP" {
+page /entity cap "CAP" {
     <sotitle>
 
     <cap_ overview><p>

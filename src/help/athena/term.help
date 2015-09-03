@@ -89,7 +89,7 @@ term activity "activity" {
 
 #-----------------------------------------------------------------------
 
-alias /term actor "actor" /object/actor
+alias /term actor "actor" /entity/actor
 
 #-----------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ term affinity "affinity" {
 
 #-----------------------------------------------------------------------
 
-alias /term agent "agent" /object/agent
+alias /term agent "agent" /entity/agent
 
 #-----------------------------------------------------------------------
 
@@ -183,7 +183,7 @@ term bgerror "bgerror" {
 
 #-----------------------------------------------------------------------
 
-alias /term block "block" /object/block
+alias /term block "block" /entity/block
 
 
 #-----------------------------------------------------------------------
@@ -197,7 +197,7 @@ term calibration "calibration" {
 
 #-----------------------------------------------------------------------
 
-alias /term cap "CAP" /object/cap
+alias /term cap "CAP" /entity/cap
 
 #-----------------------------------------------------------------------
 
@@ -255,7 +255,7 @@ term cause "cause" {
 
 #-----------------------------------------------------------------------
 
-alias /term civgroup "civilian group" /object/group/civ
+alias /term civgroup "civilian group" /entity/group/civ
 
 #-----------------------------------------------------------------------
 
@@ -311,7 +311,7 @@ term concern "concern" {
 
 #-----------------------------------------------------------------------
 
-alias /term condition "condition" /object/condition
+alias /term condition "condition" /entity/condition
 
 #-----------------------------------------------------------------------
 
@@ -372,7 +372,7 @@ term coverage "coverage" {
 }
 
 
-alias /term curse "curse" /object/curse
+alias /term curse "curse" /entity/curse
 
 #-----------------------------------------------------------------------
 
@@ -413,7 +413,7 @@ term deployment "deployment" {
     <term orggroup>s, and can make use of their 
     <term mobilize "mobilized"> <term personnel>.  To do useful work,
     such personnel must be 
-    <cref /object/tactic/deploy deployed> into neighborhoods.  A particular
+    <cref /entity/tactic/deploy deployed> into neighborhoods.  A particular
     group's <i>deployment</i> is simply the number of personnel allocated
     to each neighborhood.<p>
 
@@ -505,9 +505,9 @@ term executive "executive" {
     The Athena "executive" is the object that processes 
     <cref /command commands> entered at the Athena command-line or 
     in Athena executive scripts.  In addition, it is responsible for
-    executing <cref /object/tactic/executive>s and for evaluating
+    executing <cref /entity/tactic/executive>s and for evaluating
     the boolean expressions entered for the
-    <cref /object/condition/expr>.<p>
+    <cref /entity/condition/expr>.<p>
 
     Executive scripts can be executed from the host computer's 
     file system using the <command call> command; alternatively,
@@ -588,11 +588,11 @@ term filterbox "filter box" {
 
 #-----------------------------------------------------------------------
 
-alias /term frcgroup "force group" /object/group/frc
+alias /term frcgroup "force group" /entity/group/frc
 
 #-----------------------------------------------------------------------
 
-alias /term group "group" /object/group
+alias /term group "group" /entity/group
 
 #-----------------------------------------------------------------------
 
@@ -628,11 +628,11 @@ term influence "influence" {
 
 #-----------------------------------------------------------------------
 
-alias /term inject "inject" /object/inject
+alias /term inject "inject" /entity/inject
 
 #-----------------------------------------------------------------------
 
-alias /term iom "IOM" /object/iom
+alias /term iom "IOM" /entity/iom
 
 #-----------------------------------------------------------------------
 
@@ -737,7 +737,7 @@ term mood "mood" {
 
 #-----------------------------------------------------------------------
 
-alias /term nbhood "neighborhood" /object/nbhood
+alias /term nbhood "neighborhood" /entity/nbhood
 
 #-----------------------------------------------------------------------
 
@@ -755,7 +755,7 @@ term order "order" {
 
 #-----------------------------------------------------------------------
 
-alias /term orggroup "organization group" /object/group/org
+alias /term orggroup "organization group" /entity/group/org
 
 #-----------------------------------------------------------------------
 
@@ -779,7 +779,7 @@ term paused "Paused" {
 
 #-----------------------------------------------------------------------
 
-alias /term payload "payload" /object/payload
+alias /term payload "payload" /entity/payload
 
 #-----------------------------------------------------------------------
 
@@ -791,17 +791,17 @@ term personnel "personnel" {
     <b><term mobilize "Mobilized"> Personnel:</b>  Group personnel
     who are currently present in the <term playbox>.  Personnel may 
     exist in the playbox at time zero, or be mobilized later using the
-    <cref /object/tactic/mobilize>.<p>
+    <cref /entity/tactic/mobilize>.<p>
 
     <b><term deployment "Deployed"> Personnel:</b>  Once mobilized, 
     personnel must be deployed to neighborhoods 
-    via the <cref /object/tactic/deploy> before they can be used. 
+    via the <cref /entity/tactic/deploy> before they can be used. 
     Personnel remaining undeployed at the end of strategy execution
     are automatically demobilized.<p>
 
     <b><term demobilize "Demobilization">:</b>  Troops can be
     demobilized, i.e., removed from the playbox, using the 
-    <cref /object/tactic/demob>, or simply by not deploying them.<p>
+    <cref /entity/tactic/demob>, or simply by not deploying them.<p>
 
     Once deployed, personnel can be assigned to 
     <term activity activities> and used in a variety of other ways.<p>
@@ -1174,11 +1174,11 @@ term support "support" {
 
 #-----------------------------------------------------------------------
 
-alias /term system "SYSTEM agent" /object/agent/system
+alias /term system "SYSTEM agent" /entity/agent/system
 
 #-----------------------------------------------------------------------
 
-alias /term tactic "tactic" /object/tactic
+alias /term tactic "tactic" /entity/tactic
 
 #-----------------------------------------------------------------------
 
@@ -1270,9 +1270,9 @@ term unit "unit" {
     civilian population of the <term nbhood>, and to represent 
     <term frcgroup> and <term orggroup> 
     personnel <term deployment deployed> to neighborhoods by the 
-    <cref /object/tactic/deploy>;
+    <cref /entity/tactic/deploy>;
     and also to represent personnel assigned to particular activities
-    by the <cref /object/tactic/assign>.  Thus, every unit belongs to 
+    by the <cref /entity/tactic/assign>.  Thus, every unit belongs to 
     some group and represents personnel drawn from some particular 
     neighborhood.<p>
 

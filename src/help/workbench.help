@@ -23,7 +23,7 @@ include workbench/images.help
 
 #-----------------------------------------------------------------------
 
-page "" "" "Athena Workbench Help" {
+page "" "" "Workbench Help" {
     <img athena right>
 
     This is the on-line help for <b>Athena Workbench V<version></b>,
@@ -31,39 +31,58 @@ page "" "" "Athena Workbench Help" {
     Simulation.  Please see the <i>Athena User's Guide</i> for additional 
     information.<p>
 
+    <h4>This Release</h4>
+
     <ul>
-    <li> <cref /changelog>
-    <li> <cref /about>
-    <li> <cref /release>
-    <li> <cref /object>
+    <li> <cref /main/about>
+    <li> <cref /main/release>
+    <li> <cref /main/changelog>
+    </ul>
+
+    <h4>The Workbench User Interface</h4>
+
+    <ul>
     <li> <cref /menu>
     <li> <cref /tab>
+    <li> <cref /prefs>
+    </ul>
+
+    <h4>Athena Scenarios</h4>
+
+    <ul>
+    <li> <cref /entity>
     <li> <cref /order>
     <li> <cref /gofer>
-    <li> <cref /var>
+    <li> <cref /parmdb>
+    <li> <cref /compdb>
+    </ul>
+
+    <h4>Additional Information</h4>
+
+    <ul>
     <li> <cref /command>
     <li> <cref /function>
-    <li> <cref /parmdb>
-    <li> <cref /prefs>
     <li> <cref /term>
     </ul>
 }
 
 
+alias / main "Workbench Help" /
 
 #======================================================================
 # The following sections are in separate files
 
 include front.help
-include athena/object.help
+
 include workbench/menu.help
 include workbench/tab.help
+include workbench/prefs.help
+
+include athena/entity.help
 include athena/order.help
 include athena/gofer.help
-include workbench/var.help
+include athena/parmdb.help
+include athena/compdb.help
 include athena/command.help
 include athena/function.help
-include athena/parmdb.help
-include workbench/prefs.help
-include athena/compdb.help
 include athena/term.help

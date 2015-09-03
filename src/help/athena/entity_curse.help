@@ -91,7 +91,7 @@ object curse_ {
     } -tags {object state}
 }
 
-page /object curse "CURSE" {
+page /entity curse "CURSE" {
     <sotitle>
 
     <curse_ overview><p>

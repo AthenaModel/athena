@@ -24,7 +24,7 @@ macro INJECT.mag {} {
 object inject_ {
     noun "inject"
     overview {
-        Injects are the <cref /object> by which a
+        Injects are the <cref /entity> by which a
         <term curse> has its effect on actors and groups.
         Each CURSE has one or more injects, each of which affects
         a specific set of attitudes.  For example, a CURSE may need
@@ -36,7 +36,7 @@ object inject_ {
         and actors to cause effects in Athena.  A <term role> can be
         thought of as a variable that holds one or more IDs for a group or
         actor depending on the type of inject.  For example, a 
-        <cref /object/inject/vrel VREL> inject must have a role for one
+        <cref /entity/inject/vrel VREL> inject must have a role for one
         or more <term actor>s and one or more <term group>s.<p>
 
         There are several different types of inject; they are all 
@@ -71,7 +71,7 @@ object inject_ {
 
     attribute inject_type "Inject Type" {
         The inject's type, e.g., 
-        <b><cref /object/inject/vrel VREL></b>.
+        <b><cref /entity/inject/vrel VREL></b>.
     } -tags {object}
 
     attribute state "State" {
@@ -84,7 +84,7 @@ object inject_ {
     } -tags {object state}
 }
 
-page /object inject "Inject" {
+page /entity inject "Inject" {
     <sotitle>
 
     <inject_ overview><p>
@@ -137,7 +137,7 @@ object inject_coop {
     } -tags {create update}
 }
 
-page /object/inject coop "COOP inject" {
+page /entity/inject coop "COOP inject" {
     <sotitle>
 
     <inject_coop overview><p>
@@ -187,7 +187,7 @@ object inject_hrel {
     } -tags {create update}
 }
 
-page /object/inject hrel "HREL inject" {
+page /entity/inject hrel "HREL inject" {
     <sotitle>
 
     <inject_hrel overview><p>
@@ -229,7 +229,7 @@ object inject_sat {
     } -tags {create update}
 }
 
-page /object/inject sat "SAT inject" {
+page /entity/inject sat "SAT inject" {
     <sotitle>
 
     <inject_sat overview><p>
@@ -278,7 +278,7 @@ object inject_vrel {
     } -tags {create update}
 }
 
-page /object/inject vrel "VREL inject" {
+page /entity/inject vrel "VREL inject" {
     <sotitle>
 
     <inject_vrel overview><p>

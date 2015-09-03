@@ -74,7 +74,7 @@ order ACTOR:UPDATE "Update Actor" {
 order ACTOR:INCOME "Update Actor Income" {
     This order modifies the income of an existing <term actor>.  
     It may be used interactively when the simulation is paused, and
-    by the <cref /object/tactic/executive>.<p>
+    by the <cref /entity/tactic/executive>.<p>
    
     If the Economic model is in use, these income values are used to
     initialize and calibration the Economy; the actor's income will then come
@@ -99,9 +99,9 @@ order ACTOR:INCOME "Update Actor Income" {
 order ACTOR:SUPPORTS "Update Actor Supports" {
     This order specifies which <term actor> this actor usually
     supports politically, in the absence of a 
-    <cref /object/tactic/support> for a given neighborhood.
+    <cref /entity/tactic/support> for a given neighborhood.
     It may be used interactively when the simulation is paused, and
-    by the <cref /object/tactic/executive>.  The order
+    by the <cref /entity/tactic/executive>.  The order
     parameters are as follows:<p>
 
     <parmlist>
