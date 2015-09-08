@@ -1,0 +1,101 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    var.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Output Variables
+#
+#    This file is included into athena.help.
+#
+#    Individual variable types have page names like
+#
+#       /var/<domain>/<vartype>
+#
+#    NOTE: This file used to document the "display variables" used by
+#    neighborhood and time-series plots in Athena Workbench, as defined
+#    in app_athenawb/view.tcl.  The "time series" display variables are 
+#    now used only in plots displayed on certain Detail Browser pages;
+#    the users have no direct access to them.
+#
+#    Consequently, we have re-purposed this page.  We still document
+#    the neighborhood display variables, with the caveat that they 
+#    are useful only in Athena Workbench; and we document
+#    the "History Variables" saved as the simulation runs.  These
+#    are available in hist_* tables, in the Arachne I/F, and are the
+#    subject of output analysis. 
+#
+#-----------------------------------------------------------------------
+
+page / var "Output Variables" {
+    <title>
+    Athena defines a variety of <i output variables>.  There are two 
+    kinds:<p>
+
+    <deflist>
+    <def {<cref /var/hist>}>
+    Time-stamped output values preserved for the entire run.<p>
+
+    <def {<cref /var/n>}>
+    Neighborhood display variables, used to color neighborhoods in the
+    Athena Workbench's map display.  Neighborhood display variables are
+    defined only at the current simulation time.  <b Note:> Ultimately,
+    history variables will replace neighborhood displayvariables
+    for this purpose.
+    </deflist>
+
+    Every variable name consists of a variable type, possibly 
+    followed by one or more index values.  For example, the
+    neighborhood variable <b>sat.SHIA.SFT</b> is the <term satisfaction> of 
+    of the SHIA <term group> with respect to its SFT <term concern>.<p>
+
+    The valid index values depend on the entities defined in the current
+    scenario; consequently, this documentation describes families of 
+    variables like this: "<b>sat.<i>g.c</i></b>"is the 
+    <term satisfaction> of group <i>g</i> with concern <i>c</i>.<p>
+}
+
+proc var {domain varname text} {
+    set parent /var/$domain
+    set slug $varname
+
+    page $parent $slug $varname $text
+}
+
+# vartitle ?index...?
+#
+# index...   The variable type's indices
+#
+# Formats the header for the command, including a link to the parent
+# page.
+
+macro vartitle {args} {
+    set namelist [split [pageinfo path] "/"]
+    lassign $namelist dummy1 dummy2 domain vartype
+
+    if {$domain eq "hist"} {
+        set dtext [cref /var/$domain "History Variable"]
+    } elseif {$domain eq "n"} {
+        set dtext [cref /var/$domain "Neighborhood Display Variable"]
+    } else {
+        error "Unexpected variable domain: \"$domain\""
+    }
+
+    set pattern $vartype
+
+    foreach index $args {
+        append pattern ".<i>$index</i>"
+    }
+    
+} {
+    |<--
+    [mktitle small $dtext $pattern ""]
+}
+
+include var_hist.help
+include var_n.help
+
+
