@@ -421,10 +421,14 @@ oo::class create ::projectlib::smartdomain {
 
         set mapping [list \{ <i> \} </i>]
 
+        set mp [::kitedocs::macro mp]
+        $mp register ::kitedocs::ehtml
+        $mp reset
+
         hb dl {
             foreach suffix $suffixes {
                 set url "$info(domain)[string map $mapping $suffix]"
-                set doc [string map $mapping $info(docstring-$suffix)]
+                set doc [$mp expandonce $info(docstring-$suffix)]
 
                 hb dt "<tt>$url</tt>"
                 hb dd-with {
@@ -433,6 +437,8 @@ oo::class create ::projectlib::smartdomain {
                 }       
             }
         }
+
+        $mp destroy
 
         return [hb /page]
     }

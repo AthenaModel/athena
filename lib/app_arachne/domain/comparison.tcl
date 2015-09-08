@@ -68,6 +68,7 @@ oo::class create /comparison {
 
 smarturl /comparison /index.json {
     Returns a JSON list of comparison objects.
+    (<link "/arachne.html#/comparison/index.json" spec>)    
 } {
     set table [huddle list]
 
@@ -79,11 +80,9 @@ smarturl /comparison /index.json {
 }
 
 smarturl /comparison /request.json {
-    Requests a comparison object for the case with ID {case1} or for a 
-    pair of cases {case1} and {case2}.  On success, returns
-    <tt>['ok', <i>comparison</i>]</tt>, where 
-    <i>comparison</i> is the same kind of object returned by 
-    /comparison/index.json.
+    Requests a comparison object for the case with ID <i>case1</i> or for a 
+    pair of cases <i>case1</i> and <i>case2</i>.  
+    (<link "/arachne.html#/comparison/request.json" spec>)    
 } {
     qdict prepare case1 -required -tolower -in [case names]
     qdict prepare case2           -tolower -in [case names]
@@ -105,11 +104,8 @@ smarturl /comparison /request.json {
 
 smarturl /comparison /chain.json {
     Returns a list of the significant inputs driving change in 
-    a specific output variable {varname} in comparison {comp}.  
-    The list is recursive: we drill
-    down as far as we can, producing a "causality chain".  The {var}
-    must be one of the variables included in the list returned by
-    /comparison/request.json.
+    a specific output variable <i>varname</i> in comparison <i>comp</i>.  
+    (<link "/arachne.html#/comparison/request.json" spec>)    
 } {
     qdict prepare comp    -required -type comp
 

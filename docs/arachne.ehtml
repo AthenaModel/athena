@@ -1,5 +1,25 @@
 <document "Arachne Interface Specification">
 
+<proc defurl {path} {
+    set imap [list \{ <i> \} </i>]
+    set item [string map $imap $path]
+
+    set pmap [list \{ "" \} ""]
+    set path [string map $pmap $path]
+
+    return [defitem $path $item]
+}>
+
+<swallow {
+    template histrec {name keys desc} {
+    } {
+        [tr]<td>[tt $name]</td>
+            <td>[tt {*}$keys]</td>
+            <td>$desc</td>
+        [/tr]
+    }
+}>
+
 <b NOTE:> This is a preliminary specification; the Arachne executable
 is an incomplete prototype.<p>
 
@@ -256,7 +276,7 @@ and that the HTML will primarily be for debugging.  The return type of
 a URL is indicated by the file extension on the URL, e.g., 
 ".html" or ".json".<p>
 
-<section restapi.help "/help Domain">
+<section restapi.help "Help API">
 
 We have made the Athena Workbench's on-line help database available via
 the Arachne server because it contains quite of bit of information that
@@ -275,36 +295,1136 @@ the URL<p>
 In fact, this query string can be used on any page in the <tt /help> 
 domain.<p>
 
-<section restapi.scenario "/scenario Domain">
+<section restapi.scenario "Scenario Management API">
+<section restapi.scenario.main "Scenario Operations">
 
-Most of Arachne's URLs reside in the <tt /scenario> domain.  Top-level
-functionality hangs directly from <tt /scenario>; for example, 
-<link /scenario/index.html /scenario/index.html> lists all of the currently
-loaded scenarios.<p>
+Top-level scenario operations hang directly from <tt /scenario> and 
+consist of the following URLs.
+<p>
 
-URLs specific to a particular scenario appear in the 
+<itemlist scenariourls>
+
+<deflist scenariourls>
+<defurl "/scenario/index.json">
+<p>
+Query Parameters: None.
+<p>
+
+Returns a JSON array of scenario metadata objects.<p>
+
+<topiclist "Return Parameter">
+<topic "id">The ID of the scenario.</topic>
+<topic "longname">The user defined long name of a the scenario.</topic>
+<topic "state">The current state of the scenario. One of: PREP, PAUSED or BUSY</topic>
+<topic "tick">The current time in ticks of the scenario.</topic>
+<topic "week">The current time in weeks of the scenario.</topic>
+<topic "source">The name of the file that is the source of the scenario.</topic>
+<topic "url">The server relative URL for the scenario.</topic>
+</topiclist><p> 
+
+Example Return:
+<example>
+[
+  {
+    "id": "case00",
+    "longname": "Base Case",
+    "state": "PREP",
+    "tick": 0,
+    "week": "2012W01",
+    "source": "n\/a",
+    "url": "\/scenario\/case00\/index.json"
+  },
+  {
+    "id": "case02",
+    "longname": "Scenario #02",
+    "state": "PAUSED",
+    "tick": 10,
+    "week": "2012W11",
+    "source": "elitia.adb",
+    "url": "\/scenario\/case02\/index.json"
+  }
+]
+</example>
+
+<defurl "/scenario/clone.json">
+<p>
+<topiclist "Query Parameter">
+<topic "source">Required. A scenario to be cloned.</topic>
+<topic "target">Optional. The scenario to be replaced.</topic>
+<topic "longname">Optional. The user defined name of the target scenario.</topic>
+</topiclist> 
+<p>    
+
+Clones existing scenario <i>source</i> as a new scenario, assigning
+it an id and longname.  If <i>target</i> is given, it must be an 
+existing scenario other than <i>source</i>; the clone will replace
+the previous state of scenario <i>target</i>.  Otherwise, a 
+case ID will be chosen automatically.
+If <i>longname</i> is given, the scenario will be given the new
+name.  On success, returns a list 
+
+<example>
+["OK", "<i>case</i>"]
+</example>
+
+where the <i>case</i> is either the selected <i>target</i> or a 
+newly generated case ID.<p>
+
+Example URL:
+<example>
+http://localhost:8080/scenario/clone.json?source=case03&target=case04&longname=MyScenario
+</example>
+
+<defurl /scenario/export.json>
+<p>
+<topiclist "Query Parameter">
+<topic "case">Required. A scenario to be exported.</topic>
+<topic "filename">Required. The name of the file for export.</topic>
+</topiclist> 
+<p>    
+
+Exports scenario <i>case</i> to the <tt>-scenariodir</tt> as
+<i>filename</i>.  The file type may be "<tt>.adb</tt>" for a
+standard Athena scenario file or "<tt>.tcl</tt>" for a
+scenario script.  If no file type is given, "<tt>.adb</tt>"
+is assumed.   On success, returns a list 
+<example>
+["OK", "<i>filename</i>"]
+</example>
+<p>
+
+Example URL:
+<example>
+http://localhost:8080/scenario/export.json?case=case03&filename=MyScenario.adb
+</example>
+
+<defurl /scenario/files.json>
+
+Query Parameters: None<p>
+
+Returns a JSON array of scenario file objects.<p>
+
+<topiclist "Return Parameter">
+<topic "id">The name of a scenario file.</topic>
+<topic "size">The size of the file in bytes.</topic>
+<topic "mtime">The last time the file was modified.</topic>
+</topiclist><p> 
+
+Example Return:
+<example>
+[
+  {
+    "id": "Nangarhar_geo.tcl",
+    "size": 81078,
+    "mtime": 1433274495000
+  },
+  {
+    "id": "Nangarhar.adb",
+    "size": 478208,
+    "mtime": 1436883862000
+  },
+  {
+    "id": "test.adb",
+    "size": 480256,
+    "mtime": 1433965288000
+  }
+]
+</example>
+
+<defurl /scenario/import.json>
+<p>
+<topiclist "Query Parameter">
+<topic "filename">Required. The name of the file for import.</topic>
+<topic "case">Optional. The scenario to be imported as.</topic>
+<topic "longname">Optional. The user defined name of the imported scenario.</topic>
+</topiclist> 
+<p>    
+
+Imports scenario <i>filename</i> and loads it into memory.
+The <i>filename</i> must name a file in the 
+<tt>-scenariodir</tt>.  If the <i>case</i> is given,
+the scenario will replace the existing scenario with that 
+ID; otherwise a new ID will be assigned.  
+If the <i>longname</i> is given, the scenario will
+be assigned that name.  On success, returns a list 
+<example>
+["OK", "<i>case</i>"]
+</example>
+
+where the <i>case</i> is either the selected <i>target</i> or a 
+newly generated case ID.<p>
+
+Example URL:
+<example>
+http://localhost:8080/scenario/import.json?case=case01&filename=MyScenario.adb
+</example>
+
+<defurl /scenario/new.json>
+
+<p>
+<topiclist "Query Parameter">
+<topic "case">Optional. New scenario to be created.</topic>
+<topic "longname">Optional. The user defined name of the new scenario.</topic>
+</topiclist> 
+<p>    
+
+Creates a new, empty scenario, assigning it an ID and longname.
+If <i>case</i> is given, it must be the case ID of an existing 
+scenario; the scenario's contents will be reset to the empty state.
+If <i>longname</i> is given, the scenario will be given the new
+name.  On success, returns a list 
+<example>
+["OK", "<i>case</i>"]
+</example>
+
+where the <i>case</i> is either the selected <i>target</i> or a 
+newly generated case ID.<p>
+
+Example URL:
+<example>
+http://localhost:8080/scenario/new.json?case=case01&longname=MyScenario
+</example>
+
+<defurl /scenario/remove.json>
+
+<p>
+<topiclist "Query Parameter">
+<topic "case">Required. The scenario to be removed.</topic>
+</topiclist> 
+<p>    
+
+Removes scenario <i>case</i> from the current session; export it first
+if you wish to keep the data.  On success, returns a list 
+<example>
+["OK", "<i>message</i>"]
+</example>
+
+where <i>message</i> is an informational message pertaining to any action
+taken.<p>
+
+Example URL:
+<example>
+http://localhost:8080/scenario/remove.json?case=case03
+</example>
+
+</deflist scenariourls>
+
+<section restapi.scenario.case "Case Operations (Main)">
+
+The API specific to a particular scenario case appear in the 
 <tt>/scenario/<i case>/</tt> subdomain, where <i case> is the scenario's
-"case ID".<p>
+"case ID".  Operations on individual scenario cases can be performed with
+the following list of URLs.<p>
 
-For a complete list of URLs in this domain, with documentation, see 
-<tt><link /scenario/urlschema.html /scenario/urlschema.html></tt>.<p>
+<itemlist caseurls>
+<deflist caseurls>
 
-<section restapi.comparison "/comparison Domain">
+<defurl /scenario/{case}/index.json>
+<p>
+Query Parameters: None.
+<p>
+
+Returns metadata for scenario <i>case</i>.<p>
+
+<topiclist "Return Parameter">
+<topic "id">The ID of <i>case</i>.</topic>
+<topic "longname">The user defined long name of <i>case</i>.</topic>
+<topic "state">The current state of <i>case</i>. One of: PREP, PAUSED or BUSY</topic>
+<topic "tick">The current time in ticks of <i>case</i>.</topic>
+<topic "week">The current time in weeks of <i>case</i>.</topic>
+<topic "source">The name of the file that is the source of <i>case</i>.</topic>
+</topiclist>
+
+<p>
+Example Return:
+<example>
+{
+  "id": "case01",
+  "longname": "Scenario #01",
+  "state": "PAUSED",
+  "tick": 10,
+  "week": "2012W11",
+  "source": "elitia.adb"
+}
+</example> 
+
+Example URL:
+<example>
+http://localhost:8080/scenario/case01/index.json
+</example>
+
+<defurl /scenario/{case}/lock.json>
+<p>
+Query Parameters: None.
+<p>
+Locks scenario <i>case</i> if it is unlocked.  On success, returns a list 
+<example>["OK", ""]</example> and on failure returns a list
+<example>["ERROR","message",""]</example>
+where <i>message</i> describes the nature of the failure.<p>
+
+Example URL:
+<example>
+http://localhost:8080/scenario/case01/lock.json
+</example>
+
+<defurl /scenario/{case}/unlock.json>
+<p>
+Query Parameters: None.
+<p>
+Unocks scenario <i>case</i> if it is locked.  On success, returns a list 
+<example>["OK", ""]</example> and on failure returns a list
+<example>["ERROR","message",""]</example>
+where <i>message</i> describes the nature of the failure.<p>
+
+Example URL:
+<example>
+http://localhost:8080/scenario/case01/unlock.json
+</example>
+
+<defurl /scenario/{case}/advance.json>
+<p>
+<topiclist "Query Parameter">
+<topic "weeks">Optional. The number of weeks to advance time. Defaults to 1 week.
+</topic>
+</topiclist><p>
+
+Asks for an advance of simulation time in scenario <i case> by <i weeks>, 
+locking the scenario if necessary.  The scenario will be <b>BUSY</b> 
+until the time advance is complete.  On success, returns a list 
+<example>["OK", ""]</example> and on failure returns a list
+<example>["ERROR","message",""]</example>
+where <i messsage> describes the nature of the failure.<p>
+
+Example URL:
+<example>
+http://localhost:8080/scenario/case01/advance.json?weeks=10
+</example>
+
+<defurl /scenario/{case}/parmdb.json>
+<p>
+Query Parameters: None.
+<p>
+
+Requests the contents of the parameter database for scenario <i case>.  
+The database is returned as an array of JSON objects with parameter names,
+doc strings, current and default values.<p>
+
+<topiclist "Return Parameter">
+<topic "name">The name of the parameter.</topic>
+<topic "id">The unique ID of the parameter.</topic>
+<topic "parent">The parent of the parameter or "".</topic>
+<topic "docstr">The documentation string of the parameter.</topic>
+<topic "value">The current value of the parameter or "".</topic>
+<topic "default">The default value of the parametr or "".</topic>
+</topiclist>
+
+<defurl /scenario/{case}/order.json>
+<p>
+Query Parameters: Varies.
+<p>
+
+Accepts an order and its parameters.
+The query parameters are the order name as <tt>order_</tt>
+and the order-specific parameters as indicated in the
+<link /help/order.html "on-line help">.  The result of the order is 
+returned as a JSON list indicating the success of the request with related 
+information.<p>
+
+Example URL (Actor Create Order)
+<example>
+http://localhost:8080/scenario/case00/order.html?op=send&order_=ACTOR%3ACREATE&a=A1&longname=MyActor&bsid=1&supports=SELF&auto_maintain=0&atype=INCOME&
+cash_reserve=0&cash_on_hand=0&income_goods=0&shares_black_nr=0&income_black_tax=0&income_pop=0&income_graft=0&income_world=0&budget=0
+</example>
+
+<defurl /scenario/{case}/script.json>
+<p>
+<topiclist "Query Parameter">
+<topic "script">URL encoded script to be executed.</topic>
+</topiclist>
+
+<p>
+Accepts a Tcl script as a POST query, and attempts to
+execute it in the named scenario's executive interpreter.
+The query data should be just the script itself with a
+content-type of text/plain.  The result of running the script 
+is returned in JSON format.<p>
+
+<defurl /scenario/{case}/sanity/onlock.json>
+<p>
+Query Parameters: None.
+<p>
+
+Performs an on-lock sanity check for the scenario, and returns the 
+list of failure records.  If the list is empty, there were no 
+problems.  If the list contains a record with a "severity" of
+"error", then the scenario cannot be locked.  The JSON result
+is a list of failure objects.
+
+Example Return for sanity check failure:
+<example>
+[
+  {
+    "severity": "error",
+    "code": "nbhood.none",
+    "entity": "nbhood",
+    "message": "No neighborhoods are defined."
+  },
+  {
+    "severity": "error",
+    "code": "frcgroup.none",
+    "entity": "group\/frc",
+    "message": "No force groups are defined."
+  }
+]
+</example><p>
+
+</deflist caseurls>
+
+<section restapi.scenario.group "Case Operations (Groups)">
+In this section and the following sections are REST API calls that allow a 
+client to query and inspect scenario data from an individual scenario case.<p>
+
+<itemlist casegroups><p>
+
+<deflist casegroups>
+<defurl /scenario/{case}/group/index.json>
+<p>
+Query Parameters: None.
+<p>
+
+Returns JSON data that is common to all groups in scenario <i>case</i>.<p>
+
+<topiclist "Return Parameter">
+<topic "fancy">Human readable form of the groups name.</topic>
+<topic "a">The owner of the group or "".</topic>
+<topic "url">Server relative URL for the group.</topic>
+<topic "demeanor">Demeanor of the group: APATHETIC, AVERAGE or AGGRESSIVE.</topic>
+<topic "id">The unique ID of the group.</topic>
+<topic "qid">The qualified ID of the group.</topic>
+<topic "g">Group's short name.</topic>
+<topic "gtype">Type of the group: CIV, FRC or ORG.</topic>
+<topic "longname">Group's long name.</topic>
+<topic "cost">Deployment cost of the group (only applies to FRC or ORG types).</topic>
+<topic "bsid">Belief system of the group or "".</topic>
+<topic "a_url">Server relative URL of the owner or "".</topic>
+<topic "a_qid">Qualified ID of the owner or "".</topic>
+<topic "color">The color of the groups icon. (Used for UI display).</topic>
+</topiclist>
+
+<p>
+Example Return:
+<example>
+[
+  {
+    "fancy": "ARMY: Elitian Army",
+    "a": "GOV",
+    "url": "\/scenario\/case01\/group\/ARMY\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "ARMY",
+    "qid": "group\/ARMY",
+    "g": "ARMY",
+    "gtype": "FRC",
+    "longname": "Elitian Army",
+    "cost": 0.00,
+    "bsid": "",
+    "a_url": "\/scenario\/case01\/actor\/GOV\/index.json",
+    "a_qid": "actor\/GOV",
+    "color": "#3B61FF"
+  }
+]
+</example>
+
+<defurl /scenario/{case}/group/civ.json>
+<p>
+Query Parameters: None.
+<p>
+Returns a JSON list of civilian group entities in the <i>case</i> 
+specified.<p>
+
+<topiclist "Return Parameter">
+<topic "subsistence">Number of people in the group engaged in subsistence agriculture.</topic>
+<topic "povfrac">Fraction of the group that is in poverty.</topic>
+<topic "hist_flag">For internal use.</topic>
+<topic "fancy">Human readable form of the groups name.</topic>
+<topic "unemployed">Number of people in group currently unemployed.</topic>
+<topic "lfp">The percentage of the group in the labor force.</topic>
+<topic "bsysname">Name of groups belief system.</topic>
+<topic "basepop">The base population of the group at simulation start.</topic>
+<topic "url">Server relative URL for the group.</topic>
+<topic "eloc">The expected level of consumption of goods baskets.</topic>
+<topic "population">Current popluation of the group.</topic>
+<topic "demeanor">Demeanor of the group: APATHETIC, AVERAGE or AGGRESSIVE.</topic>
+<topic "povpct">Percentage of the group that is in poverty.</topic>
+<topic "uaf">The unemployment attitude factor.</topic>
+<topic "pretty_sa_flag">Subsistence agriculture flag suitable for display.</topic>
+<topic "id">The unique ID of the group.</topic>
+<topic "labor_force">Number of people in the group actively seeking employment.</topic>
+<topic "attrition">Number of casualties taken by this group since start time.</topic>
+<topic "qid">The qualified ID of the group.</topic>
+<topic "mood0">Mood of the group at simulation start.</topic>
+<topic "tc">Total consumption of goods baskets at the current time.</topic>
+<topic "consumers">Number of consumers in the group.</topic>
+<topic "g">Group's short name.</topic>
+<topic "n_url">Server relative URL for the groups resident neighborhood.</topic>
+<topic "rloc">The groups required level of consumption of goods baskets.</topic>
+<topic "upc">The per-capita unemployment percentage.</topic>
+<topic "gtype">Type of the group: CIV.</topic>
+<topic "longname">Group's long name.</topic>
+<topic "sat_funding">Saturation level of funding for this group for essential non-infrastructure services.</topic>
+<topic "req_funding">Required level of funding for this group for essential non-infrastructure services.</topic>
+<topic "bsid">Group's belief system ID.</topic>
+<topic "pop_cr">Group's population change rate in percent per year.</topic>
+<topic "n_qid">Qualified ID of the groups resident neighborhood.</topic>
+<topic "housing">The living condition of the group, one of: AT_HOME, DISPLACED or IN_CAMP.</topic>
+<topic "sa_flag">Flag indicating whether the group is engaged in subsistence agriculture.</topic>
+<topic "n">The ID of the groups resident neighborhood.</topic>
+<topic "mood">Current mood of the group.</topic>
+<topic "aloc">The actual level of consumption of goods baskets.</topic>
+<topic "ur">Unemployment rate of the group as a percentange.</topic>
+<topic "color">The color of the groups icon. (Used for UI display).</topic>
+</topiclist>
+
+<p>
+Example Return:
+<p>
+<example>
+[
+  {
+    "subsistence": 0,
+    "povfrac": 0.0,
+    "hist_flag": 0,
+    "fancy": "PEONR: Rural Peons",
+    "unemployed": 19200,
+    "lfp": 60,
+    "bsysname": "PEONR (5)",
+    "basepop": 800000,
+    "url": "\/scenario\/case01\/group\/PEONR\/index.json",
+    "eloc": 0.0,
+    "population": 800000,
+    "demeanor": "AGGRESSIVE",
+    "povpct": 0.0,
+    "uaf": 0.00,
+    "pretty_sa_flag": "No",
+    "id": "PEONR",
+    "labor_force": 480000,
+    "attrition": 0,
+    "qid": "group\/PEONR",
+    "mood0": 0.000,
+    "tc": 0.0,
+    "consumers": 800000,
+    "g": "PEONR",
+    "n_url": "\/scenario\/case01\/nbhood\/PE\/index.json",
+    "rloc": 0.0,
+    "upc": 2.4,
+    "gtype": "CIV",
+    "longname": "Rural Peons",
+    "sat_funding": "N\/A",
+    "req_funding": "N\/A",
+    "bsid": 5,
+    "pop_cr": 0.0,
+    "n_qid": "nbhood\/PE",
+    "housing": "AT_HOME",
+    "sa_flag": 0,
+    "n": "PE",
+    "mood": 3.405,
+    "aloc": 0.0,
+    "ur": 4.0,
+    "color": "#AA7744"
+  }
+]
+</example>
+
+<defurl /scenario/{case}/group/frc.json>
+<p>
+Query Parameters: None.
+<p>
+<topiclist "Return Parameter">
+<topic "forcetype">Type of forcegroup: REGULAR, IRREGULAR, POLICE, CRIMINAL or PARAMILITARY</topic>
+<topic "fancy">Human readable form of the groups name.</topic>
+<topic "a">ID of the owning actor.</topic>
+<topic "pretty_local">Display form of flag indicating whether group is local.</topic>
+<topic "url">The server relative URL for the group.</topic>
+<topic "equip_level">Equipment level of group: BEST, GOOD, FAIR or POOR.</topic>
+<topic "demeanor">The demeanor of the group: APATHETIC, AVERAGE or AGGRESSIVE.</topic>
+<topic "training">Level of training group has received: PROFICIENT, FULL, PARTIAL or NONE.</topic>
+<topic "id">ID of group.</topic>
+<topic "qid">Qualified ID of group.</topic>
+<topic "g">Short name of the group.</topic>
+<topic "base_personnel">The base personnel of the group available to be deployed.</topic>
+<topic "gtype">Group type: FRC.</topic>
+<topic "longname">Long name of the group.</topic>
+<topic "cost">The average deployment cost of a person per week.</topic>
+<topic "a_url">Server relative URL for the owning actor.</topic>
+<topic "local">Flag indicating whether group is local.</topic>
+<topic "a_qid">Qualified ID of the owning actor.</topic>
+<topic "personnel">Current number of personnel deployed.</topic>
+<topic "color">The color of the groups icon. (Used for UI display).</topic>
+</topiclist>
+
+<p>
+Example Return:
+<p>
+<example>
+[
+  {
+    "forcetype": "REGULAR",
+    "fancy": "ARMY: Elitian Army",
+    "a": "GOV",
+    "pretty_local": "Yes",
+    "url": "\/scenario\/case01\/group\/ARMY\/index.json",
+    "equip_level": "GOOD",
+    "demeanor": "AVERAGE",
+    "training": "FULL",
+    "id": "ARMY",
+    "qid": "group\/ARMY",
+    "g": "ARMY",
+    "base_personnel": 20000,
+    "gtype": "FRC",
+    "longname": "Elitian Army",
+    "cost": 0.00,
+    "a_url": "\/scenario\/case01\/actor\/GOV\/index.json",
+    "local": 1,
+    "a_qid": "actor\/GOV",
+    "personnel": 20000,
+    "color": "#3B61FF"
+  }
+]
+</example>
+
+<defurl /scenario/{case}/group/org.json>
+<p>
+Query Parameters: None.
+<p>
+Returns a JSON list of organization group entities in the <i>case</i> 
+specified.
+
+<topiclist "Return Parameter">
+<topic "fancy">Human readable form of the groups name.</topic>
+<topic "a">ID of the owning actor.</topic>
+<topic "url">The server relative URL for the group.</topic>
+<topic "demeanor">The demeanor of the group: APATHETIC, AVERAGE or AGGRESSIVE.</topic>
+<topic "id">ID of group.</topic>
+<topic "qid">Qualified ID of group.</topic>
+<topic "g">Short name of the group.</topic>
+<topic "base_personnel">The base personnel of the group available to be deployed.</topic>
+<topic "gtype">Group type: FRC.</topic>
+<topic "longname">Long name of the group.</topic>
+<topic "cost">The average deployment cost of a person per week.</topic>
+<topic "orgtype">Type of ORG group: NGO, IGO or CTR.</topic>
+<topic "a_url">Server relative URL for owning actor.</topic>
+<topic "a_qid">Qualified ID of the owning actor.</topic>
+<topic "personnel">Current number of personnel deployed.</topic>
+<topic "color">The color of the groups icon. (Used for UI display).</topic>
+</topiclist>
+
+<p>
+Example Return:
+<p>
+<example>
+[{
+    "fancy": "PAL: Peonian Assistance League",
+    "a": "PELF",
+    "url": "\/scenario\/case01\/group\/PAL\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "PAL",
+    "qid": "group\/PAL",
+    "g": "PAL",
+    "base_personnel": 1000,
+    "gtype": "ORG",
+    "longname": "Peonian Assistance League",
+    "cost": 0.00,
+    "orgtype": "NGO",
+    "a_url": "\/scenario\/case01\/actor\/PELF\/index.json",
+    "a_qid": "actor\/PELF",
+    "personnel": 1000,
+    "color": "#B300B3"
+  }
+]
+</example>
+
+<defurl /scenario/{case}/group/{g}/index.json>
+<p>
+Query Parameters: None.
+<p>
+
+Returns a JSON list of group data for scenario <i>case</i> and 
+group <i>g</i>.<p>
+
+The return parameters for this set of URLs is already documented above:
+<ul>
+<li><link #/scenario/case/group/civ.json "Civilian Group">
+<li><link #/scenario/case/group/frc.json "Force Group">
+<li><link #/scenario/case/group/org.json "Organization Group">
+</ul>
+
+</deflist casegroups>
+
+<section restapi.scenario.actor "Case Operations (Actors)">
+<itemlist caseactors>
+<deflist caseactors>
+<defurl /scenario/{case}/actors/index.json>
+<p>
+Query parameters: None
+<p>
+
+Returns a JSON list of actor entities in the <i>case</i> specified.<p>
+
+<topiclist "Return Parameter">
+<topic "supports">ID of actor this actor supports, or <b SELF>.</topic>
+<topic "income_pop">Weekly income from the population sector.</topic>
+<topic "a">Short name of the actor.</topic>
+<topic "fancy">Human readable form of the actors name.</topic>
+<topic "auto_maintain">Flag indicating whether goods production infrastructure owned is automatically maintained without cost.</topic>
+<topic "cash_reserve">Amount of cash in reserve.</topic>
+<topic "bsysname">Name of actors supposed belief system.</topic>
+<topic "url">Server relative URL for this actor.</topic>
+<topic "income">Computed weekly income.</topic>
+<topic "budget">Amount of income if actor is a BUDGET actor.</topic>
+<topic "atype">Actors type of monetary resources: BUDGET or INCOME.</topic>
+<topic "id">Unique ID.</topic>
+<topic "qid">Qualified unique ID.</topic>
+<topic "shares_black_nr">Amount of black market net revenue income expressed in shares.</topic>
+<topic "longname">Human readable form of the actors name.</topic>
+<topic "supports_url">Server relative URL of actor this actor supports or "".</topic>
+<topic "income_world">Weekly income from the world sector.</topic>
+<topic "cash_on_hand">Amount of cash on hand.</topic>
+<topic "supports_qid">Qualified unique ID of supported actor or "".</topic>
+<topic "income_graft">Weekly income from graft.</topic>
+<topic "income_goods">Weekly income from the goods sector.</topic>
+<topic "pretty_am_flag">Display form of auto-maintain flag.</topic>
+</topiclist>
+<p>
+Example Return:
+<example>
+[
+  {
+    "supports": "SELF",
+    "income_pop": 0.00,
+    "a": "EPP",
+    "fancy": "EPP: Elitian People's Party",
+    "auto_maintain": 0,
+    "cash_reserve": 0.00,
+    "bsysname": "EPP (4)",
+    "url": "\/scenario\/case01\/actor\/EPP\/index.json",
+    "income": 0.00,
+    "budget": 0.00,
+    "atype": "INCOME",
+    "id": "EPP",
+    "qid": "actor\/EPP",
+    "shares_black_nr": 0,
+    "longname": "Elitian People's Party",
+    "supports_url": "",
+    "income_world": 0.00,
+    "bsid": 4,
+    "income_black_tax": 0.00,
+    "cash_on_hand": 0.00,
+    "supports_qid": "",
+    "income_graft": 0.00,
+    "income_goods": "1.000M",
+    "pretty_am_flag": "No"
+  }
+]
+</example>
+
+<defurl /scenario/{case}/actor/{a}/index.json>
+<p>
+Query parameters: None
+<p>
+Returns a JSON object of actor data for scenario <i>case</i> and actor 
+<i>a</i>.
+See the actor <link #/scenario/case/actors/index.json spec> for
+a description of the return values.
+</deflist caseactors>
+
+
+<section restapi.scenario.nbhood "Case Operations (Neighborhoods)">
+<itemlist casenbhoods>
+<deflist casenbhoods>
+<defurl /scenario/{case}/nbhoods/index.json>
+<p>
+Query parameters: None
+<p>
+
+Returns a JSON list of neighborhood entities in the <i>case</i> specified.<p>
+<topiclist "Return Parameter">
+<topic "subsistence">Number of subsistence agriculture civilians in neighborhood.</topic>
+<topic "polygon">Polygon vertices expressed in MGRS.</topic>
+<topic "controller_qid">Qualified ID of controlling actor or <b>NONE</b>.</topic>
+<topic "volatility">Volatility measure of the neighborhood.</topic>
+<topic "fancy">Human readable form of the neighborhood name.</topic>
+<topic "pcf">Production capacity factor of neighborhood.</topic>
+<topic "unemployed">Number of unemployed civilians in neighborhood.</topic>
+<topic "since">Time at which controller took control.</topic>
+<topic "url">Server relative URL for this neighborhood.</topic>
+<topic "population">Total civilian population in neighborhood.</topic>
+<topic "controller">ID of controlling actor or <b>NONE</b>.</topic>
+<topic "id">Unique ID of neighborhood.</topic>
+<topic "labor_force">Size of labor force in neighborhood.</topic>
+<topic "qid">Qualified unique ID of neighborhood.</topic>
+<topic "urbanization">Level of urbanization: URBAN, SUBURBAN, RURAL.</topic>
+<topic "mood0">Composite mood of neighborhood at start time.</topic>
+<topic "consumers">Number of consumers in the neighborhood.</topic>
+<topic "stacking_order">This neighborhoods position in stacking order.</topic>
+<topic "since_ticks">Time in ticks at which controller took control.</topic>
+<topic "obscured_by">Name of obscuring neighborhood or "".</topic>
+<topic "longname">User defined long name of neighborhood.</topic>
+<topic "local">Flag indicating whether neighborhood is considered local.</topic>
+<topic "controller_url">Server relative URL of controlling actor or "".</topic>
+<topic "n">Short name of neighborhood.</topic>
+<topic "mood">Current composite mood of neighborhood.</topic>
+<topic "refpoint">Reference point in neighborhood that is guaranteed to be inside polygon and not obscured.</topic>
+</topiclist>
+
+<p>
+Example Return:
+<example>
+[
+  {
+    "subsistence": 100000,
+    "polygon": "38TNL4582553998 38TNL0862002796 38TNK9116028747 38TNL8468203274 38TPL3404250197",
+    "controller_qid": "actor\/PELF",
+    "volatility": 3,
+    "fancy": "PE: Peonia",
+    "pcf":  1.0,
+    "unemployed": 19200,
+    "since": "2012W06",
+    "url": "\/scenario\/case01\/nbhood\/PE\/index.json",
+    "population": 900000,
+    "controller": "PELF",
+    "id": "PE",
+    "labor_force": 480000,
+    "qid": "nbhood\/PE",
+    "urbanization": "RURAL",
+    "mood0": 0.000,
+    "consumers": 800000,
+    "stacking_order": 3,
+    "since_ticks": 5,
+    "obscured_by": "",
+    "longname": "Peonia",
+    "local": "YES",
+    "controller_url": "\/scenario\/case01\/actor\/PELF\/index.json",
+    "n": "PE",
+    "mood": 3.068,
+    "refpoint": "38TNL5764723441"
+  }
+]
+</example>
+<defurl /scenario/{case}/nbhood/{n}/index.json>
+<p>
+Query parameters: None
+<p>
+Returns JSON list of neighborhood data for scenario <i>case</i> and neighborhood <i>n</i>.
+See the neighborhood <link #/scenario/case/nbhoods/index.json spec> for
+a description of the return values.
+
+</deflist casenbhoods>
+<section restapi.scenario.history "Case Operations (History)">
+<deflist casehistory>
+
+<itemlist casehistory><p>
+
+<defurl /scenario/{case}/history/meta.json>
+<p>
+Query parameters: None
+<p>
+
+Returns all meta data associated with history variables as an
+array of JSON objects.  The exact contents of the array depends on
+which <i case> is queried for meta data.  The meta data returned contains
+only the variables for which their corresponding history table
+actually has data along with the valid key/value pairs for that table.
+Using the variable names and, optionally, the key/value pairs history 
+data can be requested by using the 
+<link  #/scenario/case/history/var/index.json "history variable URL">.<p>
+
+<topiclist "Return Parameter">
+<topic "name">The history variable used to query history.</topic>
+<topic "desc">Human readable description of history variable.</topic>
+<topic "size">The number of records in the history variable table.</topic>
+<topic "keys">Array of JSON objects that varies depending on the history variable. (<link #restapi.scenario.histvars spec>).</topic>
+</topiclist>
+<p>
+
+All history <tt keys> objects contain the following fields.<p>
+<topiclist "Keys Parameter">
+<topic "key">A key to be used to request history data</topic>
+<topic "label">Human readable description of the <i key>.</topic>
+<topic "values">Array of valid values for the <i key>.</topic>
+</topiclist>
+<p>
+Example Return:
+</p>
+<example>
+[
+  {
+    "name": "coop",
+    "desc": "Civilian Group Cooperation",
+    "size": 154,
+    "keys": [
+      {
+        "key": "f",
+        "label": "Civilian Group",
+        "values": [
+          "ALL",
+          "ELR",
+          "ELU",
+          "ICS",
+          "NOBODY",
+          "PEONR",
+          "PEONU",
+          "SA"
+        ]
+      },
+      {
+        "key": "g",
+        "label": "Force Group",
+        "values": [
+          "ALL",
+          "ARMY",
+          "PELFM"
+        ]
+      }
+    ]
+  }
+]
+</example>
+
+<defurl /scenario/{case}/history/{var}/index.json>
+<p>
+Query Parameters: Vary depending on <i>case</i> and <i>var</i>.
+<p>
+
+Retrieves the history associated with a history variable called <i var>
+from scenario <i case>.<p>
+
+Without any query parameters, all history data for the history variable
+<i var> is returned from scenario <i case>.<p>
+
+By using the data returned by a call to the 
+<link #/scenario/case/history/meta.json "meta data URL">
+the data returned can be constrained to specific key values and time
+periods. See the <link #restapi.scenario.histvars spec> below
+for how to construct a query to get specific history data.<p>
+
+</deflist casehistory>
+
+<section restapi.scenario.histvars "History Table Query Reference">
+
+History for a particular scenario case can be extracted using the proper
+<link #/scenario/case/history/var/index.json "REST API call">.  Without
+any query parameters, requests made with that URL will return the entire
+contents of the table containing the history for that variable.   It is
+possible, however, that knowing which keys and valid values for those keys
+only a subset of the history can be requested.  Below is a table of history
+variable names and valid keys with descriptions.  The values for the
+keys depend on the case being queried and are contained within the meta
+data returned by <link #/scenario/case/history/meta.json "this URL">.<p>
+
+All history variable queries recognize <tt t1> and <tt t2> as valid
+query parameters.  <tt t1> is the start time for the returned data and
+<tt t2> the end time.  If <tt t1> is greater than <tt t2> no data is
+returned.  If <tt t1> is greater than the end time of the simulation run
+no data is returned. Setting these query parameters as the empty string or
+omitting them altogether will result in all history being returned from 
+the simulation start time to simulation end time.<p>
+
+<table tab.histvars "History Variables">
+<th>
+<td>Variable Name</td>
+<td>Keys</td>
+<td>Description</td>
+</th>
+
+<histrec aam_battle {n f g} "Attrition History, force and civilian
+attrition taken due to battle.">
+<histrec activity_nga {n g a} "Neighborhood Activities, activities
+performed by force and organization groups.">
+<histrec control n "Neighborhood Control, actor(s) in control of
+neighborhoods.">
+<histrec coop {f g} "Civilian Group Cooperation, cooperation of civilian
+groups with force groups.">
+<histrec deploy_ng {n g} "Force/Org Group Deployments, personnel deployed
+to neighborhoods.">
+<histrec econ None "Economy, key economic factors such as GDP.">
+<histrec flow {f g} "Civilian Group Population Flow, the movement of
+civilian groups from one group to another.">
+<histrec hrel {f g} "Horizontal Relationships, relationships between 
+civilian, force and organization groups.">
+<histrec mood g "Civilian Group Mood, mood of civilian groups over time.">
+<histrec nbmood n "Neighborhood Mood, composite mood of neighborhoods over
+time.">
+<histrec nbur n "Neighborhood Unemployment, unemployment rate by
+neighborhood.">
+<histrec npop n "Neighborhood Population, population statistics by 
+neighborhood."> 
+<histrec plant_a a "Goods Plants by Owner, goods production infrastructure
+by owning actor.">
+<histrec plant_n n "Goods Plants by Neighborhood, goods production
+infrastructure by neighborhood.">
+<histrec plant_na {n a} "Goods Plants by Nbhood/Owner, goods production
+infrastructure by neighborhood and owning actor.">
+<histrec pop g "Civilian Group Population, population statistics by
+civilian group.">
+<histrec sat {g c} "Civilian Group Satisfaction, satisfaction by group
+and by concern.">
+<histrec security {n g} "Neighborhood/Group Security, the level of security
+by neighborhood and group.">
+<histrec service_sg {s g} "Service Levels, the various levels of service
+by service type and civilian group.">
+<histrec support {n a} "Political Support, the political support received
+by neighborhood and actor.">
+<histrec volatility n "Neighborhood Volatility, the level of volatility
+by neighborhood.">
+<histrec vrel {g a} "Vertical Relationship, the relationship between
+groups and actors.">
+
+</table><p>
+
+Some example URLs for extracting history data from <tt case01> using 
+key/value pairs:
+<example>
+Request for neighborhood population for the neighborhood with id "N1":
+http://localhost:8080/scenario/case01/history/npop/index.json?n=N1
+
+The same request but for a smaller time window:
+http://localhost:8080/scenario/case01/history/npop/index.json?n=N1&t1=2&t2=10
+
+Request for neighborhood activities for a the group with id "FRC1":
+http://localhost:8080/scenario/case01/history/activity_nga/index.json?g=FRC1
+
+Same request, but also for a the neighborhood with id "N1" as well:
+http://localhost:8080/scenario/case01/history/activity_nga/index.json?g=FRC1&n=N1
+</example>
+
+<section restapi.comparison "Scenario Comparison API">
 
 URLs related to comparing the results of scenarios reside in the 
-<tt /comparison> domain.  The toplevel comparison operations 
-are defined directly under <tt /comparison>; e.g., to create a 
-new comparison use <tt /comparison/new.json>.<p>
+<tt /comparison> domain.  The following list of URLs is the 
+complete list of REST API calls available in this domain.<p>
 
-URLs specific to a particular comparison appear in the 
-<tt>/comparison/<i comp>/</tt> subdomain, where <i comp> is
-the comparison's "comparison ID".<p>
+<itemlist comparison>
 
-For a complete list of URLs in this domain, with documentation, see 
-<tt><link /comparison/urlschema.html /comparison/urlschema.html></tt>.<p>
+<deflist comparison>
+<defurl /comparison/index.json>
+<p>
+Query Parameters: None.
+<p>
+Returns a JSON list of comparison objects.<p>
+
+<topiclist "Return Parameters">
+<topic "id">The Unique ID of the comparison object.</topic>
+<topic "longname">Long name of the comparison object.</topic>
+<topic "case1">Scenario used as the first case in the comparison.</topic>
+<topic "case2">Scenario used as the second case in the comparison. 
+<i This may be the same as case1></topic>
+<topic "t1">The time used for <tt case1> in the comparison.</topic>
+<topic "t2">The time used for <tt case2> in the comparison.</topic>
+<topic "week1">The time string corresponding to <tt t1>.</topic>
+<topic "week2">The time string corresponding to <tt t2>.</topic>
+<topic "outputs">Array of JSON objects representing the output of the comparison. Detailed in following table.</topic>
+</topiclist><p>
+
+The outputs returned from a comparison vary greatly. However, each object
+in the JSON return found in the <tt outputs> array contains these fields:<p>
+
+<topiclist "Outputs Field">
+<topic "type">The type of output.</topic> 
+<topic "name">The name of the output.</topic> 
+<topic "category">The PMESII category of the output.</topic> 
+<topic "leaf">Flag indicating whether this output is a leaf node.</topic> 
+<topic "val1">Value of the output in <tt case1> at <tt t1>.</topic> 
+<topic "val2">Value of the output in <tt case2> at <tt t2>.</topic> 
+<topic "fancy1">Human readable version of <tt val1>.</topic> 
+<topic "fancy2">Human readable version of <tt val2>.</topic>
+<topic "delta">Computed delta between the cases for the output.</topic>
+<topic "narrative">Human readable text for the output.</topic>
+<topic "context">A context string for the output or "".</topic>
+<topic "inputs">A JSON object showing which of the other outputs are also inputs to this output.  This field is computed on demand when a causality chain is requested.</topic>
+<topic "score">This outputs score as computed relative to all other outputs.</topic>
+</topiclist>
+
+<p>
+Example Return:
+</p>
+<example>
+[{
+    "id": "case01",
+    "longname": "case01 @ 0 vs. case01 @ 10",
+    "case1": "case01",
+    "case2": "case01",
+    "t1": 0,
+    "t2": 10,
+    "week1": "2012W01",
+    "week2": "2012W11",
+    "outputs": [
+      {
+        "type": "control",
+        "name": "control.PE",
+        "category": "political",
+        "leaf": 1,
+        "n": "PE",
+        "val1": "GOV",
+        "fmt1": "GOV",
+        "fancy1": "Actor GOV is in control",
+        "val2": "PELF",
+        "fmt2": "PELF",
+        "fancy2": "Actor PELF is in control",
+        "delta": 1.0,
+        "narrative": "Neighborhood PE was controlled by GOV, is controlled by PELF.",
+        "context": "",
+        "inputs": {
+          
+        },
+        "score": 100.0
+      },
+
+      ...
+    ]
+}]
+
+</example>
+
+<defurl /comparison/request.json>
+<topiclist "Query Parameter">
+<topic "case1">Required. The first scenario case in the comparison request.</topic>
+<topic "case2">Optional. The second case in the comparison request.</topic>
+</topiclist>
+<p>
+Requests a comparison object for the case with ID <i case1> or for a 
+pair of cases <i case1> and <i case2>.  On success, returns
+<tt>['ok', <i>comparison</i>]</tt>, where 
+<i>comparison</i> is the same kind of object returned by 
+<link #/comparison/index.json /comparison/index.json>, which is where
+the return values are defined.
+<p>
+Example Request:
+<example>
+http://localhost:8080/comparison/request.json?case1=case01
+</example>
+
+<defurl /comparison/chain.json>
+<topiclist "Query Parameter">
+<topic "comp">Required. The comparison object ID.</topic>
+<topic "varname">Required. An output variable that exists in the
+comparison object.</topic>
+</topiclist>
+<p>
+
+Returns a list of the significant inputs driving change in 
+a specific output variable <i varname> in comparison <i comp>.  
+The list is recursive: we drill
+down as far as we can, producing a "causality chain".  The <i varname>
+must be one of the variables included in the list returned by
+<link #/comparison/request.json /comparison/request.json>.
+<p>
+Example Request:
+<example>
+http://localhost:8080/comparison/chain.json?comp=case01&varname=support.PE.PELF
+</example>
+
+</deflist comparison>
 
 <section restapi.json "JSON Conventions">
-
 All URLs that return JSON content end in a file name with extension
 "<tt .json>".  In many cases, the result is simply the JSON object or 
 list.  

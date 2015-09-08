@@ -27,6 +27,7 @@
 
 smarturl /scenario /{case}/actors/index.json {
     Returns a JSON list of actor entities in the <i>case</i> specified.
+    (<link "/arachne.html#/scenario/case/actors/index.json" spec>)    
 } {
     set case [my ValidateCase $case]
 
@@ -51,8 +52,9 @@ smarturl /scenario /{case}/actors/index.json {
 }
 
 smarturl /scenario /{case}/actor/{a}/index.json {
-    Returns JSON list of actor data for scenario <i>case</i> and actor 
+    Returns a JSON object of actor data for scenario <i>case</i> and actor 
     <i>a</i>.
+    (<link "/arachne.html#/scenario/case/actor/a/index.json" spec>)    
 } {
     # FIRST, validate case and actor 
     set a [my ValidateActor $case $a]
