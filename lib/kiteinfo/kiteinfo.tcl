@@ -67,7 +67,7 @@ namespace eval ::kiteinfo:: {
         reqver-fileutil 1.14
         icon-arachne {}
         icon-athenawb {}
-        url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
+        url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20150827.docx
         local-marsutil 1
         reqver-marsgui 3.0.21
         reqver-uri 1.2
@@ -85,7 +85,7 @@ namespace eval ::kiteinfo:: {
 }
         reqver-textutil::adjust 0.7
         gui-cellide 1
-        url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20150609.pptx
+        url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20150827.pptx
         reqver-tls 1.6.4
         icon-helptool {}
         local-snit 0
@@ -121,7 +121,7 @@ namespace eval ::kiteinfo:: {
         reqver-counter 2.0
         gui-athena 0
         gui-athenawb 1
-        url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20150610.docx
+        url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20150827.docx
         local-base64 0
         local-sqlite3 0
         force-athena 0

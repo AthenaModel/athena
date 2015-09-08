@@ -70,10 +70,10 @@ require simlib 3.0.21 -local
 require Marsbin 3.0.21 -local
 
 # External Files
-xfile docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20150610.docx
+xfile docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20150827.docx
 xfile docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20150610.docx
-xfile docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20150609.pptx
-xfile docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20140826.docx
+xfile docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20150827.pptx
+xfile docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20150827.docx
 
 # Distribution Targets
 dist install-%platform {
