@@ -15,7 +15,7 @@
 oo::class create ::athena::vardiff::security {
     superclass ::athena::vardiff
     meta type       security
-    meta category   political
+    meta category   military
     meta normfunc   100.0
     meta primary    0
     meta leaf       1

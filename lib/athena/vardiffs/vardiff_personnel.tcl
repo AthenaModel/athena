@@ -15,7 +15,7 @@
 oo::class create ::athena::vardiff::personnel {
     superclass ::athena::vardiff
     meta type       personnel
-    meta category   social
+    meta category   military
     meta normfunc   maxsum
     meta primary    0
     meta leaf       1

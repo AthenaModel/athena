@@ -1,0 +1,459 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    var_hist.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: History Variables
+#
+#    Data to include for each variable:
+#
+#   * Meaning, with links to terms
+#   * Class: Whether it's a primary output or not
+#   * Category
+#   * Input types, with links or "TBD"
+#   * Description of range, it if isn't covered by a link.
+#   * RDB table and column
+#   * Other mechanisms for finding it.
+#
+#-----------------------------------------------------------------------
+
+#=======================================================================
+# History Variables
+
+macro hist.primary {} {
+    [item "Class:"]Primary[/item]
+}
+
+macro hist.secondary {} {
+    [item "Class:"]Secondary[/item]
+}
+
+macro hist.category {cat} {
+    [item "Category:"]$cat[/item]
+}
+
+macro hist.database {ref} {
+    [item "Database:"]<tt>$ref</tt>[/item]
+}
+
+macro hist.range {text} {
+    [item "Range:"]$text[/item]
+}
+
+macro hist.comp {} {
+    [item "Database:"]Computed on demand[/item]
+}
+
+macro hist.inputs {varlist} {
+    set links [list]
+
+    if {$varlist eq "TBD"} {
+        set text "Not yet available"
+    } elseif {[llength $varlist] == 0} {
+        set text "None"
+    } else {
+        foreach var [lsort $varlist] {
+            set vlist [split $var .]
+            set vartype [lindex $vlist 0]
+            set vlist [lrange $vlist 1 end]
+
+            set url /var/hist/$vartype
+
+            if {[llength $vlist] > 0} {
+                set link "$vartype.<i>[join $vlist .]</i>"
+            } else {
+                set link $vartype
+            }
+
+            lappend links [cref $url $link] 
+        }
+
+        set text [join $links ", "]
+    }
+} {
+    [item "Inputs:"]$text[/item]
+}
+
+macro hist.drivercontrib {} {
+    [ifdef WORKBENCH {
+        Driver contributions are not directly accessible in an Athena
+        scenario database, but can be viewed in the 
+        <link my:/app/contribs "Detail Browser">.<p>
+    }]
+
+    <b>NOTE:</b> The cumulative contribution to an attitude curve by a driver
+    is a measure of how important that driver is relative to other
+    drivers.  Driver contributions are often transient, having
+    their full effect only in those time ticks when the contributions
+    were made;
+    consequently, the cumulative contribution is often much larger than
+    the actual delta to the curve between the beginning and end of the run.
+}
+
+
+page /var hist "History Variables" {
+    <title>
+    History variables are the outputs Athena records as simulation
+    runs, as well as additional variables that are computable from the
+    saved history on demand.  History variables are time-stamped, and
+    their values vary with the simulation time.  For example, the
+    variable <b>sat.SHIA.SFT</b> is the <term satisfaction>
+    of the SHIA group with respect to its SFT
+    concern over time.<p>
+
+    History variables can be <b primary> or <b secondary>.  Primary
+    variables are eligible for inclusion in the list of significant
+    outputs <ifdef WORKBENCH {as shown on the <tab Analysis>}>.  Secondary
+    outputs can appear in <term chain "causality chains"> but not as
+    top-level significant outputs.<p>
+
+    The available variable types are as follows:<p>
+
+    <childlinks>
+}
+
+var hist bsysmood {
+    <vartitle b>
+
+    The <term mood> of those civilian groups with <term bsystem> <i b>.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Social">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.comp>
+    <hist.inputs {sat.g.c population.g}>
+    </itemlist>
+}
+
+var hist bsyssat {
+    <vartitle b c>
+
+    The <term satisfaction> with <term concern> <i c> of those civilian 
+    groups with <term bsystem> <i b>.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Social">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.comp>
+    <hist.inputs {sat.g.c population.g}>
+    </itemlist>
+}
+
+var hist control {
+    <vartitle n>
+
+    The name of the <term actor> in control of <term nbhood> <i n>, or
+    "NONE" if none.<p> 
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Political">
+    <hist.database hist_nbmood.a>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist driversat {
+    <vartitle g c drid>
+
+    The cumulative contribution to the <term satisfaction> of
+    <term group> <i g> with <term concern> <i c> by attitude driver
+    <i drid> from the beginning of the simulation to the time at which
+    the history value was saved.<p>
+
+    <itemlist>
+    <hist.secondary>
+    <hist.category "Social">
+    <hist.comp>
+    <hist.inputs TBD>
+    </itemlist>
+
+    <hist.drivercontrib>
+}
+
+var hist drivervrel {
+    <vartitle g a drid>
+
+    The cumulative contribution to the <term vrel> of
+    <term group> <i g> with <term actor> <i a> by attitude driver
+    <i drid> from the beginning of the simulation to the time at which
+    the history value was saved.<p>
+
+    <itemlist>
+    <hist.secondary>
+    <hist.category "Social">
+    <hist.range "Arbitrary, centered at 0.0">
+    <hist.comp>
+    <hist.inputs TBD>
+    </itemlist>
+
+    <hist.drivercontrib>
+}
+
+var hist gdp {
+    <vartitle>
+
+    The Gross Domestic Product (GDP) of the <term local_economy>, in
+    dollars.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Economic">
+    <hist.range "<i>value</i> &gt; \$0.00">
+    <hist.database hist_econ.dgdp>
+    <hist.inputs TBD>
+    </itemlist>
+
+}
+
+var hist goodscap {
+    <vartitle n>
+
+    The <b GOODS> production capacity of <term nbhood> <i n>, in 
+    dollars.  Production capacity depends on the number of 
+    <cref /entity/plant "production plants"> in the neighborhood, along
+    with their repair levels.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Economic">
+    <hist.range "<i>value</i> &gt; \$0.00">
+    <hist.database hist_plant_n.cap>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist mood {
+    <vartitle g>
+
+    The <term mood> of civilian <term group> <i g>.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Social">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.database hist_civg.mood>
+    <hist.inputs {sat.g.c population.g}>
+    </itemlist>
+}
+
+var hist nbinfluence {
+    <vartitle n>
+
+    This variable has a complex value; it is the list of actors with 
+    positive <term influence> in <term nbhood> <i n>, along with their
+    influence values, sorted from greatest influence to least influence.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Political">
+    <hist.database hist_support.influence>
+    <hist.inputs TBD>
+    </itemlist>     
+}
+
+var hist nbmood {
+    <vartitle n>
+
+    The average <term mood> of the civilian <term group "groups"> that
+    reside in <term nbhood> <i n>.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Social">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.database hist_nbhood.nbmood>
+    <hist.inputs {sat.g.c population.g}>
+    </itemlist>
+}
+
+var hist nbsat {
+    <vartitle n c>
+
+    The average <term satisfaction> with <term concern> <i c> of the
+    civilian <term group "groups"> that reside in <term nbhood> <i n>.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Social">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.comp>
+    <hist.inputs {sat.g.c population.g}>
+    </itemlist>
+}
+
+var hist nbsecurity {
+    <vartitle n>
+
+    The average <term security> of the civilian 
+    <term group "groups"> that reside in <term nbhood> <i n>.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Political">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.database hist_nbhood.nbsecurity>
+    <hist.inputs {TBD}>
+    </itemlist>
+}
+
+var hist nbunemp {
+    <vartitle n>
+
+    The unemployment rate in <term nbhood> <i n> as a percentage of
+    the working population.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Economic">
+    <hist.range "0.0%, ..., 100.0%">
+    <hist.database hist_nbhood.ur>
+    <hist.inputs {TBD}>
+    </itemlist>
+}
+
+var hist pbmood {
+    <vartitle set>
+
+    The average <term mood> of the civilian <term group "groups"> that
+    reside in either <b all> <term nbhood>s in the playbox or only in
+    <b local> neighborhoods.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Social">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.comp>
+    <hist.inputs {sat.g.c population.g}>
+    </itemlist>
+}
+
+var hist pbsat {
+    <vartitle c>
+
+    The average <term satisfaction> with <term concern> <i c>
+    of the civilian <term group "groups"> that
+    reside in either <b all> <term nbhood>s in the playbox or only in
+    <b local> neighborhoods.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Social">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.comp>
+    <hist.inputs {sat.g.c population.g}>
+    </itemlist>
+}
+
+var hist personnel {
+    <vartitle n g>
+
+    The number of personnel belonging to force or organization 
+    <term group> <i g> that are deployed to <term nbhood> <i n> at 
+    the given time.<p>
+
+    <itemlist>
+    <hist.secondary>
+    <hist.category "Military">
+    <hist.range "<i>value</i> &ge; 0">
+    <hist.database hist_nbgroup.personnel>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist population {
+    <vartitle g>
+
+    The population of civilian <term group> <i g>.<p>
+
+    <itemlist>
+    <hist.secondary>
+    <hist.category "Social">
+    <hist.range "<i>value</i> &ge; 0">
+    <hist.database hist_civg.population>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist sat {
+    <vartitle g c>
+
+    The <term satisfaction> of civilian <term group> <i g> with
+    <term concern> <i c>.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Social">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.database hist_sat.sat>
+    <hist.inputs driversat>
+    </itemlist>
+}
+
+var hist security {
+    <vartitle n g>
+
+    The <term security> of <term group> <i g> in 
+    <term nbhood> <i n>.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Military">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.database hist_nbgroup.security>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist support {
+    <vartitle n a>
+
+    The political <term support> of <term nbhood> <i n> for
+    <term actor> <i a>.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Political">
+    <hist.range "0.0, ..., 1.0">
+    <hist.database hist_support.support>
+    <hist.inputs {population.g personnel.n.g security.n.g vrel.n.a}>
+    </itemlist>
+
+}
+
+var hist unemp {
+    <vartitle>
+
+    The overall unemployment rate for the <term local_economy>, as a 
+    percentage of the work force.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Economic">
+    <hist.range "0.0%, ..., 100.0%">
+    <hist.database hist_econ.ur>
+    <hist.inputs TBD>
+    </itemlist>
+
+}
+
+var hist vrel {
+    <vartitle g a>
+
+    The <term vrel> of <term group> <i g> with
+    <term actor> <i a>.<p>
+
+    <itemlist>
+    <hist.primary>
+    <hist.category "Political">
+    <hist.range "&minus;1.0, ..., +1.0">
+    <hist.database hist_vrel.vrel>
+    <hist.inputs drivervrel>
+    </itemlist>
+}

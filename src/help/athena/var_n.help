@@ -1,0 +1,82 @@
+# -*-Tcl-*-
+#-----------------------------------------------------------------------
+# TITLE:
+#    var_n.help
+#
+# AUTHOR:
+#    Will Duquette
+#
+# DESCRIPTION:
+#    Athena Help Documentation: Neighborhood Display Variables
+#-----------------------------------------------------------------------
+
+#=======================================================================
+# Neighborhood Display Variables
+
+page /var n "Neighborhood Display Variables" {
+    <title>
+    A <i>neighborhood display variable</i> is a
+    <cref /var "output variable"> whose value varies across
+    neighborhoods at the current simulation time.<p>
+
+    For example, the neighborhood variable <b>nbcoop.BLUE</b> is 
+    the average <term cooperation> of the neighborhoods in the
+    <term playbox> with force group <b BLUE> at the current simulation 
+    time.<p>
+
+    Neighborhood display variables are used to color-code neighborhoods
+    in map displays, and are currently only accessible via the
+    Athena Workbench's <tab Physical/Map>.  Note that most neighborhood
+    variables are also accessible as timestamped <cref /var/hist>.<p>
+
+    The available variable types are as follows:<p>
+
+    <childlinks>
+}
+
+var n cap {
+    <vartitle>
+    The production capacity for goods of each neighborhood, in
+    goodsBKT/year.
+}
+
+var n cov {
+    <vartitle g a>
+    The <term coverage> fraction for <term activity> <i>a</i> by 
+    group <i>g</i>.
+}
+
+var n nbcoop {
+    <vartitle g>
+    The overall <term cooperation> of each neighborhood with group <i>g</i>.
+}
+
+var n nbmood {
+    <vartitle>
+    The overall <term mood> (composite <term satisfaction>) across
+    neighborhoods.
+}
+
+var n nbmood0 {
+    <vartitle>
+    The overall <term mood> (composite <term satisfaction>) across
+    neighborhoods at time 0.
+}
+
+var n none {
+    <vartitle>
+    A null variable, 0 for all neighborhoods.
+}
+
+var n pcf {
+    <vartitle>
+    The production capacity factor for goods across neighborhoods.
+    A number less than 1.0 indicates that production
+    capacity has been destroyed or disabled; a number greater than
+    1.0 indicates that new capacity has been built.
+}
+
+var n sec {
+    <vartitle g>
+    The <term security> of group <i>g</i> across neighborhoods.
+}

@@ -49,6 +49,7 @@ page "" "" "Arachne Help" {
     <li> <cref /entity>
     <li> <cref /order>
     <li> <cref /gofer>
+    <li> <cref /var>
     <li> <cref /parmdb>
     <li> <cref /compdb>
     </ul>
@@ -73,6 +74,7 @@ include front.help
 include athena/entity.help
 include athena/order.help
 include athena/gofer.help
+include athena/var.help
 include athena/parmdb.help
 include athena/compdb.help
 
