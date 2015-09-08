@@ -198,7 +198,7 @@ snit::type ::athena::exporter {
         # NEXT, Model Parameters
         SectionHeader $f "Model Parameters"
         foreach parm [$adb parm nondefaults] {
-            MakeSend $f PARM:SET parm $parm value [parm get $parm]
+            MakeSend $f PARM:SET parm $parm value [$adb parm get $parm]
         }
 
         # NEXT, Map Data and Projection

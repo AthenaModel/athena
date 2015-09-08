@@ -1160,6 +1160,28 @@ JOE
         cleanup
     } -result {1}
 
+    #------------------------------------------------------------------
+    # export scenario and associated error conditions
+
+    test export_scenario-1.1 {cannot export locked scenario} -setup {
+        ted sendex autogen scenario -civg 2
+    } -body {
+        ted lock
+        ted sendex -error export temp.tcl
+    } -cleanup {
+        cleanup        
+    } -result {Cannot export while the scenario is locked.}
+
+    test export_scenario-2.1 {export scenario; parm changed} -setup {
+        ted sendex autogen scenario -civg 2
+    } -body {
+        ted sendex parm set rmf.nominalRelationship 0.1
+        ted sendex export temp.tcl
+    } -cleanup {
+        ::tcltest::removeFile temp.tcl
+        cleanup        
+    } -match glob -result {Exported scenario from current data as*}
+
     cleanupTests
 }
 
