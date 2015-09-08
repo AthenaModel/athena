@@ -304,7 +304,12 @@ oo::class create ::athena::vardiff {
     # This method is for use by subclasses in their FindInputs methods.
 
     method AddInput {vartype val1 val2 args} {
-        # FIRST, save the values for the normalizer, if they are needed.
+        # FIRST, if this vartype is not active, nothing to do
+        if {![::athena::compdb get $vartype.active]} {
+            return
+        }
+
+        # NEXT, save the values for the normalizer, if they are needed.
         # They will be needed if the normalizer function isn't a 
         # constant number.
         set T ::athena::vardiff::$vartype

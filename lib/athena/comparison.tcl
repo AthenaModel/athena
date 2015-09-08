@@ -313,7 +313,12 @@ snit::type ::athena::comparison {
     # Returns the diff if it was significant, and "" otherwise. 
 
     method AddTop {vartype val1 val2 args} {
-        # FIRST, save the values for the normalizer, if they are needed.
+        # FIRST, if this vartype is not active, nothing to do
+        if {![::athena::compdb get $vartype.active]} {
+            return
+        }
+
+        # NEXT, save the values for the normalizer, if they are needed.
         # They will be needed if the normalizer function isn't a 
         # constant number.
         set T ::athena::vardiff::$vartype
@@ -839,7 +844,7 @@ snit::type ::athena::comparison {
     # Pulls out relevant compdb(5) parms and stores them in lookup array
 
     method LoadParms {} {
-        # FIRST, clear the As 
+        # FIRST, clear the A's 
         array unset A
 
         # NEXT, extract the "A" values for primary outputs
