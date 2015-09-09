@@ -748,7 +748,7 @@ snit::widget cursebrowser {
             -justify right
 
         $tree element create elemRect rect               \
-            -fill {gray {selected} "#CCFFBB" {stripe}}
+            -fill [list gray {selected} $::marsgui::stripeBackground {stripe}]
 
         # wrapStyle: wrapped text over a fill rectangle.
 
