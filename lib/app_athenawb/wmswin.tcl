@@ -486,7 +486,6 @@ snit::widget wmswin {
 
         # NEXT, extract map projection meta-data
         set proj [$map cget -projection]
-        set parms(projtype) RECT
         set parms(ulon)   [$proj cget -minlon]
         set parms(llon)   [$proj cget -maxlon]
         set parms(llat)   [$proj cget -minlat]
