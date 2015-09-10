@@ -33,7 +33,8 @@ term absit "abstract situation" {
 #-----------------------------------------------------------------------
 
 term abservice "abstract infrastructure service" {
-    An <i>abstract infrastructure service</i> is one that does not have
+    An <i>abstract infrastructure <term service></i> is one that does 
+    not have
     an actual model of infrastructure, such as the generating plants and
     transmission lines of a power grid, to determine
     the level of service (LOS) provided to civilians.  It is one for which
@@ -186,6 +187,22 @@ term cause "cause" {
 
     The cause associated with each kind of driver can be found in the
     <i>Athena Rules</i> document, delivered with the software.
+}
+
+#-----------------------------------------------------------------------
+
+page /term chain "causality chain" {
+    A "causality chain" is a way of explaining changes in a 
+    specific <cref /var/hist> between two simulation runs or over the
+    course of a single simulation run.  Athena builds the chain by tracing
+    changes to inputs and outputs back through Athena's models to original
+    scenario inputs.<p>
+
+    <b>This is currently an experimental capability.</b>  Chains are 
+    currently computed only for certain 
+    <term primary_variable>s, and do not yet
+    extend all of the way to the scenario inputs.  Much work remains 
+    to be done in future releases.<p>
 }
 
 #-----------------------------------------------------------------------
@@ -451,6 +468,10 @@ alias /term frcgroup "force group" /entity/group/frc
 #-----------------------------------------------------------------------
 
 alias /term group "group" /entity/group
+
+#-----------------------------------------------------------------------
+
+alias /term history_variable "history variable" /var/hist
 
 #-----------------------------------------------------------------------
 
@@ -723,6 +744,21 @@ term prep "Prep" {
 
 #-----------------------------------------------------------------------
 
+term primary_variable "primary variable" {
+    Primary variables are the most important class of 
+    <term history_variable>, those that are of primary interest to the 
+    analyst in almost every scenario.  Athena's output analysis code
+    detects differences in primary variables and displays them to the 
+    user on demand.<p>
+
+    <ifdef WORKBENCH {
+        In the Athena Workbench, this capability is available on the
+        <tab Analysis>.<p>
+    }>
+}
+
+#-----------------------------------------------------------------------
+
 term proximity "proximity" {
     The <i>proximity</i> of one <term nbhood> with another is
     expressed as one of the following four values, <b>HERE</b>, 
@@ -838,6 +874,16 @@ term scenariofile "scenario file" {
     Athena scenario files have an ".adb" file type.<p>
 }
 
+#-----------------------------------------------------------------------
+
+term secondary_variable "secondary variable" {
+    Secondary variables are a class of <term history_variable> that is
+    taken into account by Athena's output analysis code when 
+    computing <term chain "causality chains">.  A secondary variable
+    might be an input to a <term primary_variable>, or an input to an
+    input, and so on.<p>
+}
+
 
 #-----------------------------------------------------------------------
 
@@ -897,12 +943,31 @@ term hook "semantic hook" {
 
 #-----------------------------------------------------------------------
 
+term service "service" {
+    A "service" is something provided to the civilians living in the
+    playbox.  Athena currently models two kinds of services, 
+    Essential Non-infrastructure Services (ENI) and 
+    <term abservice>s, which include power, water, and transport.<p>
+
+    Services can be provided at different levels.  The actual level of 
+    service (ALOS) is a number between 0.0 and 1.0, where 0.0 means that 
+    no service is being provided and 1.0 means that the service is at its
+    saturation level: the civilians have all they need and don't care
+    whether any more is provided.<p>
+
+    There are two figures which determine the effect of the ALOS on
+    civilian attitudes: the required level of service (RLOS), that is, the
+    ALOS the civilians need to avoid significant hardship, and the
+    expected level of service (ELOS), that is, the ALOS the civilians
+    have come to expect given past history.<p> 
+}
+
+#-----------------------------------------------------------------------
+
 term servsit "service situation" {
     An <term attitude> <term driver> that involves the provision
-    of some service to the <term civgroup>s in a 
-    <term nbhood>.  At present, the only
-    service situation is the Essential Non-infrastructure (ENI)
-    services situation.
+    of some <term service> to the <term civgroup>s in a 
+    <term nbhood>.
 }
 
 #-----------------------------------------------------------------------
@@ -1014,6 +1079,27 @@ alias /term system "SYSTEM agent" /entity/agent/system
 #-----------------------------------------------------------------------
 
 alias /term tactic "tactic" /entity/tactic
+
+#-----------------------------------------------------------------------
+
+term tertiary_variable "tertiary variable" {
+    Tertiary variables are the third class of <term history_variable>:
+    those variables that Athena tracks over time that are neither
+    <term primary_variable "primary"> nor 
+    <term secondary_variable "secondary">.<p>
+
+    Note that there are several reasons why a variable might be marked
+    "tertiary":<p>
+
+    <ul>
+    <li>Because it is of potential interest in some cases but not all,
+        and hence isn't "primary".
+    <li>Because it is not used when computing any other outputs, and
+        hence cannot be "secondary".
+    <li>Because it should be primary or secondary but has not yet been 
+        added to the output analysis code.
+    </ul>
+}
 
 #-----------------------------------------------------------------------
 

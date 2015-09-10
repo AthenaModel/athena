@@ -17,7 +17,8 @@
 #   * Input types, with links or "TBD"
 #   * Description of range, it if isn't covered by a link.
 #   * RDB table and column
-#   * Other mechanisms for finding it.
+#   * Other mechanisms for retrieving it, if it's not available by
+#     an SQL query.
 #
 #-----------------------------------------------------------------------
 
@@ -25,11 +26,15 @@
 # History Variables
 
 macro hist.primary {} {
-    [item "Class:"]Primary[/item]
+    [item "Class:"][cref /term/primary_variable Primary][/item]
 }
 
 macro hist.secondary {} {
-    [item "Class:"]Secondary[/item]
+    [item "Class:"][cref /term/secondary_variable Secondary][/item]
+}
+
+macro hist.tertiary {} {
+    [item "Class:"][cref /term/tertiary_variable Tertiary][/item]
 }
 
 macro hist.category {cat} {
@@ -95,7 +100,7 @@ macro hist.drivercontrib {} {
 }
 
 
-page /var hist "History Variables" {
+dictionary /var hist "History Variables" {
     <title>
     History variables are the outputs Athena records as simulation
     runs, as well as additional variables that are computable from the
@@ -105,15 +110,166 @@ page /var hist "History Variables" {
     of the SHIA group with respect to its SFT
     concern over time.<p>
 
-    History variables can be <b primary> or <b secondary>.  Primary
+    History variables can be of <b><term primary_variable primary></b>,
+    <b><term secondary_variable secondary></b> or 
+    <b><term tertiary_variable tertiary></b> importance.  Primary
     variables are eligible for inclusion in the list of significant
     outputs <ifdef WORKBENCH {as shown on the <tab Analysis>}>.  Secondary
-    outputs can appear in <term chain "causality chains"> but not as
-    top-level significant outputs.<p>
+    variables are inputs to other variables and can appear in 
+    <term chain "causality chains">.  They can be scenario inputs or 
+    intermediate values.  Tertiary variables are those outputs that are
+    in neither of the other classes.<p>
 
     The available variable types are as follows:<p>
 
     <childlinks>
+}
+
+var hist actcov {
+    <vartitle n g a>
+
+    The <term coverage> of <term nbhood> <i n> by force or organization
+    <term group> <i g>'s performance of <term activity> <i a>; this is 
+    a measure of the extent to which the neighborhood population is 
+    affected by or aware of the activity.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Military">
+    <hist.range "0.0, ..., 1.0">
+    <hist.database hist_activity_nga.coverage>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist acteff {
+    <vartitle n g a>
+
+    The effective number of force or organization <term group> <i g>'s
+    personnel performing <term activity> <i a> in 
+    <term nbhood> <i n>.  The effective number can be less than the 
+    <cref /var/hist/actnom "nominal number"> due to 
+    <term security> concerns.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Military">
+    <hist.range "<i>value</i> &ge; 0">
+    <hist.database hist_activity_nga.effective>
+    <hist.inputs TBD>
+    </itemlist>
+
+    <b NOTE:> The distinction between nominal and effective personnel
+    was inherited by Athena from JNEM.  In JNEM there were a variety of
+    factors that could prevent personnel from effectively performing 
+    their assigned activity.  In Athena, at present, the only 
+    constraint is security, and it is all or nothing.  Hence, given
+    the current models the effective number of personnel will be 
+    either the nominal number or zero.  
+}
+
+var hist actnom {
+    <vartitle n g a>
+
+    The nominal number of force or organization <term group> <i g>'s
+    personnel performing <term activity> <i a> in 
+    <term nbhood> <i n>, that is, the number of troops actually 
+    assigned to do the activity regardless of whether they are
+    currently able.  See <cref /var/hist/acteff> for more on the
+    distinction between the nominal and effective number of assigned
+    personnel.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Military">
+    <hist.range "<i>value</i> &ge; 0">
+    <hist.database hist_activity_nga.nominal>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist actsec {
+    <vartitle n g a>
+
+    A boolean flag indicating whether <term group> <i g>'s
+    personnel have sufficient security to <term nbhood> <i n>
+    to perform <term activity> <i a>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Military">
+    <hist.range "1 or 0">
+    <hist.database hist_activity_nga.security_flag>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist alos {
+    <vartitle s g>
+
+    The actual level of <term service> <i s> received by 
+    <term group> <i g>, as a fraction of the saturation level of
+    service.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "0.0, ..., 1.0">
+    <hist.database hist_service_sg.actual>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist alosfunding {
+    <vartitle s g>
+
+    The actual level of funding to provide <term service> <i s> to
+    civilian <term group> <i g>, in dollars.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "<i>value</i> &ge; \$0.00">
+    <hist.database hist_service_sg.funding>
+    <hist.inputs TBD>
+    </itemlist>
+
+    <b NOTE:> Funding applies only to the <b ENI> service; this variable
+    is always 0.0 for the other services.<p>
+}
+
+var hist aplantcap {
+    <vartitle >
+
+    The <b GOODS> production capacity belonging to <term actor>
+    <i a> across all <term nbhood neighborhoods> in the playbox, in 
+    dollars.  Production capacity depends on the number of 
+    <term plant plants> the actor owns, along
+    with their repair levels.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Economic">
+    <hist.range "<i>value</i> &ge; \$0.00">
+    <hist.database hist_plant_a.cap>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist aplants {
+    <vartitle a>
+
+    The total number of <term plant plants> owned by 
+    <term actor> <i a> across all <term nbhood neighborhoods> in the 
+    playbox.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Economic">
+    <hist.range "<i>value</i> &ge; 0">
+    <hist.database hist_plant_a.num>
+    <hist.inputs TBD>
+    </itemlist>
 }
 
 var hist bsysmood {
@@ -154,7 +310,74 @@ var hist control {
     <itemlist>
     <hist.primary>
     <hist.category "Political">
-    <hist.database hist_nbmood.a>
+    <hist.database hist_nbhood.a>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist coop {
+    <vartitle f g>
+
+    The <term cooperation> of civilian <term group> <i f> with
+    force group <i g>, i.e., the likelihood that a member of <i f>
+    will give intelligence information to a member of <i g>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Military">
+    <hist.range "0.0, ..., 100.0">
+    <hist.database hist_coop.coop>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist coopbase {
+    <vartitle f g>
+
+    The baseline <term cooperation> of civilian <term group> <i f> with
+    force group <i g>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Military">
+    <hist.range "0.0, ..., 100.0">
+    <hist.database hist_coop.coopbase>
+    <hist.inputs TBD>
+    </itemlist>
+
+    The baseline level of an attitude is the level it would have if there
+    were no transient attitude effects during the given time tick.<p>
+}
+
+var hist coopnat {
+    <vartitle f g>
+
+    The natural <term cooperation> of civilian <term group> <i f> with
+    force group <i g>..<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Military">
+    <hist.range "0.0, ..., 100.0">
+    <hist.database hist_coop.coopnat>
+    <hist.inputs TBD>
+    </itemlist>
+
+    The natural level of an attitude is the level to which it will 
+    return over time in the absence of any attitude drivers.<p>
+}
+
+var hist direct_support {
+    <vartitle n a>
+
+    The political <term support> of <term nbhood> <i n> for
+    <term actor> <i a>, excluding support from other actors.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Political">
+    <hist.range "0.0, ..., 1.0">
+    <hist.database hist_support.direct_support>
     <hist.inputs TBD>
     </itemlist>
 }
@@ -170,6 +393,7 @@ var hist driversat {
     <itemlist>
     <hist.secondary>
     <hist.category "Social">
+    <hist.range "Arbitrary, centered at 0.0">
     <hist.comp>
     <hist.inputs TBD>
     </itemlist>
@@ -196,6 +420,38 @@ var hist drivervrel {
     <hist.drivercontrib>
 }
 
+var hist elos {
+    <vartitle s g>
+
+    The level of <term service> <i s> that 
+    <term group> <i g> expects to receive given past history, 
+    as a fraction of the saturation level of service.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "0.0, ..., 1.0">
+    <hist.database hist_service_sg.expected>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+
+var hist flow {
+    <vartitle f g>
+
+    The size of the population flow from civilian <term group> <i f> to 
+    civilian <term group> <i g> at the given time.
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "<i>value</i> &ge; 0">
+    <hist.database hist_flow.flow>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
 var hist gdp {
     <vartitle>
 
@@ -215,6 +471,8 @@ var hist gdp {
 var hist goodscap {
     <vartitle n>
 
+    <b TBD:> this is identical to nbplantcap.n, which is preferred.<p>
+
     The <b GOODS> production capacity of <term nbhood> <i n>, in 
     dollars.  Production capacity depends on the number of 
     <cref /entity/plant "production plants"> in the neighborhood, along
@@ -223,8 +481,74 @@ var hist goodscap {
     <itemlist>
     <hist.primary>
     <hist.category "Economic">
-    <hist.range "<i>value</i> &gt; \$0.00">
+    <hist.range "<i>value</i> &ge; \$0.00">
     <hist.database hist_plant_n.cap>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist hrel {
+    <vartitle f g>
+
+    The <term hrel> of <term group> <i f> with
+    group <i g>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "&minus;1.0, ..., +1.0">
+    <hist.database hist_hrel.hrel>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist hrelbase {
+    <vartitle f g>
+
+    The baseline <term hrel> of <term group> <i f> with
+    group <i g>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "&minus;1.0, ..., +1.0">
+    <hist.database hist_hrel.hrelbase>
+    <hist.inputs TBD>
+    </itemlist>
+
+    The baseline level of an attitude is the level it would have if there
+    were no transient attitude effects during the given time tick.<p>
+}
+
+var hist hrelnat {
+    <vartitle f g>
+
+    The natural <term hrel> of civilian <term group> <i f> with
+    group <i g>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "&minus;1.0, ..., +1.0">
+    <hist.database hist_hrel.hrelnat>
+    <hist.inputs TBD>
+    </itemlist>
+
+    The natural level of an attitude is the level to which it will 
+    return over time in the absence of any attitude drivers.<p>
+}
+
+var hist influence {
+    <vartitle n a>
+
+    The political <term influence> of <term actor> <i a> in 
+    <term nbhood> <i n>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Political">
+    <hist.range "0.0, ..., 1.0">
+    <hist.database hist_support.support>
     <hist.inputs TBD>
     </itemlist>
 }
@@ -240,6 +564,23 @@ var hist mood {
     <hist.range "&minus;100.0, ..., +100.0">
     <hist.database hist_civg.mood>
     <hist.inputs {sat.g.c population.g}>
+    </itemlist>
+}
+
+var hist nbcoop {
+    <vartitle n g>
+
+    The average <term cooperation> of the civilians who reside
+    in <term nbhood> <i n> with
+    force group <i g>, i.e., the likelihood that a resident of 
+    <i n> will give intelligence information to a member of <i g>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Military">
+    <hist.range "0.0, ..., 100.0">
+    <hist.database hist_nbcoop.nbcoop>
+    <hist.inputs TBD>
     </itemlist>
 }
 
@@ -271,6 +612,53 @@ var hist nbmood {
     <hist.database hist_nbhood.nbmood>
     <hist.inputs {sat.g.c population.g}>
     </itemlist>
+}
+
+var hist nbplantcap {
+    <vartitle n>
+
+    The <b GOODS> production capacity of <term nbhood> <i n>, in 
+    dollars.  Production capacity depends on the number of 
+    <term plant plants> in the neighborhood, along
+    with their repair levels.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Economic">
+    <hist.range "<i>value</i> &ge; \$0.00">
+    <hist.database hist_plant_n.cap>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist nbplants {
+    <vartitle n>
+
+    The total number of <term plant plants> in 
+    <term nbhood> <i n>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Economic">
+    <hist.range "<i>value</i> &ge; 0">
+    <hist.database hist_plant_n.num>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+
+var hist nbpop {
+    <vartitle n>
+
+    The civilian population of <term nbhood> <i n>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "<i>value</i> &ge; 0">
+    <hist.database hist_nbhood.nbpop>
+    <hist.inputs TBD>
+    </itemlist>    
 }
 
 var hist nbsat {
@@ -367,6 +755,40 @@ var hist personnel {
     </itemlist>
 }
 
+var hist plantcap {
+    <vartitle n a>
+
+    The <b GOODS> production capacity belonging to <term actor>
+    <i a> in <term nbhood> <i n>, in 
+    dollars.  Production capacity depends on the number of 
+    <term plant plants> the actor owns in the neighborhood, along
+    with their repair levels.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Economic">
+    <hist.range "<i>value</i> &ge; \$0.00">
+    <hist.database hist_plant_na.cap>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+var hist plants {
+    <vartitle n a>
+
+    The total number of <term plant plants> owned by 
+    <term actor> <i a> in <term nbhood> <i n>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Economic">
+    <hist.range "<i>value</i> &ge; 0">
+    <hist.database hist_plant_na.num>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+
 var hist population {
     <vartitle g>
 
@@ -381,6 +803,23 @@ var hist population {
     </itemlist>
 }
 
+var hist rlos {
+    <vartitle s g>
+
+    The level of <term service> <i s> that 
+    <term group> <i g> requires in order to avoid significant 
+    hardship, as a fraction of the saturation level of service.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "0.0, ..., 1.0">
+    <hist.database hist_service_sg.required>
+    <hist.inputs TBD>
+    </itemlist>
+}
+
+
 var hist sat {
     <vartitle g c>
 
@@ -392,8 +831,47 @@ var hist sat {
     <hist.category "Social">
     <hist.range "&minus;100.0, ..., +100.0">
     <hist.database hist_sat.sat>
-    <hist.inputs driversat>
+    <hist.inputs driversat.g.c.drid>
     </itemlist>
+}
+
+var hist satbase {
+    <vartitle g c>
+
+    The baseline <term satisfaction> of civilian <term group> <i g> with
+    <term concern> <i c>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.database hist_sat.satbase>
+    <hist.inputs TBD>
+    </itemlist>
+
+    The baseline level of an attitude is the level it would have if there
+    were no transient attitude effects during the given time tick.<p>
+}
+
+var hist satnat {
+    <vartitle g c>
+
+    The natural <term satisfaction> of civilian <term group> <i g> with
+    <term concern> <i c>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "&minus;100.0, ..., +100.0">
+    <hist.database hist_sat.satnat>
+    <hist.inputs TBD>
+    </itemlist>
+
+    The natural level of an attitude is the level to which it will 
+    return over time in the absence of any attitude drivers.  Of the
+    four <term concern>s, only SFT satisfaction curves have a natural
+    level, which derives from the group <i g>'s 
+    <cref /var/hist/security>.<p>
 }
 
 var hist security {
@@ -411,6 +889,26 @@ var hist security {
     </itemlist>
 }
 
+var hist slosfunding {
+    <vartitle s g>
+
+    The level of funding to provide <term service> <i s> to
+    civilian <term group> <i g> at which <i g>'s desire for the
+    service is saturated, in dollars.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "<i>value</i> &ge; \$0.00">
+    <hist.database hist_service_sg.saturation_funding>
+    <hist.inputs TBD>
+    </itemlist>
+
+    <b NOTE:> Funding applies only to the <b ENI> service; this variable
+    is always 0.0 for the other services.<p>
+}
+
+
 var hist support {
     <vartitle n a>
 
@@ -425,6 +923,22 @@ var hist support {
     <hist.inputs {population.g personnel.n.g security.n.g vrel.n.a}>
     </itemlist>
 
+}
+
+var hist unassigned {
+    <vartitle n g>
+
+    Number of personnel of force or organization <term group> <i g> who are
+    deployed to <term nbhood> <i n> but have not been assigned any
+    activity.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Military">
+    <hist.range "<i>value</i> &ge; 0">
+    <hist.database hist_nbgroup.unassigned>
+    <hist.inputs TBD>
+    </itemlist>    
 }
 
 var hist unemp {
@@ -454,6 +968,52 @@ var hist vrel {
     <hist.category "Political">
     <hist.range "&minus;1.0, ..., +1.0">
     <hist.database hist_vrel.vrel>
-    <hist.inputs drivervrel>
+    <hist.inputs drivervrel.g.a.drid>
     </itemlist>
 }
+
+var hist vrelbase {
+    <vartitle f g>
+
+    The baseline <term vrel> of <term group> <i g> with
+    actor <i a>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "&minus;1.0, ..., +1.0">
+    <hist.database hist_vrel.vrelbase>
+    <hist.inputs TBD>
+    </itemlist>
+
+    The baseline level of an attitude is the level it would have if there
+    were no transient attitude effects during the given time tick.<p>
+}
+
+var hist vrelnat {
+    <vartitle f g>
+
+    The natural <term vrel> of <term group> <i g> with
+    actor <i a>.<p>
+
+    <itemlist>
+    <hist.tertiary>
+    <hist.category "Social">
+    <hist.range "&minus;1.0, ..., +1.0">
+    <hist.database hist_vrel.vrelnat>
+    <hist.inputs TBD>
+    </itemlist>
+
+    The natural level of an attitude is the level to which it will 
+    return over time in the absence of any attitude drivers.<p>
+}
+
+
+#----------------------------------------------------------------------
+# Undocumented Tertiary variables
+#
+# hist_activity_nga
+#   actcov.n.g.a
+#   actnom.n.g.a
+#   acteff.n.g.a
+#   actsec.n.g.a
