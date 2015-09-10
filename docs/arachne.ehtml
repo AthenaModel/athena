@@ -33,6 +33,12 @@ is an incomplete prototype.<p>
 
 <changelog>
 
+<change 9/10/2015 Update dhanks>
+Many updates to the RESTful API with new sections and lists of URLs for easier
+access by users.  Addition of the -compdb option to the Command Line Interface
+section.
+</change>
+
 <change 6/2/2015 Update will>
 Updates on the RESTful API, prior to June engineering delivery.<p>
 </change>
@@ -107,7 +113,7 @@ spider.  Arachne is therefore Athena's web-spinner.<p>
 
 <section cmdline "Command Line Interface">
 
-<b TBD>: This is, of course, quite preliminary.<p>
+<b This is a preliminary specification>.<p>
 
 Arachne is installed as a Linux executable called <b><tt arachne></b>.
 It runs as a server with a RESTful web interface.<p>
@@ -123,6 +129,12 @@ To invoke Arache without starting the HTTP server, pass the
 Arachne takes the following command-line options:<p>
 
 <deflist options>
+
+<def {-compdb <i filename>}>
+
+Specifies a comparison parameter database to be used when output and causality
+analysis is done.  This only needs to be specified if the use of non-defaulted
+comparison parameter values is desired.<p>
 
 <def {-heartbeat <i seconds>}>
 

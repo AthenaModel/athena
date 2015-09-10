@@ -57,15 +57,6 @@ command "compdb export" {
 
 #-----------------------------------------------------------------------
 
-command "compdb import" {
-    <syntax {<i>filename</i>}>
-    
-    <b Workbench-specific.> 
-    Imports a comparison parameter file from disk. 
-}
-
-#-----------------------------------------------------------------------
-
 command "compdb get" {
     <syntax {<i>parm</i>}>
     
