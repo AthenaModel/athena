@@ -63,7 +63,53 @@ object block_ {
 
     attribute execstatus "Execution Status" {
         The block's execution status.  It is usually represented by 
-        one of the following icons: TBD
+        one of the following icons:<p>
+
+        <topiclist "Icon" "Description">
+        <topic [img exec_dash]>
+        The block was skipped over during execution because it was disabled,
+        contained no tactics, or something of this sort.
+        </topic>
+
+        <topic [img exec_clock]>
+        The block's time constraints were not met.
+        </topic>
+
+        <topic [img exec_cond]>
+        One or more of the block's attached conditions were not met.
+        </topic>
+
+        <topic [img exec_cash]>
+        The actor had insufficient cash to execute the block's tactics.
+        </topic>
+
+        <topic [img exec_personnel]>
+        The actor had insufficient personnel to execute the block's 
+        tactics.
+        </topic>
+
+        <topic [img exec_resource]>
+        The actor had insufficient of some other asset to execute
+        the block's tactics.
+        </topic>
+
+        <topic [img exec_error]>
+        An error occurred while attempting to obligate resources for
+        the tactic.
+        </topic>
+
+        <topic [img exec_cap]>
+        The block as a whole executed successfully, but
+        a <cref /entity/tactic/broadcast>
+        failed because access to the required <term cap> was not
+        <cref /entity/tactic/grant granted> by its owner. 
+        </topic>
+
+        <topic [img exec_check]>
+        The block executed successfully.
+        </topic>
+
+        </topiclist>
     } -tags {browser}
 
     attribute state "State" {

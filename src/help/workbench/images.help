@@ -59,6 +59,7 @@ image button_plust       "Button: Plus T"              $D/button_plust.png
 image button_poly        "Button: Polygon"             $D/button_poly.png
 image button_polyg       "Button: Polygon G"           $D/button_polyg.png
 image button_power       "Button: Power"               $D/button_power.png
+image button_question    "Button: Question"            $D/button_question.png
 image button_raise       "Button: Raise"               $D/button_raise.png
 image button_reload      "Button: Reload"              $D/button_reload.png
 image button_rewind      "Button: Rewind"              $D/button_rewind.png
@@ -69,6 +70,9 @@ image button_unit        "Button: New Unit"            $D/button_unit.png
 image button_updown      "Button: Up/Down"             $D/button_updown.png
 image button_unlockprep  "Button: Unlock Prep"         $D/button_unlockprep.png 
 image button_x           "Button: X"                   $D/button_x.png
+image cond_met           "Condition: Met"              $D/cond_met.png
+image cond_unknown       "Condition: Unknown"          $D/cond_unknown.png
+image cond_unmet         "Condition: Unmet"            $D/cond_unmet.png
 image control_addressbar "Control: Address Bar"        $D/control_addressbar.png
 image control_affinity   "Control: Affinity Flag"      $D/control_affinity.png
 image control_civicon    "Control: CIV Icons"          $D/control_civicon.png
@@ -102,10 +106,21 @@ image control_stoptime   "Control: Stop Time"          $D/control_stoptime.png
 image control_totime     "Control: To Time"            $D/control_totime.png
 image control_weekday    "Control: Weekday"            $D/control_weekday.png
 image control_zoom       "Control: Zoom"               $D/control_zoom.png
+image dialog_compare     "Dialog: Compare"             $D/dialog_compare.png
 image econ_sam           "Econ SAM"                    $D/econ_sam.png
 image econ_sam_locked    "Econ SAM (locked)"           $D/econ_sam_locked.png
 image econ_simple_sam    "Econ Simple Sam"             $D/econ_simple_sam.png
 image econ_ss_inputs     "Econ Simple Other Inputs"    $D/econ_ss_inputs.png
 image econ_current       "Econ Current Inputs"         $D/econ_current.png
+image exec_cap           "Execution: CAP"              $D/exec_cap.png
+image exec_cash          "Execution: Cash"             $D/exec_cash.png
+image exec_check         "Execution: Checkmark"        $D/exec_check.png
+image exec_clock         "Execution: Clock"            $D/exec_clock.png
+image exec_cond          "Execution: Condition"        $D/exec_cond.png
+image exec_dash          "Execution: Dash"             $D/exec_dash.png
+image exec_error         "Execution: Error"            $D/exec_error.png
+image exec_personnel     "Execution: Personnel"        $D/exec_personnel.png
+image exec_resource      "Execution: Resource"         $D/exec_resource.png
 image filterbox          "Filter Box"                  $D/filterbox.png
+image tab_analysis       "Tab: Analysis"               $D/tab_analysis.png
 image viewbox            "View Box"                    $D/viewbox.png

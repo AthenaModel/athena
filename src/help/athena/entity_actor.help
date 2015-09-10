@@ -114,6 +114,14 @@ object actor_ {
         the start of the simulation.<p>
     } -tags {create_opt update browser}
 
+    attribute budget "Weekly Budget, $/week" {
+        <b>BUDGET actors only!</b>
+        The actor's weekly budget from his home country or other
+        foreign source.  It flows into his cash-on-hand, where it may
+        be used to fund tactics.  Note that unspent cash-on-hand is
+        <b>not</b> carried over to the next week; it simply vanishes.<p>
+    } -tags {create_opt update browser income}
+
     attribute income_goods "Income, GOODS Sector, $/week" {
         <b>INCOME actors only!</b>
         The actor's income from the Goods sector of the economy, in dollars
@@ -211,14 +219,6 @@ object actor_ {
         This is one component of the actor's regular weekly income.  The
         actor's income flows into his cash-on-hand, where it may be
         used to fund tactics.
-    } -tags {create_opt update browser income}
-    
-    attribute budget "Weekly Budget, $/week" {
-        <b>BUDGET actors only!</b>
-        The actor's weekly budget from his home country or other
-        foreign source.  It flows into his cash-on-hand, where it may
-        be used to fund tactics.  Note that unspent cash-on-hand is
-        <b>not</b> carried over to the next week; it simply vanishes.<p>
     } -tags {create_opt update browser income}
 }
 

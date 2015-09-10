@@ -132,6 +132,9 @@ tab "Detail" {
     The search box; enter a search string to find the related on-line help.
     </topic>
 
+    <topic [img button_question]>
+    Go to the application's top-level help page.
+    </topic>
     </topiclist>
 }
 
@@ -234,10 +237,10 @@ page /tab/strategy blocks "Blocks List" {
     <block_ parm state      -label "State">
     <block_ parm intent     -label "Intent">
 
-    <topic "At Time">
+    <parm timestring "At Time">
     The block's time constraint: a statement of the time interval
     during which the block can be considered for execution.
-    </topic>
+    </parm>
 
     <block_ parm onlock     -label "On Lock?">
     <block_ parm once       -label "Once?">
@@ -295,7 +298,7 @@ page /tab/strategy blocks "Blocks List" {
     </topic>
 
     <control.filterbox>
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor metadata "Block Metadata:"></b> Below the list are 
     several controls for setting the attributes of the currently
@@ -330,7 +333,7 @@ page /tab/strategy conditions "Conditions Subtab" {
     <b>cut and copy conditions</b>, and <b>conditions tactic</b> into the 
     Conditions list for any block belonging to any agent.<p>
 
-    <topiclist Column Description>
+    <parmlist Column Description>
 
     <condition_ parm id        -label "ID">
     <condition_ parm name      -label "Name">
@@ -338,14 +341,29 @@ page /tab/strategy conditions "Conditions Subtab" {
     <condition_ parm narrative -label "Narrative">
     <condition_ parm typename  -label "Type">
 
-    <topic "Flag">
+    <parm "statusicon" "Flag">
     The condition's "met" flag, represented as one of the following
-    icons: TBD.
+    icons:<p>
+
+    <topiclist "Icon" "Description">
+    <topic [img cond_unknown]>
+    The condition has not been assessed.
+    </topic>
+
+    <topic [img cond_unmet]>
+    The condition was not met when the block was last assessed.
+    </topic>
+
+    <topic [img cond_met]>
+    The condition was met when the block was last assessed.
     </topic>
 
     </topiclist>
+    </parm>
 
-    <b><anchor controls "condition Controls:"></b>  The subtab's
+    </parmlist><p>
+
+    <b><anchor controls "Condition Controls:"></b>  The subtab's
     toolbar contains the following controls:<p>
 
     <topiclist Control Description>
@@ -388,7 +406,7 @@ page /tab/strategy tactics "Tactics Subtab" {
     <b>cut and copy tactics</b>, and <b>paste tactic</b> into the 
     Tactics list for any block belonging to any agent.<p>
 
-    <topiclist Column Description>
+    <parmlist Column Description>
 
     <tactic_ parm id        -label "ID">
     <tactic_ parm name      -label "Name">
@@ -396,13 +414,49 @@ page /tab/strategy tactics "Tactics Subtab" {
     <tactic_ parm narrative -label "Narrative">
     <tactic_ parm typename  -label "Type">
 
-    <topic "Exec">
+    <parm "statusicon" "Exec">
     The tactic's execution status, represented as one of the following
-    icons: TBD.  On failures, see the Overview Subtab for just what
-    went wrong.
-    </topic>
+    icons.<p>
 
-    </topiclist>
+        <topiclist "Icon" "Description">
+        <topic [img exec_dash]>
+        The tactic's block was skipped over during execution for
+        some reason.
+        </topic>
+
+        <topic [img exec_cash]>
+        The actor had insufficient cash to execute the tactic.
+        </topic>
+
+        <topic [img exec_personnel]>
+        The actor had insufficient personnel to execute the tactic.
+        </topic>
+
+        <topic [img exec_resource]>
+        The actor had insufficient of some other asset to execute
+        the tactic.
+        </topic>
+
+        <topic [img exec_error]>
+        An error occurred while attempting to obligate resources for
+        the tactic.
+        </topic>
+
+        <topic [img exec_cap]>
+        A <cref /entity/tactic/broadcast>
+        failed because access to the required <term cap> was not
+        <cref /entity/tactic/grant granted> by its owner. 
+        </topic>
+
+        <topic [img exec_check]>
+        The tactic executed successfully.
+        </topic>
+
+        </topiclist>
+
+    </parm>
+
+    </topiclist><p>
 
     <b><anchor controls "Tactic Controls:"></b>  The subtab's
     toolbar contains the following controls:<p>
@@ -594,6 +648,7 @@ tab "Physical/Neighborhoods" {
     <nbhood_ parm local          -label "Local">
     <nbhood_ parm urbanization   -label "Urbanization">
     <nbhood_ parm controller     -label "Controller">
+    <nbhood_ parm pcf            -label "Prod. Cap. Factor">
     <nbhood_ parm stacking_order -label "StkOrder">
     <nbhood_ parm obscured_by    -label "ObscuredBy">
     <nbhood_ parm refpoint       -label "RefPoint">
@@ -658,7 +713,7 @@ tab "Physical/Proximities" {
 
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -730,7 +785,7 @@ tab "Physical/Absits" {
     situation manually prior to that time.
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -817,7 +872,7 @@ tab "Physical/Curses" {
     affect the current level of the attitude curve during the next time step; 
     persistent injects affect the attitude curve's baseline, and hence usually 
     persistent during subsequent weeks.<p>
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -927,7 +982,7 @@ tab "Physical/Security" {
     Note that this number is constant across groups in a neighborhood.
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -984,7 +1039,7 @@ tab "Physical/Activity" {
     based on this number.
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -1032,7 +1087,7 @@ tab "Physical/NbhoodDemog" {
     seek paid employment (though they might not find it).
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -1069,12 +1124,12 @@ tab "Political/Actors" {
 
     <actor_ parms -tags browser>
 
-    </parmlist>
+    </parmlist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
 
- <topiclist Control Description>
+    <topiclist Control Description>
 
     <topic [img button_plus]>
     Pops up the <cref /order/actor/create> dialog.
@@ -1106,6 +1161,8 @@ tab "Political/VRel" {
 
     This browser functions differently in Scenario mode vs. Simulation
     mode.<p>
+
+    <h3>Scenario Mode</h3>
 
     In <b>Scenario Mode</b>, the vertical relationship
     browser shows the natural,
@@ -1164,6 +1221,8 @@ tab "Political/VRel" {
 
     </topiclist>
 
+    <h3>Simulation Mode</h3>
+
     In <b>Simulation Mode</b>, the vertical relationship
     browser shows the current, baseline, and natural levels for
     each relationship for the current time and for time 0.  The
@@ -1220,7 +1279,7 @@ tab "Political/VRel" {
     actor A from G's point of view at time 0.
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -1698,7 +1757,7 @@ tab "Economics/Expenditures" {
     <topic World>The amount of money expended to
     the sector represented as the rest of the world.
     </topic>
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -1778,7 +1837,7 @@ tab "Economics/Population" {
     <topic UAFactor>The neighborhood's unemployment attitude factor (UAF), 
     a multiplier used in the UNEMP rule set.  It is computed from the UPC.
     </topic>
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -1855,7 +1914,7 @@ tab "Economics/Groups" {
     the RLOC.
     </topic>
     
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -1934,7 +1993,7 @@ page /tab/social/beliefs systems "Belief Systems List" {
     playbox.
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
     The Belief Systems list's toolbar has the following controls:<p>
 
@@ -2183,6 +2242,8 @@ tab "Social/Satisfaction" {
     This browser functions differently in Scenario mode vs. Simulation
     mode.<p>
 
+    <h3>Scenario Mode</h3>
+
     In <b>Scenario Mode</b>, the satisfaction browser shows the baseline
     level and saliency of each satisfaction curve, as entered by the
     user.  The browser controls are described 
@@ -2221,7 +2282,9 @@ tab "Social/Satisfaction" {
     <super ::simlib::qsaliency html>
     </topic>
 
-    </topiclist>
+    </topiclist><p>
+
+    <h3>Simulation Mode</h3>
 
     In <b>Simulation Mode</b>, the satisfaction browser shows the 
     current, baseline, and natural levels for each satisfaction curve
@@ -2268,7 +2331,7 @@ tab "Social/Satisfaction" {
     <topic "Natural at T0"> The natural level (if defined) at time 0.
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
@@ -2298,6 +2361,8 @@ tab "Social/HRel" {
 
     This browser functions differently in Scenario mode vs. Simulation
     mode.<p>
+
+    <h3>Scenario Mode</h3>
 
     In <b>Scenario Mode</b>, the horizontal relationship
     browser shows the natural,
@@ -2358,7 +2423,9 @@ tab "Social/HRel" {
 
     </topic>
 
-    </topiclist>
+    </topiclist><p>
+
+    <h3>Simulation Mode</h3>
 
     In <b>Simulation Mode</b>, the horizontal relationship
     browser shows the current, baseline, and natural levels for
@@ -2416,7 +2483,7 @@ tab "Social/HRel" {
     group G from F's point of view at time 0.
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
@@ -2506,7 +2573,7 @@ tab "Social/Demog" {
     civilian group through attrition since time 0.
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -2733,7 +2800,7 @@ tab "Infrastructure/GOODS Plants" {
     number of plants that the agent is allocated in that neighborhood 
     depending on whether in Scenario mode or Simulation mode.</topic>
 
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's 
     toolbar contains the following controls:<p>
@@ -2782,6 +2849,8 @@ tab "Information/Cooperation" {
     This browser functions differently in Scenario mode vs. Simulation
     mode.<p>
 
+    <h3>Scenario Mode</h3>
+
     In <b>Scenario Mode</b>, the browser shows the initial baseline and natural
     levels for each curve.
 
@@ -2810,6 +2879,8 @@ tab "Information/Cooperation" {
     </topic>
     
     </topiclist>
+
+    <h3>Simulation Mode</h3>
 
     In <b>Simulation Mode</b>, the cooperation browser shows the 
     current, baseline, and natural levels for each cooperation curve
@@ -2854,7 +2925,7 @@ tab "Information/Cooperation" {
     <topic "Natural at T0"> The natural level at time 0.
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
@@ -2902,7 +2973,7 @@ tab "Information/NbhoodCoop" {
     force group, at the current time.
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -2938,7 +3009,7 @@ tab "Information/Semantic Hooks" {
     uniquely indentifies the semantic hook or topic.<p>
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Controls:"></b>  The browser's toolbar
     contains the following controls:<p>
@@ -2999,7 +3070,7 @@ tab "Information/Info Ops Messages" {
     <topic "Type"> For payloads, the payload type.<p>
     </topic>
 
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -3078,10 +3149,6 @@ tab "Time/Orders" {
     <topic "Date">The <term jweek> at which the order was sent.
     </topic>
 
-    <topic "Undo"><b>Yes</b> if the order can be 
-    <menu Edit/Undo undone>, and <b>No</b> otherwise.
-    </topic>
-
     <topic "Narrative">A human-readable description of the order.
     Often this is just the order's title-string; in some cases, it
     will describe the order's action in terms of its significant
@@ -3096,7 +3163,7 @@ tab "Time/Orders" {
     entered by the user when the order was sent.  Symbolic
     parameter names are shown on each <cref /order "order's help page">.
     </topic>
-    </topiclist>
+    </topiclist><p>
 
     <b><anchor controls "Browser Controls:"></b>  The browser's
     toolbar contains the following controls:<p>
@@ -3243,7 +3310,7 @@ tab "Analysis" {
     outputs.  Begin by pressing the "Select Cases" button.  This pops up a
     dialog that allows you to select the case or cases to compare.<p>
 
-    <b>TBD:</b> Display the dialog here.<p>
+   <img dialog_compare><p>
 
     You
     have the choice of the currently loaded scenario (which must be locked)
@@ -3264,6 +3331,8 @@ tab "Analysis" {
     to limit the display to those variables that are significant at a 
     particular level or higher.<p>
 
+    <img tab_analysis><p>
+
     <b>Output Tree</b><p>
 
     Below the tool bar is the output tree.  It lists the primary outputs
@@ -3281,10 +3350,6 @@ tab "Analysis" {
     output tree, and then click on the triangle at the left end of the
     bottom line of the browser, next to the name of the selected variable.
     This will display a set of information about the variable.<p>
-
-    <b>Controls</b>
-
-    <b>TBD:</b> Table of controls with descriptions.<p>
 }
 
 #=======================================================================
