@@ -135,8 +135,15 @@ menuitem "File/Save CLI Scrollback Buffer..." {
 }
 
 menuitem "File/Import Map From File..." {
-    Imports an image file in JPEG, GIF, or PNG format to be used as
-    a map background for the scenario.  Any image file can be used.
+    Imports an image file in JPEG, GIF, PNG, or GeoTIFF format to be 
+    used as a map background for the scenario.  Any image file can be 
+    used.<p>
+
+    If a GeoTIFF file is used it will be geo-registered automatically.
+    Athena will assign other maps to an arbitrary geographic region.
+    To use precise map coordinates, use 
+    <menu "File/Geo-reference Map Image..."> to set the
+    lat/long coordinates of the corners of the map.<p>
 }
 
 menuitem "File/Import Map From WMS..." {
@@ -180,6 +187,18 @@ menuitem "File/Import Map From WMS..." {
     the mouse in the map will traverse the stack of maps in reverse order.
 }
 
+menuitem "File/Geo-reference Map Image..." {
+    This menu item pops up a dialog that allows the user to set the
+    latitude/longitude coordinates of the corners of the map image 
+    currently in use so that the displayed map coordinates will accurately
+    reflect the locations on the map.<p>
+
+    If the current map was loaded from a GeoTIFF file then this step is
+    unnecessary.<p>
+}
+
+
+
 menu "File/Parameters" {
     The items on this menu relate to the Athena 
     <cref /parmdb>.<p>
@@ -221,11 +240,9 @@ menu "Edit" {
 }
 
 menuitem "Edit/Undo" {
-    Undoes the most recent order, if possible.  The 
-    <tab Time/Orders> shows the orders that can be
-    undone (among other things).<p>
+    Undoes the most recent order, if possible.<p>
 
-    The undo stack is cleared when the scenario is saved, and when 
+    The undo stack is cleared when the scenario is saved and when 
     time advances.
 }
 
@@ -236,15 +253,22 @@ menuitem "Edit/Redo" {
 }
 
 menuitem "Edit/Cut" {
-    Cuts the selected text to the clipboard.
+    Cuts the selected text or data to the clipboard.  The clipboard 
+    supports text throughout the application; data can be cut and pasted
+    only in the <tab Strategy>.
 }
 
 menuitem "Edit/Copy" {
-    Copies the selected text to the clipboard.
+    Copies the selected text or data to the clipboard.  The clipboard 
+    supports text throughout the application; data can be cut and pasted
+    only in the <tab Strategy>.
 }
 
 menuitem "Edit/Paste" {
-    Pastes text from the clipboard into the current text box.
+    Pastes text or data from the clipboard into the current window.
+    The clipboard 
+    supports text throughout the application; data can be cut and pasted
+    only in the <tab Strategy>.
 }
 
 menuitem "Edit/Select All" {
@@ -265,16 +289,16 @@ menu "View" {
     <childlinks>
 }
 
+menuitem "View/Scripts Editor" {
+    Selecting this item shows or hides the <tab Scripts>.
+}
+
 menuitem "View/Order History" {
     Selecting this item shows or hides the <tab Time/Orders>.
 }
 
 menuitem "View/Scrolling Log" {
     Selecting this item shows or hides the <tab Time/Log>.
-}
-
-menuitem "View/Scripts Editor" {
-    Selecting this item shows or hides the <tab Scripts>.
 }
 
 menuitem "View/Command Line" {
@@ -285,9 +309,11 @@ menuitem "View/Command Line" {
 # Orders Menu
 
 menu "Orders" {
-    This menu provides one means of access to Athena's simulation
+    This menu provides access to many of Athena's simulation
     orders, which are used to build the scenario and control its
-    execution.  See the <cref /order> documentation for complete
+    execution.  Orders can also be sent via controls in Athena's
+    browsers, and via the <cref /command/send> executive command.
+    See the <cref /order> documentation for complete
     information on Athena's orders.<p>
 }
 

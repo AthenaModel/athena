@@ -62,6 +62,19 @@ page /main release "Release Notes" {
          <li> The tool is available on the <tab "Analysis"> in 
               Athena Workbench, and through Arachne's JSON API.
          </ul>
+    <li> Athena's analysis of simulation results can be calibrated using
+         the new <cref /compdb> database.  
+         <ul>
+         <li> <b Athena Workbench>: <cref /compdb> can be set using the
+              new
+              <ifdef WORKBENCH {<cref /command/compdb>}>
+              <ifndef WORKBENCH {<b compdb>}> 
+              family of executive commands.
+         <li> <b Arachne>: A <cref /compdb> file can be specified using
+              Arachne's <tt -compdb> option.  See the compdb(5) man page,
+              or use the Workbench's <b compdb> executive command to 
+              edit and save a set of comparison parameters.
+         </ul>
     <li> Athena includes a new attrition model supporting 
          Lanchester-based attrition between arbitrary force groups in 
          combat.
@@ -141,7 +154,7 @@ page /main release "Release Notes" {
 page /main changelog "Help Change Log" {
     <title>
     <changelog>
-    <change 9/3/2015 New whd>
+    <change 9/10/2015 New whd>
     Changes for Athena 6.3.1 (final release)
     </change>
     <change 6/9/2015 New whd>
