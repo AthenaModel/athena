@@ -959,7 +959,6 @@ snit::type ::athena::comparison {
         # NEXT, playbox mood (local CIV groups)
         set pbm1 [$s1 stats pbmood $t1]
         set pbm2 [$s2 stats pbmood $t2]
-        puts "comparison: pbm1= $pbm1 pbm2= $pbm2 t1=$t1 t2=$t2"
 
         $self AddTop pbmood $pbm1 $pbm2 local
 

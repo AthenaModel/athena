@@ -23,7 +23,6 @@ oo::class create ::athena::vardiff::pbmood {
     meta inputTypes {sat population saliency}
 
     constructor {comp_ val1_ val2_ set_} {
-        puts "pbmood: $val1_ $val2_ $set_"
         next $comp_ [list set $set_] $val1_ $val2_
     }
 
