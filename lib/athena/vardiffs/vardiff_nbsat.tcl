@@ -16,7 +16,7 @@ oo::class create ::athena::vardiff::nbsat {
     meta category   social
     meta normfunc   100.0
     meta primary    1
-    meta inputTypes {sat population}
+    meta inputTypes {sat population saliency}
 
     constructor {comp_ val1_ val2_ n_ c_} {
         next $comp_ [list n $n_ c $c_] $val1_ $val2_
@@ -52,9 +52,11 @@ oo::class create ::athena::vardiff::nbsat {
 
         # FIRST, get the satisfaction inputs.
         $comp eval {
-            SELECT g, sat1, sat2 FROM comp_sat WHERE n = $n AND c = $c
+            SELECT g, sat1, sat2, saliency1, saliency2 
+            FROM comp_sat WHERE n = $n AND c = $c
         } {
-            my AddInput sat $sat1 $sat2 $g $c
+            my AddInput sat      $sat1      $sat2      $g $c
+            my AddInput saliency $saliency1 $saliency2 $g $c
         }
 
         # NEXT, get the population inputs

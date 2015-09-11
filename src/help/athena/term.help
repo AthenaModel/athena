@@ -835,7 +835,7 @@ term saliency "saliency" {
     Saliency is represented using the following scale:<p>
 
     <super ::simlib::qsaliency html>
-
+    <p>
     A group's saliency for each concern is set on the
     <tab Social/Satisfaction> using the
     <cref /order/sat>.

@@ -53,7 +53,7 @@ macro hist.comp {} {
     [item "Database:"]Computed on demand[/item]
 }
 
-macro hist.inputs {varlist} {
+macro hist.inputs {{varlist ""}} {
     set links [list]
 
     if {$varlist eq "TBD"} {
@@ -282,7 +282,7 @@ var hist bsysmood {
     <hist.category "Social">
     <hist.range "&minus;100.0, ..., +100.0">
     <hist.comp>
-    <hist.inputs {sat.g.c population.g}>
+    <hist.inputs {sat.g.c population.g saliency.g.c}>
     </itemlist>
 }
 
@@ -297,7 +297,7 @@ var hist bsyssat {
     <hist.category "Social">
     <hist.range "&minus;100.0, ..., +100.0">
     <hist.comp>
-    <hist.inputs {sat.g.c population.g}>
+    <hist.inputs {sat.g.c population.g saliency.g.c}>
     </itemlist>
 }
 
@@ -563,7 +563,7 @@ var hist mood {
     <hist.category "Social">
     <hist.range "&minus;100.0, ..., +100.0">
     <hist.database hist_civg.mood>
-    <hist.inputs {sat.g.c population.g}>
+    <hist.inputs {sat.g.c population.g saliency.g.c}>
     </itemlist>
 }
 
@@ -610,7 +610,7 @@ var hist nbmood {
     <hist.category "Social">
     <hist.range "&minus;100.0, ..., +100.0">
     <hist.database hist_nbhood.nbmood>
-    <hist.inputs {sat.g.c population.g}>
+    <hist.inputs {sat.g.c population.g saliency.g.c}>
     </itemlist>
 }
 
@@ -672,7 +672,7 @@ var hist nbsat {
     <hist.category "Social">
     <hist.range "&minus;100.0, ..., +100.0">
     <hist.comp>
-    <hist.inputs {sat.g.c population.g}>
+    <hist.inputs {sat.g.c population.g saliency.g.c}>
     </itemlist>
 }
 
@@ -718,7 +718,7 @@ var hist pbmood {
     <hist.category "Social">
     <hist.range "&minus;100.0, ..., +100.0">
     <hist.comp>
-    <hist.inputs {sat.g.c population.g}>
+    <hist.inputs {sat.g.c population.g saliency.g.c}>
     </itemlist>
 }
 
@@ -735,7 +735,7 @@ var hist pbsat {
     <hist.category "Social">
     <hist.range "&minus;100.0, ..., +100.0">
     <hist.comp>
-    <hist.inputs {sat.g.c population.g}>
+    <hist.inputs {sat.g.c population.g saliency.g.c}>
     </itemlist>
 }
 
@@ -832,6 +832,21 @@ var hist sat {
     <hist.range "&minus;100.0, ..., +100.0">
     <hist.database hist_sat.sat>
     <hist.inputs driversat.g.c.drid>
+    </itemlist>
+}
+
+var hist saliency {
+    <vartitle g c>
+
+    The <term saliency> of civilian <term group> <i g> with
+    respect to <term concern> <i c>.<p>
+
+    <itemlist>
+    <hist.secondary>
+    <hist.category "Social">
+    <hist.range "0.0, ..., 1.0">
+    <hist.database hist_sat.saliency>
+    <hist.inputs>
     </itemlist>
 }
 

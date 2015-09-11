@@ -19,7 +19,7 @@ oo::class create ::athena::vardiff::nbmood {
     meta category   social
     meta normfunc   100.0
     meta primary    1
-    meta inputTypes {sat population}
+    meta inputTypes {sat population saliency}
 
     constructor {comp_ val1_ val2_ n_} {
         next $comp_ [list n $n_] $val1_ $val2_
@@ -52,11 +52,13 @@ oo::class create ::athena::vardiff::nbmood {
 
         set n [my key n]
 
-        # FIRST, get the satisfaction inputs.
+        # FIRST, get the satisfaction and saliency inputs.
         $comp eval {
-            SELECT g, c, sat1, sat2 FROM comp_sat WHERE n = $n
+            SELECT g, c, sat1, sat2, saliency1, saliency2 
+            FROM comp_sat WHERE n = $n
         } {
-            my AddInput sat $sat1 $sat2 $g $c
+            my AddInput sat      $sat1      $sat2      $g $c
+            my AddInput saliency $saliency1 $saliency2 $g $c
         }
 
         # NEXT, get the population inputs

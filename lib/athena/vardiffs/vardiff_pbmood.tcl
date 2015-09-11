@@ -20,9 +20,10 @@ oo::class create ::athena::vardiff::pbmood {
     meta category   social
     meta normfunc   100.0
     meta primary    1
-    meta inputTypes {sat population}
+    meta inputTypes {sat population saliency}
 
     constructor {comp_ val1_ val2_ set_} {
+        puts "pbmood: $val1_ $val2_ $set_"
         next $comp_ [list set $set_] $val1_ $val2_
     }
 
@@ -54,9 +55,11 @@ oo::class create ::athena::vardiff::pbmood {
 
         # FIRST, get the satisfaction inputs.
         $comp eval {
-            SELECT g, c, sat1, sat2 FROM comp_sat WHERE local = $local
+            SELECT g, c, sat1, sat2, saliency1, saliency2 
+            FROM comp_sat WHERE local = $local
         } {
-            my AddInput sat $sat1 $sat2 $g $c
+            my AddInput sat      $sat1      $sat2      $g $c
+            my AddInput saliency $saliency1 $saliency2 $g $c
         }
 
         # NEXT, get the population inputs

@@ -53,7 +53,7 @@ JOIN s2.hist_nbgroup AS H2
 JOIN s1.groups AS G
      ON (G.g = H1.g);
 
--- comp_sat: combines hist_sat_raw tables
+-- comp_sat: combines hist_sat tables
 CREATE TEMPORARY VIEW comp_sat AS
 SELECT H1.g             AS g,
        H1.c             AS c,
@@ -63,11 +63,13 @@ SELECT H1.g             AS g,
        H1.sat           AS sat1,
        H1.base          AS base1,
        H1.nat           AS nat1,
+       H1.saliency      AS saliency1,
        H2.sat           AS sat2,
        H2.base          AS base2,
-       H2.nat           AS nat2
-FROM s1.hist_sat_raw   AS H1
-JOIN s2.hist_sat_raw   AS H2
+       H2.nat           AS nat2,
+       H2.saliency      AS saliency2
+FROM s1.hist_sat   AS H1
+JOIN s2.hist_sat   AS H2
      ON (H1.g = H2.g AND H1.c = H2.c AND H1.t = t1() AND H2.t = t2())     
 JOIN s1.civgroups_view AS G
      ON (G.g = H1.g)
