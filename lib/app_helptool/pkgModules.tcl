@@ -29,7 +29,7 @@ package require projectlib
 package require athena 
 
 # -kite-require-start ADD EXTERNAL DEPENDENCIES
-package require kitedocs 0.4.10
+package require kitedocs 0.4.11
 package require Img 1.4.1
 # -kite-require-end
 

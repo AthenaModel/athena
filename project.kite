@@ -62,8 +62,8 @@ require counter 2.0
 require ncgi 1.4.3
 require html 1.4.3
 require base64 2.4.2
-require kiteutils 0.4.10 -local
-require kitedocs 0.4.10 -local
+require kiteutils 0.4.11 -local
+require kitedocs 0.4.11 -local
 require marsutil 3.0.21 -local
 require marsgui 3.0.21 -local
 require simlib 3.0.21 -local
