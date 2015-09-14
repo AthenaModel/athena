@@ -18,6 +18,7 @@ oo::class create ::athena::vardiff::vrel {
     meta category   political
     meta normfunc   1.0
     meta primary    1
+    meta leaf       1
     meta inputTypes {drivervrel}
 
     constructor {comp_ val1_ val2_ g_ a_} {

@@ -17,7 +17,7 @@ oo::class create ::athena::vardiff::security {
     meta type       security
     meta category   military
     meta normfunc   100.0
-    meta primary    0
+    meta primary    1
     meta leaf       1
     meta inputTypes {}
 

@@ -70,7 +70,7 @@ snit::type ::athena::compdb {
         # FIRST, create and initialize parmset(n)
         set ps [parmset %AUTO%]    
 
-        # main
+        # primary
         $ps subset primary {
             Comparison parameters that are at the highest level of output
             variables.
@@ -116,6 +116,11 @@ snit::type ::athena::compdb {
                 }
             }
         }
+
+        # NEXT, until contributions from drivers are reworked in URAM, these
+        # are disabled so as not to show confusing results
+        $ps setdefault drivervrel.active no
+        $ps setdefault driversat.active  no
     }
 
  

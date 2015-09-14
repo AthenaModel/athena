@@ -687,7 +687,7 @@ var hist nbsecurity {
     <hist.category "Political">
     <hist.range "&minus;100.0, ..., +100.0">
     <hist.database hist_nbhood.nbsecurity>
-    <hist.inputs {TBD}>
+    <hist.inputs {security.n.g population.g}>
     </itemlist>
 }
 

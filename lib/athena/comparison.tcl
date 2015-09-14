@@ -292,6 +292,7 @@ snit::type ::athena::comparison {
     method compare {} {
         $self LoadParms
 
+        $self CompareGroupOutputs
         $self CompareNbhoodOutputs
         $self CompareAttitudeOutputs
         $self ComparePoliticalOutputs
@@ -859,9 +860,26 @@ snit::type ::athena::comparison {
     #-------------------------------------------------------------------
     # Actual Comparisons
     
-    # CompareNbhoodOutputs comp
+    # CompareGroupOutputs
     #
-    # comp   - A comparison object
+    # This method compares group specific data for two scenarios 
+    # or one scenario at different times.
+
+    method CompareGroupOutputs {} {
+        $cdb eval {
+            SELECT H1.n        AS n,
+                   H1.g        AS g,
+                   H1.security AS sec1,
+                   H2.security AS sec2
+            FROM s1.hist_security AS H1
+            JOIN s2.hist_security AS H2
+            ON (H1.n = H2.n AND H1.g = H2.g AND H1.t=$t1 AND H2.t=$t2);
+        } {
+            $self AddTop security $sec1 $sec2 $n $g
+        }
+    }
+
+    # CompareNbhoodOutputs
     #
     # This method compares neighborhood specific data for two scenarios
     # or one scenario at different times.
