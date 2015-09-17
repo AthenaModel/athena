@@ -206,6 +206,12 @@ macro gofer.function {function arglist} {
     [/item]
 }
 
+macro gofer.lockwarning {{what gofer}} {
+    [b WARNING:] This $what should not be used with in tactics that will
+    execute "on lock", as the necessary context is not established 
+    until after "on lock" tactics execute.<p>
+}
+
 
 #-----------------------------------------------------------------------
 
@@ -598,6 +604,8 @@ gofer_rule CIVGROUPS MEGA "Civilian group Mega-Filter" {
     <topic {<tt><i>mood</i></tt>}>
     This parameter filters groups depending on how their moods.<p>
 
+    <gofer.lockwarning parameter>
+
     If <i>mood</i> is <b>GOOD</b>, the rule retains only those groups
     whose mood is satisfied or very satisfied.<p>
 
@@ -745,11 +753,15 @@ gofer_rule CIVGROUPS MOOD_IS_GOOD "Civilian groups, Mood is Good" {
     <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Satisfied</b> or <b>Very Satisfied</b>.<p>
 
+    <gofer.lockwarning>
+
     <itemlist>
     <gofer.details>
     </itemlist><p>
 
     This rule has no parameters.<p>
+
+    <gofer.lockwarning>
     
     </topiclist>
 }
@@ -758,6 +770,8 @@ gofer_rule CIVGROUPS MOOD_IS_BAD "Civilian groups, Mood is Bad" {
     Retrieves a list of 
     <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Dissatisfied</b> or <b>Very Dissatisfied</b>.<p>
+
+    <gofer.lockwarning>
 
     <itemlist>
     <gofer.details>
@@ -772,6 +786,8 @@ gofer_rule CIVGROUPS MOOD_IS_AMBIVALENT "Civilian groups, Mood is Ambivalent" {
     Retrieves a list of 
     <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Ambivalent</b>.<p>
+
+    <gofer.lockwarning>
 
     <itemlist>
     <gofer.details>
@@ -1028,6 +1044,8 @@ gofer_rule FRCGROUPS DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
     that are deployed to any or all of a specified list of
     <cref /entity/nbhood neighborhoods>.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details anyall ANY nlist {N1 N2}>
     </itemlist><p>
@@ -1054,6 +1072,8 @@ gofer_rule FRCGROUPS NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhood
     that are not deployed to any or all of a specified list of
     <cref /entity/nbhood neighborhoods>.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details anyall ANY nlist {N1 N2}>
     </itemlist><p>
@@ -1083,6 +1103,8 @@ gofer_rule FRCGROUPS SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
     a specified list of 
     <cref /entity/actor actors>.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
     </itemlist><p>
@@ -1532,6 +1554,8 @@ gofer_rule GROUPS CIV_MOOD_IS_GOOD "Civilian groups, Mood is Good" {
     <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Satisfied</b> or <b>Very Satisfied</b>.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details>
     </itemlist><p>
@@ -1546,6 +1570,8 @@ gofer_rule GROUPS CIV_MOOD_IS_BAD "Civilian groups, Mood is Bad" {
     <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Dissatisfied</b> or <b>Very Dissatisfied</b>.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details>
     </itemlist><p>
@@ -1560,6 +1586,8 @@ gofer_rule GROUPS CIV_MOOD_IS_AMBIVALENT "Civilian groups, Mood is Ambivalent" {
     <cref /entity/group/civ "civilian groups">
     whose <term mood> is <b>Ambivalent</b>.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details>
     </itemlist><p>
@@ -1785,6 +1813,8 @@ gofer_rule GROUPS FRC_DEPLOYED_TO "Force groups, Deployed to Neighborhood(s)" {
     that are deployed to any or all of a specified list of
     <cref /entity/nbhood neighborhoods>.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details anyall ANY nlist {N1 N2}>
     </itemlist><p>
@@ -1811,6 +1841,8 @@ gofer_rule GROUPS FRC_NOT_DEPLOYED_TO "Force groups, Not Deployed to Neighborhoo
     that are not deployed to any or all of a specified list of
     <cref /entity/nbhood neighborhoods>.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details anyall ANY nlist {N1 N2}>
     </itemlist><p>
@@ -1840,6 +1872,8 @@ gofer_rule GROUPS FRC_SUPPORTING_ACTOR "Force groups, Supporting Actor(s)" {
     a specified list of 
     <cref /entity/actor actors>.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details anyall ANY alist {JOE BOB}>
     </itemlist><p>
@@ -2097,6 +2131,8 @@ gofer_rule NBHOODS WITH_DEPLOYMENT "Neighborhoods, With Deployment of Group(s)" 
     any or all of a specified list of <term frcgroup "force groups">
     are deployed.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details anyall ANY glist {BLUE BRIT}>
     </itemlist><p>
@@ -2122,6 +2158,8 @@ gofer_rule NBHOODS WITHOUT_DEPLOYMENT "Neighborhoods, Without Deployment of Grou
     none of a specified list of <term frcgroup "force groups">
     are deployed.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details glist {BLUE BRIT}>
     </itemlist><p>
@@ -2233,6 +2271,8 @@ gofer_rule NUMBER ASSIGNED "assigned(g,activity,n)" {
     <term orggroup> <i>g</i> assigned to do the explicit 
     <term activity> in <term nbhood> <i>n</i><p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details g BLUE activity PATROL n N01>
     <gofer.function assigned {"BLUE","PATROL","N01"}>
@@ -2307,6 +2347,8 @@ gofer_rule NUMBER COVERAGE "coverage(g,activity,n)" {
     <term activity> in <term nbhood> <i>n</i>
     as a number between 0.0 and 1.0.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details g BLUE activity PATROL n NB1>
     <gofer.function coverage {"BLUE","PATROL","NB1"}>
@@ -2335,6 +2377,8 @@ gofer_rule NUMBER DEPLOYED "deployed(g,n,...)" {
     Returns the personnel of <term frcgroup> or <term orggroup> 
      <i>g</i> deployed in the <term nbhood>s in <i>nlist</i>. <p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details g BLUE nlist {N1 N2}>
     <gofer.function deployed {"BLUE","N1","N2"}>
@@ -2625,6 +2669,8 @@ gofer_rule NUMBER MOOD "mood(g)" {
     Returns the mood of <term civgroup> <i>g</i> as a number between 
     -100.0 and 100.0.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details g SHIA>
     <gofer.function mood {"SHIA"}>
@@ -2709,6 +2755,8 @@ gofer_rule NUMBER NBMOOD "nbmood(n)" {
     Returns the mood of <term nbhood> <i>n</i> as a number between 
     -100.0 and 100.0.<p>
 
+    <gofer.lockwarning>
+    
     <itemlist>
     <gofer.details n N1>
     <gofer.function nbmood {"N1"}>
