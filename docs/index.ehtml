@@ -1,24 +1,24 @@
 <document "Athena Documentation">
 
-<h2>Modeling Documents</h2>
+<h2>Documents</h2>
 
 <ul>
+  <li> <link "build_notes.html" "Build Notes">: Details of each
+       Athena build.
   <li> Athena User's Guide (<link "aug.docx" "MS Word docx">)
   <li> Athena Analyst's Guide (<link "aag.docx" "MS Word docx">)
   <li> Athena Rules Document (<link "rules.pptx" "PowerPoint pptx">)
   <li> Mars Analyst's Guide (<link "mag.docx" "MS Word docx">)
-  <li> <link "arachne.html" "Arachne">: Athena Web/Batch Back End 
+  <li> <link "arachne.html" "Arachne">: Athena Back End 
         Interface Specification.
-  <li> <xref athena(1)> Man Page
-  <li> <xref athena_batch(1)> Man Page
 </ul>
 
-<h2>Software Notes</h2>
+<h2>Applications</h2>
 
 <ul>
-  <li> <xref athena(1)>: Command-line syntax for the Athena simulation.
-  <li> <link "build_notes.html" "Build Notes">: Details of each
-       Athena build.
+  <li> <xref athena(1)>: Athena Batch Tool
+  <li> <xref athenawb(1)>: Athena Workbench GUI
+  <li> <xref arachne(1)>: Athena Back End
 </ul>
 
 <h2>Copyright</h2>

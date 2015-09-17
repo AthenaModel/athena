@@ -31,7 +31,18 @@ namespace eval ::app_athena:: {
 # It determines the tool to invoke, and does so.
 
 proc main {argv} {
-    # FIRST, given no input display the help.
+    # FIRST, apply mods.
+    appdir init
+    try {
+        mod load
+        mod apply
+    } trap {MODERROR LOAD} {result} {
+        throw FATAL "Could not load mods: $result"
+    } trap {MODERROR APPLY} {result} {
+        throw FATAL "Could not apply mods: $result"
+    }
+
+    # NEXT, given no input display the help.
     if {[llength $argv] == 0} {
         tool use help
         return

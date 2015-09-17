@@ -48,9 +48,13 @@ Source: "..\docs\index.html"; DestDir: "{app}\docs"; Flags: ignoreversion
 Source: "..\docs\*.png"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\athena.helpdb"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\man1\athenawb.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion  
-Source: "..\docs\*.docx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion 
-Source: "..\docs\*.pptx"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "..\docs\*.pdf"; DestDir: "{app}\docs\dev"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "..\docs\man1\athena.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion  
+Source: "..\docs\man1\arachne.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion  
+Source: "..\docs\aug.docx"; DestDir: "{app}\docs"; Flags: ignoreversion 
+Source: "..\docs\aag.docx"; DestDir: "{app}\docs"; Flags: ignoreversion 
+Source: "..\docs\mag.docx"; DestDir: "{app}\docs"; Flags: ignoreversion 
+Source: "..\docs\rules.pptx"; DestDir: "{app}\docs"; Flags: ignoreversion
+Source: "..\docs\arachne.html"; DestDir: "{app}\docs"; Flags: ignoreversion  
 Source: "..\htdocs\*"; DestDir: "{app}\htdocs"; Flags: ignoreversion skipifsourcedoesntexist recursesubdirs
 Source: "..\maps\*.png"; DestDir: "{app}\maps"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\maps\*.tif"; DestDir: "{app}\maps"; Flags: ignoreversion skipifsourcedoesntexist

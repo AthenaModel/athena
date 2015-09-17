@@ -12,7 +12,7 @@
 
 </deflist program>
 
-<xref athenawb(1)> is the desktop Athena simulation application.  Details of
+Athena Workbench is the desktop Athena simulation application.  Details of
 the simulation model are to be found in the <i>Athena Analyst's
 Guide</i> and related documents, rather than here.  The models and 
 algorithms, along with tools for scenario-building, are found in 
@@ -24,7 +24,9 @@ files, which conventionally have a "<code>.adb</code>" extension.
 If a scenario file name is given on the command line, it will be
 opened automatically.<p>
 
-The following options may be used:<p>
+Athena Workbench is usually invoked from the Windows Start Menu or a 
+desktop shortcut; it may also be invoked from a Windows console command
+line, in which case the following options may be used:<p>
 
 <deflist options>
 
@@ -40,12 +42,6 @@ systems, this is typically a directory under the user's home directory.<p>
 Names an Athena executive script to be executed at start-up,
 immediately after loading scenario file (if any).  This option is
 usually used to execute exported order scripts.<p>
-
-<defopt {-dev}>
-
-Tells the application to ensure that all GUI elements of interest to
-the developer are made visible at start-up.  This includes the command
-line interface (CLI), the scrolling log, and the order history tab.<p>
 
 <defopt {-ignoreuser}>
 
@@ -68,28 +64,6 @@ and see the <b>Help</b> menu.<p>
 It is possible to patch Athena post-delivery by means of Athena
 mod files.  To use a mod, just copy the mod file to the installation's
 <code>mods/</code> directory, typically <code>~/athena/mods</code>.<p>
-
-<subsection "Mod Syntax">
-
-A mod file is a Tcl-formatted file that may contain one or more mods.
-Each mod has this syntax:<p>
-
-<example>
-<b>mod</b> <i>version num title</i> {
-    <i>body</i>
-}
-</example>
-
-where <i>version</i> is the Athena version, e.g.,
-"<b>2.1.0</b>"; <i>num</i> is the serial number of this mod;
-<i>title</i> is a brief string that identifies the purpose of the mod;
-and <i>body</i> is the code to load into the Athena application.<p>
-
-It's an error if the mod is
-written for a different version of Athena than the one attempting to
-load it, or if there are two mods present with the same <i>num</i>.<p>
-
-Mods are loaded in numerical order.<p>
 
 <section AUTHOR>
 

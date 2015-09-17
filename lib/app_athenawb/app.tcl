@@ -57,8 +57,6 @@ snit::type app {
     # -scratch dir     - The name of a directory to use for writing
     #                    log and working rdb files.
     #
-    # athena(1) only:
-    #
     # -url url         - A URL to load into the detail browser.
     #                    "%" is replaced with "/", to work around MSys
     #                    path-munging.

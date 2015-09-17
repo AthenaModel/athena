@@ -1,0 +1,89 @@
+<manpage {athena(1)} "Athena Tool">
+
+<section SYNOPSIS>
+
+<itemlist>
+
+<section DESCRIPTION>
+
+<deflist program>
+
+<defitem athena {athena <i subcommand> <i arguments...>}>
+
+</deflist program>
+
+<xref athena(1)> is tool for working with Athena scenarios from the command
+line.  It does not require GUI libraries at run-time, and will execute 
+happily on "headless" cloud nodes.<p>
+
+<section SUBCOMMANDS>
+
+Athena(1) is primarily a development and debugging tool, and its features
+come and go at the need of the developers.  Its primary capability for
+other users is the ability to run Athena scenarios in batch mode using
+the <iref athena build> subcommand; this is
+useful for doing "large N" runs on clouds or clusters.<p>
+
+This section documents the most useful and stable subcommands; to see
+the current set, use the <iref athena help> subcommand.<p>
+
+<deflist athena>
+<defitem "athena build" {athena build ?<i infile>? ?<i script...>? ?<i options...>? <i outfile>}>
+
+This command is used to build Athena scenario files, producing an output
+scenario file from an optional input file and zero or more scripts, and
+advancing time if desired.<p>
+
+<ul>
+<li> First, the <i infile> (if any) is loaded.  If given, it should be
+     an Athena scenario file with an ".adb" extension.  Otherwise, 
+     the tool creates a new, empty scenario.<p>
+
+<li> Next, any number of Athena executive scripts are executed in sequence.
+     These will usually contain "<tt send>" commands.  See the on-line 
+     help for more about Athena's executive commands.<p>
+
+<li> Next, any user options are applied; see below.<p>
+
+<li> Finally, the resulting scenario is saved as <i outfile>.<p>
+</ul>
+
+The available options are as follows:<p>
+
+<deflist options>
+
+<defopt {-run <i t>}>
+
+If this option is given, the tool will attempt to lock the scenario and
+advance time to week <i t>.<p>
+
+</deflist options>
+
+For example, the following command will load the order script from 
+<tt myorders.tcl>, lock the scenario, advance time by 30 weeks, and
+save the result in <tt myscenario.adb>:<p>
+
+<example>
+athena build myorders.tcl -run 30 myscenario.adb
+</example>
+
+<defitem "athena help" {athena help ?<i subcommand>?}>
+
+Invoked with no arguments, this command lists the tool's subcommands.
+If a <i subcommand> name is given, the command provides help for the 
+specific subcommand.<p>
+
+</deflist athena>
+
+<section MODS>
+
+It is possible to patch Athena post-delivery by means of Athena
+mod files.  To use a mod, just copy the mod file to the installation's
+<code>mods/</code> directory, typically <code>~/athena/mods</code>.<p>
+
+<section AUTHOR>
+
+Will Duquette<p>
+
+</manpage>
+
