@@ -84,7 +84,7 @@ macro gofer.rules {} {
         set plist [split $path "/"]
         set rulename [string toupper [lindex $plist end]]
         
-        append out "[topic [link $path $rulename]] $title [/topic] \n"
+        append out "[topic [cref $path $rulename]] $title [/topic] \n"
     }
 } {
     |<--
@@ -97,9 +97,6 @@ macro gofer.rules {} {
 #
 # Formats the title for a gofer rule page
 macro gofer_rule.header {typename rulename rtitle} {
-    set toplink [cref /gofer "Gofer Type:"]
-    set typelink "<b>[cref [pageinfo parent] $typename]</b>"
-} {
     |<--
     Gofer Rule: <b>$rtitle</b><p>
 }
@@ -109,14 +106,6 @@ macro gofer_rule.header {typename rulename rtitle} {
 # Formats the gofer type's details in an item list.
 
 macro gofer.details {args} {
-    set plist [split [pageinfo path] "/"]
-
-    set ltype [lindex $plist end-1]
-    set typename [string toupper $ltype]
-    set typelink [link [pageinfo parent] $typename]
-
-    set lrule [lindex $plist end]
-    set rulename [string toupper $lrule]
     set keys [dict keys $args]
 } {
     |<--
@@ -135,7 +124,7 @@ macro gofer.type {} {
 
     set ltype [lindex $plist end-1]
     set typename [string toupper $ltype]
-    set typelink [link [pageinfo parent] $typename]
+    set typelink [cref [pageinfo parent] $typename]
 } {
     |<--
     [item [cref /gofer "Gofer Type:"]]
