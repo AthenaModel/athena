@@ -119,18 +119,6 @@ order HOOK:TOPIC:UPDATE "Update Semantic Hook Topic" {
 
 #-----------------------------------------------------------------------
 
-order HOOK:TOPIC:UPDATE+MULTI "Update Semantic Hook Topic (Multi)" {
-    <b><term prep> Only.</b>  Updates the position of 
-    multiple topics associates with a semantic hook.  The 
-    order parameters are as follows:<p>
-
-    <parmlist>
-    <hook_topic parm position -required>
-    </parmlist>
-}
-
-#-----------------------------------------------------------------------
-
 order HOOK:TOPIC:STATE "Set Semantic Hook State" {
     <b><term prep> Only.</b>  Toggles the state of
     a topic associated with a semantic hook.  When

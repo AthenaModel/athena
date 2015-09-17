@@ -269,6 +269,17 @@ order TACTIC:RIOT "Tactic: RIOT Event" {
     </parmlist>
 }
 
+order TACTIC:ROE "Tactic: Force Group ROE" {
+    <b><term prep> Only.</b>
+    Updates an existing <cref /entity/tactic/roe>.<p>
+
+    <parmlist>
+    <tactic_ parm tactic_id -required>
+    <tactic_ parm name -optional>
+    <tactic_roe parms -optional -tags update>
+    </parmlist>
+}
+
 order TACTIC:SERVICE "Tactic: Update Level of Service" {
     <b><term prep> Only.</b>
     Updates an existing <cref /entity/tactic/service>.<p>

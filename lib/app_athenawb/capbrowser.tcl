@@ -272,7 +272,7 @@ snit::widget capbrowser {
             -height       20                                 \
             -width        40                                 \
             -db           ::adb                              \
-            -view         gui_cap_kn_nonzero                 \
+            -view         gui_cap_kn                         \
             -uid          id                                 \
             -filterbox    off                                \
             -titlecolumns 2                                  \
@@ -345,7 +345,7 @@ snit::widget capbrowser {
             -height 20                                      \
             -width  40                                      \
             -db     ::adb                                   \
-            -view   gui_capcov_nonzero                      \
+            -view   gui_capcov                              \
             -uid    id                                      \
             -titlecolumns 4                                 \
             -filterbox off                                  \

@@ -64,7 +64,7 @@ object cap_ {
         CAP's ID, e.g., "New York Times".
     } -tags {create update browser}
 
-    attribute a "Owning Actor" {
+    attribute owner "Owning Actor" {
         The CAP's owning actor.  This parameter may remain unset during
         <term prep>, but must be specified before time can be
         advanced.
@@ -87,7 +87,7 @@ object cap_ {
         1.0 neighborhood coverage in these neighborhoods.  Neighborhood
         coverage can also be edited subsequently using 
         <cref /order/cap/nbcov/set>.
-    } -tags {create optcreate}
+    } -tags {optcreate}
 
     attribute glist "Civ. Groups" {
         The initial set of civilian groups reached by this CAP.  This
@@ -95,7 +95,7 @@ object cap_ {
         CAP has 1.0 penetration of these groups.  Group penetration can
         also be edited subsequently using
         <cref /order/cap/pen/set>. 
-    } -tags {create optcreate}
+    } -tags {optcreate}
 
 }
 

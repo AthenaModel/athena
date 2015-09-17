@@ -47,7 +47,7 @@ object curse_ {
         
         A CURSE ID cannot be the same as the ID of any group, 
         neighborhood, etc.
-    } -tags {create}
+    } -tags {create state}
 
     attribute longname "Description" {
         This field should contain a brief statement of the real 

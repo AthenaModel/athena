@@ -49,7 +49,7 @@ object iom_ {
         be broadcast to the civilian population.  This field should
         contain a brief statement of the real message as an aid to
         the analyst.
-    } -tags {create update browser}
+    } -tags {optcreate update browser}
 
     attribute hook_id "Semantic Hook" {
         The message appeals to the belief systems of the targetted
@@ -63,7 +63,7 @@ object iom_ {
         This parameter may remain unset during
         <term prep>, but must be specified before time can be
         advanced.
-    } -tags {create update browser}
+    } -tags {optcreate update browser}
 
     attribute state "State" {
         The IOM's state, one of <b>normal</b>, <b>disabled</b>, or 

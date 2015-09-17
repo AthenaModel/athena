@@ -1354,6 +1354,21 @@ object tactic_fundeni {
         if there is not enough cash, just no cash will be spent.<p> 
     } -tags {update}
 
+    attribute cmode "Spending Cap Mode" {
+        The spending cap mode, which has one of the following values.<p>
+
+        <b>UNCAPPED</b>: Spending for ENI has no limit regardless of whether
+        the level of service being funded far exceeds the needs of the
+        civilians.  Note that even though there's no spending cap, the
+        amount of money is still limited by the funding mode.<p>
+
+        <b>CAPPED</b>: Spending for ENI should be limited to the amount
+        of funding for a specified level of service (LOS) or the amount
+        of funding actually provided for as a result of the funding mode, 
+        whichever is less.<p>
+
+    } -tags {update}
+
     attribute glist "Groups"  {
         The IDs of one or more civilian groups, or
         a <cref /gofer/civgroups> value.<p>
