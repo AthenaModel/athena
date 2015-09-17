@@ -201,6 +201,18 @@ namespace eval ::athena_test::tests:: {
         cleanup
     } -result {}
 
+    test NOT_CONTROLLED_BY-4.3 {includes nbhoods with no controller} -setup {
+        setupControlling 
+        tdb eval {
+            UPDATE control_n
+            SET controller = NULL
+            WHERE n = 'NB1'
+        }
+    } -body {
+        tdb gofer NBHOODS NOT_CONTROLLED_BY eval {alist JOE}
+    } -cleanup {
+        cleanup
+    } -result {NB1 NB2}
 
     #-------------------------------------------------------------------
     # Rule: WITH_DEPLOYMENT

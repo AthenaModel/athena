@@ -81,6 +81,14 @@ snit::type ::athena::bgslave {
             $type error $result $eopts
         }
 
+        set modlist [mod list]
+        if {[llength $modlist] > 0} {
+            sdb log normal app "Loaded Mods:\n[dictab format $modlist -headers]"
+        } else {
+            sdb log normal app "No mods loaded."
+        }
+
+
         sdb log normal slave "Initialized."
     }
 

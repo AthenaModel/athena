@@ -168,7 +168,8 @@
         return [$adb eval "
             SELECT DISTINCT n
             FROM control_n
-            WHERE controller NOT IN ('[join $alist {','}]')
+            WHERE controller IS NULL
+            OR    controller NOT IN ('[join $alist {','}]')
             ORDER BY n
         "]
     }

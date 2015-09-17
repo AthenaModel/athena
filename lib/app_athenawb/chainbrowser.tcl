@@ -275,6 +275,7 @@ snit::widget chainbrowser {
     method SelectCasesCB {} {
         set parmdict [dict create]
 
+        dict set parmdict mode  BASELINE
         dict set parmdict amode $info(amode)
         dict set parmdict afile $info(afile)
         dict set parmdict bmode $info(bmode)
@@ -315,18 +316,21 @@ snit::widget chainbrowser {
             dict set errdict afile "Specify a scenario file for Case A"
         }
 
-        if {$bmode eq "current" && [adb is unlocked]} {
-            dict set errdict bmode \
-                "The current scenario is unlocked, and has no outputs."      
+        if {$mode eq "EXCURSION"} {
+            if {$bmode eq "current" && [adb is unlocked]} {
+                dict set errdict bmode \
+                    "The current scenario is unlocked, and has no outputs."      
+            }
+
+            if {$bmode eq "external" && ![file isfile $bfile]} {
+                dict set errdict bfile "Specify a scenario file for Case B"
+            }
+
+            if {[dict size $errdict] > 0} {
+                throw REJECTED $errdict
+            }
         }
 
-        if {$bmode eq "external" && ![file isfile $bfile]} {
-            dict set errdict bfile "Specify a scenario file for Case B"
-        }
-
-        if {[dict size $errdict] > 0} {
-            throw REJECTED $errdict
-        }
         return
     }
 
@@ -343,8 +347,12 @@ snit::widget chainbrowser {
         dict with dict {}
         set errors [list]
 
-        # NEXT, if case B is identical to case A we really have one case.
-        if {$amode eq $bmode} {
+        # NEXT, if case B is identical to case A we really are in 
+        # BASELINE analysis mode.
+        if {$mode eq "BASELINE"} {
+            set bmode none
+            set bfile ""
+        } elseif {$amode eq $bmode} {
             if {$amode eq "current" || 
                 $amode eq "external" && $afile eq $bfile
             } {
@@ -946,9 +954,33 @@ dynaform define ::chainbrowser::selectcases {
         Enter the scenario(s) whose outputs you wish to analyze.
     } -span 2
 
+    rcc "Analysis Mode:" -for mode
+    selector mode {
+        case BASELINE "Baseline" {
+            rcc ""
+            label {
+                In Baseline mode, Athena tries to explain why outputs
+                of a single simulation run have the values they do.
+                Case A is the state of the simulation at the beginning
+                of the run, and Case B is the state of the simulation
+                at the end of the run.
+            }
+        }
+        case EXCURSION "Excursion" {
+            rcc ""
+            label {
+                In Excursion mode, Athena compares the results of two
+                distinct but related simulation runs and tries to 
+                explain the differences between the two sets of 
+                outputs.  Case A is the baseline run and Case B is the
+                excursion run.
+            }
+        }
+    }
+
     rc ""
 
-    rcc "Case A:" -for amode
+    rcc "Baseline Scenario:" -for amode
     selector amode {
         case current "Current Scenario" {}
         case external "External Scenario" {
@@ -962,21 +994,23 @@ dynaform define ::chainbrowser::selectcases {
         }
     }
 
-    rcc "&nbsp;"
+    when {$mode eq "EXCURSION"} {
+        rcc "&nbsp;"
 
-    rcc "Case B:" -for bmode
-    selector bmode {
-        case none    "None" {}
-        case current "Current Scenario" {}
-        case external "External Scenario" {
-            rcc "Scenario&nbsp;File:" -for bfile
-            file bfile \
-                -title "Select a scenario file to compare" \
-                -width 30 \
-                -filetypes {
-                    { {Athena Scenario} {.adb} }
-                }
-        }
+        rcc "Excursion Scenario:" -for bmode
+        selector bmode {
+            case none    "None" {}
+            case current "Current Scenario" {}
+            case external "External Scenario" {
+                rcc "Scenario&nbsp;File:" -for bfile
+                file bfile \
+                    -title "Select a scenario file to compare" \
+                    -width 30 \
+                    -filetypes {
+                        { {Athena Scenario} {.adb} }
+                    }
+            }
+        }        
     }
 }
 
