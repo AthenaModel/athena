@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide athena 6.3.1a4
+package provide athena 6.3.1a5
 # -kite-provide-end
 
 # The thread package is part of Tcl, and so doesn't need to be
