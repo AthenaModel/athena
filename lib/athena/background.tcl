@@ -282,6 +282,8 @@ snit::type ::athena::background {
         thread::send $info(slave) {
             package require athena
             namespace import ::projectlib::* ::athena::*
+            mod load
+            mod apply
         }
 
         # NEXT, ask the bgslave module to initialize itself.
