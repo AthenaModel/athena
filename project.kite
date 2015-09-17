@@ -64,16 +64,16 @@ require html 1.4.3
 require base64 2.4.2
 require kiteutils 0.4.11 -local
 require kitedocs 0.4.11 -local
-require marsutil 3.0.21 -local
-require marsgui 3.0.21 -local
-require simlib 3.0.21 -local
-require Marsbin 3.0.21 -local
+require marsutil 3.0.22 -local
+require marsgui 3.0.22 -local
+require simlib 3.0.22 -local
+require Marsbin 3.0.22 -local
 
 # External Files
 xfile docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20150827.docx
-xfile docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20150610.docx
+xfile docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20150910.docx
 xfile docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20150827.pptx
-xfile docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20150827.docx
+xfile docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20150917.docx
 
 # Distribution Targets
 dist install-%platform {

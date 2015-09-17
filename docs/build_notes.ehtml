@@ -2,6 +2,27 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.1a4, 17 September 2015</h3>
+
+This build contains a few bug fixes and some new vardiffs for causality 
+chaining.  The Athena Help has had some restructuring done to it.  There's
+also documentation updates.<p>
+
+<ul>
+<li> Issue #307: New vardiff: influence.n.a
+<li> Issue #306: NOT_CONTROLLED_BY gofer does not return correct list of nbhoods
+<li> Issue #305: chainbrowser: baseline vs excursion analysis 
+<li> Issue #304: Make security.n.g a primary vardiff
+<li> Issue #303: New vardiff: saliency.g.c enhancement
+<li> Issue #302: WMS client sends incorrect order parm 
+<li> Issue #301: export error: invalid command name "parm"
+<li> Issue #299: Athena Help Restructuring
+<li> Issue #298: compdb active parameters do not disable the variable
+<li> Issue #297: Arachne needs -compdb comand line parameter 
+<li> Issue #286: MAG Nbmood equation 
+<li> Issue #169: athena(n) background threads need mods too
+</ul>
+
 <h3>Build 6.3.1a3, 26 August 2015</h3>
 
 This build introduces the Analysis Tab in the Athena Workbench and History
