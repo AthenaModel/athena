@@ -90,6 +90,18 @@ FROM s1.hist_vrel   AS H1
 JOIN s2.hist_vrel   AS H2
      ON (H1.g = H2.g AND H1.a = H2.a AND H1.t = t1() AND H2.t = t2());
 
+-- comp_support: combines hist_support tables
+CREATE TEMPORARY VIEW comp_support AS
+SELECT H1.n         AS n,
+       H1.a         AS a,
+       H1.support   AS support1,
+       H1.influence AS influence1,
+       H2.support   AS support2,
+       H2.influence AS influence2
+FROM s1.hist_support AS H1
+JOIN s2.hist_support AS H2 
+     ON (H1.n = H2.n AND H1.a = H2.a AND H1.t = t1() AND H2.t = t2())
+     WHERE support1 > 0.0 OR support2 > 0.0;
 -----------------------------------------------------------------------
 -- End of File
 -----------------------------------------------------------------------

@@ -1024,7 +1024,8 @@ snit::type ::athena::comparison {
                 dict set i2 $n $a $influence2
             }
 
-            $self AddTop support $support1 $support2 $n $a
+            $self AddTop support   $support1   $support2   $n $a
+            $self AddTop influence $influence1 $influence2 $n $a
         }
 
         foreach n [$s1 nbhood names] {

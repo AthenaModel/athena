@@ -11,6 +11,13 @@
 #   A value is the name of the actor controlling the neighborhood, or
 #   "" if none.
 #
+#   NOTE: Ideally this vardiff would drill down to influence.n.a. However,
+#   since *when* control shifts is important the current methodology
+#   of looking at end times of cases is not sufficient in telling the
+#   story.  In fact, it is completely misleading.  Once a more suitable
+#   way of drilling down to influence is established then it can be 
+#   added in.
+#
 #-----------------------------------------------------------------------
 
 oo::class create ::athena::vardiff::control {
@@ -51,4 +58,5 @@ oo::class create ::athena::vardiff::control {
         return "Neighborhood [my key n] was controlled by [my fmt1], is controlled by [my fmt2]."
     }
 }
+
 
