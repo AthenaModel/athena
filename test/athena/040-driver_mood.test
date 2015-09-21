@@ -136,11 +136,9 @@ fdict      controller JOE delta -100.0 moodThen 0.0 n NB1 dtype MOOD tc 0 moodNo
     } -cleanup {
         cleanup
     } -result {
-rule     g    a    note        
--------- ---- ---- ----------- 
-MOOD-1-1 SHIA BOB  no control  
-MOOD-1-1 SHIA DAVE no control  
-MOOD-1-1 SHIA JOE  has control 
+rule     g    a   note        
+-------- ---- --- ----------- 
+MOOD-1-1 SHIA JOE has control 
     }
     
     
@@ -179,11 +177,9 @@ fdict      controller JOE delta 100.0 moodThen 0.0 n NB1 dtype MOOD tc 0 moodNow
     } -cleanup {
         cleanup
     } -result {
-rule     g    a    note        
--------- ---- ---- ----------- 
-MOOD-1-2 SHIA BOB  no control  
-MOOD-1-2 SHIA DAVE no control  
-MOOD-1-2 SHIA JOE  has control 
+rule     g    a   note        
+-------- ---- --- ----------- 
+MOOD-1-2 SHIA JOE has control 
     }
     
     #-------------------------------------------------------------------

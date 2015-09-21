@@ -163,8 +163,6 @@
             foreach a [my actor names] {
                 if {$a eq $controller} {
                     my vrel T $g $a [my mag/ $delta S-] "has control"
-                } else {
-                    my vrel T $g $a [my mag/ $delta L+] "no control"
                 }
             }
         }
@@ -175,8 +173,6 @@
             foreach a [my actor names] {
                 if {$a eq $controller} {
                     my vrel T $g $a [my mag/ $delta S+] "has control"
-                } else {
-                    my vrel T $g $a [my mag/ $delta L-] "no control"
                 }
             }
         }
