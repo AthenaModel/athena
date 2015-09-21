@@ -16,8 +16,9 @@ oo::class create ::athena::vardiff::saliency {
     superclass ::athena::vardiff
     meta type       saliency
     meta category   social
-    meta normfunc   100.0
+    meta normfunc   1.0
     meta primary    0
+    meta leaf       1
     meta inputTypes {}
 
     constructor {comp_ val1_ val2_ g_ c_} {
