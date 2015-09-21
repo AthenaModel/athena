@@ -744,25 +744,12 @@ $ git commit -m "Updated for Build 6.3.1a5"
 </step>
 
 <step>
-<b>Optional.</b> Run the test suite in non-GUI mode. This is to test that
-Athena tests cleanly when there are no Tk modules loaded. This step is
-recommended for builds that will be used in a cloud environment.
-Resolve any errors, and retest, until the tests all pass. Commit 
-any changes.
-</step/>
-<pre>
-$ cd ~/github/athena
-$ kite test -notk
-</pre>
-</step>
-
-<step>
 Do a complete build, fixing and committing any test failures,
 until it builds cleanly.  Note that this creates the distribution
 .zip files.
 </step/>
 <pre>
-$ kite build all
+$ kite build
 </pre>
 </step>
 
