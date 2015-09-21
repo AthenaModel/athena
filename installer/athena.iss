@@ -47,6 +47,8 @@ Source: "..\docs\build_notes.html"; DestDir: "{app}\docs"; Flags: ignoreversion
 Source: "..\docs\index.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\*.png"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\athena.helpdb"; DestDir: "{app}\docs"; Flags: ignoreversion 
+Source: "..\docs\arachne.helpdb"; DestDir: "{app}\docs"; Flags: ignoreversion 
+Source: "..\docs\workbench.helpdb"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\man1\athenawb.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion  
 Source: "..\docs\man1\athena.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion  
 Source: "..\docs\man1\arachne.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion  
