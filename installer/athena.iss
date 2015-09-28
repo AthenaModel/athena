@@ -3,7 +3,7 @@
 
 #define MyAppName "Athena"
 #define MyWebName "Arachne"
-#define MyAppVersion "6.3.1a4"
+#define MyAppVersion "6.3.1"
 #define MyAppPublisher "Jet Propulsion Laboratory, California Institute of Technology"
 #define MyAppExeName "athenawb.exe"
 #define MyWebExeName "arachne.exe"
@@ -12,13 +12,13 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{8CC311F7-C4AE-427C-9AEF-04A90148C424}
+AppId={{BF1E34BE-4E64-4F24-92C1-540EA3B91C51}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName={pf}\Athena {#MyAppVersion}
-DefaultGroupName=Athena {#MyAppVersion}
+DefaultDirName={pf}\Athena 6.3
+DefaultGroupName=Athena 6.3
 LicenseFile=..\LICENSE
 ;InfoBeforeFile=before.txt
 InfoAfterFile=after.txt
