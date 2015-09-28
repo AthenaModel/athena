@@ -2,6 +2,20 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.1, 28 September 2015</h3>
+
+This build is the 6.3.1 release candidate and contains the completed
+documentation set and one minor change to the MOOD ruleset as requested by
+TRADOC G-27.<p>
+
+<ul>
+<li> Issue #314: Remove some VREL effects from MOOD ruleset 
+<li> Issue #310: Remove unnecessary step from CM plan 
+<li> Issue #309: Help order scrub 
+<li> Issue #308: broken links in help 
+<li> Issue #260: athena(1): Man page update needed 
+</ul>
+
 <h3>Build 6.3.1a4, 17 September 2015</h3>
 
 This build contains a few bug fixes and some new vardiffs for causality 
