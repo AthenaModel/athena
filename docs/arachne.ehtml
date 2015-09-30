@@ -180,6 +180,14 @@ scenario and then run excursions from it via the RESTful API.  The
 If no <tt -scenario> is specified, then Arachne creates an empty scenario
 for "<tt case00>".<p>
 
+<def {-scratchdir <i dirpath>}>
+
+Specifies the name of a directory to use for temporary files.  This directory
+should be somewhere the user has write access.  The directory need not exist,
+it will be created if it does not.  <b>NOTE: If this directory does exist, the
+contents of it will be deleted when the application is launched.  Use great
+care when specifying this directory.</b><p>
+
 <def {-script <i filepath>}>
 
 Specifies the path to an Athena script (.tcl) file to load into the
