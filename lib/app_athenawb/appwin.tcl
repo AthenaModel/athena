@@ -1013,7 +1013,6 @@ snit::widget appwin {
 
         ttk::label $toolbar.date                 \
             -font         datafont               \
-            -width        7                      \
             -textvariable [myvar info(date)]
 
         # Tick
@@ -1022,7 +1021,6 @@ snit::widget appwin {
 
         ttk::label $toolbar.tick                 \
             -font         datafont               \
-            -width        4                      \
             -textvariable [myvar info(tick)]
 
         pack $simtools.runpause  -side left    
