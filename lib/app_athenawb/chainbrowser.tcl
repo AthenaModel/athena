@@ -399,7 +399,7 @@ snit::widget chainbrowser {
             }
             current {
                 set info(b) ::adb
-                set info(atext) "Current @ [ClockTime $info(b)]"
+                set info(btext) "Current @ [ClockTime $info(b)]"
             }
             external {
                 set info(b) [::athena::athena new]
