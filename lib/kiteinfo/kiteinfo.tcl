@@ -82,6 +82,11 @@ namespace eval ::kiteinfo:: {
     docs/*.helpdb
     docs/*.docx
     docs/*.pptx
+    htdocs/*
+    htdocs/*/*
+    htdocs/*/*/*
+    htdocs/*/*/*/*
+    maps/*
 }
         reqver-textutil::adjust 0.7
         gui-cellide 1

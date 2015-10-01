@@ -83,10 +83,16 @@ dist install-%platform {
     docs/*.html
     docs/*.png
     docs/man1/athenawb.html
-    docs/man1/cellide.html
+    docs/man1/athena.html
+    docs/man1/arachne.html
     docs/*.helpdb
     docs/*.docx
     docs/*.pptx
+    htdocs/*
+    htdocs/*/*
+    htdocs/*/*/*
+    htdocs/*/*/*/*
+    maps/*
 }
 dist src {
     project.kite
