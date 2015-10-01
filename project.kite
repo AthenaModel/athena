@@ -87,6 +87,11 @@ dist install-%platform {
     docs/*.helpdb
     docs/*.docx
     docs/*.pptx
+    htdocs/*
+    htdocs/*/*
+    htdocs/*/*/*
+    htdocs/*/*/*/*
+    maps/*
 }
 dist src {
     project.kite
