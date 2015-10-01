@@ -15,61 +15,61 @@ This man page describes a component of the <xref athena(n)> package used
 to retrieve information about agents.  Agents
 are entities that have strategies, and include all actors plus the 
 "SYSTEM" agent, which is used to control actions not dependent on
-particular actors.<p>
+particular actors.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> agent</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist commands>
 
 <defitem exists {<i adb> agent <i agent_id>}>
-Returns 1 if there is an agent with ID <i agent_id>, and 0 otherwise.<p>
+Returns 1 if there is an agent with ID <i agent_id>, and 0 otherwise.
 
 <defitem names {<i adb> agent names}>
-Returns a list of agent IDs for all agents in the scenario.<p>
+Returns a list of agent IDs for all agents in the scenario.
 
 <defitem stats {<i adb> agent stats <i agent_id>}>
-Returns a dictionary of statistics about the specified agent's strategy:<p>
+Returns a dictionary of statistics about the specified agent's strategy:
 
 <ul>
 <li> <b blocks>: The total number of blocks
 <li> <b conditions>: The total number of conditions
 <li> <b tactics>: The total number of tactics
-</ul><p>
+</ul>
 
 <defitem tactictypes {<i adb> agent tactictypes <i agent_id>}>
 
 Returns a list of the names of the tactic types that this agent is
-allowed to use.<p>
+allowed to use.
 
 <defitem type {<i adb> agent type <i agent_id>}>
 
-Returns the type of this agent, either <b system> or <b actor>.<p>
+Returns the type of this agent, either <b system> or <b actor>.
 
 <defitem validate {<i adb> agent validate <i agent_id>}>
 
 Validates <i agent_id> as an agent ID, returning it if it is valid and
-throwing <b INVALID> otherwise.<p>
+throwing <b INVALID> otherwise.
 
 </deflist commands>
 
 <subsection "Private Subcommands">
 
 The <tt><i adb> agent</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
-TBD: None yet documented.<p>
+TBD: None yet documented.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 </manpage>

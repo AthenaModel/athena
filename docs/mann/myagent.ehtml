@@ -15,10 +15,10 @@ In HTTP-parlance, a "user agent" is a program that accesses an HTTP
 server.  An instance of myagent(n) is an object that clients can use
 to access data from one or more <xref mydomain(i)> handlers within
 the same application.  See <xref mydomain(i)> for information on
-what a <xref mydomain(i)> is and why it is useful.<p>
+what a <xref mydomain(i)> is and why it is useful.
 
 In addition, the myagent(n) type is responsible keeping track of the
-available mydomain(i) instances.<p>
+available mydomain(i) instances.
 
 <section COMMANDS>
 
@@ -29,13 +29,13 @@ available mydomain(i) instances.<p>
 Creates a new myagent(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref myagent> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
 Before the new myagent(n) can be used, at least one
 <xref mydomain(i)> must be registered using
-<iref myagent register>.<p>
+<iref myagent register>.
 
-The myagent(n) may be created with the following options:<p>
+The myagent(n) may be created with the following options:
 
 <deflist options>
 
@@ -44,11 +44,11 @@ The myagent(n) may be created with the following options:<p>
 Specifies the list of content types acceptable to this client, e.g.,
 <b>text/html</b>.  Wildcards may be used, e.g., <b>text/*</b>.  This
 list will be passed to the mydomain(i) along with the requested URL;
-the server will only respond with an acceptable content type.<p>
+the server will only respond with an acceptable content type.
 
 The mydomain(i) must document the content types it is capable of
 returning.  Usually it will do so dynamically as <b>text/html</b> at the
-address <tt>/urlhelp</tt>.<p>
+address <tt>/urlhelp</tt>.
 
 </deflist options>
 
@@ -57,7 +57,7 @@ address <tt>/urlhelp</tt>.<p>
 Registers a <xref mydomain(i)> object so that it can be accessed by
 instances of myagent(n).  The <i handler> is the actual
 object.  By convention, an application's
-main domains are <b>/app</b> and <b>/help</b>.<p>
+main domains are <b>/app</b> and <b>/help</b>.
 
 <defitem "myagent resolve" {myagent resolve <i>base url</i>}>
 
@@ -66,46 +66,46 @@ this command resolves the two into a single <i>url</i>.  For example,
 given <tt>/app/group</tt> and <tt>BLUE</tt>, this command will
 return <tt>/app/group/BLUE</tt>.  If the <i>url</i> were
 <tt>/app/nbhood/N1</tt>, the returned URL would be
-<tt>/app/nbhood/N1</tt> instead.<p>
+<tt>/app/nbhood/N1</tt> instead.
 
 The client should always use this command (or, equivalently,
 the instance's <iref resolve> subcommand) on all links embedded in
 returned content, where <i>base</i> is the URL of the returned content
-as a whole.<p>
+as a whole.
 
 </deflist commands>
 
 <section "INSTANCE COMMAND">
 
-Each instance of myagent(n) has the following subcommands:<p>
+Each instance of myagent(n) has the following subcommands:
 
 <deflist instance>
 
 <defitem resolve {<i>object</i> resolve <i>base url</i>}>
 
 This is identical to <iref myagent resolve>; it is provided for
-convenience.<p>
+convenience.
 
 <defitem find {<i>object</i> find <i>url</i>}>
 
 Validates the <i url>, verifying its syntax and that its domain is
 known to the agent.  Returns a list, {<i domain> <i newurl>}, where
 the <i domain> is the domain extracted from the <i url>, e.g., "<tt /app>",
-and the <i newurl> is the <i url> in canonical form.<p>
+and the <i newurl> is the <i url> in canonical form.
 
 <defitem get {<i>object</i> get <i>url</i> ?<i>contentTypes</i>?}>
 
 Retrieves the <i>url</i>'s content.  If the URL cannot be retrieved, the
 command will throw an error with error code <i>NOTFOUND</i>; the error
-message will indicate the reason for the error.<p>
+message will indicate the reason for the error.
 
-If present, the <i>url</i>'s scheme must be "<b my:>".<p>
+If present, the <i>url</i>'s scheme must be "<b my:>".
 
 If one or more <i>contentTypes</i> are given, the returned content will
 have the first available content type in the list; if none of the the
 requested content types are available, the server will
 throw <b>NOTFOUND</b>.  If <i>contentTypes</i> is not given, it
-defaults to the value of the <code>-contenttypes</code> option.<p>
+defaults to the value of the <code>-contenttypes</code> option.
 
 </deflist instance>
 
@@ -119,7 +119,7 @@ Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

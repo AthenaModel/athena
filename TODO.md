@@ -1,5 +1,9 @@
 # TODO.md - Athena TODO List
 
+- Docs
+  - Need tree display in ehtml(5).
+    - Directory trees in CM plans.
+    - Standard nested dictionary documentation format
 - Causality Chaining
   - Vardiffs need better context strings, or perhaps links to help.
   - Need to add "trivial" checks to some of the vardiff types, based

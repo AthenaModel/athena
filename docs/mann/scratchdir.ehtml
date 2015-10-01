@@ -13,20 +13,20 @@ namespace import ::projectlib::*
 
 <xref scratchdir(n)> is responsible for locating and creating
 scratch directories for <xref arachne(1)> and other applications that
-require a well-known scratch directory.<p>
+require a well-known scratch directory.
 
 At start up the application calls <iref scratchdir init>, optionally
 passing it a specific scratch directory name.  By default, the 
 scratch directory will be <tt><i appdir>/scratch/</tt>, where the 
-<i appdir> is defined as for <xref appdir(n)>.<p>
+<i appdir> is defined as for <xref appdir(n)>.
 
 The scratch directory may be referenced by multiple applications at once,
 i.e., a master application such as <xref arachne(1)> and any number of
 ancillary tools, such as the <xref athena_log(1)> logbrowser.  Only the
-master should write to the scratch directory.<p>
+master should write to the scratch directory.
 
 Normally, the master application will initialize and clear the scratch 
-directory:<p>
+directory:
 
 <example>
     scratchdir init
@@ -34,11 +34,11 @@ directory:<p>
 </example>
 
 The <iref scratchdir clear> command also creates the normal set of 
-subdirectories, e.g., <tt><i scratchdir>/log</tt>.<p>
+subdirectories, e.g., <tt><i scratchdir>/log</tt>.
 
 <section "COMMANDS">
 
-This module defines the following commands:<p>
+This module defines the following commands:
 
 <deflist commands>
 
@@ -46,16 +46,16 @@ This module defines the following commands:<p>
 
 Deletes the content of the scratch directory, including all subdirectories,
 and creates the standard subdirectories.  It's an error to call this 
-command prior to <iref scratchdir init>.<p>
+command prior to <iref scratchdir init>.
 
 <defitem "scratchdir init" {scratchdir init ?<i>scratchdir</i>?}>
 
 Initializes scratchdir(n).  If <i scratchdir> is given, it is normalized
 and saved as the scratch directory; otherwise, the 
 scratch directory will be <tt><i appdir>/scratch/</tt>, where the 
-<i appdir> is defined as for <xref appdir(n)>.<p>
+<i appdir> is defined as for <xref appdir(n)>.
 
-Successive calls to this command in one application are no-ops.<p>
+Successive calls to this command in one application are no-ops.
 
 
 <defitem "scratchdir join" {scratchdir join ?<i>arg arg...</i>?}>
@@ -64,7 +64,7 @@ Called with no arguments, returns the name of the scratch directory.
 Otherwise, returns the path name resulting from joining the
 arguments to the scratch directory.  For example, the
 following command returns the absolute path of a file called
-"<code>working.rdb</code>" in the RDB directory.<p>
+"<code>working.rdb</code>" in the RDB directory.
 
 <pre>
 set rdbfile [scratchdir join rdb working.rdb]
@@ -76,11 +76,11 @@ set rdbfile [scratchdir join rdb working.rdb]
 
 <xref workdir(n)>, which creates working directories for applications like
 Athena Workbench, <xref athenawb(1)>, where only the application itself
-needs access to the directory.<p>
+needs access to the directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

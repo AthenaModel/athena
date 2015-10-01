@@ -14,29 +14,29 @@ namespace import ::projectlib::wmsclient
 wmsclient(n) is an implementation of a client interface to an Open GIS
 (OGC) compliant Web Map Service (WMS).  The WMS standard has been around
 for many years and is well documented.  A detailed discussion of WMS is
-outside the scope of this man page.<p>
+outside the scope of this man page.
 
 An application using the wmsclient(n) is able to extract the pertinent meta
 data from a WMS to make requests for geo-referenced maps served up by the
-WMS server.<p>
+WMS server.
 
 For now, it is assumed that maps served up by the WMS has the content type
 of <b>image/png</b>. It would be trivial to expand this to other image types,
-but PNG is recommended by the Open GIS as a minumum for compliant servers.<p>
+but PNG is recommended by the Open GIS as a minumum for compliant servers.
 
 <section "COMMANDS">
 
 wmsclient(n) provides the following commands for use by the
-application.<p>
+application.
 
 <deflist commands>
 
 <defitem wmsclient {wmsclient <i>name</i> ?<i>options...</i>?}>
 
 Creates a new instance of wmsclient(n) called <i>name</i>; returns the
-fully-qualified command name.<p>
+fully-qualified command name.
 
-wmsclient(n) has the following option:<p>
+wmsclient(n) has the following option:
 
 <deflist options>
 
@@ -44,12 +44,12 @@ wmsclient(n) has the following option:<p>
 
 Specifies an agent used to process http requests. This is normally left
 empty, in which case the wmsclient(n) uses <xref httpagent(n)> for 
-processing http requests.<p>
+processing http requests.
 
 <defopt {-servercmd <i>cmd</i>}>
 
 Specifies a callback command that is executed as a result of an http server
-state change.<p>
+state change.
 
 </deflist options>
 
@@ -59,14 +59,14 @@ state change.<p>
 <section "INSTANCE COMMANDS">
 
 Instances of wmsclient(n) provide the following subcommands for use by
-the application.<p>
+the application.
 
 <deflist instance>
 
 <defitem server {$client server <i>subcommand</i> ?<i>args...</i>?}>
 
 This command is used to connect and retrieve data from the WMS server.
-The subcommands are as follows:<p>
+The subcommands are as follows:
 
 <deflist server>
 
@@ -75,45 +75,45 @@ The subcommands are as follows:<p>
 Attempts to connect to a WMS server located at the specified URL.  If a
 connection is successful the WMS server capabilities are automatically 
 retrieved and stored in a dictionary that can be accessed using other
-commands provided by wmsclient(n).<p>
+commands provided by wmsclient(n).
 
 <defitem "server getmap" {$client server getmap <i>qparms</i>}>
 
 Attempts to retrieve a map from the WMS server using any supplied query
 parameters in the form of a dictionary of WMS server parameters and values.
-See <xref "Query Parms"> for the list of recognized parameters.<p>
+See <xref "Query Parms"> for the list of recognized parameters.
 
 <defitem "server url" {$client server url}>
 
-Returns the URL of the currently connected WMS server.<p>
+Returns the URL of the currently connected WMS server.
 
 <defitem "server state" {$client server state}>
 
-Returns the current state of the WMS server. Possible server states are:<p>
+Returns the current state of the WMS server. Possible server states are:
 
 <ul>
   <li> <b>OK</b>: The server request was completed normally.
   <li> <b>IDLE</b>: The server is idle.
   <li> <b>WAITING</b>: Waiting for a response from the server.
   <li> <b>ERROR</b>: An error occurred due to a server request.
-</ul><p>
+</ul>
 
 <defitem "server status" {$client server status}>
 
 Returns nicely formatted, human-readable text of the server status based on
-the <iref server state>.<p>
+the <iref server state>.
 
 <defitem "server error" {$client server error}>
 
 Returns a nicely formatted, human-readable text of the error encountered by
-the server if the <iref server state> is <b>ERROR</b>.<p>
+the server if the <iref server state> is <b>ERROR</b>.
 
 <defitem "server wmscap" {$client server wmscap}>
 
 Returns the capabilities of the WMS server in dictionary format. Not all the
 data in a <b>WMS GetCapabilities</b> request is stored in this dictionary. The
 available data is parsed out by the <xref wmscap(n)> object. See 
-<xref wmscap(n)> for a description of the data.<p>
+<xref wmscap(n)> for a description of the data.
 
 <subsection "Query Parms">
 
@@ -139,30 +139,30 @@ using the <iref server getmap> command:
 <defitem map {$client map <i>subcommand</i>}>
 
 This command is used to retrieve information about the currently requested
-map. The subcommands are as follows:<p>
+map. The subcommands are as follows:
 
 <deflist map>
 
 <defitem "map data" {$client map data}>
 Returns the image of the map in binary form.  The data is suitable for 
-conversion to an image using the Tk image command.<p>
+conversion to an image using the Tk image command.
 
 <defitem "map bbox" {$client map bbox}>
 Returns the bounding box of the current map using the coordinate reference
 system as specified in the map request.  The bounding box consists of a list
 of four values corresponding to two lat/long pairs, one for the lower left
 of the box and one for the upper right. Thus, the returned list is, in order,
-minumum latitude, minimum longitude, maximum latitude and maximum longitude.<p>
+minumum latitude, minimum longitude, maximum latitude and maximum longitude.
 
 <defitem "map crs" {$client map crs}>
 Returns the coordinate reference system in use.  Only CRS:84 or EPSG:4326
-coordinate reference systems are recognized.<p>
+coordinate reference systems are recognized.
 
 <defitem "map width" {$client map width}>
-Returns the width of the current map in pixels.<p>
+Returns the width of the current map in pixels.
 
 <defitem "map height" {$client map height}>
-Returns the height of the current map in pixels.<p>
+Returns the height of the current map in pixels.
 
 </deflist map>
 
@@ -170,11 +170,11 @@ Returns the height of the current map in pixels.<p>
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Dave Hanks<p>
+Dave Hanks
 
 <section HISTORY>
 

@@ -17,26 +17,26 @@ of an Athena scenario.  Every bean is defined in the context of a
 beanpot(n) object; beans in the same pot are saved and restored together.
 The beanpot(n) is also responsible for creating bean objects, 
 assigning bean IDs (which are unique and persistent within a pot) and for
-various bean-ID-related queries.<p>
+various bean-ID-related queries.
 
 Essentially, the application will create a bean pot for each distinct set of 
 beans in memory (i.e., a pot for each scenario), and then use that pot to 
 manage, save, and restore the set of beans.  All beans should be created
-using beanpot(n)'s <iref new> subcommand.<p>
+using beanpot(n)'s <iref new> subcommand.
 
 Each bean knows what pot it is in; the pot's instance command is stored
-in the bean's <tt pot> instance variable, which cannot be changed.<p>
+in the bean's <tt pot> instance variable, which cannot be changed.
 
 <subsection "Bean IDs">
 
 Every instance of <xref bean(n)> and its subclasses has a unique numeric 
 ID within its bean pot; beans can be looked up given their IDs.  
 The ID is stored in a predefined instance 
-variable called <code>id</code>, which cannot be changed.<p>
+variable called <code>id</code>, which cannot be changed.
 
 The bean ID is assigned by the bean pot's <iref new> method when the bean
 is first created, and persists across <iref checkpoint> and 
-<iref restore>.<p>
+<iref restore>.
 
 
 <subsection "Detecting Changes">
@@ -56,34 +56,34 @@ using the <tt set> method, like this:
 
 A method that makes many changes to the subclass's own variables can instead
 use the normal Tcl <code>set</code> command, and call
-<iref markchanged> when done.<p>
+<iref markchanged> when done.
 
 The <xref bean(n)> class provides <tt lappend> and <tt ldelete> 
 methods as well, for modifying list-valued variables with notification.
 In general, all <xref bean(n)> methods that update instance variables 
-notify the containing beanpot automatically.<p>
+notify the containing beanpot automatically.
 
 <subsection "Checkpoint/Restore">
 
 Each beanpot(n) instance is a <xref saveable(i)>, and thus can be plugged
 into Athena's checkpoint/restore mechanism.  Note that bean IDs are 
-preserved across checkpoint/restore, but bean object names are not.<p>
+preserved across checkpoint/restore, but bean object names are not.
 
 The beanpot(n)'s <iref checkpoint> method doesn't actually return a 
 checkpoint.  Rather, it's a trigger for the pot to save its beans in its
 configured <tt -rdb>'s <tt beans> table.  The entries are tagged with 
-the pot's <tt -dbid>, which defaults to "<tt pot>".<p>
+the pot's <tt -dbid>, which defaults to "<tt pot>".
 
 <subsection "Delete/Undelete">
 
 The <iref delete> and <iref undelete> commands support 
 cascading deletion of beans with undo.  To delete a bean, pass its ID
 to <iref delete>, which returns a checkpoint-like delete set.  To 
-undo the deletion, pass the delete set to <iref undelete>.<p>
+undo the deletion, pass the delete set to <iref undelete>.
 
 <section "CLASS COMMANDS">
 
-This module defines the following commands:<p>
+This module defines the following commands:
 
 <deflist commands>
 
@@ -92,9 +92,9 @@ This module defines the following commands:<p>
 Creates a new beanpot object with the given <i name> and options, within
 which new beans may be created.  The pot's contents may be checkpointed 
 and restored.  When the pot is <iref reset> or destroyed, all beans 
-contained within it are destroyed as well.<p>
+contained within it are destroyed as well.
 
-The valid options are as follows:<p>
+The valid options are as follows:
 
 <deflist options>
 
@@ -105,12 +105,12 @@ Gives the name of the run-time database (RDB), an
 will be done relative to this RDB.  Note that in larger applications,
 the <i rdb> is often an object that wraps the actual RDB handle and 
 provides other services; it may be used as such by the beans in the
-pot.<p>
+pot.
 
 If the <tt -rdb> is not set, the bean pot cannot be checkpointed or 
-restored.<p>
+restored.
 
-This option is read-only after the bean pot is created.<p>
+This option is read-only after the bean pot is created.
 
 <defopt {-dbid <i dbid>}>
 
@@ -118,12 +118,12 @@ The application can checkpoint multiple bean pots to a single
 <tt -rdb>.  When a bean pot is checkpointed, its entries are tagged with
 the <i dbid>, which defaults to "<tt pot>".  If an application uses 
 multiple bean pots with respect to a single scenario, each pot should
-be given a <tt -dbid> corresponding to its role.<p>
+be given a <tt -dbid> corresponding to its role.
 
 It is an error for two bean pots two have the same <tt -rdb> and 
-<tt -dbid> in the same application.<p>
+<tt -dbid> in the same application.
 
-This option is read-only after the bean pot is created.<p>
+This option is read-only after the bean pot is created.
 
 </deflist options>
 
@@ -131,32 +131,32 @@ This option is read-only after the bean pot is created.<p>
 
 <section "INSTANCE COMMANDS">
 
-Each instance of the beanpot(n) type has the following subcommands:<p>
+Each instance of the beanpot(n) type has the following subcommands:
 
 <deflist instance>
 
 <defitem "changed" {<i pot> changed}>
 
 Returns 1 if any of the pot's bean data has changed, and 0 otherwise.  
-(This is part of beanpot(n)'s <xref saveable(i)> interface.)<p>
+(This is part of beanpot(n)'s <xref saveable(i)> interface.)
 
 <defitem "cget" {<i pot> cget <i>option</i>}>
 
 Returns the value of the named configuration option.  See
-<iref beanpot> for a list of options.<p> 
+<iref beanpot> for a list of options. 
 
 <defitem "checkpoint" {<i pot> checkpoint ?-saved?}>
 
 Checkpoints the beans in the pot to the configured <tt -rdb>, tagging
 them with the configured <tt -dbid>.  If <b>-saved</b> is given, then
 the <iref changed> flag is cleared.  (This is part of
-beanpot(n)'s <xref saveable(i)> interface.)<p>
+beanpot(n)'s <xref saveable(i)> interface.)
 
 <defitem "configure" {<i pot> configure <i>option value ...</i>}>
 
 In principle, this sets the value of one or more of the 
 <xref beanpot(n)> configuration options; however, all of the options
-are read-only after the pot is created.<p>
+are read-only after the pot is created.
 
 
 <defitem "delete" {<i pot> delete <i>id</i>}>
@@ -166,75 +166,75 @@ that can be used to undelete it (under normal undo conditions).  If the
 bean owns other beans and uses bean slots properly 
 (see <xref bean(n)>) the owned beans will be 
 included in the delete set and will be undeleted
-with their owner.<p>
+with their owner.
 
 <defitem "dump" {<i pot> dump}>
 
-Returns a dump of information about all beans in the pot.<p>
+Returns a dump of information about all beans in the pot.
 
 <defitem "forget" {<i pot> forget <i>id</i>}>
 
 <b>Private.</b> Unregisters the bean with the given <i>id</i> when it is 
 destroyed.  This command is solely for the use of the <xref bean(n)>
-and should not be used by other clients.<p>
+and should not be used by other clients.
 
 <defitem "get" {<i pot> get <i>id</i>}>
 
 Returns the bean object with the given ID, throwing an error if there is 
-no such bean in the pot.<p>
+no such bean in the pot.
 
 <defitem "has" {<i pot> has <i>id</i>}>
 
 Returns 1 if the pot contains a bean with the given <i>id</i>, and
-0 otherwise.<p>
+0 otherwise.
 
 <defitem "hasa" {<i pot> hasa <i cls id>}>
 
 Returns 1 if the pot contains a bean with the given <i id> which is also
 a member of the given <i cls> (or one of its subclasses) and 0 
-otherwise.<p>
+otherwise.
 
 <defitem "ids" {<i pot> ids ?<i cls>?}>
 
 By default, returns a list of the IDs of all beans in the pot.  If
 <i cls> is given, returns a list of the IDs of the beans that are 
-members of that class or its subclasses.<p>
+members of that class or its subclasses.
 
 
 <defitem "lastid" {<i pot> lastid}>
 
 Returns the unique ID of the most recently created bean in the pot
-(which is, not coincidentally, the bean with the largest ID number).<p>
+(which is, not coincidentally, the bean with the largest ID number).
 
 <defitem "markchanged" {<i pot> markchanged}>
 
 Sets the pot's <iref changed> flag.  A bean instance should call 
 this when it knows that its data has changed.  Note that all 
 <xref bean(n)> subcommands that modify the bean's data call this routine
-automatically.<p>
+automatically.
 
 <defitem "new" {<i pot> new <i cls> ?<i args...>?}>
 
 Creates an instance of the named <xref bean(n)> subclass, <i cls>,  
 passing any additional arguments to the subclass constructor, and 
 returning the new object's name.  The new bean
-is automatically assigned an ID and placed in the pot.<p>
+is automatically assigned an ID and placed in the pot.
 
 The bean's name will include the <i pot>, an indicator of the bean's
-subclass, and the bean's ID, as an aid to debugging.<p>
+subclass, and the bean's ID, as an aid to debugging.
 
 <defitem "nextid" {<i pot> nextid}>
 
 Returns the unique ID that will be assigned to the next bean to be created.
 Application code should generally not need to call this, though it might
 be useful in some circumstances.  Note that <iref setnextid> can
-be used to control ID assignment.<p>
+be used to control ID assignment.
 
 <defitem "reset" {<i pot> reset}>
 
 Deletes all beans from the pot resets the pot to its creation state.  
 This command is primarily for use by the test suite, though it can
-also be called when creating a new scenario.<p>
+also be called when creating a new scenario.
 
 <defitem "restore" {<i pot> restore <i>checkpoint</i> ?-saved?}>
 
@@ -242,58 +242,58 @@ Triggers the restoration of a checkpoint stored in the
 <tt -rdb>; the <i>checkpoint</i> value is empty and ignored.  By
 default, the <iref changed> flag is set; if <b>-saved</b> is given,
 the <iref changed> flag is cleared.  (This is part of
-beanpot(n)'s <xref saveable(i)> interface.)<p>
+beanpot(n)'s <xref saveable(i)> interface.)
 
 <defitem "setnextid" {<i pot> setnextid <i>nid</i>}>
 
 Sets the bean ID, <i>nid</i>, to be returned the next time 
 <iref nextid> is used to assign a bean ID.  The <i>nid</i> must
-be greater than <iref lastid> to have any effect.<p>
+be greater than <iref lastid> to have any effect.
 
 This command is for use in <xref order(n)> <xref order(n) setredo>
-scripts, to ensure that an order produces the same bean IDs on redo.<p>
+scripts, to ensure that an order produces the same bean IDs on redo.
 
 
 <defitem "uncreate" {<i pot> uncreate <i>bean</i>}>
 
 This command is used by the undo code for bean(n) mutators that create new 
 beans.  This command verifies that the <i>bean</i> is
-the most recently created bean and destroys it<p> 
+the most recently created bean and destroys it 
 
 <defitem "undelete" {<i pot> undelete <i>deleteSet</i>}>
 
 Undoes a call to <iref delete> given the <i>deleteSet</i> returned
 by <iref delete>.  Normal undo conditions apply; if any other changes
-have been made to beans since the deletion, they must be undone first.<p>
+have been made to beans since the deletion, they must be undone first.
 
 <defitem "validate" {<i pot> validate <i>id</i>}>
 
 Returns <i id> unchanged if there is a bean with that ID in the pot, and
-throws <b INVALID> otherwise.<p>
+throws <b INVALID> otherwise.
 
 <defitem "valclass" {<i pot> valclass <i cls id>}>
 
 Returns <i id> unchanged if there <iref hasa> bean with that class and ID
-in the pot, and throws <b INVALID> otherwise.<p>
+in the pot, and throws <b INVALID> otherwise.
 
 <defitem "view" {<i pot> view <i>id</i> ?<i>view</i>?}>
 
-Returns a view dictionary for the bean with the given <i>id</i>.<p>
+Returns a view dictionary for the bean with the given <i>id</i>.
 
 </deflist instance>
 
 
 <section ENVIRONMENT>
 
-This package requires Tcl 8.5 or later, plus the TclOO package.<p>
+This package requires Tcl 8.5 or later, plus the TclOO package.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-New module, based on code abstracted from <xref bean(n)>.<p>
+New module, based on code abstracted from <xref bean(n)>.
 
 </manpage>
 

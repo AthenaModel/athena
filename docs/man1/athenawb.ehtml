@@ -16,17 +16,17 @@ Athena Workbench is the desktop Athena simulation application.  Details of
 the simulation model are to be found in the <i>Athena Analyst's
 Guide</i> and related documents, rather than here.  The models and 
 algorithms, along with tools for scenario-building, are found in 
-<xref athena(n)>.<p>
+<xref athena(n)>.
 
 <xref athenawb(1)> is a documentic-centric application, like a
 word-processor; here, however, the documents are Athena scenario
 files, which conventionally have a "<code>.adb</code>" extension.
 If a scenario file name is given on the command line, it will be
-opened automatically.<p>
+opened automatically.
 
 Athena Workbench is usually invoked from the Windows Start Menu or a 
 desktop shortcut; it may also be invoked from a Windows console command
-line, in which case the following options may be used:<p>
+line, in which case the following options may be used:
 
 <deflist options>
 
@@ -35,39 +35,39 @@ line, in which case the following options may be used:<p>
 Names a directory to use for writing runtime files to.  Log files and
 temporary database files are written here.  If left out, Athena defaults
 to a temporary directory defined by the operating system.  For Windows 
-systems, this is typically a directory under the user's home directory.<p>
+systems, this is typically a directory under the user's home directory.
 
 <defopt {-script <i>filename</i>.tcl}>
 
 Names an Athena executive script to be executed at start-up,
 immediately after loading scenario file (if any).  This option is
-usually used to execute exported order scripts.<p>
+usually used to execute exported order scripts.
 
 <defopt {-ignoreuser}>
 
 This option is intended for use during testing; it tells the
 application to ignore user preference settings, so that the tests
-always begin with the application in a known state.<p>
+always begin with the application in a known state.
 
 <defopt {-url <i>url</i>}>
 
 If given, Athena will show the <i>url</i> in the Detail Browser on
-start-up.<p>
+start-up.
 
 </deflist options>
 
 The application has extensive on-line help; invoke the application
-and see the <b>Help</b> menu.<p>
+and see the <b>Help</b> menu.
 
 <section MODS>
 
 It is possible to patch Athena post-delivery by means of Athena
 mod files.  To use a mod, just copy the mod file to the installation's
-<code>mods/</code> directory, typically <code>~/athena/mods</code>.<p>
+<code>mods/</code> directory, typically <code>~/athena/mods</code>.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 </manpage>
 

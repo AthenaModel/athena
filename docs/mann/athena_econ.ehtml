@@ -12,67 +12,65 @@ namespace import ::athena::*
 <section DESCRIPTION>
 
 This man page describes a component of the <xref athena(n)> package
-that provides access to the scenario's economic information.<p>
+that provides access to the scenario's economic information.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> econ</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
-<deflist econ>
+<deflist commands>
 
 <defitem "disable" {<i adb> econ disable}>
-Disables the economic model.  The scenario must be unlocked and idle.<p>
+Disables the economic model.  The scenario must be unlocked and idle.
 
 <defitem "enable" {<i adb> econ enable}>
-Enables the economic model.  The scenario must be unlocked and idle.<p>
+Enables the economic model.  The scenario must be unlocked and idle.
 
 <defitem "getcge" {<i adb> econ getcge}>
 Returns the <xref cellmodel(n)> object containing the economic model's
 CGE equations.  Modifying or destroying the object will damage the 
-scenario. <b TBD>: We should probably change how this works.<p>
+scenario. <b TBD>: We should probably change how this works.
 
 <defitem "getsam" {<i adb> econ getsam ?flag?}>
 By default, returns the <xref cellmodel(n)> object containing the 
 economic model's SAM equations.  Modifying or destroying the object will 
-damage the scenario. <b TBD>: We should probably change how this works.<p>
+damage the scenario. <b TBD>: We should probably change how this works.
 
 If <i flag> is given and true, the command creates a new <xref cellmodel(n)>
 containing the SAM equations, with default initial values, and returns it.
-It is the caller's responsibility to destroy the new cellmodel(n).<p>
+It is the caller's responsibility to destroy the new cellmodel(n).
 
 <defitem "gethist" {<i adb> econ gethist}>
 
-Returns economic history parameters.  <b TBD:> ???.<p>
+Returns economic history parameters.  <b TBD:> ???.
 
 <defitem "report" {<i adb> econ report <i ht>}>
 
 Given an instance of <xref htools(n)>, formats an HTML report of the 
-current state of the economic model.<p>
+current state of the economic model.
 
 <defitem "state" {<i adb> econ state}>
-Returns the current state, <b ENABLED> or <b DISABLED>.<p>
-
-</deflist econ>
+Returns the current state, <b ENABLED> or <b DISABLED>.
 
 </deflist commands>
 
 <subsection "Private Subcommands">
 
 The <tt><i adb> econ</tt> command takes the following subcommands, where
-where <i adb> is an instance of <xref athenadb(n)>.<p>
+where <i adb> is an instance of <xref athenadb(n)>.
 
-TBD: None yet documented.<p>
+TBD: None yet documented.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 
 </manpage>

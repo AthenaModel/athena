@@ -12,11 +12,11 @@ namespace import ::athena::*
 <section DESCRIPTION>
 
 The element(n) module defines certain standard HTML elements used 
-across multiple <xref smartdomain(n)> subclasses.<p>
+across multiple <xref smartdomain(n)> subclasses.
 
 <section "COMMANDS">
 
-comparison(n) provides the following commands:<p>
+comparison(n) provides the following commands:
 
 <deflist commands>
 
@@ -25,7 +25,7 @@ comparison(n) provides the following commands:<p>
 Returns a standard HTML page header, to be inserted at the top of
 the page's <tag body> element (or in a <xref smartdomain(n)>'s 
 <tt htmlHeader> method).  The <i appname> is the application
-name; it will be inserted in the header.<p>
+name; it will be inserted in the header.
 
 <defitem "element footer" {element footer}>
 
@@ -35,7 +35,7 @@ the page's <tag body> element.
 </deflist commands>
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 </manpage>
 

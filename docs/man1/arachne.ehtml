@@ -16,21 +16,21 @@
 scenarios and related data available to other applications executing
 on the same host.  It is intended to support running Athena in the cloud,
 but can also be used to make Athena directly accessible to visualization
-tools, scenario builders, and the like.<p>
+tools, scenario builders, and the like.
 
 Arachne provides an HTTP interface to other applications on the same host;
 it does not accept connections over the network.  Interaction consists
-of standard HTTP requests; most return a JSON response.<p>
+of standard HTTP requests; most return a JSON response.
 
 See the <link ../arachne.html "Arachne Interface Specification"> for 
-details about Arachne's start-up options, behavior, and URL schemas.<p>
+details about Arachne's start-up options, behavior, and URL schemas.
 
 <section "TEST INTERFACE">
 
 The file <code>htdocs/webapp.html</code> in the installation directory
 provides a test interface to Arachne.  To use it, invoke Arachne on the
 current host, using the default <tt -port>.  Then, click on the following 
-link to invoke the test interface:<p>
+link to invoke the test interface:
 
 <ul>
 <li> <link http://localhost:8080/webapp.html#/>
@@ -40,11 +40,11 @@ link to invoke the test interface:<p>
 
 It is possible to patch Athena post-delivery by means of Athena
 mod files.  To use a mod, just copy the mod file to the installation's
-<code>mods/</code> directory, typically <code>~/athena/mods</code>.<p>
+<code>mods/</code> directory, typically <code>~/athena/mods</code>.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 </manpage>
 

@@ -19,19 +19,19 @@ different in the mood of a particular civilian group.  Then, the user
 may produce a "causality" chain for a particular significant output,
 which traces the difference back through the output variable's inputs,
 to their inputs and beyond; these differences are also captured as
-<xref vardiff(n)> objects.<p>
+<xref vardiff(n)> objects.
 
 The <xref vardiff(n)> class is an abstract base class; it is subclassed
 for each of the important variable types, e.g., group mood, neighborhood
-mood, and average neighborhood security.<p>
+mood, and average neighborhood security.
 
 This man page describes the conventions and methods common to all 
-<xref vardiff(n)> subclasses.<p>
+<xref vardiff(n)> subclasses.
 
 <section METADATA>
 
 Each vardiff(n) subclass is expected to define the following metadata
-using the <xref mars:oohelpers(n) meta> class definition statement.<p>
+using the <xref mars:oohelpers(n) meta> class definition statement.
 
 <deflist meta>
 
@@ -39,18 +39,18 @@ using the <xref mars:oohelpers(n) meta> class definition statement.<p>
 
 States the variable type name, e.g., <b sat>, <b nbmood>.  By convention,
 this will also be the bare name of the subclass, e.g., 
-<tt ::athena::vardiff::sat>, <tt ::athena::vardiff::nbmood>.<p>
+<tt ::athena::vardiff::sat>, <tt ::athena::vardiff::nbmood>.
 
 <defitem category {meta category <i category>}>
 States the variable's PMESII category, e.g., <b political>, <b military>,
-or <b social>.<p>
+or <b social>.
 
 <defitem normfunc {meta normfunc <i func>}>
 
 Specifies the normalization function to use when scoring a set of 
 variables of this type.  The <i func> may be a constant number or 
 one of a number of symbols; see <xref comparison(n) normalizer> for
-the full set and for their meanings.<p>
+the full set and for their meanings.
 
 <defitem afactors {meta afactors <i dict>}>
 
@@ -58,20 +58,20 @@ Specifies a dictionary of <i A> factors by input variable type, e.g.,
 the <b mood> type depends on the <i sat> and <i population> types.  The
 <i A> factor is a factor used to rate the type's importance relative to
 other variable types in the same context as an aid to scoring.  The 
-nominal value is 1.0.<p>
+nominal value is 1.0.
 
 <defitem leaf {meta leaf <i boolean>}>
 
 If 1, the vardiff is a leaf in the causality tree, i.e., it either has
 no inputs or input chaining has not yet been implemented.  If 0, inputs
-can and will be chained.<p>
+can and will be chained.
 
 </deflist meta>
 
 
 <section "COMMANDS">
 
-vardiff(n) provides the following commands:<p>
+vardiff(n) provides the following commands:
 
 <deflist commands>
 
@@ -83,18 +83,18 @@ name.  The object exists in the context of <xref comparison(n)> object
 <i comp>.  Instances of this type of variable are distinguished by their
 key dictionary, <i keydict>, which names the relevant keys and their values,
 e.g., <tt {g SHIA c SFT}>.  The vardiff is created for values 
-<i val1> and <i val2>, from the two scenarios being compared.<p>
+<i val1> and <i val2>, from the two scenarios being compared.
 
 <b NOTE:> Subclass constructors will take the relevant key values as 
 additional arguments, and construct the <i keydict> internally.  Thus, the
 argument list for a <b sat> vardiff might look like this:
-<tt>{<i comp> 25.5 15.5 SHIA SFT}</tt>.<p>
+<tt>{<i comp> 25.5 15.5 SHIA SFT}</tt>.
 
 </deflist commands>
 
 <section "PUBLIC INSTANCE COMMANDS">
 
-Each instance of vardiff(n) provides the following subcommands:<p>
+Each instance of vardiff(n) provides the following subcommands:
 
 <deflist instance>
 
@@ -102,14 +102,14 @@ Each instance of vardiff(n) provides the following subcommands:<p>
 
 <b Subclasses should override this method as needed.>
 Returns a string of context information about the difference, for 
-example the numeric range.<p>
+example the numeric range.
 
 <defitem delta {<i obj> delta}>
 
 For variables with numeric values, returns the absolute difference
 between <iref val1> and <iref val2>.  For variables with symbolic
 values, returns some number representing the degree of difference; or,
-minimally, a constant 1.0.<p>
+minimally, a constant 1.0.
 
 <defitem fancy {<i obj> fancy <i value>}>
 
@@ -117,72 +117,72 @@ minimally, a constant 1.0.<p>
 Given a <i value> of the variable's type, formats it for display in a 
 "fancy" way, i.e., includes symbolic values and units as well as the
 bare number.rounds decimals to one or two decimal places.  By 
-default, calls <iref format>.<p>
+default, calls <iref format>.
 
 <defitem fancy1 {<i obj> fancy1}>
 
-Returns the result of calling <iref fancy> on <iref val1>.<p>
+Returns the result of calling <iref fancy> on <iref val1>.
 
 <defitem fancy2 {<i obj> fancy2}>
 
-Returns the result of calling <iref fancy> on <iref val2>.<p>
+Returns the result of calling <iref fancy> on <iref val2>.
 
 <defitem fmt1 {<i obj> fmt1}>
 
-Returns the result of calling <iref format> on <iref val1>.<p>
+Returns the result of calling <iref format> on <iref val1>.
 
 <defitem fmt2 {<i obj> fmt2}>
 
-Returns the result of calling <iref format> on <iref val2>.<p>
+Returns the result of calling <iref format> on <iref val2>.
 
 <defitem format {<i obj> format <i value>}>
 
 <b Subclasses should override this method as needed.>
 Given a <i value> of the variable's type, formats it for display, i.e.,
 rounds decimals to one or two decimal places.  By 
-default, returns <i value> unchanged.<p>
+default, returns <i value> unchanged.
 
 <defitem gotInputs {<i obj> gotInputs}>
 
 Returns 1 if we've computed significant inputs for this object, and
-0 otherwise.<p>
+0 otherwise.
 
 <defitem huddle {<i obj> huddle}>
 
 Returns a huddle(n) object corresponding to <i obj>.  It has a field
 for each entry in the <iref view>, plus one for the dictionary of
-of input names and scores.<p>
+of input names and scores.
 
 <defitem inputs {<i obj> inputs}>
 
 Returns a dictionary of the input <xref vardiff(n)>
 objects with their scores in the context of this variable, computing
-them if necessary.<p>
+them if necessary.
 
 <defitem key {<i obj> key <i name>}>
 
-Returns the value of the named key.<p>
+Returns the value of the named key.
 
 <defitem keys {<i obj> keys}>
 
-Returns the names of the variable's key parameters in canonical order.<p>
+Returns the names of the variable's key parameters in canonical order.
 
 <defitem keydict {<i obj> keydict}>
 
-Returns the variable's key dictionary.<p>
+Returns the variable's key dictionary.
 
 <defitem name {<i obj> name}>
 
 Returns the variable's name, which is a qualified entity ID (qid) based
 on the variable type and the key values.  For example, the satisfaction
 of group SHIA with concern SFT has a variable type name of <b sat> and
-key values <b SHIA> and <b SFT>; the qid is then "sat/SHIA/SFT".<p>
+key values <b SHIA> and <b SFT>; the qid is then "sat/SHIA/SFT".
 
 <defitem narrative {<i obj> narrative}>
 
 <b Subclasses should override this method as needed.>
 Returns a brief narrative description of the difference between 
-<iref val1> and <iref val2>.<p>
+<iref val1> and <iref val2>.
 
 <defitem trivial {<i obj> trivial}>
 
@@ -191,26 +191,26 @@ Returns 1 if the difference between <iref val1> and <iref val2> is
 trivial, and 0 otherwise.  By default, this method simply returns 0; 
 we wouldn't normally create a <xref vardiff(n)> instance unless the 
 two values were known to be non-identical.  Subclasses can override this 
-method to provide an additional check, e.g., an epsilon test.<p>
+method to provide an additional check, e.g., an epsilon test.
 
 <defitem val1 {<i obj> val1}>
 
-Returns the raw value of the variable in the first scenario.<p>
+Returns the raw value of the variable in the first scenario.
 
 <defitem val2 {<i obj> val2}>
 
-Returns the raw value of the variable in the second scenario.<p>
+Returns the raw value of the variable in the second scenario.
 
 <defitem view {<i obj> view}>
 
 Returns a view dictionary for the vardiff, including the type, name,
-category, key values, and so forth.<p>
+category, key values, and so forth.
 
 </deflist instance>
 
 <section "PRIVATE INSTANCE COMMANDS">
 
-Each instance of vardiff(n) provides the following private subcommands:<p>
+Each instance of vardiff(n) provides the following private subcommands:
 
 <deflist instance>
 
@@ -219,7 +219,7 @@ Each instance of vardiff(n) provides the following private subcommands:<p>
 Given a vardiff(n) type, a pair of values, and the variable keys, checks
 whether the two values are non-trivially different and if so saves a
 vardiff object for them.  This is intended to be used in each subclass's
-<iref FindInputs> method.<p>
+<iref FindInputs> method.
 
 <defitem FindInputs {<i obj> FindInputs}>
 
@@ -228,13 +228,13 @@ Compares the inputs to the variable across the two scenarios,
 and adds possible differences using the private method <iref AddInput>.
 The differences are also added to the <xref comparison(n)>
 object.  This is used when drilling down to provide an explanation of 
-a particular difference.<p>
+a particular difference.
 
 </deflist instance>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 </manpage>
 

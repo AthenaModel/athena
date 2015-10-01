@@ -12,48 +12,48 @@ namespace import ::athena::*
 <section DESCRIPTION>
 
 This man page describes a component of the <xref athena(n)> package that
-is used to manage and access group activities such as PATROL.<p>
+is used to manage and access group activities such as PATROL.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> activity</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist commands>
 
 <defitem names {<i adb> activity names}>
 
 Returns the entire list of activity names that could be assigned to FRC or
-ORG groups.<p> 
+ORG groups. 
 
 <defitem "frc names" {<i adb> activity frc names}>
 
 Returns the list of activity names that could only be assigned to FRC 
-groups.<p>
+groups.
 
 <defitem "org names" {<i adb> activity org names}>
 
 Returns the list of activity names that could only be assigned to ORG 
-groups.<p>  
+groups.  
 
 </deflist commands>
 
 <subsection "Private Subcommands">
 
 The <tt><i adb> activity</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athenadb(n)>.<p>
+where <i adb> is an instance of <xref athenadb(n)>.
 
-TBD: None yet defined.<p>
+TBD: None yet defined.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 </manpage>
     

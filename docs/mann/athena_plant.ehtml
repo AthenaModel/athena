@@ -13,42 +13,42 @@ namespace import ::athena::*
 
 This man page describes a component of the <xref athena(n)> package that
 provides access to the GOODS production infrastructure, which is measured
-in "plants".<p>
+in "plants".
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> plant</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist commands>
 
 <defitem "capacity" {<i adb> plant capacity <i subcommand> ?<i args...>?}>
 
-Returns the output capacity of some set of plant infrastructure.<p>
+Returns the output capacity of some set of plant infrastructure.
 
 <deflist capacity>
 
 <defitem "capacity total" {<i adb> plant capacity total}>
 
 Returns the total output capacity in "GOODS baskets" of all GOODS 
-production plants in the playbox.<p>
+production plants in the playbox.
 
 <defitem "capacity n" {<i adb> plant capacity n <i n>}>
 
 Returns the total output capacity in "GOODS baskets" of all GOODS 
-production plants in neighborhood <i n>.<p>
+production plants in neighborhood <i n>.
 
 <defitem "capacity a" {<i adb> plant capacity a <i a>}>
 
 Returns the total output capacity in "GOODS baskets" of all GOODS 
-production plants owned by agent <i a>.<p>
+production plants owned by agent <i a>.
 
 </deflist capacity>
 
@@ -59,13 +59,13 @@ production plants owned by agent <i a>.<p>
 <subsection "Private Subcommands">
 
 The <tt><i adb> plant</tt> command takes the following subcommands, where
-where <i adb> is an instance of <xref athenadb(n)>.<p>
+where <i adb> is an instance of <xref athenadb(n)>.
 
-TBD: None yet documented.<p>
+TBD: None yet documented.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 
 </manpage>
 

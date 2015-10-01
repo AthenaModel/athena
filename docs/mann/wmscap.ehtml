@@ -14,14 +14,14 @@ namespace import ::projectlib::wmscap
 wmscap(n) parses XML returned as a result of a WMS GetCapabilities request from
 an Open GIS compliant WMS server.  The XML must comply with version 1.3.0 of 
 the WMS capabilities schema.  The Open GIS standard for WMS can be found 
-<link "http://www.opengeospatial.org/standards/wms/" here>.<p>
+<link "http://www.opengeospatial.org/standards/wms/" here>.
 
 The data parsed from the XML is returned in the form of a nested dictionary.  
-See <xref "DATA DICTIONARY"> for a description of the data returned.<p>
+See <xref "DATA DICTIONARY"> for a description of the data returned.
 
 <section "COMMANDS">
 
-wmscap(n) provides the following commands:<p>
+wmscap(n) provides the following commands:
 
 <deflist commands>
 
@@ -29,22 +29,21 @@ wmscap(n) provides the following commands:<p>
 
 This method parses XML that has resulted from a Web Map Service (WMS) 
 GetCapabilities request.  The data extracted from the XML is returned in 
-a nested dictionary.<p>
+a nested dictionary.
 
 <defitem "wmscap parsefile" {wmscap parsefile <i>filename</i>}>
 
 This method parses XML from a given file called <i>filename</i>.  The XML file
 must comply with version 1.3.0 of the WMS capabilities schema.  The data 
-extracted from the XML is returned in a nested dictionary.<p>
+extracted from the XML is returned in a nested dictionary.
 
 </deflist commands>
 
 <section "DATA DICTIONARY">
 
 Data parsed by the <xref wmscap(n)> object is returned as a nested dictionary
-with the following form:<p>
+with the following form:
 
-<code>
 <ul>
   <li>Version -> The version of the WMS
   <li>Service => dictionary of service metadata
@@ -77,15 +76,13 @@ with the following form:<p>
   </ul>
 </ul>
 
-</code><p>
-
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Dave Hanks<p>
+Dave Hanks
 
 <section HISTORY>
 

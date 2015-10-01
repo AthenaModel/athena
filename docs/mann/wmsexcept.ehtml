@@ -18,14 +18,14 @@ exist.  For example, requesting a non-existent map layer using the GetMap
 service would result in a service exception being returned to the requesting
 client.  The XML parsed by this object must comply with version 1.3.0 of 
 the WMS service exception schema.  The Open GIS standard for WMS can be found 
-<link http://www.opengeospatial.org/standards/wms/ here>.<p>
+<link http://www.opengeospatial.org/standards/wms/ here>.
 
 The data parsed from the XML is returned in the form of a nested dictionary.  
-See <xref "DATA DICTIONARY"> for a description of the data returned.<p>
+See <xref "DATA DICTIONARY"> for a description of the data returned.
 
 <section "COMMANDS">
 
-wmsexcept(n) provides the following commands:<p>
+wmsexcept(n) provides the following commands:
 
 <deflist commands>
 
@@ -33,22 +33,21 @@ wmsexcept(n) provides the following commands:<p>
 
 This method parses XML that has resulted in a service exception from a Web 
 Map Service (WMS) request.  The data extracted from the XML is returned in 
-a nested dictionary.<p>
+a nested dictionary.
 
 <defitem "wmsexcept parsefile" {wmsexcept parsefile <i>filename</i>}>
 
 This method parses XML from a given file called <i>filename</i>.  The XML file
 must comply with version 1.3.0 of the WMS service exception schema.  The data 
-extracted from the XML is returned in a nested dictionary.<p>
+extracted from the XML is returned in a nested dictionary.
 
 </deflist commands>
 
 <section "DATA DICTIONARY">
 
 Data parsed by the <xref wmsexcept(n)> object is returned as a nested 
-dictionary with the following form:<p>
+dictionary with the following form:
 
-<code>
 <ul>
   <li>Version -> The version of the WMS
   <li>ServiceException => dictionary of exceptions
@@ -61,15 +60,13 @@ dictionary with the following form:<p>
   </ul>
 </ul>
 
-</code><p>
-
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Dave Hanks<p>
+Dave Hanks
 
 <section HISTORY>
 

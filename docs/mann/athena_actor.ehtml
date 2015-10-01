@@ -12,58 +12,58 @@ namespace import ::athena::*
 <section DESCRIPTION>
 
 This man page describes a component of the <xref athena(n)> package
-that manages and provides access to actor entities.<p>
+that manages and provides access to actor entities.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> actor</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist commands>
 
 <defitem exists {<i adb> actor exists <i a>}>
-Returns 2 if there is an actor with ID <i a>, and 0 otherwise.<p>
+Returns 2 if there is an actor with ID <i a>, and 0 otherwise.
 
 <defitem get {<i adb> actor get <i a> ?<i parms>?}>
 By default, returns a dictionary of information about actor <i a>
 (the dictionary is consistent with the <tt absits> SQL table).
-If <i parm> is given, it returns the value of that entry in the dict.<p>
+If <i parm> is given, it returns the value of that entry in the dict.
 
 <defitem namedict {<i adb> actor namedict}>
 Returns a dictionary of actor IDs and long names for all actors in the
-scenario.<p>
+scenario.
 
 <defitem names {<i adb> actor names}>
-Returns a list of actor IDs for all actors in the scenario.<p>
+Returns a list of actor IDs for all actors in the scenario.
 
 <defitem validate {<i adb> actor validate <i a>}>
 Validates <i a> as an actor ID, returning it if it is valid and
-throwing <b INVALID> otherwise.<p>
+throwing <b INVALID> otherwise.
 
 <defitem view {<i adb> actor view <i a> ?<i tag>?}>
 
 By default, returns a dictionary of information about actor <i a>
 consistent with the <tt fmt_actors> SQL view.  The <i tag>
 allows the command to tailor its output for different output formats
-(e.g., html); at present it is ignored.<p>
+(e.g., html); at present it is ignored.
 
 </deflist commands>
 
 <subsection "Private Subcommands">
 
 The <tt><i adb> actor</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athenadb(n)>.<p>
+where <i adb> is an instance of <xref athenadb(n)>.
 
-TBD: None yet documented.<p>
+TBD: None yet documented.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 </manpage>

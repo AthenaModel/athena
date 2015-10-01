@@ -16,18 +16,18 @@ Athena is running, and making it available to the application.
 At start-up, Athena calls <iref appdir init>, which locates and
 returns the directory; thereafter, <iref appdir join> can be
 used to create absolute paths to files in the application directory
-tree.<p>
+tree.
 
 <section "COMMANDS">
 
-This module defines the following commands:<p>
+This module defines the following commands:
 
 <deflist commands>
 
 <defitem "appdir init" {appdir init}>
 
 Initializes appdir(n).  In particular, it determines, saves,
-and returns the full path to the application directory.<p>
+and returns the full path to the application directory.
 
 <defitem "appdir join" {appdir join ?<i>arg arg...</i>?}>
 
@@ -35,7 +35,7 @@ Called with no arguments, returns the name of the application directory.
 Otherwise, returns the path name resulting from joining the
 arguments to the application directory.  For example, the
 following command returns the absolute path of the on-line
-help file:<p>
+help file:
 
 <pre>
 set helpfile [appdir join docs help athena.helpdb]
@@ -49,11 +49,11 @@ This package requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-New package derived from the JNEM simdir(n) module.<p>
+New package derived from the JNEM simdir(n) module.
 
 </manpage>
 

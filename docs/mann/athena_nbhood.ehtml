@@ -12,19 +12,19 @@ namespace import ::athena::*
 <section DESCRIPTION>
 
 This man page describes a component of the <xref athena(n)> package
-that provides access to the scenario's neighborhoods.<p>
+that provides access to the scenario's neighborhoods.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> nbhood</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist nbhood>
 
@@ -34,50 +34,50 @@ Returns a bounding box for neighborhood <i n> as a flat list of two
 latitude/latitude coordinates in decimal degrees, {<i lat1> <i lon1> 
 <i lat2> <i lon2>}, representing the upper left and lower right corners
 of the bounding box.  (It is assumed that the box will not 
-contain either pole.)<p>
+contain either pole.)
 
 <defitem "exists" {<i adb> nbhood exists <i n>}>
 
-Returns 1 if there is a neighborhood called <i n>, and 0 otherwise.<p>
+Returns 1 if there is a neighborhood called <i n>, and 0 otherwise.
 
 <defitem "find" {<i adb> nbhood find <i lat lon>}>
 
 Returns the ID of the neighborhood that contains the latitude/longitude
-coordinates, given the current stacking order.<p>
+coordinates, given the current stacking order.
 
 <defitem "get" {<i adb> nbhood get <i n> ?<i parm>?}>
 
 By default, returns a dictionary of information about group <i n>,
 as read from the <b nbhoods> table.  If <i parm> is given, returns
-the value of the <i parm>.<p>
+the value of the <i parm>.
 
 <defitem "namedict" {<i adb> nbhood namedict}>
-Returns an ID/longname dictionary of the neighborhood names.<p>
+Returns an ID/longname dictionary of the neighborhood names.
 
 <defitem "names" {<i adb> nbhood names}>
-Returns a list of the IDs of the neighborhoods.<p>
+Returns a list of the IDs of the neighborhoods.
 
 <defitem "validate" {<i adb> nbhood validate <i n>}>
 Validates neighborhood ID <i n>, returning <i n> if valid and throwing
-<b INVALID> otherwise.<p>
+<b INVALID> otherwise.
 
 <defitem "view" {<i adb> nbhood view <i n> ?<i tag>?}>
 
 Returns a dictionary of formatted information about group <i n>, retrieved
 by reading the SQL <b><i tag>_nbhoods</b> view.  If <i tag> is not 
-given, uses <b>fmt_nbhoods</b>.<p>
+given, uses <b>fmt_nbhoods</b>.
 
 </deflist nbhood>
 
 <subsection "Private Subcommands">
 
 The <tt><i adb> nbhood</tt> command takes the following subcommands, where
-where <i adb> is an instance of <xref athenadb(n)>.<p>
+where <i adb> is an instance of <xref athenadb(n)>.
 
-TBD: None yet documented.<p>
+TBD: None yet documented.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 
 </manpage>

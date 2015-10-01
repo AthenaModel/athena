@@ -15,18 +15,18 @@ scenarios for significant differences, providing
 information about the differences in a variety of formats.  It is also
 used to drill down on particular differences for more information, and
 provides services to the <xref vardiff(n)> objects that are used to 
-represent differences.<p>
+represent differences.
 
 To compare two scenarios, first use <iref ::athena::comparison check> to
 verify that they are comparable.  Then, create a new comparison(n) instance
 using <iref ::athena::comparison new> and ask it to <iref compare> the
 scenarios.  The significant outputs can then be retrieved in a number of
 ways, and the <iref explain> and <iref getchain> subcommands can be used
-to drill down and explain the change in a particular output.<p>
+to drill down and explain the change in a particular output.
 
 <section "COMMANDS">
 
-comparison(n) provides the following commands:<p>
+comparison(n) provides the following commands:
 
 <deflist commands>
 
@@ -41,7 +41,7 @@ not.  The requirements are still evolving, but include:
     <li> Identical actor names
     <li> Identical group names
     <li> Identical belief system names
-</ul><p>
+</ul>
 
 
 <defitem "::athena::comparison create" {comparison create <i>obj</i> <i s1 t1 s2 t2>}> 
@@ -49,21 +49,21 @@ not.  The requirements are still evolving, but include:
 Creates a new comparison(n) instance named <i>obj</i>, and
 returns the fully qualified object name.  The object will contain
 a comparison of scenarios <i s1> and <i s2> (which might be identical)
-at times <i t1> and <i t2>.<p>
+at times <i t1> and <i t2>.
 
 The object is initially empty; call <iref compare> to compare the two
-scenarios and find the significant outputs.<p>
+scenarios and find the significant outputs.
 
 <defitem "::athena::comparison new" {comparison new <i s1 t1 s2 t2>}>
 
 Creates a new comparison(n) instance object, just as for 
-<iref ::athena::comparison create>, but assigns an object name.<p>
+<iref ::athena::comparison create>, but assigns an object name.
 
 </deflist commands>
 
 <section "INSTANCE COMMANDS">
 
-Each instance of comparison(n) provides the following subcommands:<p>
+Each instance of comparison(n) provides the following subcommands:
 
 <deflist instance>
 
@@ -71,7 +71,7 @@ Each instance of comparison(n) provides the following subcommands:<p>
 
 <b>This command is used when populating the comparison with 
 <xref vardiff(n)> instances; clients should rarely
-if ever need it.</b><p>
+if ever need it.</b>
 
 This command compares two values of a given variable type, and retains
 them if the difference is significant.  The <i vartype> is the barename of
@@ -82,42 +82,42 @@ are the values of a variable of the given <i vartype> from
 the specific variable/<xref vardiff(n)> subclass.  For example, the key
 value for the <tt>nbsecurity/<i n></tt> variable is a neighborhood name, and the
 key values for the <tt>support/<i n>/<i a></tt> variable are a 
-neighborhood name and an actor name.<p>
+neighborhood name and an actor name.
 
 Returns the resulting <xref vardiff(n)> instance, or "" if the variable
 wasn't significant.  Note that if the same variable is checked multiple
 times, the previously saved instance will be returned the second and
-subsequent times.<p>
+subsequent times.
 
 <defitem compare {<i obj> compare}>
 
 Asks the comparison(n) object to compare the two scenarios at the given
 times and record all primary outputs with signicant differences.  Scores
-are assigned so that the differences can be ranked.<p>
+are assigned so that the differences can be ranked.
 
 <defitem chain {<i obj> chain <i subcommand> ?<i args...>?}>
 
 This command has a family of subcommands for retrieving causality 
-chains in different data formats.<p>
+chains in different data formats.
 
 <deflist chain>
 
 <defitem "chain dump" {<i obj> chain dump <i varname>}>
 
 Returns a text string that lists all of the variables in <i varname>'s
-causality chain in tree form.<p>
+causality chain in tree form.
 
 <defitem "chain huddle" {<i obj> chain huddle <i varname>}>
 
 Returns a huddle(n) object representing a list of the <xref vardiff(n)> objects
 in <i varname>'s causality chain.  The tree structure is defined by 
-each object's <tt inputs> field.<p>
+each object's <tt inputs> field.
 
 <defitem "chain json" {<i obj> chain json <i varname>}>
 
 Returns a JSON object representing a list of the <xref vardiff(n)> objects
 in <i varname>'s causality chain.  The tree structure is defined by 
-each object's <tt inputs> field.<p>
+each object's <tt inputs> field.
 
 </deflist chain>
 
@@ -127,17 +127,17 @@ Determines contributions by driver for the curve indicated by the
 subcommand and keys (e.g., <tt sat> and a civilian group name; 
 see <xref mars:uram(n)>'s <xref mars:uram(n) contrib> subcommand).
 Returns a flat list <tt>{<i drid> <i val1> <i val2> ...}</tt> of the
-contributions made by the driver in each scenario.<p>
+contributions made by the driver in each scenario.
 
 The driver ID used, <i drid>, is an ID consisting of the driver's type
 (the rule set name) and signature tokens joined together with "/", e.g.,
 "ENI/SUNN" (effect of ENI on group SUNN) or "PATROL/NB1/BLUE" (effect of
-patrolling by force group BLUE in neighborhood NB1).<p>
+patrolling by force group BLUE in neighborhood NB1).
 
 <defitem diffs {<i obj> diffs <i subcommand> ?<i args...>?}>
 
 Asks for the set of significant differences; the <i subcommand> determines
-the output format.<p>
+the output format.
 
 <deflist diffs>
 
@@ -146,18 +146,18 @@ the output format.<p>
 Returns a dump of the signicant outputs as a simple text table; this
 format is usually used for debugging.  If <tt -all> is given, the
 output includes not only the top-level variables but all that have
-been cached as part of chains.<p>
+been cached as part of chains.
 
 <defitem "diffs huddle" {<i obj> diffs huddle ?-all?}>
 
 Returns a dump of the signicant differences as a huddle(n) list containing
 difference records.  This dump can be included into a larger huddle(n)
-object for conversion to JSON.  The option is as for <iref diffs dump>.<p>
+object for conversion to JSON.  The option is as for <iref diffs dump>.
 
 <defitem "diffs json" {<i obj> diffs json ?-all?}>
 
 Returns a dump of the signicant differences as a JSON list containing
-difference records.  The option is as for <iref diffs dump>.<p>
+difference records.  The option is as for <iref diffs dump>.
 
 </deflist diffs>
 
@@ -165,13 +165,13 @@ difference records.  The option is as for <iref diffs dump>.<p>
 
 The comparison(n) object contains an internal SQLite3 database, to which
 the two scenario files are attached as databases "S1" and "S2".  This 
-command gives SQL access to that database.<p>
+command gives SQL access to that database.
 
 <defitem exists {<i obj> exists <i varname>}>
 
 Returns 1 if variable <i varname> has been cached by the comparison(n)
 instance, as either a significant output or as part of a causality
-chain.<p>
+chain.
 
 <defitem explain {<i obj> explain <i varname>}>
 
@@ -179,105 +179,105 @@ Computes the causality chain for variable
 <i varname>, adding the <xref vardiff(n)> objects to the list of 
 <i varname>'s significant inputs, and then for those variable's 
 significant inputs, and so forth.  If differences have already been
-computed for <i varname>, does nothing.<p>
+computed for <i varname>, does nothing.
 
 <defitem getchain {<i obj> getchain <i varname>}>
 
 Returns a list of <xref vardiff(n)> objects representing the named
 variable and all of the variables in its causality chain.  Calls
-<iref explain> if necessary to compute the chain.<p>
+<iref explain> if necessary to compute the chain.
 
 A single variable can appear in the causality chain in multiple places
 with different scores.  This routine simply returns a list of the relevant
 <xref vardiff(n)> objects; each object appears only once.  To trace the 
 chain, start with the root (the first item in the list) and follow its
-<xref vardiff(n) inputs>.<p>
+<xref vardiff(n) inputs>.
 
 <defitem getdiff {<i obj> getdiff <i name>}>
 
 Given a variable name, returns the variable's <xref vardiff(n)> object,
-or "" if none.<p>
+or "" if none.
 
 <defitem list {<i obj> list ?-all?}>
 
 Returns a list of the <xref vardiff(n)> objects that represent primary
 scenario outputs with signficant differences between the two scenarios
-(i.e., the "significant outputs").<p>
+(i.e., the "significant outputs").
 
 Other <xref vardiff(n)> objects are added to the comparison as the user
 drills down into causality chains; if <b -all> is given, then those 
-objects are included in the list.<p>
+objects are included in the list.
 
 <defitem maxabs {<i obj> maxabs <i values>}>
 
 Given a flat list of variable <i x1 x2> values, returns the maximum 
-absolute value in the list.<p>
+absolute value in the list.
 
 <defitem maxsum {<i obj> maxsum <i values>}>
 
 Given a flat list of variable <i x1 x2> values, returns the maximum 
-of the sum of the x1's and the sum of the x2's.<p>
+of the sum of the x1's and the sum of the x2's.
 
 <defitem normalizer {<i obj> normalizer <i vartype values>}>
 
 Returns the normalizer value for the given <i vartype> given a flat list
 of {<tt>x1 x2</tt>} values for a set of <xref vardiffs(n)> of the given 
 type.  The <i vartype> is the barename of
-an <tt ::athena::vardiff::*> class, (e.g., <tt nbsecurity>).<p>
+an <tt ::athena::vardiff::*> class, (e.g., <tt nbsecurity>).
 
 A <i normalizer> is a value used in scoring a set of <xref vardiff(n)>
 instances of the same variable type in the context of a particular output,
 e.g., all satisfaction levels that are inputs to a particular mood.  Each
 <xref vardiff(n)> subclass defines a metadata item called <b normfunc>, 
-which may take one of the following values:<p>
+which may take one of the following values:
 
 <ul>
 <li> A constant number.
 <li> A symbol, <b><iref maxabs></b> or <b><iref maxsum></b>, 
      which indicates that the named subcommand is
      used to compute the normalizer from the <i values>.
-</ul><p>
+</ul>
 
 <defitem normalizeScores {<i obj> normalizeScores <i scoresVar AVar>}>
 
 Once all <xref vardiff(n)> instances have been scored in the given 
 context, this command is used to normalize the scores so that the
 largest is 100.0.  The scores are found in the <i scoresVar>, which is
-an array of scores by <xref vardiff(n)> object name.<p>
+an array of scores by <xref vardiff(n)> object name.
 
 Each variable type has its own distinct <i A> factor within the given 
 context; <i A> factors default to 1.0, and can be increased or decreased
 to move variables of that type higher or lower in the final scores 
 ranking.   The <i AVar> is the name of an array of <i A> factors by 
-variable type for the caller's context.<p>
+variable type for the caller's context.
 
 <defitem query {<i obj> query <i sql> <i args...>}>
 
 Queries the comparison(n) object's internal database and returns the 
 results in human-readable form.  See <iref eval> for more about 
-the internal database.<p>
+the internal database.
 
 <defitem reset {<i obj> reset}>
 
-Resets the comparison object back to its empty state.<p>
+Resets the comparison object back to its empty state.
 
 <defitem s1 {<i obj> s1 ?<i subcommand args...>?}>
 
 Called with no arguments, returns the <xref athena(n)> scenario
 object for scenario <i s1>.  Otherwise, the remaining arguments are
-passed along to <i s1> as a subcommand and the result is returned.<p>
+passed along to <i s1> as a subcommand and the result is returned.
 
 <defitem s2 {<i obj> s2 ?<i subcommand args...>?}>
 
 Called with no arguments, returns the <xref athena(n)> scenario
 object for scenario <i s2>.  Otherwise, the remaining arguments are
-passed along to <i s2> as a subcommand and the result is returned.<p>
+passed along to <i s2> as a subcommand and the result is returned.
 
 <defitem score {<i obj> score <i vardiff>}>
 
 Given the name of a <xref vardiff(n)> object representing a primary 
 output variable, returns the score of that variable relative to the rest
-of the primary outputs.<p>
+of the primary outputs.
 
 <defitem scoreByType {<i obj> scoreByType <i scoresVar normalizer diffs>}>
 
@@ -285,30 +285,30 @@ Computes a score for each of the <xref vardiff(n)> objects in list
 <i diffs>; they must all have the same type.  The <i normalizer> is a 
 normalizer value computed using <iref normalizer>.  The <i scoresVar> is
 the name of an array variable in the caller's context; computed scores
-will be placed in the array by <xref vardiff(n)> object name.<p>
+will be placed in the array by <xref vardiff(n)> object name.
 
 <defitem t1 {<i obj> t1}>
 
-Returns the value of <i t1>, a simulation time in integer weeks.<p>
+Returns the value of <i t1>, a simulation time in integer weeks.
 
 <defitem t2 {<i obj> t2}>
 
-Returns the value of <i t2>, a simulation time in integer weeks.<p>
+Returns the value of <i t2>, a simulation time in integer weeks.
 
 <defitem validate {<i obj> validate <i varname>}>
 
 Validates variable <i varname>, returning <i varname> if it
-<iref exists> and throwing INVALID otherwise.<p>
+<iref exists> and throwing INVALID otherwise.
 
 </deflist instance>
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.6 or later.<p>
+Requires Tcl 8.6 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 </manpage>
 

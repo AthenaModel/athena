@@ -13,24 +13,24 @@
 parmdb(5) defines the Athena model parameters and the related file
 format.  The model parameters are used to calibrate Athena's models;
 and the parameters can be imported and exported using this file
-format.<p>
+format.
 
 <xref parmdb(n)> handles parmdb(5) files using the <xref mars:parmset(n)>
 mechanism.  A valid file consists of zero or more parameter settings,
-each of which has this basic syntax,<p>
+each of which has this basic syntax,
 
-<pre>parm <i>name</i> <i>value</i></pre><p>
+<pre>parm <i>name</i> <i>value</i></pre>
 
 where <i>value</i> must be quoted if it contains whitespace.  See
-<xref mars:parmset(n)> for more details.<p>
+<xref mars:parmset(n)> for more details.
 
 <section PARAMETERS>
 
 The majority of the parameters in parmdb(5) are defined by
 <xref parmdb(n)>.  Some of the parameters are pulled in from library
-modules.<p>
+modules.
 
-The valid parameters are as follows:<p>
+The valid parameters are as follows:
 <expand [project tclsh {
     package require athena
     ::athena::parmdb ::pdb
@@ -39,7 +39,7 @@ The valid parameters are as follows:<p>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

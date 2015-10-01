@@ -15,16 +15,16 @@ scenarios.  It is the main type in the <xref athena(n)> library;
 creating an instance of athenadb(n) creates all of the other objects 
 required by a scenario.  It is also a utility object for all objects in 
 the scenario; it passes itself to all objects it creates, and they use it 
-as the primary means of accessing other objects.<p>
+as the primary means of accessing other objects.
 
 athenadb(n) is a <b private> type, to be used only within the library code.
 Note that <xref athena(n)>, the public interface to the library, is a thin
-wrapper around athenadb(n), providing only the public operations.<p>
+wrapper around athenadb(n), providing only the public operations.
 
 
 <section "COMMANDS">
 
-This module defines the following commands:<p>
+This module defines the following commands:
 
 <deflist commands>
 
@@ -32,48 +32,48 @@ This module defines the following commands:<p>
 
 Creates a new instance of athenadb(n) called <i name>, which becomes a 
 Tcl command defined in the current scope; <iref athenadb create> returns
-the fully-qualified form of the name.<p>
+the fully-qualified form of the name.
 
 
-The following options may be used:<p>
+The following options may be used:
 
 <deflist options>
 
 <defopt {-adbfile <i filename>}>
 
 Specifies the name of an Athena scenario (<tt *.adb>) file.  If given,
-the file is loaded immediately.<p>
+the file is loaded immediately.
 
 <defopt {-executivecmd <i cmd>}>
 
 A callback command to be used to define application-specific executive
 commands.  It is called with on additional argument, the scenario's
-<xref executive(n)> component.  This option is read-only after creation.<p>
+<xref executive(n)> component.  This option is read-only after creation.
 
 <defopt {-logdir <i dirname>}>
 
 Specifies the name of log directory; athenadb(n) should create a 
-logger(n) object with this <tt -logdir>.<p>
+logger(n) object with this <tt -logdir>.
 
 If the object uses background processing, the background thread 
 should use the log directory name created by appending ".bg" to this 
-directory name.<p>
+directory name.
 
 <defopt {-scratch <i dirname>}>
 
 Names a scratch directory where athenadb(n) can write debugging files.
-Defaults to the current working directory.<p>
+Defaults to the current working directory.
 
 <defopt {-subject <i name>}>
 
 Specifies the subject <i name> used for any <xref mars:notifier(n)>
 events sent by the object.  By default, the <i name> defaults to the
-object's fully-qualified command name.<p>
+object's fully-qualified command name.
 
 For example, 
 athenadb(n) wraps an <xref mars:sqldocument(n)> object used to contain
 the scenario's run-time database (RDB).  When monitoring is enabled, the
-RDB can generate <xref mars:notifier(n)> events as tables are updated.<p>
+RDB can generate <xref mars:notifier(n)> events as tables are updated.
 
 </deflist options>
 
@@ -83,14 +83,14 @@ RDB can generate <xref mars:notifier(n)> events as tables are updated.<p>
 
 Each athenadb(n) instance has many subcommands, most of which correspond
 to a particular subcomponent; e.g., the <tt civgroup> subcommand corresponds
-to the module that handles the editing of civilian group entities.<p>
+to the module that handles the editing of civilian group entities.
 
 Because this is a private module, and because the list of such components
 changes over time, few of these subcommands will be documented here. 
 Rather, the man page documents those athenadb(n) subcommands defined 
 directly by athenadb(n) <i itself>.  Note that
 such athenadb(n) subcommands that are also exposed by 
-<xref athena(n)> are listed here, but documented there.<p> 
+<xref athena(n)> are listed here, but documented there. 
 
 <deflist instance>
 
@@ -121,7 +121,7 @@ such athenadb(n) subcommands that are also exposed by
 <defitem version {<i obj> version}>
 
 These commands and their subcommands are documented in the 
-<xref athena(n)> man page.<p>
+<xref athena(n)> man page.
 
 <defitem eval {<i obj> eval ...}>
 <defitem delete {<i obj> delete ...}>
@@ -136,43 +136,43 @@ These commands and their subcommands are documented in the
 <defitem ungrab {<i obj> ungrab ...}>
 
 These commands and their subcommands provide read/write access to the
-underlying run-time database (RDB), a <xref scenariodb(n)> object.<p>
+underlying run-time database (RDB), a <xref scenariodb(n)> object.
 
 <defitem component {<i obj> component <i name>}>
 
 Returns the fully-qualified command name for the named component, so that
 it can be passed to other objects that need direct access.  The following
-components are accessible:<p>
+components are accessible:
 
 <deflist components>
 <def {clock}>
-The instance's simulation clock, a <xref weekclock(n)> object.<p>
+The instance's simulation clock, a <xref weekclock(n)> object.
 
 <def {rdb}>
-The instance's run-time database object, a <xref scenariodb(n)> object.<p>
+The instance's run-time database object, a <xref scenariodb(n)> object.
 
 </deflist components>
 
 <defitem cprofile {<i obj> cprofile ?<i depth>? <i component args...>}>
 
 This is exactly like <iref profile>, but the command to call is an
-<xref athenadb(n)> subcomponent called as a subcommand of <i obj>.<p>
+<xref athenadb(n)> subcomponent called as a subcommand of <i obj>.
 
 
 <defitem delete {<i obj> delete ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command is delegated to the underlying <xref scenariodb(n)> object.
 
 <defitem eval {<i obj> eval ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command is delegated to the underlying <xref scenariodb(n)> object.
 
 <defitem exists {<i obj> exists ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command is delegated to the underlying <xref scenariodb(n)> object.
 
 <defitem grab {<i obj> grab ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command is delegated to the underlying <xref scenariodb(n)> object.
 
 <defitem last_insert_rowid {<i obj> last_insert_rowid}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command is delegated to the underlying <xref scenariodb(n)> object.
 
 <defitem loadtemp {<i obj> loadtemp <i filename>}>
 
@@ -180,14 +180,14 @@ Loads the scenario from the named <tt *.adb> file into this scenario
 object, throwing away any previous data.  The scenario will be marked
 <iref unsaved>, and the <i filename> will not be remembered. Afterwards, 
 the scenario will be <i locked> or <i unlocked> depending on the loaded 
-data.<p>
+data.
 
 Together with <iref savetemp>, this command allows athenadb(n) to save 
 itself to a temporary file, run some process on the contents of that file
 (i.e., in another thread) and load the results, while setting the 
-<iref unsaved> flag properly and not changing the user's <iref adbfile>.<p>
+<iref unsaved> flag properly and not changing the user's <iref adbfile>.
 
-On error, throws <b ATHENA LOAD>.<p>
+On error, throws <b ATHENA LOAD>.
 
 <defitem log {<i obj> log <i level component message>}>
 
@@ -195,37 +195,37 @@ Adds a message to the scenario's log by passing the arguments to the
 <tt logcmd>.  If <i component> is the empty string, the last part of the
 scenario's <tt -subject> is used; otherwise, the specified <i component>
 is joined to the <tt -subject> with a ".".  Thus, if <tt -subject> is 
-"adb" then the econ model logs as "adb.econ".<p>
+"adb" then the econ model logs as "adb.econ".
 
 <b TBD:> This might be silly.  We can't include multiple scenarios in 
 one log without confusion, because they'll all have different simulation
-times.  Reconsider this.<p>
+times.  Reconsider this.
 
 <defitem marksaved {<i obj> marksaved}>
 
-Marks the RDB and all components saved.<p>
+Marks the RDB and all components saved.
 
 <defitem monitor {<i obj> monitor ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command is delegated to the underlying <xref scenariodb(n)> object.
 
 <defitem notify {<i obj> notify <i component event> ?<i args...>?}>
 
 Sends a <xref mars:notifier(n)> event on behalf of <xref athena(n)>.  If
 the <i component> name is "", then the event is sent by the 
 <tt -subject>; otherwise, the <tt -subject> is suffixed with 
-"<tt>.<i component></tt>"<p>
+"<tt>.<i component></tt>"
 
 <defitem onecolumn {<i obj> onecolumn ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command is delegated to the underlying <xref scenariodb(n)> object.
 
 <defitem order {<i obj> order <i subcommand> ?<i args...>?}>
 
-<b TBD:> Document these in athena(n).<p>
+<b TBD:> Document these in athena(n).
 
 The subcommands of this command are passed along to the scenario's
 "order flunky".  Most subcommands are documented by the
 <xref mars:order_flunky(n)> man page; the Athena-specific subcommands
-are as follows:<p>
+are as follows:
 
 <deflist order>
 
@@ -233,17 +233,17 @@ are as follows:<p>
 
 Sets and queries the monitor flag.  If set, RDB changes taking place
 during order execution are monitored, and relevant notifier events are
-sent to the application.  See <xref athena(n)> for details.<p>
+sent to the application.  See <xref athena(n)> for details.
 
-Defaults to true.<p>
+Defaults to true.
 
 <defitem "transactions" {<i obj> order transactions ?<i flag>?}>
 
 Sets and queries the transaction flag.  If set, all orders are executed
 in the context of an SQL transaction; if the order throws an error, the
-transaction is rolled back, thus preventing corruption of the RDB.<p>
+transaction is rolled back, thus preventing corruption of the RDB.
 
-Defaults to true.<p>
+Defaults to true.
 
 </deflist order>
 
@@ -253,19 +253,19 @@ Calls the command once using <tt time>, in the caller's context,
 and the logs the outcome, returning the commands return value.
 In other words, you can prefix any statement with 
 "<tt><i obj> profile</tt>" and profile that call without changing code
-or adding new routines.<p>
+or adding new routines.
 
 If the <i depth> is given, it must be an integer; that many "*" characters
 are added to the beginning of the log message.  This is useful when 
-profiling calls within another profiled call.<p>
+profiling calls within another profiled call.
 
 <defitem query {<i obj> query ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command is delegated to the underlying <xref scenariodb(n)> object.
 
 <defitem rdbfile {<i obj> rdbfile}>
 
 Returns the name of the scenario's run-time database (RDB) file.  Note
-that this will change on <iref load> or <iref reset>.<p>
+that this will change on <iref load> or <iref reset>.
 
 <defitem safe {<i obj> safe <i subcommand> <i args>}>
 
@@ -285,38 +285,38 @@ puts [$myathenadb query $sql]
 
 The <iref safe> command will work with any athenadb(n) subcommand, but it's
 intended primarily for use with <iref eval>, <iref exists>,
-<iref onecolumn>, and <iref query>.<p>
+<iref onecolumn>, and <iref query>.
 
 <defitem savetemp {<i obj> savetemp <i filename>}>
 
 Saves the scenario to disk as an <tt .adb> file called <i filename>.  
 Any existing file of the same name is deleted.  The state of the 
-loaded scenario is completely unchanged.<p>
+loaded scenario is completely unchanged.
 
-On failure, throws "<tt ATHENA SAVE>".<p>
+On failure, throws "<tt ATHENA SAVE>".
 
 <defitem schema {<i obj> schema ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command is delegated to the underlying <xref scenariodb(n)> object.
 
 <defitem scratch {<i obj> scratch ?<i args...>?}>
 
 Called with no arguments, returns the <tt -scratch> directory.  Any
 arguments are joined to the scratch directory as by <tt file join>, and
-the resulting path is returned.<p>
+the resulting path is returned.
 
 <defitem send {<i obj> send}>
 This command is delegated to the underlying <xref order_flunky(n)> 
-component.<p>
+component.
 
 <defitem tables {<i obj> tables ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command is delegated to the underlying <xref scenariodb(n)> object.
 
 <defitem tkloaded {<i obj> tkloaded}>
 
-Returns 1 if Tk is loaded, and 0 otherwise.<p>
+Returns 1 if Tk is loaded, and 0 otherwise.
 
 <defitem ungrab {<i obj> ungrab ...}>
-This command is delegated to the underlying <xref scenariodb(n)> object.<p>
+This command is delegated to the underlying <xref scenariodb(n)> object.
 
 </deflist instance>
 
@@ -325,7 +325,7 @@ This command is delegated to the underlying <xref scenariodb(n)> object.<p>
 The following components are exposed as athenadb(n) subcommands.  See
 the code for details of their APIs.  Note that <xref athena(n)> documents
 those component subcommands which are made available by the public 
-facade.<p>
+facade.
 
 <topiclist "Component" "Subcommand">
 <topic aam>
@@ -394,15 +394,15 @@ facade.<p>
 <section "SQL FUNCTIONS">
 
 athenadb(n) defines many SQL functions for use in database queries.  
-See <xref athena(n)> for details.<p>
+See <xref athena(n)> for details.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-New package derived from Athena internals.<p>
+New package derived from Athena internals.
 
 </manpage>
 

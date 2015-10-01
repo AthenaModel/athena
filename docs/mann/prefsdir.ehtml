@@ -16,11 +16,11 @@ the Athena preferences directory, where user preferences and similar
 user data are stored.  At start-up, Athena calls
 <iref prefsdir init>, which creates the <xref os(n) "os prefsdir">
 directory.  The <iref prefsdir join> command can then be used to
-produce file names within that directry.<p>
+produce file names within that directry.
 
 <section "COMMANDS">
 
-This module defines the following commands:<p>
+This module defines the following commands:
 
 <deflist commands>
 
@@ -28,12 +28,12 @@ This module defines the following commands:<p>
 
 Initializes prefsdir(n).  In particular, it determines and saves the
 full path to the preferences directory, and returns the full path to it;
-in addition, it creates the directory itself.<p>
+in addition, it creates the directory itself.
 
 <defitem "prefsdir initialized" {prefsdir initialized}>
 
 Returns 1 if the preferences directory has been successfully initialized,
-and false otherwise.<p>
+and false otherwise.
 
 <defitem "prefsdir join" {prefsdir join ?<i>arg arg...</i>?}>
 
@@ -41,14 +41,14 @@ Called with no arguments, returns the name of the preferences directory.
 Otherwise, returns the path name resulting from joining the
 arguments to the preferences directory.  For example, the
 following command returns the absolute path of a file called
-"<code>prefs.dat</code>" in the preferences directory.<p>
+"<code>prefs.dat</code>" in the preferences directory.
 
 <pre>
 set prefsFil [prefsdir join prefs.dat]
 </pre>
 
 Note that this command always succeeds, even if the preferences directory
-could not be successfully created.<p> 
+could not be successfully created. 
 
 </deflist commands>
 
@@ -58,7 +58,7 @@ This package requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

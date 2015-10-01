@@ -12,15 +12,15 @@ implemented as Tcl ensemble commands with the interface described in this
 man page.  They are usually created using the <xref gofer(n)>
 <xref gofer(n) "gofer rule"> command, but can also be created as bare
 type ensembles and linked to a gofer type using the 
-<xref gofer(n) "gofer rulefrom"> command.<p>
+<xref gofer(n) "gofer rulefrom"> command.
 
-See <xref gofer(i)> before continuing here.<p>
+See <xref gofer(i)> before continuing here.
 
 
 <section "SUBCOMMANDS">
 
 Each <xref gofer_rule(i)> ensemble must implement at least the following
-subcommands.<p>
+subcommands.
 
 <deflist subcommands>
 
@@ -28,51 +28,51 @@ subcommands.<p>
 
 Given the rule's parameters in some appropriate order, returns a 
 <i>gdict</i> that contains them.  The gofer type will add the 
-<b>_type</b> and <b>_rule</b> keys.<p>
+<b>_type</b> and <b>_rule</b> keys.
 
 <defitem eval {eval <i>gdict</i>}>
 
 Evaluates the <i>gdict</i> to produce the desired output value, e.g., 
 a particular list of civilian groups.  The rule may assume that the
 <i>gdict</i> is valid, but should only look at the keys listed by
-<iref keys>.<p>
+<iref keys>.
     
 <defitem keys {keys}>
 
 Every rule adds zero or more keys to the gofer type's gofer dictionary,
 representing the rule's parameters.  This subcommand must return a list of the
-names of the keys required by this particular rule.<p>
+names of the keys required by this particular rule.
 
 <defitem narrative {narrative <i>gdict</i> ?-brief?}>
 
 Returns a human-readable narrative description of the rule given the
 parameters in the <i>gdict</i>.  The narrative should include all of the 
 relevant parameters, and should be stated as a noun phrase so that it can be 
-included in other strings (e.g., in <xref tactic(i)> narratives).<p>
+included in other strings (e.g., in <xref tactic(i)> narratives).
 
 If the <b>-brief</b> option is included, then the length of the narrative
 should be constrained in cases where the full narrative could be 
 arbitrarily long, e.g., rule parameters whose values are lists can be
 truncated with an ellipsis.  There is no hard constraint, but 
-typical brief narratives should be no more than about 120 characters.<p>
+typical brief narratives should be no more than about 120 characters.
 
-The rule may assume that the <i>gdict</i> is valid.<p>
+The rule may assume that the <i>gdict</i> is valid.
 
 <defitem validate {validate <i>gdict</i>}>
 
 Validates the <i>gdict</i>, returning it if valid, and throwing
 <b>INVALID</b> on any error.  Each of the key values should be returned in
-canonical form.<p>
+canonical form.
 
 The rule can assume that the <i>gdict</i> contains all of the keys
-that the rule requires.<p>
+that the rule requires.
 
 </deflist subcommands>
 
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

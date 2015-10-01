@@ -12,21 +12,21 @@ namespace import ::projectgui::*
 <section DESCRIPTION>
 
 The mybrowser(n) widget is a web-browser-like widget for browsing
-the contents of <xref mydomain(i)> servers.<p>
+the contents of <xref mydomain(i)> servers.
 
 <subsection "Content Types">
 
-The browser knows how to display the following content types directly:<p>
+The browser knows how to display the following content types directly:
 
 <deflist>
 <def text/html>
-Normal HTML text.<p>
+Normal HTML text.
 
 <def text/plain>
-Plain text.<p>
+Plain text.
 
 <def tk/image>
-Tk images.<p>
+Tk images.
 </deflist>
 
 <subsection "Embedded Objects">
@@ -35,7 +35,7 @@ In addition, the <code>&lt;object&gt;</code> tag can be used to embed
 GUI objects identified by a URI with content type <b>tk/widget</b>.
 The tag's <code>data</code> attribute gives the URL, and the
 <code>width</code> and <code>height</code> attributes control the
-size.  For example:<p>
+size.  For example:
 
 <pre>
     &lt;object width="100%" height="2in"
@@ -44,69 +44,69 @@ size.  For example:<p>
 </pre>
 
 Note that it's important to include the closing
-<b>&lt;/object&gt;</b> tag.<p>
+<b>&lt;/object&gt;</b> tag.
 
 The actual <b>tk/widget</b> content is a Tcl command that will create
 the widget in question.  The token <code>%W</code> will be replaced
 with a Tk window path name, and then the command will be evaluated in
-the gobal scope.<p>
+the gobal scope.
 
 <subsection "Forms">
 
-mybrowser(n) supports HTML forms, within particular constraints.<p>
+mybrowser(n) supports HTML forms, within particular constraints.
 
-The <code>&lt;form&gt;</code> tag can take the following attributes:<p>
+The <code>&lt;form&gt;</code> tag can take the following attributes:
 
 <deflist attributes>
-<defopt {action=<i>url</i>}>
+<def {action=<i>url</i>}>
 
 The action is the URL that is sent on submit with the form parameters
 attached.  The URL can be relative to the current page; and if it is
 empty, the same page is loaded with the new
-form parameters.  Any query parameters in the action <i>url</i> are ignored.<p>
+form parameters.  Any query parameters in the action <i>url</i> are ignored.
 
-<defopt {autosubmit=<i>flag</i>}>
+<def {autosubmit=<i>flag</i>}>
 
 If the <i>flag</i> is 1, any 
 change to the form's fields will be submitted immediately on user input.
-Otherwise, the user must press the "Submit" button to submit the form.<p>
+Otherwise, the user must press the "Submit" button to submit the form.
 
-Note that changes to <b>text</b> inputs do not trigger auto-submit.<p>
+Note that changes to <b>text</b> inputs do not trigger auto-submit.
 
 </deflist attributes>
 
 Forms can contain the following kinds of <code>&lt;input&gt;</code> tag, 
 each of which must have a <b>type</b> and <b>name</b> attribute.  The <b>type</b> 
-attribute should be one of the following:<p>
+attribute should be one of the following:
 
 <deflist inputs>
 
-<defopt {enum}>
+<def {enum}>
 
 Adds an <xref enumfield(n)> widget to the form.  There are a number of
-important attributes.<p>
+important attributes.
 
 The field's drop down list is populated by querying the URL given as the
 <b>src</b> attribute (required).  The content type is assumed to be 
 <code>tcl/enumlist</code>, in which case the drop down list contains
-exactly the enumerated values.<p>
+exactly the enumerated values.
 
 If the <b>content</b> attribute is set to <code>tcl/enumdict</code>, then
 the long form of the enumeration is retrieved and used for the drop-down values
-in the usual way.<p>
+in the usual way.
 
 The field's content is
-initialized with the value of the <b>value</b> attribute, if present.<p>
+initialized with the value of the <b>value</b> attribute, if present.
 
-<defopt {text}>
+<def {text}>
 
 Adds a <xref textfield(n)> widget to the form.  The field's content is
-initialized with the value of the <b>value</b> attribute, if present.<p>
+initialized with the value of the <b>value</b> attribute, if present.
 
-<defopt {submit}>
+<def {submit}>
 
 Adds a "Submit" button to the form.  If the <b>value</b> attribute is present, 
-its value is used as the button text.<p>
+its value is used as the button text.
 
 </deflist inputs>
 
@@ -116,7 +116,7 @@ A mybrowser(n) widget can also be used to display mydomain(n) pages purely
 the control of the application, i.e., as a way to implement browsers for
 specific pieces of data.  The involves turning off the "chrome" (the toolbar
 the sidebar), possibly setting the -home URL to a desired page, and 
-setting hyperlinks to be displayed in a full browser.  For example,<p>
+setting hyperlinks to be displayed in a full browser.  For example,
 
 <pre>
     mybrowser .datapane              \
@@ -135,14 +135,14 @@ This code creates a data pane that will always display the URL
 If the user clicks on any link in the displayed data, the URL will be passed
 to the application's <code>::app show</code> command for handling.  The
 widget's contents will automatically reload on the 
-"<code>::sim &lt;Tick&gt;</code>" <xref mars:notifier(n)> event.<p>
+"<code>::sim &lt;Tick&gt;</code>" <xref mars:notifier(n)> event.
 
 If the application needs to change the displayed page, it can use the
-<iref show> method in the usual way.<p>
+<iref show> method in the usual way.
 
 <section COMMANDS>
 
-This module defines the following commands.<p>
+This module defines the following commands.
 
 <deflist commands>
 
@@ -150,67 +150,67 @@ This module defines the following commands.<p>
 
 Creates a new <iref mybrowser> widget named <i>pathName</i>, and
 returns <i>pathName</i>.  The widget supports the following
-options, in addition to those provided by the underlying frame widget:<p>
+options, in addition to those provided by the underlying frame widget:
 
 <deflist options>
 
 <defopt {-bookmarkcmd <i>cmd</i>}>
 
 Specifies a <i>command</i> to be called whenever the user has
-pushed the "bookmark this page" button on the browser toolbar.<p>
+pushed the "bookmark this page" button on the browser toolbar.
 
 This option is read-only after widget creation; and note that the
-button is displayed only if this option has a non-empty value.<p>
+button is displayed only if this option has a non-empty value.
 
 <defopt {-defaultserver <i>name</i>}>
 
 The browser will access the named server when given a URL with a
-missing server name.  Defaults to "app".<p>
+missing server name.  Defaults to "app".
 
 <defopt {-help <i>url</i>}>
 
 Specifies the URL of the browser's "help" page.  If this option is
 given then the browser will display a "Help" button in the toolbar
-and will display this page when the button is pressed.<p>
+and will display this page when the button is pressed.
 
 <defopt {-home <i>url</i>}>
 
 Specifies the URL of the browser's "home" page.  It will display
 this page initially, and will return to it when the browser's
-"Home" button is pressed.<p>
+"Home" button is pressed.
 
 <defopt {-hyperlinkcmd <i>command</i>}>
 
 This option determines what happens when a user clicks on a hyperlink.  If
 the option is unset (the default), then mybrowser(n) simply passes 
 resolved hyperlinks directly to <iref show>.  Otherwise, they are passed
-to <i>command</i>, which may do what it likes.<p>
+to <i>command</i>, which may do what it likes.
 
 <defopt {-loadedcmd <i>command</i>}>
 
 Specifies a <i>command</i> to be called whenever the browser has
 loaded a page.  It will be called with one additional argument, the
-URL of the loaded page.<p>
+URL of the loaded page.
 
 <defopt {-messagecmd <i>command</i>}>
 
 Specifies a <i>command</i> to be called
 whenever the browser has a message to be displayed on the application
 window's message line.  This is usually used for displaying the linked
-URL when the mouse moves over a link.<p>
+URL when the mouse moves over a link.
 
 <defopt {-reloadcmd <i>command</i>}>
 
 Specifies a <i>command</i> to be called when the browser's
 "reload" button is pressed.  Note that the browser reloads its own
 content; this callback is defined so that the <b>sidebar</b>
-components, if any, can also reload their content.<p>
+components, if any, can also reload their content.
 
 <defopt {-reloadon <i>dict</i>}>
 
 Specifies a dictionary of notifier subject/event pairs.  The widget
 will bind to the given events, and reload its content when any of
-them is sent.<p>
+them is sent.
 
 <defopt {-searchcmd <i>command</i>}>
 
@@ -218,31 +218,31 @@ Specifies a <i>command</i> to be called whenever the user has
 entered a search string into the browser's search box.
 It will be called with one additional argument, the search string;
 the command must return a URL that can be queried to get the search
-results for the string.<p>
+results for the string.
 
 This option is read-only after widget creation; and note that the
-search box is displayed only if this option has a non-empty value.<p>
+search box is displayed only if this option has a non-empty value.
 
 <defopt {-sidebar <i>flag</i>}>
 
 If yes (the default), the browser will have a <iref sidebar> frame,
 into which the client can place any desired content.   If no, the sidebar will
-be omitted.<p>
+be omitted.
 
-This option is read-only after widget creation.<p>
+This option is read-only after widget creation.
 
 <defopt {-styles <i>css</i>}>
 
 Gives a set of CSS styles to the underlying 
-<xref mars:htmlviewer(n)>.<p>
+<xref mars:htmlviewer(n)>.
 
 <defopt {-toolbar <i>flag</i>}>
 
 If yes (the default), the browser will have a toolbar with the usual
 controls (back button, address bar, etc.).  If no, the toolbar will
-be omitted.<p>
+be omitted.
 
-This option is read-only after widget creation.<p>
+This option is read-only after widget creation.
 
 <defopt {-unknowncmd <i>command</i>}>
 
@@ -251,7 +251,7 @@ scheme other than "my".  The command is passed two additional arguments,
 the scheme name (e.g., "gui") and the URI, and can do
 what it likes with them.  The command should return 1 if it handles the
 URI, and 0 otherwise, in which case mybrowser(n)'s usual error
-handling will apply.<p>
+handling will apply.
 
 </deflist options>
 
@@ -259,58 +259,58 @@ handling will apply.<p>
 
 <section "INSTANCE COMMAND">
 
-mybrowser(n) widgets have the following subcommands:<p>
+mybrowser(n) widgets have the following subcommands:
 
 <deflist instance>
 
 <defitem back {<i>pathName</i> back}>
 
-This command is equivalent to pressing the browser's "back" button.<p>
+This command is equivalent to pressing the browser's "back" button.
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
 Sets the value of one or more of the object's
-options.<p>
+options.
 
 <defitem forward {<i>pathName</i> forward}>
 
-This command is equivalent to pressing the browser's "forward" button.<p>
+This command is equivalent to pressing the browser's "forward" button.
 
 <defitem home {<i>pathName</i> home}>
 
-Shows the browser's <code>-home</code> page.<p>
+Shows the browser's <code>-home</code> page.
 
 <defitem reload {<i>pathName</i> reload ?-force?}>
 
 Causes the widget to reload its currently displayed URL, and
-call its <code>-reloadcmd</code>.<p>
+call its <code>-reloadcmd</code>.
 
 By default, the widget's contents is reloaded in a lazy fashion, using
 <xref mars:lazyupdater(n)>.  If the <b>-force</b> option is given, the
-content is reloaded immediately.<p>
+content is reloaded immediately.
 
 <defitem show {<i>pathName</i> show <i>url</i>}>
 
-Asks the browser to display the given <i>url</i>.<p>
+Asks the browser to display the given <i>url</i>.
 
 <defitem sidebar {<i>pathName</i> sidebar}>
 
 If <b>-sidebar</b> is yes, returns a <b>ttk::frame</b> widget into which the 
 application can add its own components.  The sidebar appears on the left hand 
 side of the browser, separated from the main browser pane by a user-adjustable 
-sash.<p>
+sash.
 
 <defitem title {<i>pathName</i> title}>
 
-Returns the title of the currently displayed page, or "" if none.<p>
+Returns the title of the currently displayed page, or "" if none.
 
 <defitem url {<i>pathName</i> url}>
 
-Returns the URL of the currently displayed page, or "" if none.<p>
+Returns the URL of the currently displayed page, or "" if none.
 
 </deflist instance>
 
@@ -324,7 +324,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

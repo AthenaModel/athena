@@ -15,54 +15,54 @@ mydomain(n) is a basic <xref mydomain(i)> implementation.
 The application creates an instance of mydomain(n) and registers
 resources and resource handlers with it; it then registers the
 instance with <xref myagent(n)>.  At that point, <xref myagent(n)>
-clients like <xref mybrowser(n)> can query it.<p>
+clients like <xref mybrowser(n)> can query it.
 
 The only resources known to a newly created mydomain(n) are
 <code>/urlhelp</code> and <code>/urlhelp/{url}</code>, which are used
-to browse the set of resources known to the server.<p>
+to browse the set of resources known to the server.
 
 <section "CONTENT TYPES">
 
-By default, mydomain(n) serves only the following content types<p>
+By default, mydomain(n) serves only the following content types
 
 <deflist ctypes>
 
 <defitem text/html {text/html}>
 
-HTML text.<p>
+HTML text.
 
 However, registered resource handlers can provide content in any
-desired form; mydomain(n) doesn't care.<p>
+desired form; mydomain(n) doesn't care.
 
 </deflist>
 
 <section "COMMANDS">
 
 mydomain(n) provides the following commands for use by the
-application.<p>
+application.
 
 <deflist commands>
 
 <defitem mydomain {mydomain <i>name</i> ?<i>option value...</i>?}>
 
 Creates a new instance of mydomain(n) called <i>name</i>; returns the
-fully-qualified command name.<p>
+fully-qualified command name.
 
-Instances of mydomain(n) take the following options:<p>
+Instances of mydomain(n) take the following options:
 
 <deflist options>
 <defopt {-domain <i domain>}>
 <b Required.>  Specifies the object's domain, which must be a single
-folder name beginning with "/", e.g., "<tt /app>" or "<tt /help>".<p>
+folder name beginning with "/", e.g., "<tt /app>" or "<tt /help>".
 
 <defopt {-logcmd <i>cmd</i>}>
 Defines a command prefix to be called with three additional arguments
 when the instance wishes to write to the debugging log: a verbosity
 level, a module name, and a log message.  Note that <i>cmd</i> will
-often be a <xref mars:logger(n)> instances.<p>
+often be a <xref mars:logger(n)> instances.
 
 The most important thing logged by mydomain(n) are the requested URLs
-and the time (in microseconds) required to produce the content.<p>
+and the time (in microseconds) required to produce the content.
 
 </deflist options>
 
@@ -72,18 +72,18 @@ and the time (in microseconds) required to produce the content.<p>
 <section "INSTANCE COMMANDS">
 
 Instances of mydomain(n) provide the following subcommands for use by
-the application.<p>
+the application.
 
 <deflist instance>
 
 <defitem ctypes {$server ctypes <i>rtype</i>}>
 
 Given a resource type name, <i>rtype</i>, returns a list of the
-available content types.<p>
+available content types.
 
 <defitem domain {$server domain}>
 
-Returns the object's <tt -domain>.<p>
+Returns the object's <tt -domain>.
 
 <defitem get {$server get <i>url</i> ?<i>contentTypes</i>?}>
 
@@ -91,23 +91,23 @@ Returns the object's <tt -domain>.<p>
 server.  If the <i>url</i> cannot be retrieved for any reason, the
 server throws an error with error code <b>NOTFOUND</b>; the error
 message is a human-readable message explaining why the resource cannot
-be found.<p>
+be found.
 
 The <i>contentTypes</i> argument, if given, is a list of content types
 accepted by the client.  Browse the server's <code>/urlhelp</code> resource
 to see what URLs are accepted, and what content types they can
-provide.  Custom content types should be documented by the application.<p>
+provide.  Custom content types should be documented by the application.
 
 If <i>contentTypes</i> is empty, the server will return the first
 available content type for the requested <i>url</i>.  Otherwise, it
 will return the first content type listed in <i>contentTypes</i> which
-is available for the requested <i>url</i>.<p>
+is available for the requested <i>url</i>.
 
 Note that the content types listed in <i>contentTypes</i> can include
-wild cards, e.g., <b>text/*</b> and <b>*/*</b>.<p>
+wild cards, e.g., <b>text/*</b> and <b>*/*</b>.
 
 On success, the <iref get> command returns a dictionary with the
-following keys:<p>
+following keys:
 
 <deflist getdict>
 
@@ -116,11 +116,11 @@ following keys:<p>
 The complete URL given to the server.  This is of interest because the
 <xref myagent(n)> might have performed address resolution; hence,
 the URL given to the server might not be the same as the URL given to
-the agent.<p>
+the agent.
 
 <defitem contentType {contentType}>
 
-The content type of the returned content.<p>
+The content type of the returned content.
 
 <defitem content {content}>
 
@@ -133,7 +133,7 @@ The returned content itself.
 }>
 
 Registers (or re-registers) a resource type with the server; clients
-can now query resources of this type.<p>
+can now query resources of this type.
 
 The <i>rtype</i> is the resource type name.  Resource type names are
 arbitrary strings; conventionally, however, they mimic the associated
@@ -150,18 +150,18 @@ component of the resource's URL. It will be used as
 "<code>^<i>pattern</i>$</code>" so
 that it matches the entire path.  It should not begin with a
 "/", as the leading slash is really a separator between the host name
-and the path.<p>
+and the path.
 
 The resource can be associated with multiple content types; each
 <i>ctype</i> requires a <i>handler</i> to produce the content
 associated with that <i>ctype</i>.  At least one <i>ctype</i> and
-<i>handler</i> are required.<p>
+<i>handler</i> are required.
 
 Use standard MIME content types where possible (e.g.,
 <code>text/html</code>, <code>text/plain</code>); for custom content
 types containing Tcl-formatted data, use content type names like
 <code>tcl/<i>name</i></code> or <code>tk/<i>name</i></code>.  The
-application should document all custom content types.<p>
+application should document all custom content types.
 
 The <i>handler</i> should be a command prefix taking two additional
 arguments, the <i>udict</i> and the <i>matchArray</i>.  The
@@ -170,24 +170,24 @@ the resource, as returned by <code>uri::split</code>, with the entire
 <b>url</b> added.  The <i>matchArray</i> is the name of an 
 array of pattern matches with indices 0 through 9.  Match 0 is the
 entire path component of the URL; matchs 1 through 9 are submatches,
-as determined by parentheses in the <i>pattern</i>.<p>
+as determined by parentheses in the <i>pattern</i>.
 
 The handler must either return the desired content, or throw a
-NOTFOUND error with a human-readable error message.<p>
+NOTFOUND error with a human-readable error message.
 
 <defitem resources {$server resources}>
 
-Returns a list of the names of the registered resource types.<p>
+Returns a list of the names of the registered resource types.
 
 </deflist instance>
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

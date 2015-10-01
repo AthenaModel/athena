@@ -16,20 +16,20 @@ developer introspection of SQLite3 databases.
 The application creates an instance of rdbserver(n), specifying a
 database using the <code>-rdb</code> option, and registers the
 instance with <xref myagent(n)>.  At that point, <xref myagent(n)>
-clients like <xref mybrowser(n)> can query it.<p>
+clients like <xref mybrowser(n)> can query it.
 
 The resources known to the server are listed under <xref RESOURCES>;
 they can also be seen by querying the server's 
-<code>/urlhelp</code> resource.<p>
+<code>/urlhelp</code> resource.
 
 <section "CONTENT TYPES">
 
-All rdbserver(n) data has the content type <b>text/html</b>.<p>
+All rdbserver(n) data has the content type <b>text/html</b>.
 
 <section "RESOURCES">
 
 In addition to the standard resources provided by
-<xref mydomain(n)>, rdbserver(n) provides the following:<p>
+<xref mydomain(n)>, rdbserver(n) provides the following:
 
 <deflist resources>
 
@@ -43,19 +43,19 @@ temporary entiteis ("/temp").  All three of this resources accept a
 query string, which is a wildcard pattern.  The tabular list will
 contain all entities whose names match the pattern.  For example, if
 the rdbserver(n) is registered with <xref myagent(n)> as "rdb", the
-URL<p>
+URL
 
 <pre>
     my://rdb/temp/gui_*
 </pre>
 
 will return a tabular listing of all temporary tables, views, and
-triggers whose names begin with "gui_".<p>
+triggers whose names begin with "gui_".
 
 <defitem /content {/content/<i>name</i>}>
 
 Displays the content of the table or view called <i>name</i> in
-tabular form.  This resource accepts a query string of the form<p>
+tabular form.  This resource accepts a query string of the form
 
 <pre>
     <i>column=value</i>?+<i>column=value</i>...?
@@ -64,35 +64,35 @@ tabular form.  This resource accepts a query string of the form<p>
 where <i>column</i> is a column name in the table or view.  The query
 will return all rows for which the columns have the specified values.
 Note that the values may be wildcard patterns.  Query values are
-case-sensitive.<p>
+case-sensitive.
 
 <defitem /schema {/schema/<i>name</i>}>
 
 Displays the SQL schema for the table, view, or trigger with the
-specified name.<p>
+specified name.
 
 </deflist resources>
 
 <section "COMMANDS">
 
 rdbserver(n) provides the following commands for use by the
-application.<p>
+application.
 
 <deflist commands>
 
 <defitem rdbserver {rdbserver <i>name</i> ?<i>options...</i>?}>
 
 Creates a new instance of rdbserver(n) called <i>name</i>; returns the
-fully-qualified command name.<p>
+fully-qualified command name.
 
-rdbserver(n) has the following option:<p>
+rdbserver(n) has the following option:
 
 <deflist options>
 
 <defopt {-rdb <i>database</i>}>
 
 Specifies the SQLite3 database to query, expressed as an
-<xref sqldocument(n)> object.<p>
+<xref sqldocument(n)> object.
 
 </deflist options>
 
@@ -102,14 +102,14 @@ Specifies the SQLite3 database to query, expressed as an
 <section "INSTANCE COMMANDS">
 
 Instances of rdbserver(n) provide the following subcommands for use by
-the application.<p>
+the application.
 
 <deflist instance>
 
 <defitem ctypes {$server ctypes <i>rtype</i>}>
 
 Given a resource type name, <i>rtype</i>, returns a list of the
-available content types.<p>
+available content types.
 
 <defitem get {$server get <i>url</i> ?<i>contentTypes</i>?}>
 
@@ -117,23 +117,23 @@ available content types.<p>
 server.  If the <i>url</i> cannot be retrieved for any reason, the
 server throws an error with error code <b>NOTFOUND</b>; the error
 message is a human-readable message explaining why the resource cannot
-be found.<p>
+be found.
 
 The <i>contentTypes</i> argument, if given, is a list of content types
 accepted by the client.  Browse the server's <code>/urlhelp</code> resource
 to see what URLs are accepted, and what content types they can
-provide.  Custom content types should be documented by the application.<p>
+provide.  Custom content types should be documented by the application.
 
 If <i>contentTypes</i> is empty, the server will return the first
 available content type for the requested <i>url</i>.  Otherwise, it
 will return the first content type listed in <i>contentTypes</i> which
-is available for the requested <i>url</i>.<p>
+is available for the requested <i>url</i>.
 
 Note that the content types listed in <i>contentTypes</i> can include
-wild cards, e.g., <b>text/*</b> and <b>*/*</b>.<p>
+wild cards, e.g., <b>text/*</b> and <b>*/*</b>.
 
 On success, the <iref get> command returns a dictionary with the
-following keys:<p>
+following keys:
 
 <deflist getdict>
 
@@ -142,11 +142,11 @@ following keys:<p>
 The complete URL given to the server.  This is of interest because the
 <xref myagent(n)> might have performed address resolution; hence,
 the URL given to the server might not be the same as the URL given to
-the agent.<p>
+the agent.
 
 <defitem contentType {contentType}>
 
-The content type of the returned content.<p>
+The content type of the returned content.
 
 <defitem content {content}>
 
@@ -156,17 +156,17 @@ The returned content itself.
 
 <defitem resources {$server resources}>
 
-Returns a list of the names of the registered resource types.<p>
+Returns a list of the names of the registered resource types.
 
 </deflist instance>
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

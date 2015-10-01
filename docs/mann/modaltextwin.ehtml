@@ -15,29 +15,29 @@ namespace import ::projectgui::*
 a modal window with an "OK" button.  It is used for displaying
 arbitrarily large possibly formatted text messages to the user, and is
 usually used in MS Windows for exit messages that would otherwise be
-written to standard out.<p>
+written to standard out.
 
 <section "COMMANDS">
 
-This module defines the following commands:<p>
+This module defines the following commands:
 
 <deflist commands>
 
 <defitem "modaltextwin popup" {modaltextwin popup ?<i>option value...</i>?}>
 
 Pops up the modal text window given the following options.  Execution
-will continue after the user presses the "OK" button in the window.<p>
+will continue after the user presses the "OK" button in the window.
 
 <deflist options>
 
 <defopt {-title <i>title</i>}>
 
-Sets the window's title string.<p>
+Sets the window's title string.
 
 <defopt {-message <i>text</i>}>
 
 Sets the displayed text.  The text is displayed in a monospaced font,
-so simple formatting is possible.<p>
+so simple formatting is possible.
 
 </deflist options>
 
@@ -49,7 +49,7 @@ This package requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

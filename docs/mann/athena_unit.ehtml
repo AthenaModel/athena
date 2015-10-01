@@ -13,19 +13,19 @@ namespace import ::athena::*
 
 This man page describes a component of the <xref athena(n)> package
 that provides access to the scenario's units: entities representing
-geographic subdivisions of a group's personnel.<p>
+geographic subdivisions of a group's personnel.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> unit</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist unit>
 
@@ -33,36 +33,36 @@ where <i adb> is an instance of <xref athena(n)>.<p>
 
 By default, returns a dictionary of information about unit <i u>,
 as read from the <b units> table.  If <i parm> is given, returns
-the value of the <i parm>.<p>
+the value of the <i parm>.
 
 <defitem move {<i adb> unit move <i u location>}>
 
 Moves unit <i u> to the new <i location>, which must be in the same
 neighborhood.  The <i location> may be a lat/long pair in decimal 
 degrees, or an MGRS string.  Throws INVALID if the location is invalid
-or outside the situation's neighborhood.<p>
+or outside the situation's neighborhood.
 
 <b NOTE:> Moving a unit has no effect on the simulation results, but 
-will affect how the unit is displayed on a map.<p>
+will affect how the unit is displayed on a map.
 
 <defitem "names" {<i adb> unit names}>
-Returns a list of the IDs of the existing units.<p>
+Returns a list of the IDs of the existing units.
 
 <defitem "validate" {<i adb> unit validate <i u>}>
 Validates unit name <i u>, returning <i u> if valid and throwing
-<b INVALID> otherwise.<p>
+<b INVALID> otherwise.
 
 </deflist unit>
 
 <subsection "Private Subcommands">
 
 The <tt><i adb> unit</tt> command takes the following subcommands, where
-where <i adb> is an instance of <xref athenadb(n)>.<p>
+where <i adb> is an instance of <xref athenadb(n)>.
 
-TBD: None yet documented.<p>
+TBD: None yet documented.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 
 </manpage>

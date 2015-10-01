@@ -2,7 +2,7 @@
 
 <h2>Third-party Software List</h2>
 
-Athena depends on the following third-party software during operations:<p>
+Athena depends on the following third-party software during operations:
 
 <ul>
   <li> Windows 7, 32-bit or 64-bit; the application is built for
@@ -10,7 +10,7 @@ Athena depends on the following third-party software during operations:<p>
 
   <li> Red Hat Enterprise Linux, Version 5 (though other versions of
        Linux will probably work just as well).
-</ul><p>
+</ul>
 
 The following third-party software is required during development, but not 
 during operations:

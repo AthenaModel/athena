@@ -12,13 +12,13 @@ package require athena <version>
 
 Each instance of <xref athena(n)> contains an executive interpreter for 
 processing scripts and expressions; the interpreter's complete API is
-exposed via the <xref athena(n)> instance's <tt executive> subcommand.<p>
+exposed via the <xref athena(n)> instance's <tt executive> subcommand.
 
 The heart of the executive is a <xref mars:marsutil(n)>
 <xref mars:smartinterp(n)> object; many of the executive's commands are
-delegated to the <xref mars:smartinterp(n)>.<p>
+delegated to the <xref mars:smartinterp(n)>.
 
-This man page documents the executive API.<p>
+This man page documents the executive API.
 
 <section "INTERNAL SCRIPTS">
 
@@ -27,14 +27,14 @@ collection of internal scripts.  Any number of internal scripts may
 be saved using <iref script save>.  A saved script can be executed on 
 demand, using the <iref call> method or executive command; alternatively,
 a script that defines Tcl procedures can be loaded automaticaly on 
-<iref reset> by setting its <iref script auto> flag.<p>
+<iref reset> by setting its <iref script auto> flag.
 
 Scripts can be used to automate tasks (i.e., the set up for particular
-excursions from a base case) or with EXECUTIVE tactics.<p>
+excursions from a base case) or with EXECUTIVE tactics.
 
 <section "COMMANDS">
 
-executive(n) provides the following commands for use by the application.<p>
+executive(n) provides the following commands for use by the application.
 
 <deflist commands>
 
@@ -43,7 +43,7 @@ executive(n) provides the following commands for use by the application.<p>
 Creates a new <iref executive> instance named <i>obj</i>, and
 returns the fully qualified object name.  The <i adb_> is the name of the
 enclosing <xref athenadb(n)> object.  The object takes the following 
-options:<p>
+options:
 
 <deflist options>
 
@@ -52,7 +52,7 @@ options:<p>
 This option names a command to be called whenever the executive is reset.
 The <i cmd> is a prefix to be called with one additional argument, the 
 executive object itself.  The application will usually use this to define
-additional application-specific commands for use in executive scripts.<p>
+additional application-specific commands for use in executive scripts.
 
 </deflist options>
 
@@ -60,7 +60,7 @@ additional application-specific commands for use in executive scripts.<p>
 
 <section "INSTANCE COMMANDS">
 
-Each instance of executive(n) provides the following.<p>
+Each instance of executive(n) provides the following.
 
 <deflist instance>
 
@@ -73,104 +73,104 @@ Each instance of executive(n) provides the following.<p>
 These commands are delegated to the underlying
 <xref mars:smartalias(n)> interpreter; they are used to define new
 executive commands and functions.  See the <xref mars:smartalias(n)>
-man page for details.<p>
+man page for details.
 
 <defitem call {<i obj> call <i scriptName>}>
 
 Executes the named script in the interpreter.  The <i scriptName> should
 either be a script name as returned by <iref script names>, or an 
-absolute or relative path to a file on the local disk.<p>
+absolute or relative path to a file on the local disk.
 
 <defitem check {<i obj> check <i script>}>
 
 Checks a script for obvious syntax errors.  Returns a flat list of
-line numbers and error messages.<p>
+line numbers and error messages.
 
 <defitem commands {<i obj> commands}>
 
-Returns a list of the commands defined in the interpreter.<p>
+Returns a list of the commands defined in the interpreter.
 
 <defitem errtrace {<i obj> errtrace}>
 
 Returns the error stack trace from the last <iref eval> or <iref call> 
-that threw an error.<p>
+that threw an error.
 
 <defitem eval {<i obj> eval <i script>}>
 
 Evaluates the script in the interpreter, returning the result.  If the
 script throws an error, the stack trace is available by calling
-<iref errtrace>.<p>
+<iref errtrace>.
 
 <defitem reset {<i obj> reset}>
 
 Resets the executive interpreter, restoring it to a pristine state with
 all standard executive commands and functions defined.  If there is a
 <tt -executivecmd> callback, it will be called when the reset is complete,
-allowing application commands to be defined in the interpreter.<p>
+allowing application commands to be defined in the interpreter.
 
 <defitem script {<i obj> script <i subcommand> ?<i args...>?}>
 
 The client can save scripts into the scenario for later execution
 via the <i call> method or executive command.  This command's 
-subcommands are used to manage the scenario's collection of scripts.<p>
+subcommands are used to manage the scenario's collection of scripts.
 
 <deflist script>
 
 <defitem "script names" {<i obj> script names}>
 
-Returns a list of the names of the scripts in sequence order.<p>
+Returns a list of the names of the scripts in sequence order.
 
 <defitem "script list" {<i obj> script list}>
 
 Returns a human-readable list of the names of the defined executive
 scripts in sequence order, one per line.  The result is not a 
-proper Tcl list if any of the names contain whitespace.<p>
+proper Tcl list if any of the names contain whitespace.
 
 <defitem "script get" {<i obj> script get <i name>}>
 
-Returns the body of the named script.<p>
+Returns the body of the named script.
 
 <defitem "script exists" {<i obj> script exists <i name>}>
 
-Returns 1 if there's a script with the given name, and 0 otherwise.<p>
+Returns 1 if there's a script with the given name, and 0 otherwise.
 
 <defitem "script load" {<i obj> script load <i name>}>
 
 Loads the named script into the executive interpreter.  No special 
 error handling is done; it's assumed that the caller will handle any
-errors.<p>
+errors.
 
 <defitem "script save" {<i obj> script save <i name> ?<i body>? ?-silent?}>
 
 Saves a script called <i name> into the scenario.  If <i body> is given,
 it's the script's new body; if not, the script is given a body consisting
-of a single header comment.<p>
+of a single header comment.
 
 By default, the executive will send the <tt><tag Scripts></tt> event on 
 save; if the <tt -silent> option is given, it will not.  (See
-<xref athena(n)> for more about notifier events.)<p>
+<xref athena(n)> for more about notifier events.)
 
 <defitem "script auto" {<i obj> script auto <i name> ?<i flag>?}>
 
 Queries and sets the value of the named script's "auto" flag,
 which is false by default.  If true, the script will be loaded
-automatically on executive <i reset>.<p>
+automatically on executive <i reset>.
 
 <defitem "script import" {<i obj> script import <i filename>}>
 
 Imports a script from the named file into the scenario; a name is
-assigned automatically.<p>
+assigned automatically.
 
 <defitem "script rename" {<i obj> script rename <i oldName newName>}>
 
-Renames a script.<p>
+Renames a script.
 
 <defitem "script sequence" {<i obj> script sequence <i name priority>}>
 
 Scripts are saved in priority order; on <iref reset>, all scripts with
 their <iref script auto> flag set are <iref script load>ed in priority order.  This
 command is used to move the named script in the sequence.  The 
-<i priority> can be one of <b top>, <b raise>, <b lower>, or <b bottom>.<p>
+<i priority> can be one of <b top>, <b raise>, <b lower>, or <b bottom>.
 
 
 </deflist>
@@ -179,11 +179,11 @@ command is used to move the named script in the sequence.  The
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 </manpage>
 

@@ -12,52 +12,52 @@ namespace import ::athena::*
 <section DESCRIPTION>
 
 This man page describes a component of the <xref athena(n)> package
-that gives access to the scenario's model parameter database.<p>
+that gives access to the scenario's model parameter database.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> parm</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist commands>
 
 <defitem "docstring" {<i adb> parm docstring <i name>}>
-Returns the documentation string for the named parameter.<p>
+Returns the documentation string for the named parameter.
 
 <defitem "get" {<i adb> parm get <i name>}>
-Returns the current value of the named parameter.<p>
+Returns the current value of the named parameter.
 
 <defitem "getdefault" {<i adb> parm getdefault <i name>}>
-Returns the default value of the named parameter.<p>
+Returns the default value of the named parameter.
 
 <defitem "islocked" {<i adb> parm islocked <i name>}>
-Returns 1 if the named parameter is locked, and 0 otherwise.<p>
+Returns 1 if the named parameter is locked, and 0 otherwise.
 
 <defitem "list" {<i adb> parm list ?<i pattern>?}>
 Returns a list of the names of the parameters whose names match the 
 <i pattern>, with their values, in human-readable form.  Note that
-the result is also a valid Tcl dictionary.<p>
+the result is also a valid Tcl dictionary.
 
 <defitem "names" {<i adb> parm names ?<i pattern>?}>
 
 Returns a list of the names of the parameters whose names match
-the <i pattern>.<p>
+the <i pattern>.
 
 <defitem "nondefaults" {<i adb> parm nondefaults ?<i pattern>?}>
 Returns a list of the names of the parameters with non-default
 values.  If <i pattern> is given, it is a glob-style wildcard pattern;
-only names that match the pattern are included in the result.<p>
+only names that match the pattern are included in the result.
 
 <defitem "save" {<i adb> parm save <i filename>}>
 
-Saves the current set of parameter values to the named file.<p>
+Saves the current set of parameter values to the named file.
 
 <defitem "serialize" {<i adb> parm serialize ?<i stype>?}>
 
@@ -67,7 +67,7 @@ list is available in two forms depending on <i stype>. If <i stype> is
 <code>json</code> JSON is returned, if it is <code>huddle</code> a huddle
 string is returned (See the Tcllib documentation for more on huddle). If 
 <i stype> is not provided, JSON is returned by default. For each 
-parameter the following fields are returned:<p>
+parameter the following fields are returned:
 <ul>
 <li> <code>name</code> - the name of the parameter
 <li> <code>id</code> - the ID of the parameter
@@ -75,7 +75,7 @@ parameter the following fields are returned:<p>
 <li> <code>docstr</code> - the documentation string for the parameter.
 <li> <code>value</code> - the current value of the parameter or "".
 <li> <code>default</code> - the default value of the parameter or "".
-</ul><p>
+</ul>
 
 For top level parameters, the parent is the empty string. For parameters
 that have children, the current and default values are the empty string.
@@ -86,11 +86,11 @@ that have children, the current and default values are the empty string.
 
 When <i adb> is an instance of <xref athenadb(n)>, the
 <tt><i adb> parm</tt> subcommand is directly implemented by an
-instance of <xref parmdb(n)>.  See that man page for the subcommands.<p>
+instance of <xref parmdb(n)>.  See that man page for the subcommands.
 
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 
 </manpage>

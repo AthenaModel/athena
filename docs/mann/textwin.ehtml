@@ -15,11 +15,11 @@ The textwin(n) widget is a toplevel window that displays arbitrary
 text in a scrolling <xref mars:rotext(n)> widget.  Incremental
 search is supported.  The usual pattern is create a textwin(n) to hold
 a particular string, and forget about it; it will go away when the
-user decides to close it or exits the application.<p>
+user decides to close it or exits the application.
 
 <section COMMANDS>
 
-This module defines the following commands.<p>
+This module defines the following commands.
 
 <deflist commands>
 
@@ -27,17 +27,17 @@ This module defines the following commands.<p>
 
 Creates a new <iref textwin> widget named <i>pathName</i>, and
 returns <i>pathName</i>.  The widget supports the following
-options, in addition to those provided by the underlying frame widget:<p>
+options, in addition to those provided by the underlying frame widget:
 
 <deflist options>
 
 <defopt {-title <i>title</i>}>
 
-Sets the window title.<p>
+Sets the window title.
 
 <defopt {-text <i>text</i>}>
 
-Sets the text to be displayed in the window.<p>
+Sets the text to be displayed in the window.
 
 </deflist options>
 
@@ -45,18 +45,18 @@ Sets the text to be displayed in the window.<p>
 
 <section "INSTANCE COMMAND">
 
-textwin(n) widgets have the following subcommands:<p>
+textwin(n) widgets have the following subcommands:
 
 <deflist instance>
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
 Sets the value of one or more of the object's
-options.<p>
+options.
 
 </deflist instance>
 
@@ -70,7 +70,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

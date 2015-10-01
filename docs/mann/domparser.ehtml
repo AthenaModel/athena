@@ -13,74 +13,74 @@ namespace import ::projectlib::domparser
 
 domparser(n) parses XML returned as a result of a WMS GetCapabilities request from
 an Open GIS compliant WMS server.  The XML must comply with version 1.3.0 of 
-the WMS capabilities schema.<p>
+the WMS capabilities schema.
 
 
 <section "COMMANDS">
 
-domparser(n) provides the following commands:<p>
+domparser(n) provides the following commands:
 
 <deflist commands>
 
 <defitem "domparser doc" {domparser doc <i>xml</i>}>
 
 Given a complete piece of XML as a string, this method creates the Document 
-Object Model (DOM) tree upon which the other commands operate.<p>
+Object Model (DOM) tree upon which the other commands operate.
 
 <defitem "domparser root" {domparser root}>
 
 Returns the DOM root node. This node can then be used in other domparser(n)
 commands. If no DOM tree has been created with the <iref domparser doc>
-command, an error is thrown.<p>
+command, an error is thrown.
 
 <defitem "domparser nodebyname" {domparser nodebyname <i>tag</i>}>
 
 Returns the first DOM node that has the given tag. This node can then
 be used in other domparser(n) commands.  If no DOM tree has been created 
-with the <iref domparser doc> command, an error is thrown.<p>
+with the <iref domparser doc> command, an error is thrown.
 
 <defitem "domparser delete" {domparser delete}>
 
 Deletes the DOM tree created by the <iref domparser doc> command.  This
 should be called when there's no more use for the DOM tree.  If no DOM tree
-has been created, an error is thrown.<p>
+has been created, an error is thrown.
 
 <defitem "domparser cnodebyname" {domparser cnodebyname <i>node</i> <i>tag</i>}>
 
 This command searches for a single child node with the supplied tag anywhere 
 below the node passed in and returns it if found.  If no children are found, 
 the empty string is returned.  If more than one child is found, an error is 
-thrown.<p>
+thrown.
 
 <defitem "domparser ctextbyname" {domparser ctextbyname <i>node</i> <i>tag</i>}>
 
 This command searches for a single child node with the supplied tag anywhere
 below the node passed in and returns text enclosed by the tag.  If no 
 children are found, the empty string is returned.  If more that one child is
-found, an error is thrown.<p>
+found, an error is thrown.
 
 <defitem "domparser cnodesbyname" {domparser cnodesbyname <i>node</i> <i>tag</i>}>
 
 This command searches for all child nodes with the supplied tag anywhere 
 below the node passed in and returns them in a list.  If no children are found, 
-the empty string is returned.<p>
+the empty string is returned.
 
 
 <defitem "domparser attr" {domparser attr <i>node</i> <i>name</i>}>
 
 This command returns the attribute value of an attribute with the supplied
 name, provided it exists.  If the attribute does not exist, an error is 
-thrown.<p>
+thrown.
 
 </deflist commands>
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Dave Hanks<p>
+Dave Hanks
 
 <section HISTORY>
 
