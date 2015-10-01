@@ -12,20 +12,20 @@ entities to be used in the on-line help.  The text for each help page
 is defined in "Extended HTML" format, i.e., HTML text extended
 with embedded macros. The basic syntax and capabilities of
 Extended HTML are defined in the <xref ehtml(5)> man page.  This man
-page describes a number of extensions to the basic format.<p>
+page describes a number of extensions to the basic format.
 
 <xref helptool(1)> translates help(5) files into
 "<code>.helpdb</code>" help database files.  These can be queried
 directly using the <xref helpserver(n)> API, or browsed using
-<xref mybrowser(n)>.<p>
+<xref mybrowser(n)>.
 
 <xref helptool(1)> takes a single help(5) file as input; however,
 it's possible to break the input into multiple files by use of the
-<iref include> command.<p>
+<iref include> command.
 
 <section ENTITIES>
 
-A help(5) file can define two kinds of entities: pages and images.<p>
+A help(5) file can define two kinds of entities: pages and images.
 
 <subsection "Pages">
 
@@ -34,22 +34,22 @@ The path is the basis for the page's URL, as retrieved using
 <xref helpserver(n)>.  Pages exist in a hierarchy; the path of the
 topmost page is "/", with child pages extending the path in the usual
 way.  All page paths must be unique, and <xref helptool(1)> 
-might reserve some for its own use.<p>
+might reserve some for its own use.
 
 A <iref dictionary> is a page that represents an alphabetical index of its
 children, i.e., a main glossary page.  The children of a <iref dictionary>
-page are always presented in sorted order.<p>
+page are always presented in sorted order.
 
 An <iref alias> is pseudo-page that redirects to another page.  A term
 on a glossary page might be an alias to another page in the help file.
 Making it an alias means that it appears in both the glossary and its
-normal location.<p>
+normal location.
 
 <subsection "Images">
 
 Every image has a unique "slug", a short string that uniquely
 identifies it.  The slug is the basis for the image's path, which is
-used in URLs.  All image pages look this this:<p>
+used in URLs.  All image pages look this this:
 
 <pre>
     /image/<i>slug</i>
@@ -58,7 +58,7 @@ used in URLs.  All image pages look this this:<p>
 <section "COMMANDS">
 
 A help(5) file is a Tcl-formatted file.  It can contain Tcl comments,
-along with the following commands.<p>
+along with the following commands.
 
 <deflist commands>
 
@@ -67,21 +67,21 @@ along with the following commands.<p>
 Defines a new help page as an alias to the page whose path is
 <i>alias</i>.  The new page will have the given <i>parent</i>,
 <i>slug</i>, and <i>title</i>, just as for the <iref page>
-command.<p>
+command.
 
 The <i>alias</i> page must already exist, and must not itself be an
-alias to another page.<p>
+alias to another page.
 
 <defitem define {define <i symbol> ?<i value>}>
 
 Defines a compilation symbol called <i symbol>, optionally assigning
 it a <i value>.  Compilation symbols are used to support conditional
 compilation, which is useful if a <xref help(5)> file is used as a 
-source for more than one help database.<p>
+source for more than one help database.
 
 <defitem defined {defined <i symbol>}>
 
-Returns 1 if the named <i symbol> is defined, and 0 otherwise.<p>
+Returns 1 if the named <i symbol> is defined, and 0 otherwise.
 
 <defitem dictionary {dictionary <i>parent slug title text</i>}>
 
@@ -90,65 +90,65 @@ Defines a new dictionary page with the given <i parent>, <i slug>,
 <iref page>, except that its direct children are always sorted in
 alphabetical order.  Dictionaries are used for things like glossaries
 and other lists of sorted entities; they allow the child pages
-to be defined anywhere in the input, in any order.<p>
+to be defined anywhere in the input, in any order.
 
 A dictionary page's text will usually include 
-the <itag childlinks>.<p>
+the <itag childlinks>.
 
 <defitem getsym {getsym <i symbol>}>
 
 Returns the value of the named <i symbol>, or "" if the symbol was
-defined without a value.  It's an error if the symbol is undefined.<p>
+defined without a value.  It's an error if the symbol is undefined.
 
 <defitem image {image <i>slug title filename</i>}>
 
 Loads the image stored in <i>filename</i> into the help database
 with the given <i>slug</i> and <i>title</i>.  The image's path is
 then "<code>/image/<i>slug</i></code>".  Help pages may include the
-image using the normal HTML syntax:<p>
+image using the normal HTML syntax:
 
 <pre>    &lt;img src="/image/<i>slug</i>"&gt;</pre>
 
 Alternatively, the <iref image> macro creates the
-"<code>&lt;img&gt;</code>" take given the <i>slug</i>.<p>
+"<code>&lt;img&gt;</code>" take given the <i>slug</i>.
 
 The <i filename> may be a relative or absolute path; if relative, it is
 relative to the directory of the help(5) file containing the 
-<iref image> command.<p>
+<iref image> command.
 
 <defitem include {include <i>filename</i>}>
 
 Includes another help(5) file into this one.  The <i filename> may be
-absolute or relative to the directory of the including file.<p>
+absolute or relative to the directory of the including file.
 
 <defitem log {log <i text>}>
 
 Logs the <i text> to the console during compilation.  This command is
 primarily useful for debugging compilation issues.  It can also be
-used as a macro.<p>
+used as a macro.
 
 <defitem macro {macro <i>name arglist</i> ?<i>initbody</i>? <i>template</i>}>
 
 Defines a document-specific macro that can be used in the body of
 subsequent pages.  The <iref macro> is essentially a
 <xref template(n)> <xref template(n) template>; see that man page
-for details.<p>
+for details.
 
 The difference between macros and <iref proc>s is that macros can
-appear in page bodies, whereas <iref proc>s cannot.<p>
+appear in page bodies, whereas <iref proc>s cannot.
 
 <defitem macroproc {macroproc <i>name arglist</i> <i>body</i>}>
 
 Defines a document-specific macro that can be used in the body of
 subsequent pages.  The <iref macro> is essentially a
 standard proc that can appear in page text; it is called and 
-replaced with its return value.<p>
+replaced with its return value.
 
 The difference between macros and <iref proc>s is that macros can
-appear in page bodies, whereas <iref proc>s cannot.<p>
+appear in page bodies, whereas <iref proc>s cannot.
 
 The difference between macroprocs and normal macros is that macroprocs
-simply return their expanded value; they don't have a template string.<p>
+simply return their expanded value; they don't have a template string.
 
 <defitem object {object <i>name script</i>}>
 
@@ -156,40 +156,40 @@ Defines an object called <i>name</i> given an
 <xref "Object Definition"> script.  The <i>name</i> can be used as a
 command in <iref proc>s and as a macro in <iref page> bodies; it
 should be chosen so as not to conflict with other commands and macros. See
-<xref "Object Commands"> for the subcommands.<p>
+<xref "Object Commands"> for the subcommands.
 
 <defitem page {page <i>parent slug title text</i>}>
 
-Defines a new help page with the specified <i>title</i> and <i>text</i>.<p>
+Defines a new help page with the specified <i>title</i> and <i>text</i>.
 
 Every help page is identified by its <i>parent</i> path and a
 <i>slug</i>; these are joined with a "/" character to make the page's
 path.  The root page of the help tree has its <i>parent</i> and
 <i>slug</i> both "", giving it the path "/".  Subsequent pages will
 have a <i>parent</i> of "/" (or some lower-level page) and a non-empty
-<i>slug</i>.<p>
+<i>slug</i>.
 
 The <i>text</i> is the raw text of the page.  Once all pages have been
 read, the help compiler will expand all of the <xref ehtml(5)>
-macros in each page, producing the finished HTML for display.<p>
+macros in each page, producing the finished HTML for display.
 
 <defitem proc {proc <i>name arglist body</i>}>
 
 This command defines a procedure in the context of the help file,
 e.g.., a new command that can be used to define pages of specific
-types.<p>
+types.
 
 Procs should not be confused with <iref macro>s.  A macro is a
 special kind of command that can be embedded in a page body and
 expanded in place.  A proc is a command executed in the context of the
-help(5) file that can call other help(5) commands.<p>
+help(5) file that can call other help(5) commands.
 
 <defitem super {super <i>command...</i>}>
 
 This is a special command that allows procedures defined using
 <iref proc> to access project libraries and other commands
 defined in the main Tcl interpreter.  It should be used with
-caution.<p>
+caution.
 
 </deflist commands>
 
@@ -198,7 +198,7 @@ caution.<p>
 
 help(5) man pages may use the following macros, as well as all
 macros defined in the <xref ehtml(5)> man page.  You can also define
-document-specific macros using the <iref macro> command.<p>
+document-specific macros using the <iref macro> command.
 
 <deflist macros>
 
@@ -206,7 +206,7 @@ document-specific macros using the <iref macro> command.<p>
 
 Creates a bulleted list of links to the children of the named
 <i>parent</i> page.  If <i>parent</i> is omitted, the children of the
-current page are listed.<p>
+current page are listed.
 
 <defitem children {<tag children {?<i>parent</i>?}>}>
 
@@ -214,12 +214,12 @@ Returns a dictionary of paths and page titles for the children
 of the named <i>parent</i> page.  If <i>parent</i> is omitted, the 
 children of the current page are return.  This macro can be used
 in a macro's <i>initbody</i> to implement variants of the 
-<iref childlinks> macro.<p>
+<iref childlinks> macro.
 
 <defitem cref {<tag cref {<i>url</i> ?<i>text</i>?}>}>
 
 Creates a cross-reference link to another page, identified by
-<i>url</i>.  The <i>url</i> has this syntax:<p>
+<i>url</i>.  The <i>url</i> has this syntax:
 
 <pre>    <i>path</i>#<i>anchor</i></pre>
 
@@ -228,13 +228,13 @@ within the page, as defined using
 
 <pre>    &lt;a name="<i>anchor</i>"&gt;...&lt;/a&gt;</pre>
 
-The <i>url</i> can contain either or both of the components.<p>
+The <i>url</i> can contain either or both of the components.
 
 If <i>text</i> is given, it is used as the link text; otherwise, the
-title of the linked page is used.<p>
+title of the linked page is used.
 
 If the linked page is unknown (as will often be the case when writing a new
-help file) then the link text is prefixed with "TBD:".<p>
+help file) then the link text is prefixed with "TBD:".
 
 <defitem enumdoc {<tag enumdoc {<i>enum</i>}>}>
 
@@ -243,29 +243,29 @@ HTML documentation string; however, the produced HTML is ugly when
 rendered by <xref htmlviewer(n)>.  
 appropriate for Athena use.  This macro provides an alternative
 documentation string, given an <xref enum(n)> object called
-<i>enum</i>.<p>
+<i>enum</i>.
 
 <defitem ifdef {<tag ifdef {<i symbol body>}>}>
 
 Returns its <i body> if the named <i symbol> is defined, expanding any
-macros in the <i body>.<p>
+macros in the <i body>.
 
 <defitem ifndef {<tag ifndef {<i symbol body>}>}>
 
 Returns its <i body> if the named <i symbol> is <b not> defined, 
-expanding any macros in the <i body>.<p>
+expanding any macros in the <i body>.
 
 <defitem ifsym {<tag ifsym {<i symbol value body>}>}>
 
 Returns its <i body> if the named <i symbol> has the given <i value>,
-expanding any macros in the <i body>.<p>
+expanding any macros in the <i body>.
 
 <defitem img {<tag img {<i>slug</i> ?<i>align</i>?}>}>
 
 Inserts an "<code>&lt;img&gt;</code>" tag for the image with the given
 <i>slug</i>.  If <i>align</i> is included, then it must be one of
 <b>right</b>, <b>left</b>, or <b>center</b>; the image's horizontal
-alignment will be as indicated.<p>
+alignment will be as indicated.
 
 <defitem itemlist {<tag itemlist>}>
 <defitem item {<tag item {<i>label</i>}>}>
@@ -273,18 +273,18 @@ alignment will be as indicated.<p>
 <defitem /itemlist {<tag /itemlist>}>
 
 These macros are used together to produce a two-column borderless 
-table of item labels and descriptions.  There are no column headers.<p>
+table of item labels and descriptions.  There are no column headers.
 
 Rows are added using the
 <itag item>...<itag /item> tags; the value of the
 <i>label</i> argument to <itag item> appears in boldface
-in the first column, and the text between the tags appears in the second.<p>
+in the first column, and the text between the tags appears in the second.
 
 <defitem pageinfo {<tag pageinfo {<i>field</i>}>}>
 
 This command returns information about the current page.  The
 <i>field</i> is one of <b>path</b>, <b>title</b>, <b>parent</b>, or
-<b>text</b>.<p>
+<b>text</b>.
 
 <defitem optionlist {<tag optionlist>}>
 <defitem option {<tag option {<i>name</i>}>}>
@@ -295,9 +295,9 @@ These macros are used together to produce a table of command option names
 and descriptions.  Each option has a name, e.g., "<code>-myoption</code>",
 plus a description, which is <xref ehtml(5)> input contained between
 <itag option> and
-<itag /option>.<p>
+<itag /option>.
 
-The column headers are "Option" and "Description".<p>
+The column headers are "Option" and "Description".
 
 <defitem parmlist {<tag parmlist {?<i>h1</i>? ?<i>h2</i>?}>}>
 <defitem parm {<tag parm {<i>parm field</i>}>}>
@@ -308,26 +308,26 @@ These macros are used together to produce a table of order parameter
 definitions.  Each parameter has a name as used in the code,
 <i>parm</i>, plus a label used in dialog boxes, <i>field</i>, plus a
 description, which is <xref ehtml(5)> input contained between
-<itag parm></code> and
-<itag /parm></code>.<p>
+<itag parm> and
+<itag /parm>.
 
 The column headers default to "Field" and
 "Description", but can be changed using the optional <i>h1</i> and
-<i>h2</i> parameters.<p>
+<i>h2</i> parameters.
 
 <defitem sym {<tag sym {<i symbol>}>}>
 
 Returns the value of the named <i symbol>; it's an error if the
-symbol is undefined.<p>
+symbol is undefined.
 
 <defitem symdef {<tag symdef {<i symbol>}>}>
 
-Returns 1 if the named <i symbol> is defined, and 0 otherwise.<p>
+Returns 1 if the named <i symbol> is defined, and 0 otherwise.
 
 <defitem version {<tag version>}>
 
 Returns the version number for the current project, as passed to
-the <xref helptool(1)> help compiler.<p>
+the <xref helptool(1)> help compiler.
 
 
 </deflist>
@@ -340,15 +340,15 @@ record structure, an order, etc.  The <iref object> command creates
 new objects; these objects can be used as macros within <iref page> bodies,
 and as normal commands with <iref proc>s.  Each object has
 subcommands for querying object data and including it in help
-pages.<p>
+pages.
 
 Note that just defining an object doesn't produce any help page
 output; the object must explicitly be used in the definition of
-pages.<p>
+pages.
 
 <subsection "Object Definition">
 
-Objects are defined by a script containing the following commands:<p>
+Objects are defined by a script containing the following commands:
 
 <deflist odef>
 
@@ -356,33 +356,33 @@ Objects are defined by a script containing the following commands:<p>
 
 The <iref object>'s name is a Tcl command, not an English word.
 This command is used to define the English word used in the help text
-for this kind of object.<p>
+for this kind of object.
 
 <defitem odef_overview {overview <i>text</i>}>
 
 This command provides a general overall description of the object.
 The <i>text</i> is <xref ehtml(5)>, and may contain
-<xref MACROS>.<p>
+<xref MACROS>.
 
 <defitem odef_include {include <i>object</i> ?<i>options</i>?}>
 
 This command includes attribute definitions from another object.
 Included attributes have the same labels and documentation text as they do
 in the object from which they are taken, but lose their tags so that
-the including object can tag them however is desired.<p>
+the including object can tag them however is desired.
 
 <deflist options>
 
 <defopt {-attrs <i>names</i>}>
 
 If given, <i>names</i> is a list of the attribute names to include.
-By default, all attributes are included.<p>.
+By default, all attributes are included..
 
 <defopt {-tags <i>tags</i>}>
 
 Specifies a list of one-word tags to attach to this attribute.  Tags
 are used to filter the output produced by some of the
-<xref "Object Commands">.<p>
+<xref "Object Commands">.
 
 </deflist options>
 
@@ -394,7 +394,7 @@ has a <i>name</i>; this is usually the attribute's name in the program
 code, e.g., the name of a column in an SQL table.  The <i>label</i> is
 the human-readable version of the name.  The <i>text</i> is
 <xref ehtml(5)> text that documents the attribute; it may contain
-<xref MACROS>.  The options are as follows:<p>
+<xref MACROS>.  The options are as follows:
 
 <deflist options>
 
@@ -402,7 +402,7 @@ the human-readable version of the name.  The <i>text</i> is
 
 Specifies a list of one-word tags to attach to this attribute.  Tags
 are used to filter the output produced by some of the
-<xref "Object Commands">.<p>
+<xref "Object Commands">.
 
 </deflist options>
 
@@ -412,63 +412,63 @@ are used to filter the output produced by some of the
 
 Each object defined using the <iref object> command has the
 following subcommands.  These may be used in <iref proc>s
-or in <iref page> or <iref macro> bodies.<p>
+or in <iref page> or <iref macro> bodies.
 
 <deflist osub>
 
 <defitem osub_noun {<i>object</i> noun}>
 
-Returns the object's noun.<p>
+Returns the object's noun.
 
 <defitem osub_overview {<i>object</i> overview}>
 
-Returns the object's overview text, first expanding any macros.<p>
+Returns the object's overview text, first expanding any macros.
 
 <defitem {osub_attr names} {<i>object</i> attr names}>
 
 Returns a list of the object's attribute names, in order of
-definition.<p>
+definition.
 
 <defitem {osub_attr data} {<i>object</i> attr data <i>name</i>}>
 
 Returns a two-item list of the named attribute's label and
-documentation text strings.  No macros are expanded.<p>
+documentation text strings.  No macros are expanded.
 
 <defitem {osub_attr label} {<i>object</i> attr label <i>name</i>}>
 
-Returns the label text for the named attributed.<p>
+Returns the label text for the named attributed.
 
 <defitem {osub_attr text} {<i>object</i> attr text <i>name</i>}>
 
 Returns the named attribute's documentation text, first expanding
-any macros.<p>
+any macros.
 
 <defitem osub_parm {<i>object</i> parm <i>attr</i> ?<i>options...</i>?}>
 
 Returns an expanded <tag parm}>...<tag /parm}> entry
 for a single attribute, given the options.  This is usually done to
-change the label text for the attribute.<p>
+change the label text for the attribute.
 
 <deflist options>
 
 <defopt {-label <i>label</i>}>
 
-Provides an alternate label string.<p>
+Provides an alternate label string.
 
 <defopt {-required}>
 
 The attribute will be marked as being
-<b>Required.</b><p>
+<b>Required.</b>
 
 <defopt {-optional}>
 
 The attribute will be marked as being
-<b>Optional.</b><p>
+<b>Optional.</b>
 
 <defopt {-display}>
 
 The attribute will be marked as being
-<b>Display Only.</b><p>
+<b>Display Only.</b>
 
 
 </deflist options>
@@ -480,34 +480,34 @@ Returns a sequence of one or more expanded
 <tag parm}>...<tag /parm}> entries for inclusion in
 a <iref parmlist>.  By default, the result
 includes an entry each of the object's attributes.
-The options filter and tailor the results.<p>
+The options filter and tailor the results.
 
 <deflist options>
 
 <defopt {-attrs <i>names</i>}>
 
-Lists the names of the attribute or attributes to include in the output.<p>
+Lists the names of the attribute or attributes to include in the output.
 
 <defopt {-tags <i>tags</i>}>
 
 Only attributes with at least one of the listed <i>tags</i> will be
 included in the output.  This option is ignored if the
-<code>-attrs</code> option has a non-empty value.<p>
+<code>-attrs</code> option has a non-empty value.
 
 <defopt {-required}>
 
 All attributes in the output will be marked as being
-<b>Required.</b><p>
+<b>Required.</b>
 
 <defopt {-optional}>
 
 All attributes in the output will be marked as being
-<b>Optional.</b><p>
+<b>Optional.</b>
 
 <defopt {-display}>
 
 All attributes in the output will be marked as being
-<b>Display Only.</b><p>
+<b>Display Only.</b>
 
 </deflist options>
 
@@ -516,45 +516,45 @@ All attributes in the output will be marked as being
 Returns a complete <iref parmlist>.  By default, the result
 includes an <iref parm> macro for each of the object's attributes.
 The options, which are the same as for the <iref parms> subcommand,
-filter and tailor the results.<p>
+filter and tailor the results.
 
 </deflist osub>
 
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
 <changelog>
 
 <change 2015-09-03 Added whd>
-Made changes to support multiple help documents with shared pages:<p>
+Made changes to support multiple help documents with shared pages:
 
 <ul>
 <li> Renamed the <tag image> macro to <itag img>, to match the underlying
      HTML tag and to prevent a name collision with the <iref image>
-     command.<p>
+     command.
 
 <li> Added the <iref dictionary> page type, to allow (e.g.) glossary
      entries to be defined out of order.  This allows glossary entries
-     from multiple sources to be merged transparently.<p>
+     from multiple sources to be merged transparently.
 <li>
 </ul>
 </change>
 
 <change 2013-12-11 Added whd>
-Added changes to support objects with configure/cget commands:<p>
+Added changes to support objects with configure/cget commands:
 
 <ul>
     <li> Added the <iref optionlist>, <iref /optionlist>,
         <iref option>, and <iref /option> macros, for producing
-        lists of command or object options.<p>
+        lists of command or object options.
 
     <li> The <iref object> <iref parms> and <iref parm> 
          commands now take an <code>-asoption</code> option; this
-         produces an <iref option>...<iref /option> pair.<p>
+         produces an <iref option>...<iref /option> pair.
 
 </ul>
 

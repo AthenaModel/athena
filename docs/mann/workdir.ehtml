@@ -25,31 +25,31 @@ or as
 depending on whether <iref workdir init> is called with an optional
 directory name as an argument. <i>NNNNNNNN</i> is a random 8-digit number 
 generated at runtime.  This directory is referred to as the working directory.  
-Within that, it then creates the following subdirectories:<p>
+Within that, it then creates the following subdirectories:
 
 <deflist>
   <def {<tt><i working>/log</tt>}>
   For log files.  Individual apps will put their logs in
        subdirectories of this directory, e.g., <xref athena_sim(1)>
-       will put its logs in<p>
+       will put its logs in
 
        <tt><i working>/log/sim/</tt>
 
   <def {<tt><i working>/rdb</tt>}>
   <xref athenawb(1)> will put its run-time database (RDB) in
-       this directory.<p>
+       this directory.
 </deflist>
 
 <section "COMMANDS">
 
-This module defines the following commands:<p>
+This module defines the following commands:
 
 <deflist commands>
 
 <defitem "workdir cleanup" {workdir cleanup}>
 
 Deletes the current working directory and its contents, and "uninitializes"
-workdir(n).<p>
+workdir(n).
 
 <defitem "workdir init" {workdir init ?<i>scratchdir</i>?}>
 
@@ -58,7 +58,7 @@ full path to the working directory, and creates the standard
 subdirectories.  If called with <i>scratchdir</i> it sets the root of
 the working directory to that, otherwise it chooses an OS dependent 
 temporary directory as the root of the working directory.  It returns the 
-full path to the working directory.<p>
+full path to the working directory.
 
 <defitem "workdir join" {workdir join ?<i>arg arg...</i>?}>
 
@@ -66,7 +66,7 @@ Called with no arguments, returns the name of the working directory.
 Otherwise, returns the path name resulting from joining the
 arguments to the working directory.  For example, the
 following command returns the absolute path of a file called
-"<code>working.rdb</code>" in the RDB directory.<p>
+"<code>working.rdb</code>" in the RDB directory.
 
 <pre>
 set rdbfile [workdir join rdb working.rdb]
@@ -76,8 +76,8 @@ set rdbfile [workdir join rdb working.rdb]
 
 <section AUTHOR>
 
-Will Duquette<p>
-Dave Hanks<p>
+Will Duquette
+Dave Hanks
 
 <section HISTORY>
 

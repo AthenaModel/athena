@@ -17,54 +17,54 @@ is a Complex User-defined Role-based Situation or Event, i.e., a magic
 attitude driver used to model events and situations not included in
 Athena's normal rule base.  An inject is a part of a CURSE that is 
 responsible for updating a particular attitude curve or set of curves
-in a particular way.<p>
+in a particular way.
 
-An inject is identified by a {<i curse_id> <i inject_num>} pair.<p>
+An inject is identified by a {<i curse_id> <i inject_num>} pair.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> inject</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist curse>
 
 <defitem "exists" {<i adb> inject exists <i id>}>
 
 Returns 1 if there is an inject with the given <i id>, where
-<i id> is a {<i curse_id> <i inject_num>} pair, and 0 otherwise.<p>
+<i id> is a {<i curse_id> <i inject_num>} pair, and 0 otherwise.
 
 <defitem "get" {<i adb> inject get <i id> ?<i parm>?}>
 
 By default, returns a dictionary of information about the inject
 with the given <i id>.  If <i parm> is given, returns
-the value of the <i parm>.<p>
+the value of the <i parm>.
 
 <defitem "typenames" {<i adb> inject typenames}>
 There are several distinct inject types; this returns a list of
-the type names.<p>
+the type names.
 
 <defitem "validate" {<i adb> inject validate <i id>}>
 Validates ID <i id>, returning the <i id> if valid and throwing
-<b INVALID> otherwise.<p>
+<b INVALID> otherwise.
 
 </deflist curse>
 
 <subsection "Private Subcommands">
 
 The <tt><i adb> inject</tt> command takes the following subcommands, where
-where <i adb> is an instance of <xref athenadb(n)>.<p>
+where <i adb> is an instance of <xref athenadb(n)>.
 
-TBD: None yet documented.<p>
+TBD: None yet documented.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 
 </manpage>

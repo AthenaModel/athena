@@ -12,7 +12,7 @@ namespace import ::projectlib::*
 <section DESCRIPTION>
 
 This module defines the <iref urlquery> command for manipulating
-URL query parameter strings.<p>
+URL query parameter strings.
 
 <section COMMANDS>
 
@@ -20,37 +20,37 @@ URL query parameter strings.<p>
 
 <defitem urlquery {urlquery <i>subcommand</i> ?<i>args...</i>?}>
 
-All urlquery(n) commands are subcommands of <iref urlquery>.<p>
+All urlquery(n) commands are subcommands of <iref urlquery>.
 
 <deflist urlquery>
 
 <defitem fromdict {urlquery fromdict <i>dict</i>}>
 
 Converts a parameter dictionary into a form usables as a URL query
-string.  E.g., it converts the dictionary<p>
+string.  E.g., it converts the dictionary
 
 <pre>
     first John last Doe
 </pre>
 
-into the string<p>
+into the string
 
-<pre>    first=John+last=Doe</pre><p>
+<pre>    first=John+last=Doe</pre>
 
 If a parameter's value is the empty string, the "=" portion is left
-out for that parameter.<p>
+out for that parameter.
 
 Parameters and their values may not contain white space, "+", or
-"=".<p>
+"=".
 
 <defitem todict {urlquery todict <i>query</i>}>
 
 Converts a URL query string into a parameter dictionary.  E.g., it
-converts the string<p>
+converts the string
 
-<pre>    first=John+last=Doe</pre><p>
+<pre>    first=John+last=Doe</pre>
 
-into the dictionary<p>
+into the dictionary
 
 <pre>
     first John last Doe
@@ -59,21 +59,21 @@ into the dictionary<p>
 If a parameter has no "=" value, it goes into the dictionary with an
 empty value.  If a parameter has more than one "=", e.g.,
 
-<pre>    first=John=Doe</pre><p>
+<pre>    first=John=Doe</pre>
 
-then the second and any subsequent "=" values are ignored.<p>
+then the second and any subsequent "=" values are ignored.
 
 <defitem get {urlquery get <i>query parmlist</i>}>
 
 Converts a URL query string into a parameter dictionary with the full
 canonical list of parameters, i.e., all parameters in <i>parmlist</i> are
 included and parameters in the <i>query</i> but not in <i>parmlist</i> are 
-omitted.<p>
+omitted.
 
 The <i>parmlist</i> can be a simple list of parameter names; but as with the
 <xref tcl:proc(n)> command each entry can be a pair, 
 {<i>name</i> <i>default</i>}.  If parameter <i>name</i> is missing from the
-query, it will be assigned the given <i>default</i>.<p>
+query, it will be assigned the given <i>default</i>.
 
 </deflist urlquery>
 </deflist commands>
@@ -88,7 +88,7 @@ To use this package in a Tcl script, the environment variable
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

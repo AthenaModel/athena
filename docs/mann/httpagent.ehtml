@@ -16,7 +16,7 @@ server.  An instance of httpagent(n) is an object that clients can use
 to access data from web servers across the network using either the
 "http" or "https" protocols.  As such, httpagent(n) is a wrapper 
 around Tcl's built-in <xref tcl:http(n)> package; it provides the 
-following benefits:<p>
+following benefits:
 
 <ul>
     <li> All non-successful results are reported using a single 
@@ -25,33 +25,33 @@ following benefits:<p>
     <li> Support for "https" is enabled automatically.
     <li> An application can create multiple instances, each with its
          own http(n) configuration.
-</ul><p>
+</ul>
 
-At present, only "GET" requests are supported.<p>
+At present, only "GET" requests are supported.
 
 <subsection "Agent States">
 
 At any time, the agent is in one of the following states, as indicated by
-the <iref state> method:<p>
+the <iref state> method:
 
 <deflist states>
 <defopt IDLE>
 No requests have yet been sent, or the agent has been
-<iref reset>; there is no status data to retrieve.<p>
+<iref reset>; there is no status data to retrieve.
 
 <defopt WAITING>
-A request is pending.<p>
+A request is pending.
 
 <defopt TIMEOUT>
-The most recent request timed out.<p>
+The most recent request timed out.
 
 <defopt ERROR>
 The most recent request completed with an error.  See 
-<iref status> for nature of the error, and <iref error> for details.<p>
+<iref status> for nature of the error, and <iref error> for details.
 
 <defopt OK>
 The request completed successfully, and data was retrieved.  See 
-<iref data> for the data and <iref meta> for the HTTP headers.<p>
+<iref data> for the data and <iref meta> for the HTTP headers.
 
 </deflist>
 
@@ -64,9 +64,9 @@ The request completed successfully, and data was retrieved.  See
 Creates a new httpagent(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref httpagent> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
-The httpagent(n) may be created with the following options:<p>
+The httpagent(n) may be created with the following options:
 
 <deflist options>
 
@@ -74,18 +74,18 @@ The httpagent(n) may be created with the following options:<p>
 
 All HTTP requests are handled asynchronously.  This command is called
 when the current request is complete.  It can be overridden by the
-<iref get> method's <b>-command</b> option.<p>
+<iref get> method's <b>-command</b> option.
 
 <defopt {-contenttypes <i>list</i>}>
 
 Specifies the list of content types acceptable to this client, e.g.,
 <b>text/html</b>.  This list is used to configure <xref tcl:http(n)>
-prior to each request.<p>
+prior to each request.
 
 <defopt {-timeout <i>msec</i>}>
 
 Specifies the length of the network timeout for all HTTP requests,
-in milliseconds. The default is 10,000 milliseconds.<p>
+in milliseconds. The default is 10,000 milliseconds.
 
 </deflist options>
 
@@ -93,7 +93,7 @@ in milliseconds. The default is 10,000 milliseconds.<p>
 
 <section "INSTANCE COMMAND">
 
-Each instance of httpagent(n) has the following subcommands:<p>
+Each instance of httpagent(n) has the following subcommands:
 
 <deflist instance>
 
@@ -102,68 +102,68 @@ Each instance of httpagent(n) has the following subcommands:<p>
 Returns the data associated with the most recent request, or "" if none.
 This is usually useful only if the <iref state> is <b>OK</b>; however,
 it will also be populated for certain error conditions (e.g., 404
-errors).<p>
+errors).
 
 <defitem error {<i>object</i> error}>
 
 When the <iref state> is <b>ERROR</b>, returns details about the 
-specific error.<p>
+specific error.
 
 <defitem get {<i>object</i> get <i>url</i> ?<i>option value...</i>?}>
 
-Requests the <i>url</i>'s content.  The following options may be used:<p>
+Requests the <i>url</i>'s content.  The following options may be used:
 
 <deflist options>
 <defopt {-command <i>cmd</i>}>
 
 Specifies the command to call when the request is complete, overriding
 the object's <b>-command</b> option. This method will throw an error
-if neither option is set.<p>
+if neither option is set.
 
 <defopt {-query <i>dict</i>}>
 Specifies a dictionary of query keywords and values.  The query will
-be properly formatted and appended to the URL.<p>
+be properly formatted and appended to the URL.
 
 </deflist options>
 
 All requests are asynchronous; when the request is complete, the
 <b>-command</b> callback will be called, and can query the agent's
-<iref state> for the result.<p>
+<iref state> for the result.
 
 <defitem httpinfo {<i>object</i> httpinfo}>
 
 Returns a dictionary of low-level information about the most recent
 request; the keywords are <b>status</b>, <b>code</b>, <b>ncode</b>,
 and <b>error</b>, corresponding to the equivalent 
-<code>http::*</code> commands in <xref tcl:http(n)>.<p>
+<code>http::*</code> commands in <xref tcl:http(n)>.
 
 <defitem meta {<i>object</i> meta ?<i>name</i>?}>
 
 Called with no argument, returns the dictionary of HTTP headers 
 received for the most recent request, or the empty dictionary if
-the most recent request failed.<p>
+the most recent request failed.
 
 If <i>name</i> is given, returns the value of the named header,
-or "" if the header was not present.<p>
+or "" if the header was not present.
 
 <defitem reset {<i>object</i> reset}>
 
 Cancels any pending request and cleans up the result of any previous
-request, returning the <iref state> to <b>IDLE</b>.<p>
+request, returning the <iref state> to <b>IDLE</b>.
 
 <defitem state {<i>object</i> state}>
 
-Returns the current state of the agent; see <xref "Agent States">.<p>
+Returns the current state of the agent; see <xref "Agent States">.
 
 <defitem status {<i>object</i> status}>
 
 Returns the current status of the agent: a human-readable string that
-corresponds to the <iref state>, but often with more information.<p>
+corresponds to the <iref state>, but often with more information.
 
 <defitem token {<i>object</i> token}>
 
 Returns the <xref tcl:http(n)> "token" for the most recent request, or
-"" if none.  This call should be used only as an aid to debugging.<p>
+"" if none.  This call should be used only as an aid to debugging.
 
 <defitem url {<i>object</i> url}>
 
@@ -182,7 +182,7 @@ Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

@@ -21,7 +21,7 @@
 }>
 
 <b NOTE:> This is a preliminary specification; the Arachne executable
-is an incomplete prototype.<p>
+is an incomplete prototype.
 
 <hrule>
 
@@ -40,13 +40,13 @@ section.
 </change>
 
 <change 6/2/2015 Update will>
-Updates on the RESTful API, prior to June engineering delivery.<p>
+Updates on the RESTful API, prior to June engineering delivery.
 </change>
 
 <change 4/10/2015 Update will>
 Added details about the RESTful API.  Also, Arachne is no longer 
 intended for non-server batch runs; <xref athena(1)>'s "build" subcommand
-handles that use-case quite nicely.<p>
+handles that use-case quite nicely.
 </change>
 
 <change 4/2/2015 Update will>
@@ -73,20 +73,20 @@ Preliminary draft
 
 Arachne is a version of Athena intended to run as part of a web back-end in
 the cloud.  It includes a web server that provides a RESTful interface
-to Athena's run-time data.<p>
+to Athena's run-time data.
 
 The purpose of this document is to specify Arachne's command-line and
 RESTful interface as an aid to web developers using Arachne in 
-production.<p>
+production.
 
 <b NOTE:> Arachne is still in development; therefore this document also 
 serves to capture the preliminary design and to record decisions made in
-discussions with the Web Athena developers.<p>
+discussions with the Web Athena developers.
 
 <section overview.cloud "Cloud Assumptions">
 
 Arachne makes the following assumptions about its run-time environment when
-run as part of the "Web Athena" back end:<p>
+run as part of the "Web Athena" back end:
 
 <ul>
 <li> Arachne runs on a cloud node, with an instance of Arachne for each
@@ -109,24 +109,24 @@ run as part of the "Web Athena" back end:<p>
 
 In Greek myth, Arachne was so skilled at spinning thread that she beat
 Athena in a fair contest.  In retaliation, Athena turned Arachne into a 
-spider.  Arachne is therefore Athena's web-spinner.<p>
+spider.  Arachne is therefore Athena's web-spinner.
 
 <section cmdline "Command Line Interface">
 
-<b This is a preliminary specification>.<p>
+<b This is a preliminary specification>.
 
 Arachne is installed as a Linux executable called <b><tt arachne></b>.
-It runs as a server with a RESTful web interface.<p>
+It runs as a server with a RESTful web interface.
 
 To run Arachne simply invoke it, optionally specifying the HTTP 
 <tt -port> and other options.  Arachne will load 
 any <tt -scenario> and execute any <tt -script> for its "base" case, 
-and then wait for instructions via HTTP.<p>
+and then wait for instructions via HTTP.
 
 To invoke Arache without starting the HTTP server, pass the 
-<tt -test> option.  (This is provided as an aid to testing.)<p>
+<tt -test> option.  (This is provided as an aid to testing.)
 
-Arachne takes the following command-line options:<p>
+Arachne takes the following command-line options:
 
 <deflist options>
 
@@ -134,12 +134,12 @@ Arachne takes the following command-line options:<p>
 
 Specifies a comparison parameter database to be used when output and causality
 analysis is done.  This only needs to be specified if the use of non-defaulted
-comparison parameter values is desired.<p>
+comparison parameter values is desired.
 
 <def {-heartbeat <i seconds>}>
 
 <b Not Yet Implemented.>  Specifies the number of seconds between 
-heartbeats.<p>
+heartbeats.
 
 <def {-heartbeatfile <i filepath>}>
 
@@ -147,14 +147,14 @@ heartbeats.<p>
 requests, it will write the 
 current time in seconds to the named <i filepath> approximately every 
 <tt -heartbeat> seconds.  This allows the enclosing web application to be 
-sure that it is alive.<p>
+sure that it is alive.
 
 <def {-heartbeaturl <i url>}>
 
 <b Not Yet Implemented.>  If given, and if Arachne is listening for 
 HTTP requests, it will GET the
 specified URL approximately every <tt -heartbeat> seconds.  This allows the 
-enclosing web application to be sure that it is alive.<p>
+enclosing web application to be sure that it is alive.
 
 <def {-port <i portid>}>
 
@@ -162,23 +162,23 @@ Specifies the port ID at which Arachne should listen for HTTP requests.
 Defaults to port 8080.
 <b TBD:> Ultimately, Arachne will accept only HTTPS request; at present,
 we are waiting on a bug fix in the Tcl TLS package, so we listen for 
-normal HTTP requests.<p>
+normal HTTP requests.
 
 <def {-scenariodir <i dirpath>}>
 Specifies the name of a directory from which Arachne will import and 
 export Athena scenario (.adb) files and scenario script (.tcl) files at 
 run-time.  The larger application can stage and retrieve files using
-this directory.<p>
+this directory.
 
 <def {-scenario <i filename>}>
 
 Specifies the path to an Athena scenario (.adb) file to load at start-up
 as Arachne's base case, "<tt case00>".  It is usual to begin with a base 
 scenario and then run excursions from it via the RESTful API.  The 
-<i filename> must be a bare filename in the <tt -scenariodir>.<p>
+<i filename> must be a bare filename in the <tt -scenariodir>.
 
 If no <tt -scenario> is specified, then Arachne creates an empty scenario
-for "<tt case00>".<p>
+for "<tt case00>".
 
 <def {-scratchdir <i dirpath>}>
 
@@ -186,19 +186,19 @@ Specifies the name of a directory to use for temporary files.  This directory
 should be somewhere the user has write access.  The directory need not exist,
 it will be created if it does not.  <b>NOTE: If this directory does exist, the
 contents of it will be deleted when the application is launched.  Use great
-care when specifying this directory.</b><p>
+care when specifying this directory.</b>
 
 <def {-script <i filepath>}>
 
 Specifies the path to an Athena script (.tcl) file to load into the
 base case at start-up. Any <tt -scenario> is loaded into "<tt case00>" 
-first.<p> 
+first. 
 
 <def {-test}>
 
 If this option is specified, Arachne will halt immediately after loading the
 <tt -scenario> and executing the <tt -script>.  This is provided as an
-aid to testing.<p>
+aid to testing.
 
 </deflist options>
 
@@ -208,7 +208,7 @@ Arachne allows the client to work with multiple scenarios at one time.
 The expected use case is that one scenario will be the "base case" and
 the others will be excursions from that base case; but while Arachne
 facilitates this pattern it does not require it, and the loaded scenarios
-can be entirely unrelated.<p>
+can be entirely unrelated.
 
 <section scenario.caseid "Scenario Case IDs">
 
@@ -216,10 +216,10 @@ Each scenario has a symbolic "case ID" and a human-readable "long name".
 The case IDs are strings matching the pattern "<tt>case<i nn></tt>", 
 where <i nn> is a number from "00" to "99" (or larger).  
 Case IDs are assigned automatically as scenarios are created, cloned, or
-imported.  The long name may be set to any desired string.<p>
+imported.  The long name may be set to any desired string.
 
 The base case would typically be scenario <tt case00>, which is created
-automatically when Arachne is invoked.<p>
+automatically when Arachne is invoked.
 
 <section scenario.staging "Scenario Staging">
 
@@ -227,37 +227,37 @@ Arachne does not know the details of how users' scenario files will be
 stored or accessed in the cloud.  Consequently, all scenario data is
 staged through Arachne's "scenario directory".  The scenario directory
 may contain Athena scenarios as scenario files (".adb") or as 
-executive script files (".tcl").<p>
+executive script files (".tcl").
 
 Scenarios to be used in Arachne should be copied to the scenario directory
 and then <b imported> into a running instance of Arachne using the
 <tt /scenario/import.{json,html}> URL.  On import, the client can specify
 the scenario's long name.  The newly imported scenario will have a new
-case ID, or alternatively, it can be imported over an existing case ID.<p>
+case ID, or alternatively, it can be imported over an existing case ID.
 
 Similarly, a scenario to be saved to the closed must be <b exported> to the 
 scenario directory using the <tt /scenario/export.{json,html}> URL.  The
 client specifies the file name to use, and is then responsible for
-storing the file in the cloud.<p>
+storing the file in the cloud.
 
 <section scenario.create "Creating Scenarios">
 
 In addition to importing scenarios, they can also be created within 
 Arachne.  The client can create a <b new> empty scenario using
 <tt /scenario/new.{json,html}>, and can <b clone> an existing scenario
-using <tt /scenario/clone.{json,html}>.<p>
+using <tt /scenario/clone.{json,html}>.
 
 <section scenario.modify "Modifying Scenarios">
 
 Once a scenario has been created, cloned, or imported it can be modified
 by sending it orders using <tt>/scenario/<i case>/order.{html,json}</tt>
-or executive scripts using <tt>/scenario/<i case>/script.{html,json}</tt>.<p>
+or executive scripts using <tt>/scenario/<i case>/script.{html,json}</tt>.
 
 <section scenario.other "Other Operations">
 
 Finally, scenarios can be sanity checked, locked, advanced in time, 
 queried, and unlocked using the remaining 
-<tt /scenario> domain URLs; see <xref restapi.scenario>.<p>
+<tt /scenario> domain URLs; see <xref restapi.scenario>.
 
 
 <section restapi "RESTful API">
@@ -266,14 +266,14 @@ queried, and unlocked using the remaining
 
 Arachne's RESTful HTTP interface is accessed at
 <tt>http://127.0.0.1:<i portid>/</tt>.  The <i portid> is set using
-the <tt -port> command line option, and defaults to port 8080.<p>
+the <tt -port> command line option, and defaults to port 8080.
 
 The HTTP interface can only be accessed from the local host, i.e.,
 by the wrapper software, because Arachne doesn't support any kind
-of user authentication.<p>
+of user authentication.
 
 The set of URLs and HTTP operations supported by Arachne is still 
-<b TBD>, but will certainly allow all of the following:<p>
+<b TBD>, but will certainly allow all of the following:
 
 <ul>
 <li> Controlling scenario execution.
@@ -288,13 +288,13 @@ The set of URLs and HTTP operations supported by Arachne is still
 </ul> 
 
 Normal requests should be sent as GET requests; form submissions
-should be sent using POST.<p>
+should be sent using POST.
 
 Information will be returned to the client as HTML or JSON text.  At
 present, we assume that the front-end will do most of its own presentation,
 and that the HTML will primarily be for debugging.  The return type of
 a URL is indicated by the file extension on the URL, e.g., 
-".html" or ".json".<p>
+".html" or ".json".
 
 <section restapi.help "Help API">
 
@@ -302,35 +302,35 @@ We have made the Athena Workbench's on-line help database available via
 the Arachne server because it contains quite of bit of information that
 will be useful to the front-end developer, including order definitions
 and executive script documentation.  Ultimately we plan to provide an
-Arachne-specific help database.<p>
+Arachne-specific help database.
 
 The root of the help pages is at 
-<tt><link /help/index.html /help/index.html></tt>.<p>
+<tt><link /help/index.html /help/index.html></tt>.
 
 The <tt /help> domain supports full text search; to make use of it, use 
-the URL<p>
+the URL
 
 <example>/help/?search=<i target></example>
 
 In fact, this query string can be used on any page in the <tt /help> 
-domain.<p>
+domain.
 
 <section restapi.scenario "Scenario Management API">
 <section restapi.scenario.main "Scenario Operations">
 
 Top-level scenario operations hang directly from <tt /scenario> and 
 consist of the following URLs.
-<p>
+
 
 <itemlist scenariourls>
 
 <deflist scenariourls>
 <defurl "/scenario/index.json">
-<p>
-Query Parameters: None.
-<p>
 
-Returns a JSON array of scenario metadata objects.<p>
+Query Parameters: None.
+
+
+Returns a JSON array of scenario metadata objects.
 
 <topiclist "Return Parameter">
 <topic "id">The ID of the scenario.</topic>
@@ -340,7 +340,7 @@ Returns a JSON array of scenario metadata objects.<p>
 <topic "week">The current time in weeks of the scenario.</topic>
 <topic "source">The name of the file that is the source of the scenario.</topic>
 <topic "url">The server relative URL for the scenario.</topic>
-</topiclist><p> 
+</topiclist> 
 
 Example Return:
 <example>
@@ -367,13 +367,13 @@ Example Return:
 </example>
 
 <defurl "/scenario/clone.json">
-<p>
+
 <topiclist "Query Parameter">
 <topic "source">Required. A scenario to be cloned.</topic>
 <topic "target">Optional. The scenario to be replaced.</topic>
 <topic "longname">Optional. The user defined name of the target scenario.</topic>
 </topiclist> 
-<p>    
+    
 
 Clones existing scenario <i>source</i> as a new scenario, assigning
 it an id and longname.  If <i>target</i> is given, it must be an 
@@ -388,7 +388,7 @@ name.  On success, returns a list
 </example>
 
 where the <i>case</i> is either the selected <i>target</i> or a 
-newly generated case ID.<p>
+newly generated case ID.
 
 Example URL:
 <example>
@@ -396,12 +396,12 @@ http://localhost:8080/scenario/clone.json?source=case03&target=case04&longname=M
 </example>
 
 <defurl /scenario/export.json>
-<p>
+
 <topiclist "Query Parameter">
 <topic "case">Required. A scenario to be exported.</topic>
 <topic "filename">Required. The name of the file for export.</topic>
 </topiclist> 
-<p>    
+    
 
 Exports scenario <i>case</i> to the <tt>-scenariodir</tt> as
 <i>filename</i>.  The file type may be "<tt>.adb</tt>" for a
@@ -411,7 +411,7 @@ is assumed.   On success, returns a list
 <example>
 ["OK", "<i>filename</i>"]
 </example>
-<p>
+
 
 Example URL:
 <example>
@@ -420,15 +420,15 @@ http://localhost:8080/scenario/export.json?case=case03&filename=MyScenario.adb
 
 <defurl /scenario/files.json>
 
-Query Parameters: None<p>
+Query Parameters: None
 
-Returns a JSON array of scenario file objects.<p>
+Returns a JSON array of scenario file objects.
 
 <topiclist "Return Parameter">
 <topic "id">The name of a scenario file.</topic>
 <topic "size">The size of the file in bytes.</topic>
 <topic "mtime">The last time the file was modified.</topic>
-</topiclist><p> 
+</topiclist> 
 
 Example Return:
 <example>
@@ -452,13 +452,13 @@ Example Return:
 </example>
 
 <defurl /scenario/import.json>
-<p>
+
 <topiclist "Query Parameter">
 <topic "filename">Required. The name of the file for import.</topic>
 <topic "case">Optional. The scenario to be imported as.</topic>
 <topic "longname">Optional. The user defined name of the imported scenario.</topic>
 </topiclist> 
-<p>    
+    
 
 Imports scenario <i>filename</i> and loads it into memory.
 The <i>filename</i> must name a file in the 
@@ -472,7 +472,7 @@ be assigned that name.  On success, returns a list
 </example>
 
 where the <i>case</i> is either the selected <i>target</i> or a 
-newly generated case ID.<p>
+newly generated case ID.
 
 Example URL:
 <example>
@@ -481,12 +481,12 @@ http://localhost:8080/scenario/import.json?case=case01&filename=MyScenario.adb
 
 <defurl /scenario/new.json>
 
-<p>
+
 <topiclist "Query Parameter">
 <topic "case">Optional. New scenario to be created.</topic>
 <topic "longname">Optional. The user defined name of the new scenario.</topic>
 </topiclist> 
-<p>    
+    
 
 Creates a new, empty scenario, assigning it an ID and longname.
 If <i>case</i> is given, it must be the case ID of an existing 
@@ -498,7 +498,7 @@ name.  On success, returns a list
 </example>
 
 where the <i>case</i> is either the selected <i>target</i> or a 
-newly generated case ID.<p>
+newly generated case ID.
 
 Example URL:
 <example>
@@ -507,11 +507,11 @@ http://localhost:8080/scenario/new.json?case=case01&longname=MyScenario
 
 <defurl /scenario/remove.json>
 
-<p>
+
 <topiclist "Query Parameter">
 <topic "case">Required. The scenario to be removed.</topic>
 </topiclist> 
-<p>    
+    
 
 Removes scenario <i>case</i> from the current session; export it first
 if you wish to keep the data.  On success, returns a list 
@@ -520,7 +520,7 @@ if you wish to keep the data.  On success, returns a list
 </example>
 
 where <i>message</i> is an informational message pertaining to any action
-taken.<p>
+taken.
 
 Example URL:
 <example>
@@ -534,17 +534,17 @@ http://localhost:8080/scenario/remove.json?case=case03
 The API specific to a particular scenario case appear in the 
 <tt>/scenario/<i case>/</tt> subdomain, where <i case> is the scenario's
 "case ID".  Operations on individual scenario cases can be performed with
-the following list of URLs.<p>
+the following list of URLs.
 
 <itemlist caseurls>
 <deflist caseurls>
 
 <defurl /scenario/{case}/index.json>
-<p>
-Query Parameters: None.
-<p>
 
-Returns metadata for scenario <i>case</i>.<p>
+Query Parameters: None.
+
+
+Returns metadata for scenario <i>case</i>.
 
 <topiclist "Return Parameter">
 <topic "id">The ID of <i>case</i>.</topic>
@@ -555,7 +555,7 @@ Returns metadata for scenario <i>case</i>.<p>
 <topic "source">The name of the file that is the source of <i>case</i>.</topic>
 </topiclist>
 
-<p>
+
 Example Return:
 <example>
 {
@@ -574,13 +574,13 @@ http://localhost:8080/scenario/case01/index.json
 </example>
 
 <defurl /scenario/{case}/lock.json>
-<p>
+
 Query Parameters: None.
-<p>
+
 Locks scenario <i>case</i> if it is unlocked.  On success, returns a list 
 <example>["OK", ""]</example> and on failure returns a list
 <example>["ERROR","message",""]</example>
-where <i>message</i> describes the nature of the failure.<p>
+where <i>message</i> describes the nature of the failure.
 
 Example URL:
 <example>
@@ -588,13 +588,13 @@ http://localhost:8080/scenario/case01/lock.json
 </example>
 
 <defurl /scenario/{case}/unlock.json>
-<p>
+
 Query Parameters: None.
-<p>
+
 Unocks scenario <i>case</i> if it is locked.  On success, returns a list 
 <example>["OK", ""]</example> and on failure returns a list
 <example>["ERROR","message",""]</example>
-where <i>message</i> describes the nature of the failure.<p>
+where <i>message</i> describes the nature of the failure.
 
 Example URL:
 <example>
@@ -602,18 +602,18 @@ http://localhost:8080/scenario/case01/unlock.json
 </example>
 
 <defurl /scenario/{case}/advance.json>
-<p>
+
 <topiclist "Query Parameter">
 <topic "weeks">Optional. The number of weeks to advance time. Defaults to 1 week.
 </topic>
-</topiclist><p>
+</topiclist>
 
 Asks for an advance of simulation time in scenario <i case> by <i weeks>, 
 locking the scenario if necessary.  The scenario will be <b>BUSY</b> 
 until the time advance is complete.  On success, returns a list 
 <example>["OK", ""]</example> and on failure returns a list
 <example>["ERROR","message",""]</example>
-where <i messsage> describes the nature of the failure.<p>
+where <i messsage> describes the nature of the failure.
 
 Example URL:
 <example>
@@ -621,13 +621,13 @@ http://localhost:8080/scenario/case01/advance.json?weeks=10
 </example>
 
 <defurl /scenario/{case}/parmdb.json>
-<p>
+
 Query Parameters: None.
-<p>
+
 
 Requests the contents of the parameter database for scenario <i case>.  
 The database is returned as an array of JSON objects with parameter names,
-doc strings, current and default values.<p>
+doc strings, current and default values.
 
 <topiclist "Return Parameter">
 <topic "name">The name of the parameter.</topic>
@@ -639,16 +639,16 @@ doc strings, current and default values.<p>
 </topiclist>
 
 <defurl /scenario/{case}/order.json>
-<p>
+
 Query Parameters: Varies.
-<p>
+
 
 Accepts an order and its parameters.
 The query parameters are the order name as <tt>order_</tt>
 and the order-specific parameters as indicated in the
 <link /help/order.html "on-line help">.  The result of the order is 
 returned as a JSON list indicating the success of the request with related 
-information.<p>
+information.
 
 Example URL (Actor Create Order)
 <example>
@@ -657,22 +657,22 @@ cash_reserve=0&cash_on_hand=0&income_goods=0&shares_black_nr=0&income_black_tax=
 </example>
 
 <defurl /scenario/{case}/script.json>
-<p>
+
 <topiclist "Query Parameter">
 <topic "script">URL encoded script to be executed.</topic>
 </topiclist>
 
-<p>
+
 Accepts a Tcl script as a POST query, and attempts to
 execute it in the named scenario's executive interpreter.
 The query data should be just the script itself with a
 content-type of text/plain.  The result of running the script 
-is returned in JSON format.<p>
+is returned in JSON format.
 
 <defurl /scenario/{case}/sanity/onlock.json>
-<p>
+
 Query Parameters: None.
-<p>
+
 
 Performs an on-lock sanity check for the scenario, and returns the 
 list of failure records.  If the list is empty, there were no 
@@ -696,23 +696,23 @@ Example Return for sanity check failure:
     "message": "No force groups are defined."
   }
 ]
-</example><p>
+</example>
 
 </deflist caseurls>
 
 <section restapi.scenario.group "Case Operations (Groups)">
 In this section and the following sections are REST API calls that allow a 
-client to query and inspect scenario data from an individual scenario case.<p>
+client to query and inspect scenario data from an individual scenario case.
 
-<itemlist casegroups><p>
+<itemlist casegroups>
 
 <deflist casegroups>
 <defurl /scenario/{case}/group/index.json>
-<p>
-Query Parameters: None.
-<p>
 
-Returns JSON data that is common to all groups in scenario <i>case</i>.<p>
+Query Parameters: None.
+
+
+Returns JSON data that is common to all groups in scenario <i>case</i>.
 
 <topiclist "Return Parameter">
 <topic "fancy">Human readable form of the groups name.</topic>
@@ -731,7 +731,7 @@ Returns JSON data that is common to all groups in scenario <i>case</i>.<p>
 <topic "color">The color of the groups icon. (Used for UI display).</topic>
 </topiclist>
 
-<p>
+
 Example Return:
 <example>
 [
@@ -755,11 +755,11 @@ Example Return:
 </example>
 
 <defurl /scenario/{case}/group/civ.json>
-<p>
+
 Query Parameters: None.
-<p>
+
 Returns a JSON list of civilian group entities in the <i>case</i> 
-specified.<p>
+specified.
 
 <topiclist "Return Parameter">
 <topic "subsistence">Number of people in the group engaged in subsistence agriculture.</topic>
@@ -804,9 +804,9 @@ specified.<p>
 <topic "color">The color of the groups icon. (Used for UI display).</topic>
 </topiclist>
 
-<p>
+
 Example Return:
-<p>
+
 <example>
 [
   {
@@ -855,9 +855,9 @@ Example Return:
 </example>
 
 <defurl /scenario/{case}/group/frc.json>
-<p>
+
 Query Parameters: None.
-<p>
+
 <topiclist "Return Parameter">
 <topic "forcetype">Type of forcegroup: REGULAR, IRREGULAR, POLICE, CRIMINAL or PARAMILITARY</topic>
 <topic "fancy">Human readable form of the groups name.</topic>
@@ -881,9 +881,9 @@ Query Parameters: None.
 <topic "color">The color of the groups icon. (Used for UI display).</topic>
 </topiclist>
 
-<p>
+
 Example Return:
-<p>
+
 <example>
 [
   {
@@ -912,9 +912,9 @@ Example Return:
 </example>
 
 <defurl /scenario/{case}/group/org.json>
-<p>
+
 Query Parameters: None.
-<p>
+
 Returns a JSON list of organization group entities in the <i>case</i> 
 specified.
 
@@ -937,9 +937,9 @@ specified.
 <topic "color">The color of the groups icon. (Used for UI display).</topic>
 </topiclist>
 
-<p>
+
 Example Return:
-<p>
+
 <example>
 [{
     "fancy": "PAL: Peonian Assistance League",
@@ -963,12 +963,12 @@ Example Return:
 </example>
 
 <defurl /scenario/{case}/group/{g}/index.json>
-<p>
+
 Query Parameters: None.
-<p>
+
 
 Returns a JSON list of group data for scenario <i>case</i> and 
-group <i>g</i>.<p>
+group <i>g</i>.
 
 The return parameters for this set of URLs is already documented above:
 <ul>
@@ -983,11 +983,11 @@ The return parameters for this set of URLs is already documented above:
 <itemlist caseactors>
 <deflist caseactors>
 <defurl /scenario/{case}/actors/index.json>
-<p>
-Query parameters: None
-<p>
 
-Returns a JSON list of actor entities in the <i>case</i> specified.<p>
+Query parameters: None
+
+
+Returns a JSON list of actor entities in the <i>case</i> specified.
 
 <topiclist "Return Parameter">
 <topic "supports">ID of actor this actor supports, or <b SELF>.</topic>
@@ -1013,7 +1013,7 @@ Returns a JSON list of actor entities in the <i>case</i> specified.<p>
 <topic "income_goods">Weekly income from the goods sector.</topic>
 <topic "pretty_am_flag">Display form of auto-maintain flag.</topic>
 </topiclist>
-<p>
+
 Example Return:
 <example>
 [
@@ -1047,9 +1047,9 @@ Example Return:
 </example>
 
 <defurl /scenario/{case}/actor/{a}/index.json>
-<p>
+
 Query parameters: None
-<p>
+
 Returns a JSON object of actor data for scenario <i>case</i> and actor 
 <i>a</i>.
 See the actor <link #/scenario/case/actors/index.json spec> for
@@ -1061,11 +1061,11 @@ a description of the return values.
 <itemlist casenbhoods>
 <deflist casenbhoods>
 <defurl /scenario/{case}/nbhoods/index.json>
-<p>
-Query parameters: None
-<p>
 
-Returns a JSON list of neighborhood entities in the <i>case</i> specified.<p>
+Query parameters: None
+
+
+Returns a JSON list of neighborhood entities in the <i>case</i> specified.
 <topiclist "Return Parameter">
 <topic "subsistence">Number of subsistence agriculture civilians in neighborhood.</topic>
 <topic "polygon">Polygon vertices expressed in MGRS.</topic>
@@ -1095,7 +1095,7 @@ Returns a JSON list of neighborhood entities in the <i>case</i> specified.<p>
 <topic "refpoint">Reference point in neighborhood that is guaranteed to be inside polygon and not obscured.</topic>
 </topiclist>
 
-<p>
+
 Example Return:
 <example>
 [
@@ -1130,9 +1130,9 @@ Example Return:
 ]
 </example>
 <defurl /scenario/{case}/nbhood/{n}/index.json>
-<p>
+
 Query parameters: None
-<p>
+
 Returns JSON list of neighborhood data for scenario <i>case</i> and neighborhood <i>n</i>.
 See the neighborhood <link #/scenario/case/nbhoods/index.json spec> for
 a description of the return values.
@@ -1141,12 +1141,12 @@ a description of the return values.
 <section restapi.scenario.history "Case Operations (History)">
 <deflist casehistory>
 
-<itemlist casehistory><p>
+<itemlist casehistory>
 
 <defurl /scenario/{case}/history/meta.json>
-<p>
+
 Query parameters: None
-<p>
+
 
 Returns all meta data associated with history variables as an
 array of JSON objects.  The exact contents of the array depends on
@@ -1155,7 +1155,7 @@ only the variables for which their corresponding history table
 actually has data along with the valid key/value pairs for that table.
 Using the variable names and, optionally, the key/value pairs history 
 data can be requested by using the 
-<link  #/scenario/case/history/var/index.json "history variable URL">.<p>
+<link  #/scenario/case/history/var/index.json "history variable URL">.
 
 <topiclist "Return Parameter">
 <topic "name">The history variable used to query history.</topic>
@@ -1163,17 +1163,17 @@ data can be requested by using the
 <topic "size">The number of records in the history variable table.</topic>
 <topic "keys">Array of JSON objects that varies depending on the history variable. (<link #restapi.scenario.histvars spec>).</topic>
 </topiclist>
-<p>
 
-All history <tt keys> objects contain the following fields.<p>
+
+All history <tt keys> objects contain the following fields.
 <topiclist "Keys Parameter">
 <topic "key">A key to be used to request history data</topic>
 <topic "label">Human readable description of the <i key>.</topic>
 <topic "values">Array of valid values for the <i key>.</topic>
 </topiclist>
-<p>
+
 Example Return:
-</p>
+
 <example>
 [
   {
@@ -1210,21 +1210,21 @@ Example Return:
 </example>
 
 <defurl /scenario/{case}/history/{var}/index.json>
-<p>
+
 Query Parameters: Vary depending on <i>case</i> and <i>var</i>.
-<p>
+
 
 Retrieves the history associated with a history variable called <i var>
-from scenario <i case>.<p>
+from scenario <i case>.
 
 Without any query parameters, all history data for the history variable
-<i var> is returned from scenario <i case>.<p>
+<i var> is returned from scenario <i case>.
 
 By using the data returned by a call to the 
 <link #/scenario/case/history/meta.json "meta data URL">
 the data returned can be constrained to specific key values and time
 periods. See the <link #restapi.scenario.histvars spec> below
-for how to construct a query to get specific history data.<p>
+for how to construct a query to get specific history data.
 
 </deflist casehistory>
 
@@ -1238,7 +1238,7 @@ possible, however, that knowing which keys and valid values for those keys
 only a subset of the history can be requested.  Below is a table of history
 variable names and valid keys with descriptions.  The values for the
 keys depend on the case being queried and are contained within the meta
-data returned by <link #/scenario/case/history/meta.json "this URL">.<p>
+data returned by <link #/scenario/case/history/meta.json "this URL">.
 
 All history variable queries recognize <tt t1> and <tt t2> as valid
 query parameters.  <tt t1> is the start time for the returned data and
@@ -1246,14 +1246,14 @@ query parameters.  <tt t1> is the start time for the returned data and
 returned.  If <tt t1> is greater than the end time of the simulation run
 no data is returned. Setting these query parameters as the empty string or
 omitting them altogether will result in all history being returned from 
-the simulation start time to simulation end time.<p>
+the simulation start time to simulation end time.
 
 <table tab.histvars "History Variables">
-<th>
-<td>Variable Name</td>
-<td>Keys</td>
-<td>Description</td>
-</th>
+<tr>
+<th>Variable Name</th>
+<th>Keys</th>
+<th>Description</th>
+</tr>
 
 <histrec aam_battle {n f g} "Attrition History, force and civilian
 attrition taken due to battle.">
@@ -1298,7 +1298,7 @@ by neighborhood.">
 <histrec vrel {g a} "Vertical Relationship, the relationship between
 groups and actors.">
 
-</table><p>
+</table>
 
 Some example URLs for extracting history data from <tt case01> using 
 key/value pairs:
@@ -1320,16 +1320,16 @@ http://localhost:8080/scenario/case01/history/activity_nga/index.json?g=FRC1&n=N
 
 URLs related to comparing the results of scenarios reside in the 
 <tt /comparison> domain.  The following list of URLs is the 
-complete list of REST API calls available in this domain.<p>
+complete list of REST API calls available in this domain.
 
 <itemlist comparison>
 
 <deflist comparison>
 <defurl /comparison/index.json>
-<p>
+
 Query Parameters: None.
-<p>
-Returns a JSON list of comparison objects.<p>
+
+Returns a JSON list of comparison objects.
 
 <topiclist "Return Parameters">
 <topic "id">The Unique ID of the comparison object.</topic>
@@ -1342,10 +1342,10 @@ Returns a JSON list of comparison objects.<p>
 <topic "week1">The time string corresponding to <tt t1>.</topic>
 <topic "week2">The time string corresponding to <tt t2>.</topic>
 <topic "outputs">Array of JSON objects representing the output of the comparison. Detailed in following table.</topic>
-</topiclist><p>
+</topiclist>
 
 The outputs returned from a comparison vary greatly. However, each object
-in the JSON return found in the <tt outputs> array contains these fields:<p>
+in the JSON return found in the <tt outputs> array contains these fields:
 
 <topiclist "Outputs Field">
 <topic "type">The type of output.</topic> 
@@ -1363,9 +1363,9 @@ in the JSON return found in the <tt outputs> array contains these fields:<p>
 <topic "score">This outputs score as computed relative to all other outputs.</topic>
 </topiclist>
 
-<p>
+
 Example Return:
-</p>
+
 <example>
 [{
     "id": "case01",
@@ -1409,14 +1409,14 @@ Example Return:
 <topic "case1">Required. The first scenario case in the comparison request.</topic>
 <topic "case2">Optional. The second case in the comparison request.</topic>
 </topiclist>
-<p>
+
 Requests a comparison object for the case with ID <i case1> or for a 
 pair of cases <i case1> and <i case2>.  On success, returns
 <tt>['ok', <i>comparison</i>]</tt>, where 
 <i>comparison</i> is the same kind of object returned by 
 <link #/comparison/index.json /comparison/index.json>, which is where
 the return values are defined.
-<p>
+
 Example Request:
 <example>
 http://localhost:8080/comparison/request.json?case1=case01
@@ -1428,7 +1428,7 @@ http://localhost:8080/comparison/request.json?case1=case01
 <topic "varname">Required. An output variable that exists in the
 comparison object.</topic>
 </topiclist>
-<p>
+
 
 Returns a list of the significant inputs driving change in 
 a specific output variable <i varname> in comparison <i comp>.  
@@ -1436,7 +1436,7 @@ The list is recursive: we drill
 down as far as we can, producing a "causality chain".  The <i varname>
 must be one of the variables included in the list returned by
 <link #/comparison/request.json /comparison/request.json>.
-<p>
+
 Example Request:
 <example>
 http://localhost:8080/comparison/chain.json?comp=case01&varname=support.PE.PELF
@@ -1453,7 +1453,7 @@ In cases where error returns are possible (e.g., when using
 the JSON interface to perform some action, or when invalid query 
 parameters are sent) the JSON result is a list of 
 two or more elements.  The first element is a
-code, "OK", "ERROR", "REJECT", or "EXCEPTION".<p>
+code, "OK", "ERROR", "REJECT", or "EXCEPTION".
 
 <ul>
 <li>  If the code is "OK", the request was
@@ -1461,23 +1461,23 @@ code, "OK", "ERROR", "REJECT", or "EXCEPTION".<p>
       result string.  Typically there is a single additional element,
       a message or a single object. Look up the
       particular URL in the domain's schema
-      for specifics.<p>
+      for specifics.
 
 <li> If the code is "REJECT", the request was rejected because of input
      errors.  The second 
      element is a JSON object with one field for each problem parameter
      in the request.  The field names are query parameter names 
      (or "*" for errors affecting the whole request); the field values 
-     are error messages for display to the user.<p>
+     are error messages for display to the user.
 
 <li> If the code is "ERROR", there was an error while processing
      the request.  The second element is an error message.  An "ERROR"
      usually implies that the input parameters were OK but the request
-     could not be performed successfully for some other reason.<p>
+     could not be performed successfully for some other reason.
 
 <li> If the code is "EXCEPTION", there was an unexpected error while executing
      the request.  The second element is an error message, and the third
-     element is a TCL stack trace.<p>
+     element is a TCL stack trace.
 </ul>
 
 
@@ -1488,7 +1488,7 @@ scenario; thus, the order definitions are part of the
 interface specification.  We already have high-quality documentation of
 all Athena orders as on-line help in the Athena Workbench; for now,
 we are making this same help database available through Arachne's web 
-interface, at <tt><link /help/index.html /help/index.html></tt>.<p>
+interface, at <tt><link /help/index.html /help/index.html></tt>.
 
 In time, we hope to provide a help database tailored to the Arachne 
 user.  In addition, the Athena Workbench has a sophisticated set of
@@ -1497,7 +1497,7 @@ definitions.  At present, this infrastructure only works with TK GUIs,
 not with web UIs.  We plan to extend this "dynaform" infrastructure to 
 work with web forms as well, so as to reduce the burden on the web
 developers and to make order modifications in the back-end 
-require minimal (or zero) changes to the front-end.<p>
+require minimal (or zero) changes to the front-end.
 
 <section script "Athena Script Commands">
 
@@ -1506,10 +1506,10 @@ scenario and executed by it; thus, the executive commands are part of the
 interface specification.  We already have high-quality documentation of
 the executive commands as on-line help in the Athena Workbench; for now,
 we are making this same help database available through Arachne's 
-web interface, at <tt><link /help/index.html /help/index.html></tt>.<p>
+web interface, at <tt><link /help/index.html /help/index.html></tt>.
 
 In time, we hope to provide a help database tailored to the 
-Arachne user.<p>
+Arachne user.
 
 </document>
 

@@ -17,11 +17,11 @@ list of items; however, it is designed for use when space is at a
 premium.  The widget displays a label and an "Edit" button; the label
 displays the chosen value, and the "Edit" button pops up a 
 <xref mars:messagebox(n)> in which the user can select the desired
-items.<p>
+items.
 
 <section COMMANDS>
 
-This module defines the following commands.<p>
+This module defines the following commands.
 
 <deflist commands>
 
@@ -29,7 +29,7 @@ This module defines the following commands.<p>
 
 Creates a new <iref listbuttonfield> widget named <i>pathName</i>, and
 returns <i>pathName</i>.  The widget supports the following
-options, in addition to those provided by the underlying frame widget:<p>
+options, in addition to those provided by the underlying frame widget:
 
 <deflist options>
 
@@ -38,12 +38,12 @@ options, in addition to those provided by the underlying frame widget:<p>
 From <xref field(i)>.  Specifies a <i>command</i> to be called
 whenever the field's value changes, for any reason whatsoever
 (including explicit calls to <iref set>.  The new value is appended
-to the <i>command</i> as an argument.<p>
+to the <i>command</i> as an argument.
 
 <defopt {-emptymessage <i>text</i>}>
 
 The text to display in the field when no items are selected.  Defaults to 
-"No items selected."<p>
+"No items selected."
 
 <defopt {-itemdict <i>dict</i>}>
 
@@ -51,26 +51,26 @@ The items from which the user can choose, specified as a dictionary of
 keys and values.  The dictionary values are displayed in the dialog's
 "include" and "omit" lists, optionally prefixed by the keys (see
 <b>-showkeys</b>); the <iref get> and <iref set> methods
-return and accept a list of keys.<p>
+return and accept a list of keys.
 
 <defopt {-message <i>text</i>}>
 
 Specifies the message to be shown at the top of the pop-up dialog.  
-Defaults to "Select items from the list:".<p>
+Defaults to "Select items from the list:".
 
 <defopt {-listrows <i>rows</i>}>
 
-The height of the "include" and "omit" lists, in rows, in the dialog.<p>
+The height of the "include" and "omit" lists, in rows, in the dialog.
 
 <defopt {-listwidth <i>chars</i>}>
 
-The width in text characters of each of the item lists.<p>
+The width in text characters of each of the item lists.
 
 <defopt {-showkeys <i>flag</i>}>
 
 If true (the default), the text shown for each item in the dialog's
 item lists is "<i>key</i>: <i>value</i>".  Otherwise only the 
-<b>-itemdict</b> values are displayed.<p>
+<b>-itemdict</b> values are displayed.
 
 <defopt {-showmaxitems <i>num</i>}>
 
@@ -81,24 +81,24 @@ box; defaults to 10.  If <i>num</i> is the empty string, there is no limit.
 
 From <xref field(i)>.  listfield(i) widgets have states, just as the
 normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
-states are <b>normal</b> and <b>disabled</b>.<p>
+states are <b>normal</b> and <b>disabled</b>.
 
 <defopt {-stripe <i>flag</i>}>
 
 If true (the default) the even items in each list in the dialog
 are striped with a
 distinctive background color.  This is useful if item values might
-wrap to multiple lines.<p>
+wrap to multiple lines.
 
 <defopt {-wraplength <i>pixels</i>}>
 
 Specifies the width in pixels at which the widget will wrap the narrative
-across multiple lines.  Defaults to 300.<p>
+across multiple lines.  Defaults to 300.
 
 <defopt {-width <i>chars</i>}>
 
 Specifies the width of the widget's narrative box in characters.  If
-negative, specifies the minimum width.  Defaults to -30.<p>
+negative, specifies the minimum width.  Defaults to -30.
 
 </deflist options>
 
@@ -106,27 +106,27 @@ negative, specifies the minimum width.  Defaults to -30.<p>
 
 <section "INSTANCE COMMAND">
 
-listbuttonfield(n) widgets have the following subcommands:<p>
+listbuttonfield(n) widgets have the following subcommands:
 
 <deflist instance>
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
-Sets the value of one or more of the object's options.<p>
+Sets the value of one or more of the object's options.
 
 <defitem get {<i>pathName</i> get}>
 
 Returns the current value of the field, i.e., a list of keys from the
-<b>-itemdict</b>.<p> 
+<b>-itemdict</b>. 
 
 <defitem set {<i>pathName</i> set <i>value</i>}>
 
 Sets the current <i>value</i> of the field, a list of keys from the
-<b>-itemdict</b>.<p>
+<b>-itemdict</b>.
 
 </deflist instance>
 
@@ -138,11 +138,11 @@ The field type takes the same <b>-listrows</b>, <b>-listwidth</b>,
 <b>-message</b>, <b>-showmaxitems</b>, <b>-showkeys</b>, 
 <b>-stripe</b> and <b>-wraplength</b> options as listbuttonfield(n) does.  
 The <b>-width</b> option sets the minimum width of the field, since that's
-usually what's wanted.<p>
+usually what's wanted.
 
 The widget's <b>itemdict</b> is set using either <b>-dict</b> or 
 <b>-dictcmd</b>, as for the <b>enumlist</b> field type; one of these
-two options is required.<p>
+two options is required.
 
 <section ENVIRONMENT>
 
@@ -154,7 +154,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

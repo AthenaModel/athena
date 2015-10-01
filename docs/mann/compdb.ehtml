@@ -15,33 +15,33 @@ compdb(n) manages the Athena scenario comparison parameter database: the
 collection of parameters that govern how scenarios are compared, and how
 large differences have to be to be considered significant.
 At base, the parameter database is a <xref mars:parmset(n)> with some
-added capabilities.<p>
+added capabilities.
 
-The full set of parameters is defined in <xref compdb(5)>.<p>
+The full set of parameters is defined in <xref compdb(5)>.
 
 <section "COMMANDS">
 
 compdb(n) provides the following subcommands for use by the application,
 along with all of the subcommands provided by the underlying
-<xref mars:parmset(n)>.<p>
+<xref mars:parmset(n)>.
 
 <deflist commands>
 
 <defitem "compdb init" {compdb init}>
 
 Initializes the module.  This should be called once, at application
-start-up.  It defines the full set of comparison parameters.<p>
+start-up.  It defines the full set of comparison parameters.
 
 <defitem validate {compdb validate <i parm>}>
 
 Throws <b INVALID> if <i parm> isn't a defined parameter; otherwise
-returns parameter name in canonical form.<p>
+returns parameter name in canonical form.
 
 <defitem nondefaults {compdb nondefaults ?<i pattern>?}>
 
 Returns a list of the names of the parameters with non-default values.
 If <i pattern> is given, it is a glob-style wildcard pattern; only
-names that match the pattern are included in the result.<p>
+names that match the pattern are included in the result.
 
 <defitem "compdb get"      {compdb get <i>parm</i>}>
 <defitem "compdb names"    {compdb names ?<i>pattern</i>?}>
@@ -49,27 +49,27 @@ names that match the pattern are included in the result.<p>
 <defitem "compdb manpage"  {compdb manpage}>
 
 These commands are simply delegated to the underlying
-<xref parmset(n)>.<p>
+<xref parmset(n)>.
 
 <defitem "compdb set" {compdb set <i>parm value</i>}>
 
-Sets the parameter's value and saves the compdb to disk.<p>
+Sets the parameter's value and saves the compdb to disk.
 
 <defitem "compdb reset" {compdb reset}>
 
 Resets all comparison parameters to their default values, and
-saves them to disk.<p>
+saves them to disk.
 
 <defitem "compdb list" {compdb list ?<i>pattern</i>?}>
 
 Lists all parameters and their values.  If <i>pattern</i> is given,
 it's a wildcard pattern; only parameters whose names match the pattern
-are listed.<p>
+are listed.
 
 <defitem "compdb load" {compdb load}>
 
 Loads the compdb from disk, if the compdb file exists.  This
-is usually only done at application start-up.<p>
+is usually only done at application start-up.
 
 <defitem "compdb save" {compdb save <i>filename</i>}>
 
@@ -80,8 +80,8 @@ are written, since that's unnecessary.
 
 <section AUTHOR>
 
-Will Duquette<p>
-Dave Hanks<p>
+Will Duquette
+Dave Hanks
 
 <section HISTORY>
 

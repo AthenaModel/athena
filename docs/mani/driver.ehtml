@@ -8,7 +8,7 @@
 
 A driver(i) object is a module of code that implements the effects of a
 particular type of attitude driver, e.g., an activity situation or
-civilian casualties.<p>
+civilian casualties.
 
 Each driver type is defined by a Snit type
 ensemble within the ::driver:: namespace that is created using the
@@ -22,11 +22,11 @@ driver type define CIVCAS {f} {
 </pre>
 
 resulting in a type ensemble called <code>driver::CIVCAS</code>.  The
-definition script is simply a Snit type ensemble definition script.<p>
+definition script is simply a Snit type ensemble definition script.
 
 Every driver ensemble must implement the subcommands defined
 in this interface; it may also define other commands as needed.
-Thus, a driver is essentially a special kind of module.<p>
+Thus, a driver is essentially a special kind of module.
 
 <subsection "Rule Sets">
 
@@ -34,7 +34,7 @@ The driver type ensemble must implement one or more rule sets for
 the given driver type, along with an appropriate subcommand for triggering
 them.  This subcommand is usually called <iref assess>; its arguments will
 vary depending on the driver type.  The rule sets themselves will use the
-dam(sim) API.<p>
+dam(sim) API.
 
 <subsection "Firing Dictionaries">
 
@@ -42,11 +42,11 @@ The input to a rule set is called a <i>firing dictionary</i>, or
 <i>fdict</i>.  When a rule fires, the <i>fdict</i> is saved in the
 <b>rule_firings</b> table for later use.  Part of the job of the driver
 type's ensemble is to translate that saved <i>fdict</i> into human-readable
-text.<p>
+text.
 
 The firing dictionary should contain all inputs to the rule set; it should
 also contain the driver type name (e.g., "CIVCAS") under the key <b>dtype</b>.
-<p>
+
 
 <subsection "Driver IDs and Signatures">
 
@@ -57,12 +57,12 @@ IDs are assigned on the basis of <i>signatures</i>.  A driver type's signature
 is a subset of the parameters in its firing dictionary; this subset is
 identified in the <code>driver type define</code> call.  In the CIVCAS example
 shown above, the signature is <i>f</i>, that is, the name of the civilian group
-that took the casualties.<p>
+that took the casualties.
 
 Driver IDs are assigned automatically by <code>[dam rule]</code> the first 
-time a rule fires for the given driver type and signature.<p>
+time a rule fires for the given driver type and signature.
 
-Note that the signature, properly speaking, is not a dictionary, but rather a list of zero or more parameter values drawn from the <i>fdict</i>.<p>
+Note that the signature, properly speaking, is not a dictionary, but rather a list of zero or more parameter values drawn from the <i>fdict</i>.
 
 <subsection "Families of Driver Types">
 
@@ -72,7 +72,7 @@ activity situations, are part of a large family of very similar driver types.
 Because they share a common pattern and often common infrastructure code,
 it is convenient to put them into a single mdoule, e.g.,
 "<code>driver_actsit.tcl</code>".  This module will generally contain the 
-the following blocks of code:<p>
+the following blocks of code:
 
 <ul>
     <li> An ensemble for the whole family, e.g., <code>driver::actsit</code>.
@@ -81,21 +81,21 @@ the following blocks of code:<p>
         example, will usually be delegated back to this ensemble.  Indeed, this
         ensemble will probably provide a driver definition call that will 
         add the relevant <code>delegate</code> statements to the situation's
-        definition script.<p>
+        definition script.
 
     <li> An ensemble for each specific driver type, containing the rule sets
         and other driver-type specific subcommands, possibly delegating them
-        back to the family ensemble.<p>
+        back to the family ensemble.
 </ul>
 
-See "<code>driver_actsit.tcl</code>" as an example.<p>
+See "<code>driver_actsit.tcl</code>" as an example.
 
 
 <section "SUBCOMMANDS">
 
 Each <xref driver(i)> ensemble must implement at least the following
 subcommands.  Most will taking a firing dictionary, or <i>fdict</i> as
-an argument.<p>
+an argument.
 
 <deflist subcommands>
 
@@ -106,19 +106,19 @@ subcommand of some kind that triggers the driver type's rule set(s).
 Sometimes the subcommand will have arguments that either comprise or will
 lead to an <i>fdict</i>; more commonly, the subcommand will do its own 
 sweep of the available data, identifying events and situations that need to
-be assessed.<p>
+be assessed.
 
 <defitem detail {detail <i>fdict ht</i>}>
 
 Writes a detailed block of HTML text describing a particular 
 rule-firing into an <xref htools(n)> buffer <i>ht</i>.  The text 
-should include all of the data in the <i>fdict</i>.<p>
+should include all of the data in the <i>fdict</i>.
 
 <defitem getid {getid <i>fdict</i>}>
 
 Given an <i>fdict</i>, assigns or retrieves a driver ID based on the
 signature.  This subcommand is defined automatically when the driver type
-is defined.  It is generally called only by <code>[dam rule]</code>.<p>
+is defined.  It is generally called only by <code>[dam rule]</code>.
 
 <defitem narrative {narrative <i>fdict</i>}>
 
@@ -130,20 +130,20 @@ links of the form
     {<i>entity</i>:<i>id</i>}
 </pre>
 
-which will be translated into plain text or into HTML links as required.<p>
+which will be translated into plain text or into HTML links as required.
 
 <defitem sigline {sigline <i>signature</i>}>
 
 Given a specific driver's signature, as saved in the <b>drivers.signature</b>
 column by <code>[dam rule]</code>, return a one-line description of the 
-driver for use in tables and lists.<p>
+driver for use in tables and lists.
 
 
 </deflist subcommands>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

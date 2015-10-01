@@ -16,26 +16,26 @@ user-defined roles in tactic dialogs, e.g., the CURSE tactic.  When
 the user defines a "curse" entity with attitude injects, the groups
 and actors affected by the injects are specified using "roles": essentially,
 named arguments.  When the CURSE tactic is set up to inject a given curse,
-the user needs to map those roles to actual lists of groups and actors.<p>
+the user needs to map those roles to actual lists of groups and actors.
 
 The number and name of these roles will vary from curse to curse.  However, the
-handling is identical for each role:<p>
+handling is identical for each role:
 
 <ol>
 <li> There is a list of valid choices for each role, determined on-the-fly.
 <li> The user may select multiple items from that list.
 <li> The mapping is incomplete if any role's mapping is empty.
-</ol><p>
+</ol>
 
 The rolemapfield(n) widget handles this use case.  It is a thin wrapper around
 the <xref mars:form(n)> widget that displays a configurable set of labels
-and edit fields given a <b>-rolespec</b>, which is a dictionary with this form:<p>
+and edit fields given a <b>-rolespec</b>, which is a dictionary with this form:
 
-<i>role-name</i> <i>valid-list</i> ...<p>
+<i>role-name</i> <i>valid-list</i> ...
 
-The value of the widget is a similar dictionary,<p>
+The value of the widget is a similar dictionary,
 
-<i>role-name</i> <i>selected-list</i> ...<p>
+<i>role-name</i> <i>selected-list</i> ...
 
 <subsection "Implementation">
 
@@ -44,11 +44,11 @@ When configured with a <b>-rolespec</b>, the widget populates its
 <xref mars:textfield(n)> widget for each role.  Each text field is
 read-only with an "Edit" button; displays a whitespace-delimited list
 of the currently chosen entities for that role.  Pressing the "Edit" button
-pops up a <xref mars:messagebox(n)> list selector.<p>
+pops up a <xref mars:messagebox(n)> list selector.
 
 <section COMMANDS>
 
-This module defines the following commands.<p>
+This module defines the following commands.
 
 <deflist commands>
 
@@ -56,7 +56,7 @@ This module defines the following commands.<p>
 
 Creates a new <iref rolemapfield> widget named <i>pathName</i>, and
 returns <i>pathName</i>.  The widget supports the following
-options, in addition to those provided by the underlying frame widget:<p>
+options, in addition to those provided by the underlying frame widget:
 
 <deflist options>
 
@@ -65,27 +65,27 @@ options, in addition to those provided by the underlying frame widget:<p>
 Specifies a <i>command</i> to be called
 whenever the selected entity changes, for any reason whatsoever
 (including explicit calls to <iref set>.  The newly selected
-entity's name is appended to the <i>command</i> as an argument.<p>
+entity's name is appended to the <i>command</i> as an argument.
 
 <defopt {-listheight <i>num</i>}>
 <defopt {-liststripe <i>flag</i>}>
 <defopt {-listwidth <i>num</i>}>
 
 These options are used to configure the <xref mars:messagebox(n)>
-list selector when a role's mapping is being edited.<p>
+list selector when a role's mapping is being edited.
 
 <defopt {-rolespec <i>spec</i>}>
 
 Sets the dictionary of roles and valid lists, and reconfigures the
-widget.  See <xref DESCRIPTION>.<p>
+widget.  See <xref DESCRIPTION>.
 
 <defopt {-state <i>state</i>}>
 
-Sets the field's state to <b>normal</b> or <b>disabled</b>.<p>
+Sets the field's state to <b>normal</b> or <b>disabled</b>.
 
 <defopt {-textwidth <i>num</i>}>
 
-The width of the role text fields, in characters.<p>
+The width of the role text fields, in characters.
 
 </deflist options>
 
@@ -93,25 +93,25 @@ The width of the role text fields, in characters.<p>
 
 <section "INSTANCE COMMAND">
 
-rolemapfield(n) widgets have the following subcommands:<p>
+rolemapfield(n) widgets have the following subcommands:
 
 <deflist instance>
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
-Sets the value of one or more of the object's options.<p>
+Sets the value of one or more of the object's options.
 
 <defitem get {<i>pathName</i> get}>
 
-Returns the current value of the field.<p> 
+Returns the current value of the field. 
 
 <defitem set {<i>pathName</i> set <i>value</i>}>
 
-Sets the current value of the field.<p>
+Sets the current value of the field.
 
 </deflist instance>
 
@@ -125,7 +125,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

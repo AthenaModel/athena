@@ -15,19 +15,19 @@ parmdb(n) manages the Athena model parameter database: the collection of
 parameters which are used to tune the behavior of the models and
 software.  At base, the parameter database is a <xref mars:parmset(n)>
 which collects the application-specific and library module
-parameters into one place, and wraps them with additional behavior.<p>
+parameters into one place, and wraps them with additional behavior.
 
-The full set of parameters is defined in <xref parmdb(5)>.<p>
+The full set of parameters is defined in <xref parmdb(5)>.
 
 <subsection "Mutators">
 
 Each instance of parmdb(n) provides a set of mutator subcommands for use
 by <xref athenadb(n)>.  These are not documented here, as they are of no
-use to external clients.<p>
+use to external clients.
 
 <section "COMMANDS">
 
-parmdb(n) provides the following commands for use by the application.<p>
+parmdb(n) provides the following commands for use by the application.
 
 <deflist commands>
 
@@ -36,37 +36,37 @@ parmdb(n) provides the following commands for use by the application.<p>
 Creates a new <iref parmdb> instance named <i>object</i>, and
 returns the fully qualified object name.  If given, <i adb_> should be
 the name of an enclosing <xref athenadb(n)> object; when using 
-<xref parmdb(n)> separately, this parameter should be omitted.<p>
+<xref parmdb(n)> separately, this parameter should be omitted.
 
 </deflist commands>
 
 <section "INSTANCE COMMANDS">
 
 Each instance of parmdb(n) provides all of the <xref mars:parmset(n)> 
-instance subcommands; in addition, it adds the following.<p>
+instance subcommands; in addition, it adds the following.
 
 <deflist instance>
 
 <defitem validate {<i obj> validate <i parm>}>
 
 Throws <b INVALID> if <i parm> isn't a defined parameter; otherwise
-returns parameter name in canonical form.<p>
+returns parameter name in canonical form.
 
 <defitem nondefaults {<i obj> nondefaults ?<i pattern>?}>
 
 Returns a list of the names of the parameters with non-default values.
 If <i pattern> is given, it is a glob-style wildcard pattern; only
-names that match the pattern are included in the result.<p>
+names that match the pattern are included in the result.
 
 </deflist instance>
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

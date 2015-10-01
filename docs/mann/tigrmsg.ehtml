@@ -14,32 +14,31 @@ namespace import ::projectlib::tigrmsg
 tigrmsg(n) parses XML returned as a result of a request for TIGR messages.
 
 The data parsed from the XML is returned in the form of a nested dictionary.  
-See <xref "DATA DICTIONARY"> for a description of the data returned.<p>
+See <xref "DATA DICTIONARY"> for a description of the data returned.
 
 <section "COMMANDS">
 
-tigrmsg(n) provides the following commands:<p>
+tigrmsg(n) provides the following commands:
 
 <deflist commands>
 
 <defitem "tigrmsg parse" {tigrmsg parse <i>xml</i>}>
 
 This method parses XML that has resulted from a TIGR message request.  The 
-data extracted from the XML is returned in a nested dictionary.<p>
+data extracted from the XML is returned in a nested dictionary.
 
 <defitem "tigrmsg parsefile" {tigrmsg parsefile <i>filename</i>}>
 
 This method parses XML from a given file called <i>filename</i>.  The XML 
-should comply with the TIGR message format.<p>
+should comply with the TIGR message format.
 
 </deflist commands>
 
 <section "DATA DICTIONARY">
 
 Data parsed by the <xref tigrmsg(n)> object is returned as a nested dictionary
-with the following form:<p>
+with the following form:
 
-<code>
 <ul>
   <li>CID          => The unique ID of the message
   <li>BODY         => Entire XML body of the TIGR message
@@ -67,15 +66,13 @@ with the following form:<p>
   </ul>
 </ul>
 
-</code><p>
-
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Dave Hanks<p>
+Dave Hanks
 
 <section HISTORY>
 

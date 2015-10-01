@@ -13,12 +13,12 @@ namespace import ::athena::*
 
 This man page describes a component of the <xref athena(n)> package
 that allows the user to select and retrieve specific kinds of values 
-according to rules.<p>
+according to rules.
 
 A <i gofer value> is a member of a <i gofer type> that represents a
 particular data value or set of values to be returned on demand. This
 component defines a set of commands used to create, validate, and 
-evaluate gofer values.<p>
+evaluate gofer values.
 
 Each gofer type has a type name, e.g., <b CIVGROUPS> and defines one or
 more rules for retrieving data of that type, each of which has a rule name, 
@@ -27,48 +27,48 @@ e.g., <b BY_VALUE>.
 A gofer value, then, is a dictionary which contains at least two keys, 
 <tt _type> and <tt _rule>, which are set to the gofer type name and rule 
 name respectively.  The number and names of the remaining keys are type 
-and rule-specific.<p>
+and rule-specific.
 
 The complete set of gofer types defined by <xref athena(n)> may be found
-in the Athena on-line help.<p>
+in the Athena on-line help.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> gofer</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist commands>
 
 <defitem "eval" {<i adb> gofer eval <i gdict>}>
 
 Evaluates gofer value <i gdict>, returning the requested data according
-to the type and rule.<p>
+to the type and rule.
 
 <defitem "get" {<i adb> gofer get <i typename rulename> ?<i args...>?}>
 
 Makes a new gofer value with the given <i typename>, <i rulename> and
-argument list, and immediately evaluates it, returning the result.<p>
+argument list, and immediately evaluates it, returning the result.
 
 <defitem "gtype" {<i adb> gofer gtype <i typename>}>
 
-Returns the Tcl object that implements the named gofer type.<p>
+Returns the Tcl object that implements the named gofer type.
 
 <defitem "keys" {<i adb> gofer keys <i typename>}>
 
 Returns the gofer type's keys, i.e., the list of parameter names
-defined by the type's rules.<p>
+defined by the type's rules.
 
 <defitem "make" {<i adb> gofer make <i typename rulename> ?<i args...>?}>
 
 Makes a new gofer value with the given <i typename>, <i rulename> and
-argument list.  The arguments must match the rule's parameter list.<p>
+argument list.  The arguments must match the rule's parameter list.
 
 <defitem "narrative" {<i adb> gofer narrative <i gdict> ?-brief?}>
 
@@ -76,18 +76,18 @@ Returns a narrative string for gofer value <i gdict>.  The narrative
 describes the rule for retrieving the data in human-readable terms, 
 e.g., e.g., "all civilian groups resident in neighborhood NB1".  If
 the <tt -brief> option is included, long lists in the narrative might 
-be abbreviated with an ellipsis ("...").<p>
+be abbreviated with an ellipsis ("...").
 
 <defitem "validate" {<i adb> gofer validate <i gdict>}>
 
 Validates gofer value <i gdict>, returning it in canonical form if valid
-and throwing <b INVALID> otherwise.<p>
+and throwing <b INVALID> otherwise.
 
 <defitem "delegate" {<i adb> gofer <i typename> <i subcommand args...>}>
 
 This command passes the <i subcommand> and <i args> along to the gofer
 type's Tcl object.  This is primarily useful when working with a
-gofer value that is supposed to be of a specific type, e.g.,<p>
+gofer value that is supposed to be of a specific type, e.g.,
 
 <example>
 # Validate a value of the CIVGROUPS gofer type
@@ -96,26 +96,26 @@ gofer value that is supposed to be of a specific type, e.g.,<p>
 </example>
 
 The full set of gofer type subcommands is beyond the scope of this
-man page; see <tt lib/athena/gofer_type.tcl>.<p>
+man page; see <tt lib/athena/gofer_type.tcl>.
 
 </deflist commands>
 
 <subsection "Private Subcommands">
 
 The <tt><i adb> gofer</tt> command takes the following subcommands, where
-where <i adb> is an instance of <xref athenadb(n)>.<p>
+where <i adb> is an instance of <xref athenadb(n)>.
 
 <deflist commands>
 
 <defitem "check" {<i adb> gofer check}>
 
 Does a sanity check on all defined gofer types.  This is provided for
-use by the test suite.<p>
+use by the test suite.
 
 </deflist commands>
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 
 </manpage>

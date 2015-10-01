@@ -19,21 +19,21 @@ tactic type define DEFROE {n g text1} actor {
 </pre>
 
 resulting in a type ensemble called <code>tactic::DEFROE</code>.  The
-definition script is simply a Snit type ensemble definition script.<p>
+definition script is simply a Snit type ensemble definition script.
 
 Every tactic ensemble must implement the subcommands defined
-in this interface; it may also define other commands as needed.<p>
-Thus, a tactic is essentially a special kind of module.<p>
+in this interface; it may also define other commands as needed.
+Thus, a tactic is essentially a special kind of module.
 
 In addition, every tactic type must provide two orders,
-TACTIC:<i>type</i>:CREATE and TACTIC:<i>type</i>:UPDATE.<p>
+TACTIC:<i>type</i>:CREATE and TACTIC:<i>type</i>:UPDATE.
 
 <section "SUBCOMMANDS">
 
 Each <xref tactic(i)> ensemble must implement at least the following
 subcommands.  Note that they all take the "tactic parameter
 dictionary", or <i>tdict</i>, as their first argument.  This is simply a
-row from the tactics table in the form of a dictionary.<p>
+row from the tactics table in the form of a dictionary.
 
 <deflist subcommands>
 
@@ -41,25 +41,25 @@ row from the tactics table in the form of a dictionary.<p>
 
 Returns a human-readable narrative description of the tactic.  The
 description should include all of the tactic's parameters, so that the
-narrative is a complete description of the tactic.<p>
+narrative is a complete description of the tactic.
 
 <defitem check {check <i>tdict</i>}>
 
 Sanity-checks the tactic's parameters.  Returns a human-readable
 string describing any errors that are found, and the empty string
 otherwise.  If a force group referenced by a tactic is deleted, for
-example, the error message might be "Force group no longer exists."<p>
+example, the error message might be "Force group no longer exists."
 
 Many tactic parameters can be valid when the tactic is created but
 become invalid later, especially during scenario preparation.  For
 example, a tactic might require a force group that is owned by the
 actor executing the tactic...and the force group might subsequently be
-assigned to some other actor.<p>
+assigned to some other actor.
 
 Checking for such errors as they occur is tedious and error-prone, and
 inconvenient for the user.  Instead, we simply sanity-check all
 tactics at appropriate times, such as when the scenario is locked.
-We make any problems known to the user, and allow them to fix them.<p>
+We make any problems known to the user, and allow them to fix them.
 
 <defitem dollars {dollars <i>tdict</i>}>
 
@@ -67,7 +67,7 @@ Returns the estimated cost in dollars of executing the tactic
 once, for display in the GUI.  The
 <xref mars:marsmisc(n) moneyfmt> command should be used to
 format numeric output.  If an estimated cost in dollars doesn't
-make sense for this tactic, return "n/a".<p>
+make sense for this tactic, return "n/a".
     
    
 <defitem execute {execute <i>tdict</i>}>
@@ -75,14 +75,14 @@ make sense for this tactic, return "n/a".<p>
 Determines whether or not the tactic is affordable, given 
 its parameters and the available assets.  If it is not, the command
 returns 0.  If it is, the assets are expended, the tactic is executed,
-and the command returns 1.<p>
+and the command returns 1.
 
 
 </deflist subcommands>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

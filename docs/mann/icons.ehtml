@@ -13,53 +13,53 @@ package require projectgui <version>
 This module defines a number of standard icon images.  Each icon is a
 standard Tk image; all are defined in the <code>::projectgui::icon</code>
 namespace.  <b>Note that it's necessary to use the fully qualified
-name!</b>.<p>
+name!</b>.
 
 Icons are generally square; each name is suffixed with the size of the
 icon in pixels, e.g., <code>::projectgui::icon::pencil22</code> is a 22x22
-pixel icon.<p>
+pixel icon.
 
 <section ICONS>
 
-The module defines the following icons.<p>
+The module defines the following icons.
 
 <deflist icons>
 
 <defitem check22 {::projectgui::icon::check22}>
 
-A green "checkmark" icon.<p>
+A green "checkmark" icon.
 
 <defitem pause22 {::projectgui::icon::pause22}>
 
-A "pause" icon, two black vertical bars.<p>
+A "pause" icon, two black vertical bars.
 
 <defitem pencil22 {::projectgui::icon::pencil22}>
 
-A pencil, i.e., "Edit".<p>
+A pencil, i.e., "Edit".
 
 <defitem play22 {::projectgui::icon::play22}>
 
-A "play" icon, a black triangle pointing right.<p>
+A "play" icon, a black triangle pointing right.
 
 <defitem plus22 {::projectgui::icon::plus22}>
 
-A bold plus sign, i.e., "Add".<p>
+A bold plus sign, i.e., "Add".
 
 <defitem rewind22 {::projectgui::icon::rewind22}>
 
 A "rewind to start" icon, a black triangle pointing left into a solid
-black line.<p>
+black line.
 
 <defitem x22 {::projectgui::icon::x22}>
 
-A large red "X", i.e., "Cancel" or "Delete".<p>
+A large red "X", i.e., "Cancel" or "Delete".
 
 </deflist icons>
 
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

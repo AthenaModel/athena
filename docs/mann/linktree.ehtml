@@ -15,16 +15,16 @@ The linktree(n) widget displays a tree of links, each with an icon
 and label.  The top-level set of links is read from a <xref mydomain(i)>
 URL returning a <b>tcl/linkdict</b> given the <code>-url</code>.  The
 widget will follow these links recursively until the entire tree is
-built.<p>
+built.
 
 If <code>-lazy</code> is true, the tree is built lazily; linktree(n)
 doesn't add child links until a parent link is expanded by the user.
 For large trees, this can be much faster.
-<p>
+
 
 <section COMMANDS>
 
-This module defines the following commands.<p>
+This module defines the following commands.
 
 <deflist commands>
 
@@ -32,7 +32,7 @@ This module defines the following commands.<p>
 
 Creates a new <iref linktree> widget named <i>pathName</i>, and
 returns <i>pathName</i>.  The widget supports the following
-options, in addition to those provided by the underlying frame widget:<p>
+options, in addition to those provided by the underlying frame widget:
 
 <deflist options>
 
@@ -41,27 +41,27 @@ options, in addition to those provided by the underlying frame widget:<p>
 Specifies a <i>command</i> to be called
 whenever the selected entity changes, for any reason whatsoever
 (including explicit calls to <iref set>.  The newly selected
-entity's name is appended to the <i>command</i> as an argument.<p>
+entity's name is appended to the <i>command</i> as an argument.
 
 <defopt {-errorcmd <i>command</i>}>
 
 Specifies a <i>command</i> to be called with one argument, an
 error message, if the widget catches an error while retrieving the
-<code>-url</code> or one of its subsidiary links.<p>
+<code>-url</code> or one of its subsidiary links.
 
 <defopt {-lazy <i>flag</i>}>
 
 If true, the widget will retrieve child links in a lazy fashion, e.g.,
 subtrees will not be populated until the parent item is expanded by
 the user.  Otherwise, the entire tree is populated immediately on
-<iref refresh>.  Defaults to false.<p>
+<iref refresh>.  Defaults to false.
 
 <defopt {-url <i>url</i>}>
 
 Specifies the URL at which the widget can retrieve a
 <b>tcl/linkdict</b>.  The widget will attempt to
 recursively retrieve a <b>tcl/linkdict</b> for each link in
-the returned dictionary.<p>
+the returned dictionary.
 
 </deflist options>
 
@@ -69,22 +69,22 @@ the returned dictionary.<p>
 
 <section "INSTANCE COMMAND">
 
-linktree(n) widgets have the following subcommands:<p>
+linktree(n) widgets have the following subcommands:
 
 <deflist instance>
 
 <defitem cget {<i>pathName</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>pathName</i> configure <i>option value...</i>}>
 
 Sets the value of one or more of the object's
-options.<p>
+options.
 
 <defitem get {<i>pathName</i> get}>
 
-Returns the URL of the currently selected entity, or "" if none.<p>
+Returns the URL of the currently selected entity, or "" if none.
 
 <defitem refresh {<i>pathName</i> refresh}>
 
@@ -92,16 +92,16 @@ Causes the widget to reload the displayed entities from the
 server.  Call this when the set of entities to display has
 changed.  Note that this call will not change the open/close state of
 the entity type folders, nor will it change the selected entity,
-unless the selected entity no longer exists.<p>
+unless the selected entity no longer exists.
 
 <defitem set {<i>pathName</i> set <i>url</i>}>
 
 Selects the entity with the given <i>url</i>.  If <i>url</i> is
-unrecognized, or is the empty string, the selection is cleared.<p>
+unrecognized, or is the empty string, the selection is cleared.
 
 Note that a sequence of calls to <iref set> with the same
 <i>url</i> will result in at most one call of the
-<code>-changecmd</code>.<p>
+<code>-changecmd</code>.
 
 </deflist instance>
 
@@ -115,7 +115,7 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

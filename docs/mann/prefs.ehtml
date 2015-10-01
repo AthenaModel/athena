@@ -13,11 +13,11 @@ namespace import ::projectlib::*
 
 prefs(n) manages the Athena user preferences; see <xref prefs(5)>.
 The preferences are saved automatically whenever a parameter's value
-changes to the file <code>~/.athena/user.prefs</code>.<p>
+changes to the file <code>~/.athena/user.prefs</code>.
 
 <section "COMMANDS">
 
-prefs(n) provides the following commands:<p>
+prefs(n) provides the following commands:
 
 
 <deflist commands>
@@ -25,7 +25,7 @@ prefs(n) provides the following commands:<p>
 <defitem "prefs init" {prefs init}>
 
 Initializes the module.  This should be called once, at application
-start-up.  It defines the full set of preference parameters.<p>
+start-up.  It defines the full set of preference parameters.
 
 <defitem "prefs get"      {prefs get <i>parm</i>}>
 <defitem "prefs names"    {prefs names ?<i>pattern</i>?}>
@@ -33,41 +33,41 @@ start-up.  It defines the full set of preference parameters.<p>
 <defitem "prefs manpage"  {prefs manpage}>
 
 These commands are simply delegated to the underlying
-<xref parmset(n)>.<p>
+<xref parmset(n)>.
 
 <defitem "prefs help" {prefs help <i>parm</i>}>
 
-Returns the parameter's help string.<p>
+Returns the parameter's help string.
 
 <defitem "prefs set" {prefs set <i>parm value</i>}>
 
-Sets the parameter's value and saves the preferences to disk.<p>
+Sets the parameter's value and saves the preferences to disk.
 
 <defitem "prefs reset" {prefs reset}>
 
 Resets all preference parameters to their default values, and
-saves them to disk.<p>
+saves them to disk.
 
 <defitem "prefs list" {prefs list ?<i>pattern</i>?}>
 
 Lists all parameters and their values.  If <i>pattern</i> is given,
 it's a wildcard pattern; only parameters whose names match the pattern
-are listed.<p>
+are listed.
 
 <defitem "prefs load" {prefs load}>
 
 Loads the preferences from disk, if the preference file exists.  This
-is usually only done at application start-up.<p>
+is usually only done at application start-up.
 
 </deflist commands>
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

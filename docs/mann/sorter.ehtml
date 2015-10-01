@@ -14,7 +14,7 @@ namespace import ::projectgui::*
 This module defines the <code>::projectgui::sorter</code> widget,
 which allows the user to sort a list of items into bins.  The widget
 implements most of the <xref field(i)> interface, with the exception
-of the <b>-state</b> option.<p>
+of the <b>-state</b> option.
 
 The use case is as follows.  The application has a set of items (e.g.,
 human-readable reports from some external source) and needs the user's 
@@ -22,7 +22,7 @@ help to sort them into bins to enable further automated processing.  The
 application sets up the sorter(n) widget with the set of bins, a list of
 unique IDs for the items to sort, and the means to retrieve information 
 about the items.  The user sorts the items into bins, and then returns
-control to the application to use the sorted data.<p>
+control to the application to use the sorted data.
 
 <subsection "Configuration">
 
@@ -30,41 +30,41 @@ A sorter(n) widget contains three panes: the bin set, the item list, and
 the detail pane.  The bin set is a collection of bin buttons; it always
 contains at least two bins, <b>unsorted</b> and <b>ignored</b>.  
 Items start out in the <b>unsorted</b> bin.  The user may put items that
-don't fit any of the other bins into the <b>ignored</b> bin.<p>
+don't fit any of the other bins into the <b>ignored</b> bin.
 
 The bin set is configured using the <b>-bincols</b> and <b>-binspec</b> 
-options.<p>
+options.
 
 The item list is a <xref databrowser(n)> widget; it is configured using
-the <b>-itemcmd</b> and <b>-itemlayout</b> options.<p>
+the <b>-itemcmd</b> and <b>-itemlayout</b> options.
 
 The detail pane is an <xref htmlviewer(n)>; it is configured using the
-<b>-detailcmd</b> and <b>-helptext</b> options.<p>
+<b>-detailcmd</b> and <b>-helptext</b> options.
 
 <section COMMANDS>
 
-This module defines the following command:<p>
+This module defines the following command:
 
 <deflist commands>
 
 <defitem sorter {sorter <i>win ?options...?</i>}>
 
-Creates a new <iref sorter> widget named <i>win</i>.<p>
+Creates a new <iref sorter> widget named <i>win</i>.
 
-The <iref sorter> widget may be created with the following options:<p>
+The <iref sorter> widget may be created with the following options:
 
 <deflist sorter options>
 
 <defopt {-bincols <i>num</i>}>
 
-Bins can be layed out in 1, 2, or more columns.  The default is 2.<p>
+Bins can be layed out in 1, 2, or more columns.  The default is 2.
 
 <defopt {-binspec <i>dict</i>}>
 
 The "bin specification" is a dictionary of bin ID strings and text labels
 that specifies the bins into which items can be sorted.
 The IDs should be short ID strings containing no whitespace or special
-characters.  The labels are displayed to the user.<p>
+characters.  The labels are displayed to the user.
 
 <defopt {-changecmd <i>cmd</i>}>
 
@@ -72,39 +72,39 @@ The <i>cmd</i> is called each time the value of the widget changes; the
 new value is passed to the command as an additional argument.  The value
 of the widget is a dictionary whose keys are the bin IDs (including
 <b>unsorted</b> and <b>ignored</b>) and whose values are lists of item
-IDs in the bins.<p>
+IDs in the bins.
 
 <defopt {-detailcmd <i>cmd</i>}>
 
 This command is called when an item is selected in the item list; it is
 passed the selected item's ID as an additional argument.  It should 
 return an HTML string that gives all of the item's details, for 
-display in the detail pane.<p>
+display in the detail pane.
 
 <defopt {-helptext <i>html</i>}>
 
 This option specifies HTML text to be displayed in the detail pane when 
 no item is selected in the item list.  Usually this text will explain
-what the items are, what the bins mean, and how to use the widget.<p>
+what the items are, what the bins mean, and how to use the widget.
 
 <defopt {-itemcmd <i>cmd</i>}>
 
 This command is called by the item list to retrieve a dictionary of
 information about each item in the list.  The keys should match the
 column names in the <b>-itemlayout</b> specification.  It is mapped to the 
-<xref databrowser(n)>'s <b>-dictcmd</b> option.<p>
+<xref databrowser(n)>'s <b>-dictcmd</b> option.
 
 <defopt {-itemlabel <i>text</i>}>
 
 The sorter(n) widget can sort all kinds of items.  The <i>text</i> is a
 plural noun indicating the kind of items being sorted; it defaults to
-"Items".<p>
+"Items".
 
 <defopt {-itemlayout <i>spec</i>}>
 
 This option defines the column layout for the itemlist.  It is mapped to
 the <xref databrowser(n)>'s <b>-layout</b> option, and has the identical
-syntax.<p>
+syntax.
 
 </deflist sorter options>
 
@@ -116,50 +116,50 @@ syntax.<p>
 
 <defitem cget {<i>win</i> cget <i>option</i>}>
 
-Returns the value of the specified <i>option</i>.<p>
+Returns the value of the specified <i>option</i>.
 
 <defitem configure {<i>win</i> configure <i>option value...</i>}>
 
-Sets the values of the specified <i>options</i>.<p>
+Sets the values of the specified <i>options</i>.
 
 <defitem clear {<i>win</i> clear}>
 
-Clears the widget of all item data, and calls the <b>-changecmd</b>.<p>
+Clears the widget of all item data, and calls the <b>-changecmd</b>.
 
 <defitem get {<i>win</i> get ?<i>bin</i>?}>
 
 By default, returns the widget's value, which is a <i>bindict</i>: a 
 dictionary whose keys are bin IDs (including <b>unsorted</b> and 
-<b>ignored</b>) and whose values are lists of item IDs.<p>
+<b>ignored</b>) and whose values are lists of item IDs.
 
 If a <i>bin</i> ID is given, returns the list of item IDs currently
-in that bin.  Note that a single item can be sorted into multiple bins.<p>  
+in that bin.  Note that a single item can be sorted into multiple bins.  
 
 <defitem set {<i>win</i> set <i>bindict</i>}>
 
 Sets the widget's value to given <i>bindict</i>, where the <i>bindict</i>
 is as described for the <iref get> subcommand.  
-Calls the <b>-changecmd</b>.<p>
+Calls the <b>-changecmd</b>.
 
 <defitem sortset {<i>win</i> sortset <i>idlist</i>}>
 
 Clears the widget and puts the IDs in the <i>idlist</i> into the
-<b>unsorted</b> bin.<p>
+<b>unsorted</b> bin.
 
 
 </deflist instance>
 
 <section ENVIRONMENT>
 
-sorter(n) requires Tcl 8.5 or later.<p>
+sorter(n) requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Dave Hanks, Will Duquette<p>
+Dave Hanks, Will Duquette
 
 <section HISTORY>
 
-Original widget.<p>
+Original widget.
 
 
 </manpage>

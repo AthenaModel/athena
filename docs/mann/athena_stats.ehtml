@@ -14,73 +14,73 @@ namespace import ::athena::*
 This man page describes a component of the <xref athena(n)> package that
 is responsible for computing statistics on request about the current
 run of Athena.  These are values computed from the history data 
-"on the fly" rather than as the program runs.<p>
+"on the fly" rather than as the program runs.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> stats</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist commands>
 
 <defitem "groupsbybsys" {<i adb> stats groupsbybsys}>
-Returns a dictionary of groups by belief system id.<p>
+Returns a dictionary of groups by belief system id.
 
 <defitem "moodbybsys" {<i adb> stats moodbybsys <i t>}>
 Computes a roll-up of mood by group and belief system and returns a
-dictionary of composite mood by belief system ID at time <i t>.<p>
+dictionary of composite mood by belief system ID at time <i t>.
 
 <defitem "moodbygroups" {<i adb> stats moodbygroups <i grps t>}>
 Computes and returns the mood for the set of civilian <i grps> at 
-time <i t>.<p>
+time <i t>.
 
 <defitem "satbybsys" {<i adb> stats satbybsys <i t clist>}>
 Computes a roll-up of satisfaction at time <i t> by belief system,
 where <i clist> is a list of concerns.  If <i clist> includes all four
 concerns, then the result is the same as for <iref moodbybsys>.
-Returns a dictionary of composite satisfaction by belief system ID.<p>
+Returns a dictionary of composite satisfaction by belief system ID.
 
 
 <defitem "satbygroups" {<i adb> stats satbygroups <i grps concerns t>}>
 Computes a roll-up of satisfaction at time <i t> for the specific
 set of civilian <i grps> and <i concerns>, return the computed
-value.<p>
+value.
 
 <defitem "satbynb" {<i adb> stats satbynb <i t clist>}>
 Computes a roll-up of satisfaction at time <i t> neighborhood,
 where <i clist> is a list of concerns.  If <i clist> includes all four
 concerns, then the result is the same as for the <b nbmood> variable,
 which is always computed automatically.
-Returns a dictionary of composite satisfaction by neighborhood.<p>
+Returns a dictionary of composite satisfaction by neighborhood.
 
 
 <defitem "pbmood" {<i adb> stats pbmood <i t> ?<i local>?}>
 Computes the playbox mood across all groups at time <i t>.  If 
 the <i local> flag is true (the default) only groups in "local"
 neighborhoods are included; otherwise, all groups are included.
-Returns the computed mood.<p>
+Returns the computed mood.
 
 <defitem "pbsat" {<i adb> stats pbsat <i t clist> ?<i local>?}>
 Computes a roll-up of satisfaction at time <i t> for the entire
 playbox, where <i clist> is a list of concerns.  If <i clist> includes 
 all four concerns, then the result is the same as for <iref pbmood>.
-Returns the composite satisfaction.<p>
+Returns the composite satisfaction.
 
 </deflist commands>
 
 <subsection "Private Subcommands">
 
-None defined.<p>
+None defined.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 
 </manpage>

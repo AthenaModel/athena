@@ -13,34 +13,34 @@ package require projectlib <version>
 parmdict(n) is a tool for managing and validating parameter dictionaries,
 e.g., the query dictionary in an HTTP request.  A handler can "prepare"
 each of the parameter values, possibly transforming or validating them
-along the way.  If there are errors, the errors can be reported back.<p>
+along the way.  If there are errors, the errors can be reported back.
 
 In general, parmdict(n) provides an <xref mars:order(n)>-like validation
-system for use in general procedures.<p>
+system for use in general procedures.
 
 <section "COMMANDS">
 
 <tt ::projectlib::parmdict> is an <tt oo::class>.  It provides the 
-following commands.<p>
+following commands.
 
 <deflist commands>
 
 <defitem "parmdict create" {parmdict create <i name> ?<i dict>}>
 
 Creates a new instance of parmdict(n) with the given command <i name>
-for the given initial parameter <i dict>.<p>
+for the given initial parameter <i dict>.
 
 <defitem "parmdict new" {parmdict new ?<i dict>?}>
 
 Creates a new instance of parmdict(n) for the given initial
-parameter <i dict> and returns the instance's name.<p>
+parameter <i dict> and returns the instance's name.
 
 </deflist commands>
 
 
 <section "INSTANCE COMMANDS">
 
-Instances of parmdict(n) provide the following subcommands.<p>
+Instances of parmdict(n) provide the following subcommands.
 
 <deflist instance>
 
@@ -48,13 +48,13 @@ Instances of parmdict(n) provide the following subcommands.<p>
 
 Assigns each listed <i parm>'s value to a variable of the same name
 in the caller's context.  It's an error if <i parm> isn't defined in
-the parmdict, so be sure to <iref prepare>.<p>
+the parmdict, so be sure to <iref prepare>.
 
 <defitem badparm {<i obj> badparm <i parm>}>
 
 Returns 1 if it's known that the <i parm> requires no further validation:
 either there is already a known error, or the parameter is optional and
-its value is the empty string.<p>
+its value is the empty string.
 
 <defitem checkon {<i obj> checkon <i parm script>}>
 
@@ -64,29 +64,29 @@ together.  If the <i parm> isn't already known to be "bad" (in the sense
 of <iref badparm>), the <i script> will be executed in the caller's 
 context.  If the script throws INVALID, the error will be caught and
 <i parm> will be rejected.  Naturally, <iref reject> and other commands
-can also be used explicitly.<p>
+can also be used explicitly.
 
 <defitem errors {<i obj> errors}>
 
 If parameter errors have been discovered, returns a dictionary of
 parameter names and error messages.  In some cases, the error dictionary
 might have one key, "*", and a message encompassing the whole set of
-parameters.<p>
+parameters.
 
 If no errors have been discovered, this command returns an empty 
-dictionary.<p>
+dictionary.
 
 <defitem get {<i obj> get <i parm>}>
 
-Returns the value of <i parm> if <i parm> is defined, and "" otherwise.<p>
+Returns the value of <i parm> if <i parm> is defined, and "" otherwise.
 
 <defitem ok {<i obj> ok}>
 
-Returns 1 if no parameter errors have been discovered, and 0 otherwise.<p>
+Returns 1 if no parameter errors have been discovered, and 0 otherwise.
 
 <defitem parms {<i obj> parms}>
 
-Returns the current parameter dictionary.<p>
+Returns the current parameter dictionary.
 
 <defitem prepare {<i obj> prepare <i parm> ?<i options...>?}>
 
@@ -94,76 +94,76 @@ This one command does most of the work.  First it ensures that the <i parm>
 is present in the dictionary, adding it with an empty value if necessary.
 Next it executes each of the options in order from left to right; 
 each option can transform or validate the parameter's value in some way.  
-The command returns the final value of the parameter.<p>
+The command returns the final value of the parameter.
 
-The options are as follows:<p>
+The options are as follows:
 
 <deflist options>
 
 <defopt {-default <i defvalue>}>
 
-If the parameter's value is the empty string, assigns <i defvalue>.<p>
+If the parameter's value is the empty string, assigns <i defvalue>.
 
 <defopt {-ident}>
 
 Requires that the parameter's value be a valid identifier, as determined
-by the <tt identifier> type in <xref mars:marsmisc(n)>.<p>
+by the <tt identifier> type in <xref mars:marsmisc(n)>.
 
 <defopt {-notin <i list>}>
 
 Requires that the parameter's value not be in the given list; if it is,
-it will be rejected with the message "Duplicate <i parm>".<p>
+it will be rejected with the message "Duplicate <i parm>".
 
 <defopt {-remove}>
 
 Removes the parameter from the dictionary.  When this option is used,
-the caller will usually capture the command's return value.<p>
+the caller will usually capture the command's return value.
 
 <defopt {-required}>
 
 The <i parm> is required; it is rejected if its value is the empty
-string.<p>
+string.
 
 <defopt {-toupper}>
 
-Converts the parameter's value to upper case.<p>
+Converts the parameter's value to upper case.
 
 <defopt {-tolower}>
 
-Converts the parameter's value to lower case.<p>
+Converts the parameter's value to lower case.
 
 <defopt {-type <i vtype>}>
 
 Validates the parameter's value using the named validation type, saving
 the return value.  If the command throws INVALID, the parameter
 will be rejected.  Note that "<tt>-type <i mytype></tt>" is equivalent
-to "<tt>-with {<i mytype> validate}</tt>.<p>
+to "<tt>-with {<i mytype> validate}</tt>.
 
 <defopt {-with <i cmd>}>
 
 Passes the parameter's value to the <i cmd> as an additional argument,
 saving the return value.  If the command throws INVALID, the parameter
-will be rejected.<p>
+will be rejected.
 
 </deflist options>
 
 <defitem prune {<i obj> prune}>
 
-Removes any parameters for which <i prepare> has not been called.<p>
+Removes any parameters for which <i prepare> has not been called.
 
 <defitem reject {<i obj> reject <i parm message>}>
 
 A client calls this to explicitly reject a particular <i parm>'s value.
-The <i message> is added to the <iref errors> dictionary.<p>
+The <i message> is added to the <iref errors> dictionary.
 
 <defitem remove {<i obj> remove <i parm>}>
 
 Removes the parameter from the parmdict, returning its value.  If the
-parameter is undefined, returns "".<p>
+parameter is undefined, returns "".
 
 <defitem setdict {<i obj> setdict <i dict>}>
 
-Re-initializes the object with the new parameter <i dict>.<p>
+Re-initializes the object with the new parameter <i dict>.
 
 
 
@@ -171,11 +171,11 @@ Re-initializes the object with the new parameter <i dict>.<p>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-Original package, based on <xref mars:order(n)>'s validation commands.<p>
+Original package, based on <xref mars:order(n)>'s validation commands.
 
 </manpage>
 

@@ -21,7 +21,7 @@ type takes the same <b>-textwidth</b>, <b>-listheight</b>,
 options as the widget, and requires the <b>-rolespeccmd</b> option.  The value
 of this option is a command that returns a <b>-rolespec</b>; it may reference
 the values of the fields preceding it in the form by using their field names
-as Tcl variables, e.g.,<p>
+as Tcl variables, e.g.,
 
 <pre>    -rolespeccmd {::MyRoleSpec $curse_id}</pre>
 
@@ -35,11 +35,11 @@ directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
-Original package.<p>
+Original package.
 
 </manpage>
 

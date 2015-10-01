@@ -13,7 +13,7 @@
 prefs(5) defines the Athena user preference settings.  These are
 distinct from the model parameters defined in <xref parmdb(5)> in
 that they apply to the application rather than to individual
-scenarios.  Therefore,<p>
+scenarios.  Therefore,
 
 <ul>
   <li> They are not saved in scenario files.
@@ -22,16 +22,16 @@ scenarios.  Therefore,<p>
 
 <xref prefs(n)> handles prefs(5) files using the <xref mars:parmset(n)>
 mechanism.  A valid file consists of zero or more parameter settings,
-each of which has this basic syntax,<p>
+each of which has this basic syntax,
 
-<pre>parm <i>name</i> <i>value</i></pre><p>
+<pre>parm <i>name</i> <i>value</i></pre>
 
 where <i>value</i> must be quoted if it contains whitespace.  See
-<xref mars:parmset(n)> for more details.<p>
+<xref mars:parmset(n)> for more details.
 
 <section PARAMETERS>
 
-The valid parameters are as follows:<p>
+The valid parameters are as follows:
 
 <expand [project tclsh {
     package require projectlib
@@ -41,7 +41,7 @@ The valid parameters are as follows:<p>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

@@ -51,7 +51,7 @@
             set title [sqlSectionLink $section]
 
             append out \
-                "The following schema definitions are from $title.<p>\n\n"
+                "The following schema definitions are from $title.\n\n"
 
             append out "<pre>\n"
             append out [join $schema "\n\n"]
@@ -78,7 +78,7 @@
             }
         }
 
-        return "<ul>\n$out</ul><p>"
+        return "<ul>\n$out</ul>"
     }
 }>
 
@@ -98,12 +98,12 @@ database format.  It is an SQLite3 format based on
 <xref mars:sqldocument(n)>; as such, it automatically includes all
 <xref mars:sqlsection(i)>s defined by the Mars infrastructure.  It
 also includes all tables, indices, and so forth defined explicitly for
-Mars.<p>
+Mars.
 
 <xref athena(1)> uses scenariodb(n) to define its
 run-time database (RDB), and to save and load scenario data to and
 from external files.  By convention, these "scenario files" have a
-"<code>.adb</code>" (Athena Scenario) extension.<p>
+"<code>.adb</code>" (Athena Scenario) extension.
 
 <section COMMANDS>
 
@@ -114,12 +114,12 @@ from external files.  By convention, these "scenario files" have a
 Creates a new scenariodb(n) object called <i>name</i>. The object is
 represented as a new Tcl command in the caller's scope;
 <iref scenariodb> returns the fully-qualified form of the
-<i>name</i>.<p>
+<i>name</i>.
 
 Before the new scenariodb(n) can be used, a database file must be
-<iref open>ed, and possibly <iref clear>ed.<p>
+<iref open>ed, and possibly <iref clear>ed.
 
-The scenariodb(n) may be created with the following options:<p>
+The scenariodb(n) may be created with the following options:
 
 <deflist options>
 
@@ -127,11 +127,11 @@ The scenariodb(n) may be created with the following options:<p>
 
 Specifies a <xref mars:simclock(n)> object, or the equivalent.  This
 option is delegated to the underlying <xref mars:sqldocument(n)> object,
-which uses it to provide <xref mars:simclock(n)>-related SQL functions.<p>
+which uses it to provide <xref mars:simclock(n)>-related SQL functions.
 
 <defopt {-explaincmd <i>command</i>}>
 
-This option is delegated to <xref mars:sqldocument(n)>.<p>
+This option is delegated to <xref mars:sqldocument(n)>.
 
 </deflist options>
 
@@ -140,21 +140,21 @@ This option is delegated to <xref mars:sqldocument(n)>.<p>
 Given an SQLite3 database handle <i>db</i>, this command
 checks to see whether it is an Athena scenario file, and if so, 
 whether it is compatible with this version of scenariodb(n).  If not,
-the command throws an informative error suitable for display to the user.<p>
+the command throws an informative error suitable for display to the user.
 
 Note that <i>db</i> can be any SQLite3 database handle; it need not have
-been opened with scenariodb(n) or <xref mars:sqldocument(n)>.<p>
+been opened with scenariodb(n) or <xref mars:sqldocument(n)>.
 
 <defitem "scenariodb sqlsections" {scenariodb sqlsections}>
 
 Returns a list of the <xref mars:sqlsection(i)> objects that 
-scenariodb(n) registers.<p>
+scenariodb(n) registers.
 
 <defitem "scenariodb sectiondict" {scenariodb sectiondict}>
 
 Returns a dictionary of information about the <xref mars:sqlsection(i)>
 objects that scenariodb(n) registers.  The dictionary has this
-structure:<p>
+structure:
 
 <example>
 $section => An SQL section registered by scenariodb
@@ -172,25 +172,25 @@ $section => An SQL section registered by scenariodb
 
 Each instance of scenariodb(n) inherits all methods
 of the <xref mars:sqldocument(n)> object and the underlying SQLite3
-database handle.  In addition, it has the following subcommands:<p>
+database handle.  In addition, it has the following subcommands:
 
 <deflist instance>
 
 <defitem clear {<i>obj</i> clear}>
 
 Clears the contents of the database, establishing a fresh, empty scenario.
-Also, clears the <iref unsaved> flag.<p>
+Also, clears the <iref unsaved> flag.
 
 
 <defitem load {<i>obj</i> load <i>filename</i>}>
 
 Loads the scenario file called <i>filename</i> into the database, and
-clears the <iref unsaved> flag.<p>
+clears the <iref unsaved> flag.
 
 <defitem marksaved {<i>obj</i> marksaved}>
 
 Marks the scenario saved.  This is generally useful if the application
-adds additional behavior on top of <iref clear>.<p>
+adds additional behavior on top of <iref clear>.
 
 <defitem open {<i>obj</i> open <i>filename</i>}>
 
@@ -198,20 +198,20 @@ Opens an existing scenario file, and clears the <iref unsaved>
 flag.  <xref athena(1)> will usually use this to open a working
 RDB, into which the user's scenario file will be <iref load>ed.
 If <i>filename</i> is "<code>:memory:</code>", the database will be
-opened in memory rather than on the disk.<p>
+opened in memory rather than on the disk.
 
 <defitem saveas {<i>obj</i> saveas <i>filename</i>}>
 
 Saves the current contents of the database to the file with name
 <i>filename</i>, which conventionally should have a
-"<code>.ath</code>" extension.  Clears the <iref unsaved> flag.<p>
+"<code>.ath</code>" extension.  Clears the <iref unsaved> flag.
 
 <defitem unsaved {<i>obj</i> unsaved}>
 
 Returns 1 if changes have been made to the database since the last
 <iref clear>, <iref load>, <iref open>, or <iref saveas>, and
 0 otherwise.  Applications can use this flag to determine whether
-there are unsaved changes, e.g., before shutting down.<p>
+there are unsaved changes, e.g., before shutting down.
 
 </deflist instance>
 
@@ -220,7 +220,7 @@ there are unsaved changes, e.g., before shutting down.<p>
 Every <xref scenariodb(n)> database will support at least the
 following SQL functions, in addition to those defined by SQLite3
 and those defined by <xref mars:sqlsection(i)> modules explicitly
-loaded by the application.<p>
+loaded by the application.
 
 <sqlFunctionsDoc>
 
@@ -228,11 +228,11 @@ loaded by the application.<p>
 <section "SCHEMA">
 
 scenariodb(n) adds the following definitions to the database
-schema:<p>
+schema:
 
 Every <xref scenariodb(n)> database will contain at least the
 following schema definitions, in addition to those from any other
-<xref mars:sqlsection(i)>'s loaded explicitly by the application.<p>
+<xref mars:sqlsection(i)>'s loaded explicitly by the application.
 
 <schemaDoc>
 
@@ -248,7 +248,7 @@ Requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

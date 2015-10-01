@@ -12,19 +12,19 @@ namespace import ::athena::*
 <section DESCRIPTION>
 
 This man page describes a component of the <xref athena(n)> package
-that provides access to the agent's strategies.<p>
+that provides access to the agent's strategies.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> strategy</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist commands>
 
@@ -32,7 +32,7 @@ where <i adb> is an instance of <xref athena(n)>.<p>
 
 Returns the name of the <xref bean(n)> object the contains the named
 agent's strategy.  The caller may query this object, but must refrain
-from modifying it.<p>
+from modifying it.
 
 <defitem "check" {<i adb> strategy check}>
 
@@ -43,22 +43,22 @@ two items, {<i severity>, <i flist>}, where <i severity> is one of
 <b OK> or <b ERROR>.  In the latter case, the 
 <i flist> is a list of sanity check failure records, each of which
 identifies a problem and the entity which has it.  Entities are
-identified by their qualified entity IDs (QIDs).<p>
+identified by their qualified entity IDs (QIDs).
 
 If the <i severity> is <b ERROR> then there are problems that must
-be fixed before the scenario is locked, and otherwise not.<p>
+be fixed before the scenario is locked, and otherwise not.
 
 </deflist commands>
 
 <subsection "Private Subcommands">
 
 The <tt><i adb> strategy</tt> command takes the following subcommands, where
-where <i adb> is an instance of <xref athenadb(n)>.<p>
+where <i adb> is an instance of <xref athenadb(n)>.
 
-TBD: None yet documented.<p>
+TBD: None yet documented.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 
 </manpage>

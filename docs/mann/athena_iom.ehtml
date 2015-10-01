@@ -16,19 +16,19 @@ that provides access to the scenario's information operation messages
 (IOMs).  An IOM represents a message tailored to affect the attitudes of
 a particular part of the population.  Its success depends on its 
 semantic hook (<xref athena_hook(n)>), and its effects are based upon
-its payloads (<xref athena_payload(n)>).<p>
+its payloads (<xref athena_payload(n)>).
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> iom</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist iom>
 
@@ -37,62 +37,62 @@ where <i adb> is an instance of <xref athena(n)>.<p>
 Computes a sanity check for the set of IOMs and returns a list of two 
 items, {<i severity> <i flist>}, where <i severity> is either 
 <b OK> or <b WARNING> and <i flist> is either the empty list or a list
-sanity check failure dictionaries.<p>
+sanity check failure dictionaries.
 
 <defitem "exists" {<i adb> iom exists <i iom_id>}>
 
-Returns 1 if there is an IOM called <i iom_id>, and 0 otherwise.<p>
+Returns 1 if there is an IOM called <i iom_id>, and 0 otherwise.
 
 
 <defitem "get" {<i adb> iom get <i iom_id> ?<i parm>?}>
 
 By default, returns a dictionary of information about IOM <i iom_id>,
 as read from the <b fmt_ioms>.  If <i parm> is given, returns
-the value of the <i parm>.<p>
+the value of the <i parm>.
 
 <defitem "normal" {<i adb> iom normal <i subcommand> ?<i args...>?}>
 
 Returns information about the "normal" IOMs, i.e., those whose state
-is <b normal> as opposed to <b disabled> or <b invalid>.<p>
+is <b normal> as opposed to <b disabled> or <b invalid>.
 
 <deflist normal>
 <defitem "normal namedict" {<i adb> iom normal namedict}>
 Returns an ID/longname dictionary of the names of the "normal" 
-IOMs.<p>
+IOMs.
 
 <defitem "normal names" {<i adb> iom normal names}>
-Returns a list of the IDs of the "normal" IOMs.<p>
+Returns a list of the IDs of the "normal" IOMs.
 
 <defitem "normal longnames" {<i adb> iom normal longnames}>
-Returns a list of the "long names" of the "normal" IOMs.<p>
+Returns a list of the "long names" of the "normal" IOMs.
 
 <defitem "normal validate" {<i adb> iom normal validate <i iom_id>}>
 Validates IOM <i iom_id>, returning <i iom_id> if <i iom_id> is a "normal"
-IOM and throwing <b INVALID> otherwise.<p>
+IOM and throwing <b INVALID> otherwise.
 
 </deflist normal>
 
 <defitem "namedict" {<i adb> iom namedict}>
-Returns an ID/longname dictionary of the IOM names.<p>
+Returns an ID/longname dictionary of the IOM names.
 
 <defitem "names" {<i adb> iom names}>
-Returns a list of the IDs of the IOMs.<p>
+Returns a list of the IDs of the IOMs.
 
 <defitem "validate" {<i adb> iom validate <i iom_id>}>
 Validates group ID <i iom_id>, returning <i iom_id> if valid and throwing
-<b INVALID> otherwise.<p>
+<b INVALID> otherwise.
 
 </deflist iom>
 
 <subsection "Private Subcommands">
 
 The <tt><i adb> iom</tt> command takes the following subcommands, where
-where <i adb> is an instance of <xref athenadb(n)>.<p>
+where <i adb> is an instance of <xref athenadb(n)>.
 
-TBD: None yet documented.<p>
+TBD: None yet documented.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 
 </manpage>

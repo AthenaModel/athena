@@ -12,12 +12,12 @@ namespace import projectlib::*
 <section DESCRIPTION>
 
 helpdomain(n) is a <xref smartdomain(n)> domain handler for 
-<xref ahttpd(n)> that is used to handle <xref help(5)> databases.<p>
+<xref ahttpd(n)> that is used to handle <xref help(5)> databases.
 
 <section "COMMANDS">
 
 <tt ::projectlib::helpdomain> is an <tt oo::class>.  It provides the 
-following commands.<p>
+following commands.
 
 <deflist commands>
 
@@ -27,37 +27,37 @@ Creates a new instance of helpdomain(n) with the given command <i name>
 for the given <i domain>.  The <i domain> must begin with "/".  The
 instance will serve help pages and images from the <xref help(5)> database
 whose file name is <i helpdb>.  The display title of this particular 
-help database is <i dbtitle><p>
+help database is <i dbtitle>
 
 <defitem "helpdomain new" {::projectlib::helpdomain new <i domain dbtitle helpdb>}>
 
 Creates a new instance of helpdomain(n) with an arbitrarily chosen name.
-The arguments are as for <iref helpdomain create>.<p>
+The arguments are as for <iref helpdomain create>.
 
 </deflist commands>
 
 <section "INSTANCE COMMANDS">
 
 Instances of helpdomain(n) provide the same subcommands as
-<xref smartdomain(n)>.   Only the following are useful to clients:<p>
+<xref smartdomain(n)>.   Only the following are useful to clients:
 
 <deflist instance>
 
 <defitem ahttpd {<i obj> ahttpd}>
 
 Installs the helpdomain for use with <xref ahttpd(n)>, which should 
-already be initialized.<p>
+already be initialized.
 
 <defitem mydomain {<i obj> mydomain <i name>}>
 
 Installs the helpdomain for use with the named <xref mydomain(n)>.
-<b TBD: Not yet implemented.><p>
+<b TBD: Not yet implemented.>
 
 </deflist instance>
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

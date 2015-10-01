@@ -12,19 +12,19 @@ namespace import ::athena::*
 <section DESCRIPTION>
 
 This man page describes a component of the <xref athena(n)> package
-that exports the scenario as an order script.<p>
+that exports the scenario as an order script.
 
 The component is accessible as a subcommand of the <xref athena(n)> and
 <xref athenadb(n)> objects; <xref "Public Subcommands"> are accessible
 from <xref athena(n)> and (usually) from <xref athenadb(n)>, and
-<xref "Private Subcommands"> only from <xref athenadb(n)>.<p>
+<xref "Private Subcommands"> only from <xref athenadb(n)>.
 
 <section "COMMANDS">
 
 <subsection "Public Subcommands">
 
 The <tt><i adb> export</tt> command takes the following subcommands,
-where <i adb> is an instance of <xref athena(n)>.<p>
+where <i adb> is an instance of <xref athena(n)>.
 
 <deflist commands>
 
@@ -33,35 +33,35 @@ where <i adb> is an instance of <xref athena(n)>.<p>
 Creates an <xref executive(n)> script of <tt send> commands from the
 scenario's order history.  (For historical reasons, the order history
 is known as the "CIF", or "Critical Input File".)  The script will 
-be written to the named <i scriptFile>.<p>
+be written to the named <i scriptFile>.
 
 By default the order script will define the bounds of the playbox using
 a <tt MAP:GEOREF> order but will not contain any map image data.  If the 
-<i mapflag> is true, then the full map image will be included.<p>
+<i mapflag> is true, then the full map image will be included.
 
 <b NOTE:> This command is provided as a way to capture the order history
 that led to the current scenario, which is useful under rare circumstances.
-For normal use, <iref fromdata> is preferred.<p>
+For normal use, <iref fromdata> is preferred.
 
 <defitem "fromdata" {<i adb> export fromdat <i scriptFile> ?<i mapflag>?}>
 
 Creates an <xref executive(n)> script that will rebuild the current scenario
 using a minimal number of commands, i.e., unlike <iref fromcif> it does not
 recapitulate the entire order history.  The script will 
-be written to the named <i scriptFile>.<p>
+be written to the named <i scriptFile>.
 
 By default the script will define the bounds of the playbox using
 a <tt MAP:GEOREF> order but will not contain any map image data.  If the 
-<i mapflag> is true, then the full map image will be included.<p>
+<i mapflag> is true, then the full map image will be included.
 
 </deflist commands>
 
 <subsection "Private Subcommands">
 
-None defined.<p>
+None defined.
 
 <section AUTHOR>
 
-Will Duquette, Dave Hanks.<p>
+Will Duquette, Dave Hanks.
 
 </manpage>

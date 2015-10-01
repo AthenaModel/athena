@@ -14,22 +14,22 @@ namespace import ::projectlib::*
 The os(n)is responsible for determining the operating system on
 which Athena is running, and for handling OS-specific details.  In
 particular, it determines where particular files should be stored
-on the different platforms.<p>
+on the different platforms.
 
 <section "COMMANDS">
 
-This module defines the following commands:<p>
+This module defines the following commands:
 
 <deflist commands>
 
 <defitem "os type" {os type}>
 
-Returns the operating system type, one of the <iref os types>.<p>
+Returns the operating system type, one of the <iref os types>.
 
 <defitem "os types" {os types}>
 
 Returns a list of the operating system types: <b>linux</b>, <b>win32</b>, and
-<b>macosx</b>.<p>
+<b>macosx</b>.
 
 
 <defitem "os prefsdir" {os prefsdir}>
@@ -38,7 +38,7 @@ Returns the name of the directory in which Athena should store
 preference files and similar user data.  Note that this module simply
 identifies the name of the directory; it does not create it.
 Application code should usually use the
-<xref prefsdir(n)> module to retrieve the preferences directory.<p>
+<xref prefsdir(n)> module to retrieve the preferences directory.
 
 <defitem "os workdir" {os workdir}>
 
@@ -46,7 +46,7 @@ Returns the name of the directory in which Athena should store
 its working data, e.g., the RDB, debugging log, and so forth.
 Note that this module simply identifies the name of the directory; it
 does not create it.  Application code should usually use the
-<xref workdir(n)> module to retrieve the working directory.<p>
+<xref workdir(n)> module to retrieve the working directory.
 
 </deflist commands>
 
@@ -56,7 +56,7 @@ This package requires Tcl 8.5 or later.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

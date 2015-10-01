@@ -9,14 +9,14 @@
 A gofer type is a collection of recipes for computing a particular kind of
 output value, so called because it goes and gets the output value on
 demand.  A value of a gofer type specifies a particular recipe and the
-ingredients it needs to compute the desired output.<p>
+ingredients it needs to compute the desired output.
 
 This man page originally described the interface that one would implement 
 by hand; given the increasing maturity of the <xref gofer(n)> 
 infrastucture, there is no little reason to do so: it is better to simply
 use <xref gofer(n)>'s <xref gofer(n) "gofer define"> command.  As
 a result, rather than describing the gofer type interface, as such, 
-this man page now documents the gofer type architecture.<p>
+this man page now documents the gofer type architecture.
 
 <section "Overview">
 
@@ -34,7 +34,7 @@ one might want to select a specific set of groups.  For example,
 
 These are four recipes that a <code>::gofer::CIVGROUPS</code> type might 
 allow the user to use, in addition to simply selecting the groups from
-a list.<p>
+a list.
 
 The first recipe has no ingredients, i.e., no additional parameters required
 to compute the desired list of groups.
@@ -47,46 +47,46 @@ tactics.  Consider a tactic that requires a list of civilian groups: by
 using a gofer type, the analyst can select a dynamic set of groups, a set that 
 might change as the simulation runs, simply by specifying the rule used to 
 identify the groups in the set.  For this reason, we refer to a gofer type's
-recipes as <i>gofer rules</i>, or just <i>rules</i> for short.<p>
+recipes as <i>gofer rules</i>, or just <i>rules</i> for short.
 
 A gofer type is implemented as a Tcl ensemble command using the
 <xref gofer(n)> infrastructure.  Each gofer type has a name, an identifier
 in upper case like "CIVGROUPS"; the command will always be in the
-<code>::gofer</code> namespace, e.g., <code>::gofer::CIVGROUPS</code>.<p>
+<code>::gofer</code> namespace, e.g., <code>::gofer::CIVGROUPS</code>.
 
 <subsection Operations>
 
-Gofer types support the following operations on their values.<p>
+Gofer types support the following operations on their values.
 
 First, a value can be validated.  Validation finds any errors, and if valid
 puts the value in canonical form.  In other words, a gofer type is a validation
-type like all of the others in Athena and Mars.<p>
+type like all of the others in Athena and Mars.
 
 Second, a narrative can be computed from a value.  The narrative is a 
 human-readable string, usually a noun phrase, that describes the output and 
 how it will be computed, 
-e.g., "all non-empty civilian groups resident in N1".<p>
+e.g., "all non-empty civilian groups resident in N1".
 
 Third, a value can be evaluated, resulting in an output value of the desired
-type.<p>
+type.
 
 Suppose a tactic has a parameter of a gofer type.  The tactic will validate
 parameter values using the gofer type, as it does for any other parameter.  
-It will include the parameter's narrative in its own narrative, e.g.,<p>
+It will include the parameter's narrative in its own narrative, e.g.,
 
 <blockquote>
-Actor JOE funds $25M of ENI for <b>all non-empty civilian groups in N1</b><p>
+Actor JOE funds $25M of ENI for <b>all non-empty civilian groups in N1</b>
 </blockquote>
 
 Finally, when the tactic executes it will evaluate the value, and make use
-of the output.<p>
+of the output.
 
 <subsection "Gofer Dictionaries">
 
 Every gofer type value is a Tcl dictionary with at least two keys:
 <b>_type</b>, which is the name of the type (e.g., "CIVGROUPS"), and
 <b>_rule</b>, whose value is the name of the rule to apply.  Other keys 
-may be added depending on the rule.  For example, values for the four rules given above might be represented like this:<p>
+may be added depending on the rule.  For example, values for the four rules given above might be represented like this:
 
 <pre>
     _type CIVGROUPS _rule ALL
@@ -96,7 +96,7 @@ may be added depending on the rule.  For example, values for the four rules give
 </pre>
 
 These values are called <i>gofer dictionaries</i>, or <i>gdicts</i>.  In 
-canonical form,<p>
+canonical form,
 
 <ul>
     <li> The <b>_type</b> key will be the first key.
@@ -104,7 +104,7 @@ canonical form,<p>
     <li> The type and rule names will be in upper case.
     <li> The remaining keys will be only those related to the selected rule.
     <li> The values of those keys will be in canonical form for their types.
-</ul><p>
+</ul>
 
 <subsection "Required Rules">
 
@@ -114,15 +114,15 @@ another.  However, every gofer type must implement at least the
 
 After all, the analyst will sometimes want to just specify the value to
 use, rather than telling the application how to compute it.  The 
-<b>BY_VALUE</b> rule is how the gofer type supports this.<p>
+<b>BY_VALUE</b> rule is how the gofer type supports this.
 
-Thus,<p>
+Thus,
 
 <pre>
     _type <i>typename</i> _rule BY_VALUE raw_value {A B C} 
 </pre>
 
-will evaluate (if valid) to "A B C".<p> 
+will evaluate (if valid) to "A B C". 
 
 <subsection "Raw Value Conversion">
 
@@ -131,31 +131,31 @@ tactics that ought to use them.  For example, the FUNDENI tactic has a
 <b>glist</b> parameter whose value is a list of civilian groups.  At present,
 the user must always select an explicit list; and there are existing Athena
 scenarios that use this tactic.  How do we transition the tactic to use
-a gofer type without breaking existing scenarios?<p>
+a gofer type without breaking existing scenarios?
 
 The answer lies in the canonical form of a gofer type value.  A raw value
 will never begin with the token "<b>_type</b>"; a gofer value always will.
 The application can check for the presence of "<b>_type</b>"; if absent, it
 can assume that the value is a raw value and convert it to a gofer value
 using the <b>BY_VALUE</b> rule.  (This is another reason why all types
-must support the <b>BY_VALUE</b> rule.)<p>
+must support the <b>BY_VALUE</b> rule.)
 
 <section "EDITING">
 
 Gofer type values can be edited by using the <b>gofer</b> field type
 in <xref dynaform(n)> scripts, or by using the <xref goferfield(n)>
-widget directly in other contexts.<p>
+widget directly in other contexts.
 
 Because gofer type values can be arbitrarily complex, each type must define
 a <xref dynaform(n)> script that will be used to display and edit its values
 in an appropriate way.  The form will be used by itself in a 
 <xref dynabox(n)> popup, rather than being embedded within a larger form,
-so it can use all of the space it needs to.<p>
+so it can use all of the space it needs to.
 
 The dynaform script should include prose that makes it clear what the user is
 selecting.  The first data field in the form should always be a selector
 called <b>_rule</b>; each rule supported by the type should have a case 
-within the selector.  For example:<p>
+within the selector.  For example:
 
 <pre>
     rc "" -width 3in -span 3
@@ -179,18 +179,18 @@ within the selector.  For example:<p>
 
 Note that the form is free to use whatever text strings it likes to present
 the rules to the user; thus, the <b>BY_VALUE</b> rule is presented as 
-"By name", which is friendlier for this particular type.<p>
+"By name", which is friendlier for this particular type.
 
 <b>NOTE:</b> The dynaform script must have a field for each <i>gdict</i>
 key, in the required order; thus, the first two fields in the dynaform script
 must be the <b>_type</b> and the <b>_rule</b> selector.  However, the
 <xref gofer(n)> infrastructure automatically inserts the <b>_type</b>
-as an invisible context field, so it is omitted from the example.<p>  
+as an invisible context field, so it is omitted from the example.  
 
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

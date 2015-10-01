@@ -15,43 +15,43 @@ smartdomain(n) is a domain handler for <xref ahttpd(n)> that is used to
 handle dynamic application content.  The application subclasses
 smartdomain(n); the subclass defines specific URLs and handler methods
 for them.  The URLs can contain place-holder variables, which will be
-automatically matched and provided to the handlers.<p>
+automatically matched and provided to the handlers.
 
 <b TBD:> Eventually we will rearchitect <xref mydomain(n)> to be a 
 simple server that serves up <xref smartdomain(n)> content; then one
 smartdomain(n) instance can be used with both <xref ahttpd(n)> and 
-<xref mydomain(n)>.  That work has not yet been done.<p>
+<xref mydomain(n)>.  That work has not yet been done.
 
 A smartdomain is associated with a particular server domain, i.e., with a
 subtree of the server's file system: e.g, "<tt /my/subdomain>" or 
 "<tt /mydomain>".  All URLs defined with the smartdomain will be within 
 this subtree.  In addition, the smartdomain defines the URL 
 "<tt><i domain>/urlschema.html</tt>" which
-documents the accepted URLs within the domain.<p>
+documents the accepted URLs within the domain.
 
 <subsection "Fallbacks">
 
 If a requested URL matches a directory within the domain, and that 
 directory defines an "<tt index.html>" file, the server will be 
 redirected to the "<tt index.html>" file.  Otherwise, the content
-will be "not found".<p>
+will be "not found".
 
 <section "COMMANDS">
 
 <tt ::projectlib::smartdomain> is an <tt oo::class>.  It provides the 
-following commands.<p>
+following commands.
 
 <deflist commands>
 
 <defitem "smartdomain create" {::projectlib::smartdomain create <i name domain>}>
 
 Creates a new instance of smartdomain(n) with the given command <i name>
-for the given <i domain>.  The <i domain> must begin with "/".<p>
+for the given <i domain>.  The <i domain> must begin with "/".
 
 <defitem "smartdomain new" {::projectlib::smartdomain new <i domain>}>
 
 Creates a new instance of smartdomain(n) for the given <i domain> and
-returns the instance's name.  The <i domain> must begin with "/".<p>
+returns the instance's name.  The <i domain> must begin with "/".
 
 <defitem smarturl {smarturl <i cls suffix docstring body>}>
 
@@ -59,33 +59,33 @@ This command is used outside of the definition of smartdomain(n) subclass
 <i cls> to add URLs to the subclass.  The <i suffix> and <i docstring>
 are defined as for <iref url>, below; and the <i body> is the handler's
 method body.  The handler method will be defined with one argument for
-each placeholder in the suffix, named as in the suffix.<p>
+each placeholder in the suffix, named as in the suffix.
 
 </deflist commands>
 
 
 <section "INSTANCE COMMANDS">
 
-Instances of smartdomain(n) provide the following subcommands.<p>
+Instances of smartdomain(n) provide the following subcommands.
 
 <deflist instance>
 
 <defitem ahttpd {<i obj> ahttpd}>
 
 Installs the smartdomain for use with <xref ahttpd(n)>, which should 
-already be initialized.<p>
+already be initialized.
 
 <defitem mydomain {<i obj> mydomain <i name>}>
 
 Installs the smartdomain for use with the named <xref mydomain(n)>.
-<b TBD: Not yet implemented.><p>
+<b TBD: Not yet implemented.>
 
 <defitem domain {<i obj> domain}>
-Returns the domain's domain, e.g., "/secenario".<p>
+Returns the domain's domain, e.g., "/secenario".
 
 <defitem redirect {<i obj> redirect <i url>}>
 
-Redirects the requester to the given <i url> by throwing HTTPD_REDIRECT.<p>
+Redirects the requester to the given <i url> by throwing HTTPD_REDIRECT.
 
 <defitem request {<i obj> request <i op suffix> ?<i query>?}>
 
@@ -94,7 +94,7 @@ Makes a direct request to the domain handler for the given
 <b GET> or <b POST>; on <b GET>, the <i query> will be parsed as a 
 dictionary of query parms and values and passed to the handler. On
 <b POST> it will not be.  The full query string can always be retrieved
-using <iref req>.<p>
+using <iref req>.
 
 <defitem url {<i obj> url <i suffix docstring>}>
 
@@ -102,68 +102,68 @@ Defines a new URL within the domain.  The <i suffix> is the URL's
 suffix within the domain, beginning with a "/" and ending with a 
 file name and extension.  For example, if the domain is "<tt /mydomain>" 
 and the full URL will be "<tt /mydomain/this/that/theother.html>", then the 
-<i suffix> should be "<tt /this/that/theother.html>".<p>
+<i suffix> should be "<tt /this/that/theother.html>".
 
 The file extension is required; it is used to determine the URL's 
-content-type.<p>
+content-type.
 
 The <i suffix> may contain place-holders for any path component but the
 filename, e.g., "<tt /actor/{a}/index.html>" or 
 "<tt /group/{g}/index.html>".  The place-holder is a variable that will
 be matched against the requested URL.  If "<tt /actor/fred/index.html>" is
 requested, then "{a}" will match "fred".  The place-holder must be the
-entire path component, and must be wrapped in "{" and "}" as shown.<p>
+entire path component, and must be wrapped in "{" and "}" as shown.
 
 The subclass must define a method with the same name as the <i suffix>;
 this method will handle the URL.  It must have one argument for each
-placeholder in the <i suffix>.  The handler may may:<p>
+placeholder in the <i suffix>.  The handler may may:
 
 <ul>
-<li> Return data of a type consistent with the URL's file extension.<p>
+<li> Return data of a type consistent with the URL's file extension.
 <li> Throw <b NOTFOUND> to indicate that the place-holder values
      match no available data (i.e., if there is no actor with the
-     given name).<p> 
+     given name). 
 
 <li> Call <iref redirect> to redirect to a 
      different URL.  Note that this causes the handler to throw
-     HTTP_REDIRECT.<p>
+     HTTP_REDIRECT.
 </ul> 
 
 The <i docstring> should describe the data returned by the URL in
-general terms, and document any place-holders.<p>
+general terms, and document any place-holders.
 
 <defitem urltree {<i obj> urltree <i root docstring>}>
 
 <b TBD:> This handler type was added to support the on-line help pages, 
 but we might write a different domain handler for that purpose.  In that
-case, this might go away.><p>
+case, this might go away.>
 
 Defines a handler for a subtree of the domain.  The <i root> is the 
 subtree's root within the domain, beginning with a "/".  For example, if 
 the domain is "<tt /mydomain>" and the full URL will be 
 "<tt /mydomain/this/that/...>", then the 
-<i root> should be "<tt /this/that>".<p>
+<i root> should be "<tt /this/that>".
 
 The <i root> may contain place-holders in any path component 
 (as for <iref url>).  Note that <iref url> and <iref urltree> handlers are
 matched in the order of definition; if the first registered handler is
 an <iref urltree> handler with root "/{mydir}" then it will match all
-URLs received by the domain and no other handler will ever be called.<p>
+URLs received by the domain and no other handler will ever be called.
 
 The handler is a method with the same name as the <i root>.  It must have
 one argument for each place-holder in the <i root>, giving the actual 
 content from the requested URL, plus an argument for the remainder of
-the URL following the <i root>.  The handler may:<p>
+the URL following the <i root>.  The handler may:
 
 <ul>
-<li> Return data of a type consistent with the URL's file extension.<p>
+<li> Return data of a type consistent with the URL's file extension.
 <li> Throw <b NOTFOUND> to indicate that the place-holder values
      match no available data (i.e., if there is no actor with the
-     given name).<p> 
+     given name). 
 
 <li> Call <iref redirect> to redirect to a 
      different URL.  Note that this causes the handler to throw
-     HTTP_REDIRECT.<p>
+     HTTP_REDIRECT.
 </ul> 
 
 The content-type of the returned data will be determined from the 
@@ -171,10 +171,10 @@ file extension of the last component of the requested URL; if there
 is no extension, then it will be "text/plain".  
 <b TBD:> This is not very good.  If we retain this feature, we need
 a way to specify the default content-type for the subtree, and to
-set it explicitly for particular requests.<p>
+set it explicitly for particular requests.
 
 The <i docstring> should describe the data returned by the URL in
-general terms, and document any place-holders.<p>
+general terms, and document any place-holders.
 
 
 </deflist instance>
@@ -182,20 +182,20 @@ general terms, and document any place-holders.<p>
 <section COMPONENTS>
 
 smartdomain(n) defines the following component objects for use by 
-URL handlers:<p>
+URL handlers:
 
 <deflist components>
 <defitem hb {hb <i subcommand> ?<i args...>?}>
 An instance of <xref htmlbuffer(n)> which can be used to generate
-HTML output.<p>
+HTML output.
 
 <defitem qdict {qdict <i subcommand> ?<i args...>?}>
 An instance of <xref parmdict(n)> which will contain any parsed
-query parameters and their values.<p>
+query parameters and their values.
 
 <defitem req {req <i parm>}>
 A command that returns data about the request being processed.  
-The <i parm> may be one of the following:<p>
+The <i parm> may be one of the following:
 
 <ul>
 <li> <b method>: The HTTP method being used, <b GET> or <b POST>.
@@ -208,7 +208,7 @@ any query or fragment.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 

@@ -12,23 +12,23 @@ namespace import ::projectlib::*
 <section DESCRIPTION>
 
 projectlib(n) is a package of non-GUI code for use in <xref athena_sim(1)> and
-related tools.<p>
+related tools.
 
 <section MODULES>
 
-<b>TBD</b><p>
+<b>TBD</b>
 
 <section ENVIRONMENT>
 
-Requires Tcl 8.5 or later.<p>
+Requires Tcl 8.5 or later.
 
 To use this package in a Tcl script, the environment variable
 <code>TCLLIBPATH</code> must include the parent of the package
-directory.<p>
+directory.
 
 <section AUTHOR>
 
-Will Duquette<p>
+Will Duquette
 
 <section HISTORY>
 
