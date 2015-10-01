@@ -12,5 +12,5 @@
 #-------------------------------------------------------------------------
 
 # -kite-ifneeded-start  DO NOT EDIT THIS BLOCK BY HAND
-package ifneeded athena 6.3.1 [list source [file join $dir pkgModules.tcl]]
+package ifneeded athena 6.3.2 [list source [file join $dir pkgModules.tcl]]
 # -kite-ifneeded-end

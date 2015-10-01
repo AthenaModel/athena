@@ -2,6 +2,17 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.2, 1 October 2015</h3>
+
+This build contains a couple of small fixes to problems found in the
+release candidate.  The documentation for Linux zip files was not 
+being packaged properly, that has also been fixed.<p>
+
+<ul>
+<li>  Issue #316: Current scenario as excursion case causes problem
+<li>  Issue #315: Simulation Date does not fit
+</ul>
+
 <h3>Build 6.3.1, 28 September 2015</h3>
 
 This build is the 6.3.1 release candidate and contains the completed
