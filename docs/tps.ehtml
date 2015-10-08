@@ -16,7 +16,7 @@ The following third-party software is required during development, but not
 during operations:
 
 <ul>
-  <li> ActiveTcl 8.6.1 (Community Edition), from ActiveState.com.
+  <li> ActiveTcl 8.6.4 (Community Edition), from ActiveState.com.
 
   <li> <link "http://activestate.com/Products/Tcl_Dev_Kit/?mp=1" "Tcl Dev Kit 5.1">
   (or later).
