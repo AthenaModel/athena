@@ -15,8 +15,7 @@ teapot.txt
 /htdocs/arachne.html
 /htdocs/index.html
 /mods/testmod.tcl
-*.docx
-*.pptx
+mag.docx
 *.xlsx
 *.adb
 *.helpdb
