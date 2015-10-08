@@ -23,18 +23,20 @@ Athena V[kiteinfo version] Regional Stability Simulation<p>
 
 Copyright 2008-[clock format [clock seconds] -format %Y],
 by the California Institute of Technology. 
-ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.
+ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged.<p>
  
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions 
-are met:
+are met:<p>
 
-* Redistributions of source code must retain the above copyright 
+<ul>
+<li>Redistributions of source code must retain the above copyright 
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright 
+<li>Redistributions in binary form must reproduce the above copyright 
   notice, this list of conditions and the following disclaimer in the 
   documentation and/or other materials provided with the distribution.
+</ul><p>
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
