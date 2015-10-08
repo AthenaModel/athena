@@ -15,7 +15,7 @@
 # Package Definition
 
 # -kite-provide-start  DO NOT EDIT THIS BLOCK BY HAND
-package provide projectlib 6.4.0a1
+package provide projectlib 6.3.3a1
 # -kite-provide-end
 
 #-----------------------------------------------------------------------
@@ -34,10 +34,10 @@ package require fileutil 1.14
 package require tls 1.6.4
 package require tdom 0.8
 package require struct::set 2.2
-package require kiteutils 0.4.11
-package require kitedocs 0.4.11
-package require marsutil 3.0.22
-package require simlib 3.0.22
+package require kiteutils 0.5.0
+package require kitedocs 0.5.0
+package require marsutil 3.0.23
+package require simlib 3.0.23
 # -kite-require-end
 
 package require kiteinfo
