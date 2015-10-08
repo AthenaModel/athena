@@ -19,7 +19,6 @@ namespace eval ::kiteinfo:: {
     variable kiteInfo
 
     array set kiteInfo {
-        url-docs/aug.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aug-20150910.docx
         reqver-Tktable 2.11
         mansec-5 {File Formats}
         apptype-athena exe
@@ -36,7 +35,7 @@ namespace eval ::kiteinfo:: {
         local-simlib 1
         local-ncgi 0
         exclude-cellide {}
-        xfiles {docs/aag.docx docs/aug.docx docs/rules.pptx docs/mag.docx}
+        xfiles {}
         reqver-json 1.3.3
         local-Tkhtml 0
         apps {athena arachne athenawb athena_log cellide helptool}
@@ -62,12 +61,16 @@ namespace eval ::kiteinfo:: {
     if {[file exists docs/arachne.html]} {
         file copy -force docs/arachne.html htdocs/
     }
+
+    # Copy the Mars Analyst's Guide to the docs directory.
+    if {[file exists ../mars/docs/mag.docx]} {
+        file copy -force ../mars/docs/mag.docx docs/
+    }
 }}
         reqver-kiteutils 0.5.0
         reqver-fileutil 1.14
         icon-arachne {}
         icon-athenawb {}
-        url-docs/mag.docx https://pepper.jpl.nasa.gov/kite/xdocs/mars/3.0/mag-20150917.docx
         local-marsutil 1
         reqver-marsgui 3.0.23
         reqver-uri 1.2
@@ -91,7 +94,6 @@ namespace eval ::kiteinfo:: {
 }
         reqver-textutil::adjust 0.7
         gui-cellide 1
-        url-docs/rules.pptx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/rules-20150921.pptx
         reqver-tls 1.6.4
         icon-helptool {}
         local-snit 0
@@ -127,7 +129,6 @@ namespace eval ::kiteinfo:: {
         reqver-counter 2.0
         gui-athena 0
         gui-athenawb 1
-        url-docs/aag.docx https://pepper.jpl.nasa.gov/kite/xdocs/athena/6.3/aag-20150827.docx
         local-base64 0
         local-sqlite3 0
         force-athena 0
