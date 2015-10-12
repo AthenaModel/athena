@@ -2,6 +2,15 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.3a1, 12 October 2015</h3>
+
+This build is the 6.3.3 release candidate and contains one bug fix and an
+update to the copyright notice in anticipation of Athena's open sourcing.
+
+<ul>
+<li> Issue #320: long latlong strings cause Athena to crash
+</ul>
+
 <h3>Build 6.3.1, 28 September 2015</h3>
 
 This build is the 6.3.1 release candidate and contains the completed
