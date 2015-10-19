@@ -2,6 +2,11 @@
 
 <h2>Build Notes</h2>
 
+<h3>Build 6.3.3, 19 October 2015</h3>
+
+This is the release build for Athena 6.3.3. It is identical to 6.3.3a1 
+except for the version number and these build notes.
+
 <h3>Build 6.3.3a1, 12 October 2015</h3>
 
 This build is the 6.3.3 release candidate and contains one bug fix and an
