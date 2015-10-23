@@ -46,7 +46,6 @@ Source: "..\bin\arachne-{#MyAppVersion}-win32-ix86.exe"; DestDir: "{app}"; DestN
 Source: "..\docs\build_notes.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\index.html"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\*.png"; DestDir: "{app}\docs"; Flags: ignoreversion 
-Source: "..\docs\athena.helpdb"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\arachne.helpdb"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\workbench.helpdb"; DestDir: "{app}\docs"; Flags: ignoreversion 
 Source: "..\docs\man1\athenawb.html"; DestDir: "{app}\docs\man1"; Flags: ignoreversion  
