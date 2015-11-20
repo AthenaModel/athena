@@ -1,0 +1,857 @@
+<html>
+<head>
+<title>athena 6.3.3: beanbrowser(n) -- Bean Browser Widget, submodule of projectgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>beanbrowser(n)</b> -- Bean Browser Widget, submodule of <a href="../mann/projectgui.html">projectgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#configuration">Configuration</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectgui 6.3.3
+namespace import ::projectgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#beanbrowser">beanbrowser <i>win ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-borderwidth">-borderwidth <i>width</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-relief">-relief <i>relief</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-editstartcommand">-editstartcommand <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-editendcommand">-editendcommand <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-height">-height <i>height</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-width">-width <i>width</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-selectmode">-selectmode <i>mode</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-stripebackground">-stripebackground <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-stripeforeground">-stripeforeground <i>color</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-stripeheight">-stripeheight <i>rows</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-titlecolumns">-titlecolumns <i>number</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-beanpot">-beanpot <i>pot</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-beancmd">-beancmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-columnsorting">-columnsorting <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-cutcopycmd">-cutcopycmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-displaycmd">-displaycmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-filterbox">-filterbox <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-layout">-layout <i>spec</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-pastecmd">-pastecmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-reloadbtn">-reloadbtn <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-reloadon">-reloadon <i>eventList</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-selectioncmd">-selectioncmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanbrowser-view">-view <i>view</i></a></li>
+<li><a class="iref" href="#cget"><i>win</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>win</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#cellcget"><i>win</i> cellcget <i>cellindex option</i></a></li>
+<li><a class="iref" href="#cellconfigure"><i>win</i> cellconfigure <i>cellindex</i> ?<i>option value...</i>?</a></li>
+<li><a class="iref" href="#columncget"><i>win</i> columncget <i>cindex option</i></a></li>
+<li><a class="iref" href="#columnconfigure"><i>win</i> columnconfigure <i>cindex</i>
+?<i>option value...</i>?</a></li>
+<li><a class="iref" href="#rowcget"><i>win</i> rowcget <i>rindex option</i></a></li>
+<li><a class="iref" href="#rowconfigure"><i>win</i> rowconfigure <i>rindex</i> ?<i>option value...</i>?</a></li>
+<li><a class="iref" href="#cindex2cname"><i>win</i> cindex2cname <i>cindex</i></a></li>
+<li><a class="iref" href="#cname2cindex"><i>win</i> cname2cindex <i>cname</i></a></li>
+<li><a class="iref" href="#clear"><i>win</i> clear ?-silent?</a></li>
+<li><a class="iref" href="#curselection"><i>win</i> curselection</a></li>
+<li><a class="iref" href="#editwinpath"><i>win</i> editwinpath</a></li>
+<li><a class="iref" href="#get"><i>win</i> get <i>indexList</i></a></li>
+<li><a class="iref" href="#get"><i>win</i> get <i>indexList</i></a></li>
+<li><a class="iref" href="#layout"><i>win</i> layout</a></li>
+<li><a class="iref" href="#reload"><i>win</i> reload ?-force?</a></li>
+<li><a class="iref" href="#rindex2uid"><i>win</i> rindex2uid <i>rindex</i></a></li>
+<li><a class="iref" href="#selection"><i>win</i> selection <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#sortby"><i>win</i> sortby <i>cname</i> ?<i>direction</i>?</a></li>
+<li><a class="iref" href="#toolbar"><i>win</i> toolbar</a></li>
+<li><a class="iref" href="#uid2rindex"><i>win</i> uid2rindex <i>uid</i></a></li>
+<li><a class="iref" href="#uid"><i>win</i> uid <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#uid_create"><i>win</i> uid create <i>uid</i></a></li>
+<li><a class="iref" href="#uid_curselection"><i>win</i> uid curselection</a></li>
+<li><a class="iref" href="#uid_delete"><i>win</i> uid delete <i>uid</i></a></li>
+<li><a class="iref" href="#uid_update"><i>win</i> uid update <i>uid</i></a></li>
+<li><a class="iref" href="#uid_select"><i>win</i> uid select <i>uids</i> ?-silent?</a></li>
+<li><a class="iref" href="#uid_setbg"><i>win</i> uid setbg <i>uid color</i></a></li>
+<li><a class="iref" href="#uid_setfg"><i>win</i> uid setfg <i>uid color</i></a></li>
+<li><a class="iref" href="#uid_setcellbg"><i>win</i> uid setcellbg <i>uid cname color</i></a></li>
+<li><a class="iref" href="#uid_setcellfg"><i>win</i> uid setcellfg <i>uid cname color</i></a></li>
+<li><a class="iref" href="#uid_setcelltext"><i>win</i> uid setcelltext <i>uid cname value</i></a></li>
+<li><a class="iref" href="#uid_setfont"><i>win</i> uid setfont <i>uid font</i></a></li>
+<li><a class="iref" href="#windowpath"><i>win</i> windowpath <i>cellindex</i> </a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This module defines the <code>::projectgui::beanbrowser</code>, which
+displays a tabular list of <a href="../mann/bean.html">bean(n)</a> objects of a particular kind. 
+It allows sorting and filtering of the data, and provides a
+<b>-selectioncmd</b> callback.</p>
+
+<p>See the file <code>test_beanbrowser.tcl</code> in the <a href="../mann/projectgui.html">projectgui(n)</a>
+source directory for an example of how to use beanbrowser(n).</p>
+
+<p>beanbrowser(n) is based on the tablelist(n) widget.
+
+</p>
+
+<h2><a name="configuration">Configuration</a></h2>
+<p>A beanbrowser(n) is configured with three options: <b>-beancmd</b>,
+<b>-view</b>, and <b>-layout</b>.</p>
+
+<p>The value of the <b>-beancmd</b> is a Tcl command that returns a list
+of bean object names; these are the beans that will be displayed.  The
+browser can be made to display a different set of beans by specifying
+a different <b>-beancmd</b>.  If the <b>-beancmd</b> is the empty string,
+no beans will be displayed.</p>
+
+<p>The bean data to display comes from the named <b>-view</b>, retrieved
+each bean's <a href="../mann/bean.html#view">view</a> method.  If no specific view is named,
+the bean's default view is used.  <b>Note:</b> The chosen view <i>must</i>
+define an <b>id</b> field containing the bean's ID.</p>
+
+<p>The <b>-layout</b> option explains how to map view fields to browser columns.
+By convention, the <b>id</b> field is placed in the first column; however,
+it <i>must</i> appear somewhere.</p>
+
+<p>The <b>-layout</b> option's value is a list of lists, one list for each
+column to be displayed in the browser.  Each list will have the
+following syntax:</p>
+
+<p><i>cname label</i> ?<i>option value...</i>?</p>
+
+<p>where <i>cname</i> is the name of the view field associated with
+the column, and <i>label</i>
+is the column title.  If <i>label</i> is a single hyphen, "<code>-</code>",
+then the field name will be used as the label.</p>
+
+<p>The remaining options are tablelist(n) <a class="iref" href="#columnconfigure">columnconfigure</a>
+options, and are passed through to the tablelist(n).  In theory,
+any tablelist(n) column option can be used; be aware that many do not
+make sense in this context.  Of those that do, these are the most likely
+to be useful:
+
+</p>
+
+<ul>
+<li> <b>-align left|center|right</b>
+</li><li> <b>-background <i>color</i></b>
+</li><li> <b>-foreground <i>color</i></b>
+</li><li> <b>-maxwidth <i>width</i></b>
+</li><li> <b>-sortmode ascii|dictionary|integer|real</b>
+</li></ul>
+<p>beanbrowser(n) specifies the following options by default; they can
+be overridden by the user:
+
+</p>
+
+<ul>
+<li> The default <b>-sortmode</b> is <b>dictionary</b>.
+</li><li> If the caller specifies a numeric <b>-sortmode</b>, then the
+     default <b>-align</b> is <b>right</b>.
+</li><li> The <b>id</b> column is numerically sorted and aligned right by default.
+</li></ul>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="beanbrowser">beanbrowser <i>win ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#beanbrowser">beanbrowser</a> widget named <i>win</i>.</p>
+
+<p>The <a class="iref" href="#beanbrowser">beanbrowser</a> widget may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="beanbrowser-borderwidth">-borderwidth <i>width</i></a></dt>
+<dt class="defopt"><a name="beanbrowser-relief">-relief <i>relief</i></a></dt><dd>
+These options are delegated to the hull ttk::frame widget.
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-editstartcommand">-editstartcommand <i>command</i></a></dt>
+<dt class="defopt"><a name="beanbrowser-editendcommand">-editendcommand <i>command</i></a></dt>
+<dt class="defopt"><a name="beanbrowser-height">-height <i>height</i></a></dt>
+<dt class="defopt"><a name="beanbrowser-width">-width <i>width</i></a></dt>
+<dt class="defopt"><a name="beanbrowser-selectmode">-selectmode <i>mode</i></a></dt>
+<dt class="defopt"><a name="beanbrowser-stripebackground">-stripebackground <i>color</i></a></dt>
+<dt class="defopt"><a name="beanbrowser-stripeforeground">-stripeforeground <i>color</i></a></dt>
+<dt class="defopt"><a name="beanbrowser-stripeheight">-stripeheight <i>rows</i></a></dt>
+<dt class="defopt"><a name="beanbrowser-titlecolumns">-titlecolumns <i>number</i></a></dt><dd>
+
+These options are delegated to the underlying tablelist(n) widget.
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-beanpot">-beanpot <i>pot</i></a></dt><dd>
+The <a href="../mann/beanpot.html">beanpot(n)</a> in which the displayed beans reside.
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-beancmd">-beancmd <i>cmd</i></a></dt><dd>
+
+The <i>cmd</i> is a Tcl command that returns the list of beans to be 
+displayed.  The content is automatically reloaded.
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-columnsorting">-columnsorting <i>flag</i></a></dt><dd>
+
+<b>Read-only after creation.</b>
+If <b>on</b> (the default), the user can sort the rows using the data in
+a particular column, in ascending or descending order, by clicking on
+the column label.  If <b>off</b>, the sort order is determined by the
+table or view being displayed, and cannot be changed.  (This is
+appropriate when the order of the items in the table is meaningful,
+e.g., priority ordering.)
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-cutcopycmd">-cutcopycmd <i>cmd</i></a></dt><dd>
+
+Specifies a command that is called when the widget receives the
+&lt;&lt;Cut&gt;&gt; or &lt;&lt;Copy&gt;&gt; virtual events.  The
+command is called with one additional argument, the mode, which is
+either <b>cut</b> or <b>copy</b>.  The command is called only if 
+there is a selection.
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-displaycmd">-displaycmd <i>cmd</i></a></dt><dd><p>
+
+Specifies a command that is called for each row inserted or updated in the
+browser.  The <i>cmd</i> is a command prefix that will be called with two
+additional arguments, the row index and a list of the data values to be
+displayed in the row's cells, in order from left to right.</p>
+
+<p>This command can be used to set the color or font of particular rows
+or cells based on the data they contain.
+
+</p>
+</dd>
+<dt class="defopt"><a name="beanbrowser-filterbox">-filterbox <i>flag</i></a></dt><dd>
+
+If the flag is true (the default) the browser's toolbar will include
+a <a href="../mann/filter.html">filter(n)</a> widget for filtering the content.  If false,
+it will not.
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-layout">-layout <i>spec</i></a></dt><dd>
+
+<b>Required.</b>  Defines the layout
+specification.  See <a href="#configuration">Configuration</a> for the syntax for
+layout specifications.
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-pastecmd">-pastecmd <i>cmd</i></a></dt><dd>
+
+Specifies a command that is called when the widget receives the
+&lt;&lt;Paste&gt;&gt; virtual event.
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-reloadbtn">-reloadbtn <i>flag</i></a></dt><dd>
+
+If <i>flag</i> is true, then a "reload" button will appear in the toolbar,
+to the right of the filter box.  Defaults to false.
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-reloadon">-reloadon <i>eventList</i></a></dt><dd><p>
+
+Causes the browser to subscribe to any number of <a href="../mann/notifier.html">notifier(n)</a>
+events, and reload its contents when any of them are received.  The
+<i>eventList</i> must be a list of <a href="../mann/notifier.html">notifier(n)</a> subjects and
+events.  For example, the following option causes the browser to
+reload whenever the <b>&lt;Reset&gt;</b> event is received from
+the <b>::sim</b> object.
+
+</p><pre>
+    beanbrowser .browser             \
+        ...                         \
+        -reloadon { ::sim &lt;Reset&gt; }
+</pre>
+<p>If the value of <b>-reloadon</b> is changed, the previous bindings will be
+unbound; and all bindings will be unbound when the browser is destroyed.
+
+</p>
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-selectioncmd">-selectioncmd <i>cmd</i></a></dt><dd>
+
+Specifies a command that is called whenever the beanbrowser(n)'s
+selection has changed (or might have changed).
+
+</dd>
+<dt class="defopt"><a name="beanbrowser-view">-view <i>view</i></a></dt><dd>
+
+Specifies the <i>view</i> of the bean's data to display.  Defaults to the
+bean's default view, "".
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>win</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>win</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.
+
+</dd>
+<dt class="defitem"><a name="cellcget"><i>win</i> cellcget <i>cellindex option</i></a></dt>
+<dt class="defitem"><a name="cellconfigure"><i>win</i> cellconfigure <i>cellindex</i> ?<i>option value...</i>?</a></dt>
+<dt class="defitem"><a name="columncget"><i>win</i> columncget <i>cindex option</i></a></dt>
+<dt class="defitem"><a name="columnconfigure"><i>win</i> columnconfigure <i>cindex</i>
+?<i>option value...</i>?</a></dt>
+<dt class="defitem"><a name="rowcget"><i>win</i> rowcget <i>rindex option</i></a></dt>
+<dt class="defitem"><a name="rowconfigure"><i>win</i> rowconfigure <i>rindex</i> ?<i>option value...</i>?</a></dt><dd>
+
+These methods are delegated to the underlying tablelist(n), and query
+the tablelist(n) row, column and cell options.  See the tablelist(n)
+documentation for details.
+
+</dd>
+<dt class="defitem"><a name="cindex2cname"><i>win</i> cindex2cname <i>cindex</i></a></dt><dd>
+
+Given a tablelist column index,  returns the column's bean variable
+name (or "" if none).
+
+</dd>
+<dt class="defitem"><a name="cname2cindex"><i>win</i> cname2cindex <i>cname</i></a></dt><dd>
+
+Given a column name, returns the matching tablelist column
+index (or "" if none).
+
+</dd>
+<dt class="defitem"><a name="clear"><i>win</i> clear ?-silent?</a></dt><dd>
+
+Deletes all rows from the browser.  By default, the <b>-selectioncmd</b>
+is called; if <b>-silent</b> is given, however, it is not.
+
+</dd>
+<dt class="defitem"><a name="curselection"><i>win</i> curselection</a></dt><dd><p>
+
+Returns a list of the row indices of the selected rows, or the empty list
+if no rows are selected.  See also <a class="iref" href="#uid_curselection">uid curselection</a>.</p>
+
+<p><b>NOTE:</b> Unlike <a class="iref" href="#uid_curselection">uid curselection</a>, this command returns row 
+indices for all rows the underlying Tablelist considers to be 
+selected, even if they are currently hidden, i.e., even if their
+<span class="tt">-hide</span> option is set.
+
+</p>
+</dd>
+<dt class="defitem"><a name="editwinpath"><i>win</i> editwinpath</a></dt><dd>
+
+This method is delegated to the underlying tablelist(n), and retrieves
+the name of the editor window in the <code>-editstartcommand</code>
+and <code>-editendcommand</code> callbacks.
+
+</dd>
+<dt class="defitem"><a name="get"><i>win</i> get <i>first last</i></a></dt>
+<dt class="defitem"><a name="get"><i>win</i> get <i>indexList</i></a></dt><dd><p>
+
+Retrieves the data from one or more rows in the browser.</p>
+
+<p>The first form of the command returns a list whose elements are all of the
+items (i.e., row contents) between <i>first</i> and <i>last</i>, inclusive.
+The value returned by the second form depends on the number of elements in
+the list <i>indexList</i>: if the latter contains exactly one index then the
+return value is the item indicated by that index (or an empty
+string if the index refers to a non-existent item); otherwise the command
+returns the list of all of the items corresponding to the indices
+specified by <i>indexList</i>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="layout"><i>win</i> layout</a></dt><dd><p>
+
+Asks the beanbrowser(n) to layout the columns afresh, and then reload
+the data from the database.  Note that beanbrowser(n) does this
+automatically if the <b>-beancmd</b> or <b>-layout</b> options are changed.</p>
+
+<p>The <b>-displaycmd</b>, if defined, will (eventually) be called for
+each row loaded into the browser.
+
+</p>
+</dd>
+<dt class="defitem"><a name="reload"><i>win</i> reload ?-force?</a></dt><dd><p>
+
+Asks the beanbrowser(n) to clear its contents and reload all the data
+from the database for the current <b>-view</b>.  By default, the command
+schedules a "lazy" reload: the content will only be reloaded once, no
+matter how times the command is called; the reload will not be done
+until control is returned to the Tk event loop; and not until the 
+browser window is actually mapped.</p>
+
+<p>If the <b>-force</b> option is given, the content will be reloaded
+immediately, and any pending lazy updates will be canceled.  
+This is suitable for use in code already protected by
+a <a href="../mann/lazyupdater.html">lazyupdater(n)</a>.</p>
+
+<p>The <b>-displaycmd</b>, if defined, will (eventually) be called for
+each row loaded into the browser.
+
+</p>
+</dd>
+<dt class="defitem"><a name="rindex2uid"><i>win</i> rindex2uid <i>rindex</i></a></dt><dd>
+
+Given a tablelist row index,  returns the matching
+the row UID (or "" if none).
+
+</dd>
+<dt class="defitem"><a name="selection"><i>win</i> selection <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This method is delegated to the underlying tablelist(n) widget.  Note that
+if this method is used to change the selection, the <b>-selectioncmd</b>
+will <i>not</i> be called.
+
+</dd>
+<dt class="defitem"><a name="sortby"><i>win</i> sortby <i>cname</i> ?<i>direction</i>?</a></dt><dd>
+
+Sorts the contents of the browser on the column named <i>cname</i>;
+the sort direction defaults to <b>-increasing</b>, but can be set to
+either <b>-increasing</b> or <b>-decreasing</b>.
+
+</dd>
+<dt class="defitem"><a name="toolbar"><i>win</i> toolbar</a></dt><dd>
+
+Returns a ttk::frame into which the caller can add toolbar buttons and
+other controls.
+
+</dd>
+<dt class="defitem"><a name="uid2rindex"><i>win</i> uid2rindex <i>uid</i></a></dt><dd>
+
+Given a row UID, returns the matching tablelist row
+index (or "" if none).
+
+</dd>
+<dt class="defitem"><a name="uid"><i>win</i> uid <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+Every bean object has a unique integer ID, stored in the bean variable
+"id".  This ID is displayed in the first or "ID" column.  The 
+beanbrowser(n) allows the client to update
+and manipulate rows by ID rather than by row index using the subcommands
+of <a class="iref" href="#uid">uid</a>.</p>
+
+<p><b>TBD:</b> We might not need all of these; it's not clear that we'll
+get "update" and "delete" events, rather than simply reloading.
+
+</p><dl>
+
+<dt class="defitem"><a name="uid_create"><i>win</i> uid create <i>uid</i></a></dt><dd><p>
+
+Notifies the beanbrowser(n) that a row with the specified <i>uid</i>
+has been added to the list of beans and needs to be displayed.</p>
+
+<p><b>TBD:</b> I'm not sure this one is even used anymore, in 
+<a href="../mann/sqlbrowser.html">sqlbrowser(n)</a>.</p>
+
+<p>The <b>-displaycmd</b> will be called.
+
+</p>
+</dd>
+<dt class="defitem"><a name="uid_curselection"><i>win</i> uid curselection</a></dt><dd><p>
+
+Returns a list of the UIDs of the selected rows, or the empty list
+if no rows are selected.  See also <a class="iref" href="#curselection">curselection</a>.</p>
+
+<p><b>NOTE:</b> Unlike <a class="iref" href="#curselection">curselection</a>, this command returns only UIDs
+associated with visible rows, i.e., those for which the <span class="tt">-hide</span> option 
+is not set.  Hidden rows (e.g., those filtered out using the 
+filter box) are never included, even if the underlying Tablelist 
+considers them selected.
+
+</p>
+</dd>
+<dt class="defitem"><a name="uid_delete"><i>win</i> uid delete <i>uid</i></a></dt><dd>
+
+Notifies the beanbrowser(n) that a row with the specified <i>uid</i>
+has been deleted from the list, and needs to be deleted from
+the browser as well.
+
+</dd>
+<dt class="defitem"><a name="uid_update"><i>win</i> uid update <i>uid</i></a></dt><dd><p>
+
+Notifies the beanbrowser(n) that a row with the specified <i>uid</i>
+has been updated and needs to be displayed.</p>
+
+<p>The <b>-displaycmd</b> will be called.
+
+</p>
+</dd>
+<dt class="defitem"><a name="uid_select"><i>win</i> uid select <i>uids</i> ?-silent?</a></dt><dd>
+
+Selects the rows associated with the UIDs, ignoring unknown
+uids.  By default, calls the <b>-selectioncmd</b>; if 
+<b>-silent</b> is given, it does not.
+
+</dd>
+<dt class="defitem"><a name="uid_setbg"><i>win</i> uid setbg <i>uid color</i></a></dt><dd>
+
+Sets the background color of the row with the given <i>uid</i>.
+
+</dd>
+<dt class="defitem"><a name="uid_setfg"><i>win</i> uid setfg <i>uid color</i></a></dt><dd>
+
+Sets the foreground color of the row with the given <i>uid</i>.
+
+</dd>
+<dt class="defitem"><a name="uid_setcellbg"><i>win</i> uid setcellbg <i>uid cname color</i></a></dt><dd>
+
+Sets the background color of the cell with the given <i>uid</i> and column
+name.
+
+</dd>
+<dt class="defitem"><a name="uid_setcellfg"><i>win</i> uid setcellfg <i>uid cname color</i></a></dt><dd>
+
+Sets the foreground color of the cell with the given <i>uid</i>
+and column name.
+
+</dd>
+<dt class="defitem"><a name="uid_setcelltext"><i>win</i> uid setcelltext <i>uid cname value</i></a></dt><dd>
+Sets the text of the cell with the given <i>uid</i>
+and column name.
+
+</dd>
+<dt class="defitem"><a name="uid_setfont"><i>win</i> uid setfont <i>uid font</i></a></dt><dd>
+
+Sets the font of the row with the given <i>uid</i>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="windowpath"><i>win</i> windowpath <i>cellindex</i> </a></dt><dd>
+
+This method is delegated to the underlying tablelist(n), and retrieves
+the name of the window embedded via the cell <code>-window</code>
+option, or "" if none.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>beanbrowser(n) requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Dave Hanks, Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>beanbrowser(n) is a new widget patterned after <a href="../mann/sqlbrowser.html">sqlbrowser(n)</a>.
+
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:57 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

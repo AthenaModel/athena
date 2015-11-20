@@ -1,0 +1,1505 @@
+<html>
+<head>
+<title>athena 6.3.3: athena(n) -- Athena Scenario Type</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>athena(n)</b> -- Athena Scenario Type
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#relationship_with_athenadbn">RELATIONSHIP WITH ATHENADB(N)</a></li>
+    <ul>
+
+    <li><a href="#scenario_states">Scenario States</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#functions">FUNCTIONS</a></li>
+    
+
+    <li><a href="#notifier_events">NOTIFIER EVENTS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require athena 6.3.3
+namespace import ::athena::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#athena_create">athena create <i>name</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athena create-adbfile">-adbfile <i>filename</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athena create-executivecmd">-executivecmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athena create-logdir">-logdir <i>dirname</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athena create-scratch">-scratch <i>dirname</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athena create-subject">-subject <i>name</i></a></li>
+<li><a class="iref" href="#athena_compdb">athena compdb <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#athena_diff">athena diff <i>s1</i> ?<i>s2</i>? ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athena diff-t1">-t1 <i>week</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athena diff-t2">-t2 <i>week</i></a></li>
+<li><a class="iref" href="#athena_new">athena new ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#athena_version">athena version</a></li>
+<li><a class="iref" href="#absit"><i>adb</i> absit <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#activity"><i>adb</i> activity <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#actor"><i>adb</i> actor <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#adbfile"><i>adb</i> adbfile</a></li>
+<li><a class="iref" href="#advance"><i>adb</i> advance ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#advance-mode">-mode <i>mode</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#advance-ticks">-ticks <i>ticks</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#advance-until">-until <i>time</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#advance-tickcmd">-tickcmd <i>cmd</i></a></li>
+<li><a class="iref" href="#agent"><i>adb</i> agent <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#autogen"><i>adb</i> autogen <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#bean"><i>adb</i> bean <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#bsys"><i>adb</i> bsys <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#busy"><i>adb</i> busy <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#busy_clear"><i>adb</i> busy clear</a></li>
+<li><a class="iref" href="#busy_set"><i>adb</i> busy set <i>busytext</i> ?<i>pausecmd</i>?</a></li>
+<li><a class="iref" href="#canlock"><i>adb</i> canlock</a></li>
+<li><a class="iref" href="#civgroup"><i>adb</i> civgroup <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#clock"><i>adb</i> clock <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#contribs"><i>adb</i> contribs <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#curse"><i>adb</i> curse <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#dbsync"><i>adb</i> dbsync</a></li>
+<li><a class="iref" href="#econ"><i>adb</i> econ <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#enter"><i>adb</i> enter <i>options...</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#enter-order">-order <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#enter-parmdict">-parmdict <i>dict</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#enter-master">-master <i>window</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#enter-appname">-appname <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#enter-helpcmd">-helpcmd <i>cmd</i></a></li>
+<li><a class="iref" href="#eval"><i>adb</i> eval <i>query</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#executive"><i>adb</i> executive <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#exists"><i>adb</i> exists <i>query</i></a></li>
+<li><a class="iref" href="#export"><i>adb</i> export <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#frcgroup"><i>adb</i> frcgroup <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#getclock"><i>adb</i> getclock</a></li>
+<li><a class="iref" href="#gofer"><i>adb</i> gofer <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#group"><i>adb</i> group <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#halt"><i>adb</i> halt</a></li>
+<li><a class="iref" href="#hist"><i>adb</i> hist <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#hook"><i>adb</i> hook <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#inject"><i>adb</i> inject <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#interrupt"><i>adb</i> interrupt</a></li>
+<li><a class="iref" href="#iom"><i>adb</i> iom <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#is"><i>adb</i> is <i>predicate</i></a></li>
+<li><a class="iref" href="#is_advanced"><i>adb</i> is advanced</a></li>
+<li><a class="iref" href="#is_busy"><i>adb</i> is busy</a></li>
+<li><a class="iref" href="#is_idle"><i>adb</i> is idle</a></li>
+<li><a class="iref" href="#is_interruptible"><i>adb</i> is interruptible</a></li>
+<li><a class="iref" href="#is_locked"><i>adb</i> is locked</a></li>
+<li><a class="iref" href="#is_unlocked"><i>adb</i> is unlocked</a></li>
+<li><a class="iref" href="#is_unsaved"><i>adb</i> is unsaved</a></li>
+<li><a class="iref" href="#load"><i>adb</i> load <i>filename</i></a></li>
+<li><a class="iref" href="#loadtemp"><i>adb</i> loadtemp <i>filename</i></a></li>
+<li><a class="iref" href="#lock"><i>adb</i> lock</a></li>
+<li><a class="iref" href="#log"><i>adb</i> log <i>subcommand args...</i></a></li>
+<li><a class="iref" href="#nbhood"><i>adb</i> nbhood <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#onecolumn"><i>adb</i> onecolumn <i>query</i></a></li>
+<li><a class="iref" href="#order"><i>adb</i> order <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#orggroup"><i>adb</i> orggroup <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#parm"><i>adb</i> parm <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#paste"><i>adb</i> paste <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#paste_block"><i>adb</i> paste block <i>agent copysets</i></a></li>
+<li><a class="iref" href="#paste_condition"><i>adb</i> paste condition <i>block_id copysets</i></a></li>
+<li><a class="iref" href="#paste_tactic"><i>adb</i> paste tactic <i>block_id copysets</i></a></li>
+<li><a class="iref" href="#payload"><i>adb</i> payload <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#plant"><i>adb</i> plant <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#progress"><i>adb</i> progress ?<i>value</i>?</a></li>
+<li><a class="iref" href="#ptype"><i>adb</i> ptype <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#query"><i>adb</i> query <i>query</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#query-mode">-mode mc|list|csv|json</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#query-labels">-labels <i>list</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#query-maxcolwidth">-maxcolwidth <i>chars</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#query-headercols">-headercols <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#query-channel">-channel <i>chan</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#query-filename">-filename <i>filename</i></a></li>
+<li><a class="iref" href="#rdb"><i>adb</i> rdb <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#rdbfile"><i>adb</i> rdbfile</a></li>
+<li><a class="iref" href="#reset"><i>adb</i> reset</a></li>
+<li><a class="iref" href="#ruleset"><i>adb</i> ruleset <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#sanity"><i>adb</i> sanity <i>subcommand</i></a></li>
+<li><a class="iref" href="#sanity_onlock"><i>adb</i> sanity onlock</a></li>
+<li><a class="iref" href="#sanity_ontick"><i>adb</i> sanity ontick</a></li>
+<li><a class="iref" href="#save"><i>adb</i> save ?<i>filename</i>?</a></li>
+<li><a class="iref" href="#savetemp"><i>adb</i> savetemp <i>filename</i></a></li>
+<li><a class="iref" href="#service"><i>adb</i> service <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#state"><i>adb</i> state</a></li>
+<li><a class="iref" href="#statetext"><i>adb</i> statetext</a></li>
+<li><a class="iref" href="#stats"><i>adb</i> stats <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#strategy"><i>adb</i> strategy <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#unit"><i>adb</i> unit <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#unlock"><i>adb</i> unlock</a></li>
+<li><a class="iref" href="#version"><i>adb</i> version</a></li>
+<li><a class="iref" href="#Create"><i>subject</i> <code>&lt;Create&gt;</code></a></li>
+<li><a class="iref" href="#Destroy"><i>subject</i> <code>&lt;Destroy&gt;</code></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>athena(n) is the primary public interface for the athena(n) package.
+athena(n) is a Snit type whose instances represent entire Athena
+scenarios.  To create a new scenario, possibly loading an <span class="tt">.adb</span> file,
+create an instance of athena(n).  In addition, athena(n) provides 
+a number of capabilities that involve analyzing and comparing scenarios.
+
+</p>
+
+<h2><a name="relationship_with_athenadbn">RELATIONSHIP WITH ATHENADB(N)</a></h2>
+<p>Instances of athena(n) are thin wrappers around <a href="../mann/athenadb.html">athenadb(n)</a>, which 
+is the true main object in the package.  <a href="../mann/athenadb.html">athenadb(n)</a> also provides
+services to internal modules that aren't appropriate for use by clients.
+
+</p>
+
+<h2><a name="scenario_states">Scenario States</a></h2>
+<p>athena(n) defines a state machine to determine what can be done at 
+different times, and more specifically which <a href="../mann/order.html">order(n)</a> orders are
+available at any given time.  The state machine is illustrated in the
+following diagram (athena(n) subcommands are shown in blue):
+
+</p>
+
+<img src="athenadb_state.png">
+<p>First, the scenario may be <a class="iref" href="#is_locked">is locked</a> or <a class="iref" href="#is_unlocked">is unlocked</a>.  While
+<a class="iref" href="#is_unlocked">is unlocked</a>, the scenario may be edited freely.  When the scenario
+<a class="iref" href="#is_locked">is locked</a>, the models are initialized and many inputs become
+frozen until the scenario <a class="iref" href="#is_unlocked">is unlocked</a> again.</p>
+
+<p>Second, the scenario may be <a class="iref" href="#is_idle">is idle</a> or <a class="iref" href="#busy">busy</a>.  While it is
+<a class="iref" href="#is_idle">is idle</a> it is waiting in the event loop for user input.  While it
+<a class="iref" href="#is_busy">is busy</a>, it is performing some long-running task; the user interface
+might be responsive, but input (i.e., orders) cannot be accepted.</p>
+
+<p>Third, any such task can be <a class="iref" href="#is_interruptible">is interruptible</a> or 
+non-<a class="iref" href="#is_interruptible">is interruptible</a>.  Interruptible tasks can be terminated in the 
+middle; other tasks must run to completion.</p>
+
+<p>This leads to the following four states:
+
+</p>
+
+<table class="table topiclist">
+<tr>
+<th>State</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td><b>PREP</b></td>
+<td>
+        
+Scenario preparation.  The scenario <a class="iref" href="#is_idle">is idle</a> and <a class="iref" href="#is_unlocked">is unlocked</a>,
+and most orders can be used to edit the scenario.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>PAUSED</b></td>
+<td>
+        
+The scenario <a class="iref" href="#is_idle">is idle</a> and <a class="iref" href="#is_locked">is locked</a>; simulation time can be
+advanced.
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><b>BUSY</b></td>
+<td>
+        
+The scenario <a class="iref" href="#is_busy">is busy</a> with a non-<a class="iref" href="#is_interruptible">is interruptible</a> task.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b>RUNNING</b></td>
+<td>
+        
+The scenario <a class="iref" href="#is_busy">is busy</a> with an <a class="iref" href="#is_interruptible">is interruptible</a> task.
+</td>
+</tr>
+        
+</table>
+<p>The lock state is set using <a class="iref" href="#lock">lock</a> and <a class="iref" href="#unlock">unlock</a>.</p>
+
+<p>The busy state is set using <a class="iref" href="#busy">busy</a>, which also indicates whether 
+the task <a class="iref" href="#is_interruptible">is interruptible</a> or not.  At present, 
+<a class="iref" href="#is_interruptible">is interruptible</a> tasks are terminated by <a class="iref" href="#interrupt">interrupt</a>.  Progress
+in a busy task is indicated to the user via the <a class="iref" href="#progress">progress</a> 
+subcommand.</p>
+
+<p>The <a class="iref" href="#busy">busy</a> controls are primarily for use internally, but may also
+be used by the client.
+
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="athena_create">athena create <i>name</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new instance of athena(n) called <i>name</i>, which becomes a 
+Tcl command defined in the current scope; <a class="iref" href="#athena_create">athena create</a> returns
+the fully-qualified form of the name.</p>
+
+<p>The following options may be used:
+
+</p><dl>
+
+<dt class="defopt"><a name="athena create-adbfile">-adbfile <i>filename</i></a></dt><dd><p>
+
+If the <i>filename</i> isn't the empty string, it specifies the name of 
+an <span class="tt">.adb</span> scenario file to load.  If the named file cannot be loaded, 
+athena(n) will throw "<span class="tt">ATHENA LOAD</span>".</p>
+
+<p>Note that this option is read-only after the object is created.
+
+</p>
+</dd>
+<dt class="defopt"><a name="athena create-executivecmd">-executivecmd <i>cmd</i></a></dt><dd>
+
+A callback command to be used to define application-specific executive
+commands.  It is called with on additional argument, the scenario's
+<a href="../mann/executive.html">executive(n)</a> component.  This option is read-only after creation.
+
+</dd>
+<dt class="defopt"><a name="athena create-logdir">-logdir <i>dirname</i></a></dt><dd><p>
+
+Specifies the name of log directory; athenadb(n) should create a 
+logger(n) object with this <span class="tt">-logdir</span>.</p>
+
+<p>If the object uses background processing, the background thread 
+should use the log directory name created by appending ".bg" to this 
+directory name.
+
+</p>
+</dd>
+<dt class="defopt"><a name="athena create-scratch">-scratch <i>dirname</i></a></dt><dd>
+
+Names a scratch directory where athenadb(n) can write debugging files.
+Defaults to the current working directory.
+
+</dd>
+<dt class="defopt"><a name="athena create-subject">-subject <i>name</i></a></dt><dd><p>
+
+Specifies the subject <i>name</i> used for any <a href="../../../mars/docs/mann/notifier.html">notifier(n)</a>
+events sent by the object.  By default, the <i>name</i> defaults to the
+object's fully-qualified command name.</p>
+
+<p>For example, 
+athena(n) wraps an <a href="../../../mars/docs/mann/sqldocument.html">sqldocument(n)</a> object used to contain
+the scenario's run-time database (RDB).  When monitoring is enabled, the
+RDB can generate <a href="../../../mars/docs/mann/notifier.html">notifier(n)</a> events as tables are updated.</p>
+
+<p>See <a href="#notifier_events">NOTIFIER EVENTS</a> for more details.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="athena_compdb">athena compdb <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+Provides access to the parameters that govern the scenario comparisons
+performed by <a class="iref" href="#athena_diff">athena diff</a>.  See <a href="../man5/compdb.html">compdb(5)</a> for the parameters
+and <a href="../mann/compdb.html">compdb(n)</a> for the subcommands.
+
+
+</dd>
+<dt class="defitem"><a name="athena_diff">athena diff <i>s1</i> ?<i>s2</i>? ?<i>options...</i>?</a></dt><dd><p>
+
+Compares two scenarios (or one scenario with itself at different 
+simulation times) for significant differences, and returns a
+<a href="../mann/comparison.html">comparison(n)</a> object containing them.</p>
+
+<p><i>s1</i> (and <i>s2</i> if given) must be an <a href="../mann/athena.html">athena(n)</a> scenario object
+with time advanced. By default, the command compares <i>s1</i> at time 0 
+with itself at its latest simulation time.  If both scenarios are given, 
+the command compares them at their current simulation times.</p>
+
+<p>Throws <b>ATHENA INCOMPARABLE</b> if the two scenarios cannot reasonably be 
+compared.</p>
+
+<p>The options are as follows:
+
+</p><dl>
+
+<dt class="defopt"><a name="athena diff-t1">-t1 <i>week</i></a></dt><dd>
+
+Specifies the simulation time for the first scenario, overriding the
+logic given above.
+
+</dd>
+<dt class="defopt"><a name="athena diff-t2">-t2 <i>week</i></a></dt><dd>
+
+Specifies the simulation time for the second scenario (or the second
+simulation time for the first scenario if only one is given), 
+overriding the logic given above.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="athena_new">athena new ?<i>options...</i>?</a></dt><dd>
+
+Creates a new instance of athena(n), and returns its name.  The
+options are as for <a class="iref" href="#athena_create">athena create</a>.
+
+</dd>
+<dt class="defitem"><a name="athena_version">athena version</a></dt><dd>
+
+Returns the athena(n) version number.
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each athena(n) instance has the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="absit"><i>adb</i> absit <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the abstract situations in the scenario.
+See <a href="../mann/athena_absit.html">athena_absit(n)</a>.
+
+</dd>
+<dt class="defitem"><a name="activity"><i>adb</i> activity <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the FRC and ORG group activities in the scenario.
+See <a href="../mann/athena_activity.html">athena_activity(n)</a>.
+
+</dd>
+<dt class="defitem"><a name="actor"><i>adb</i> actor <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the actors in the scenario.  See
+<a href="../mann/athena_actor.html">athena_actor(n)</a>.
+
+</dd>
+<dt class="defitem"><a name="adbfile"><i>adb</i> adbfile</a></dt><dd>
+
+Returns the name of the <span class="tt">.adb</span> file loaded on creation, if any, or
+the <span class="tt">.adb</span> file name last used for saving, or "" if no <span class="tt">.adb</span> file
+has ever been loaded or saved.
+
+</dd>
+<dt class="defitem"><a name="advance"><i>adb</i> advance ?<i>options...</i>?</a></dt><dd><p>
+
+Advances simulation time, provided that the scenario <a class="iref" href="#is_locked">is locked</a> and
+<a class="iref" href="#is_idle">is idle</a>.  With no options, advances time by one tick.</p>
+
+<p>Throws <b>ATHENA BUSY</b> if the scenario <a class="iref" href="#is_busy">is busy</a> and 
+<b>ATHENA UNLOCKED</b> if the scenario is not <a class="iref" href="#is_locked">is locked</a>.</p>
+
+<p>The options are as follows:
+
+</p><dl>
+<dt class="defopt"><a name="advance-mode">-mode <i>mode</i></a></dt><dd><p>
+
+The execution mode: <b>blocking</b> (the default), <b>foreground</b>, or 
+<b>background</b>.</p>
+
+<p>When <b>blocking</b>, the command returns after it has advanced 
+time the specified number of ticks.  The time advance is not 
+<a class="iref" href="#is_interruptible">is interruptible</a>.</p>
+
+<p>When running in the <b>foreground</b>, the command returns after executing
+one tick.  The scenario <a class="iref" href="#is_busy">is busy</a>, and successive ticks are executed 
+in the context of the Tcl event loop.  The process is 
+<a class="iref" href="#is_interruptible">is interruptible</a>, but if the UI will block during each tick.</p>
+
+<p>When running in the <b>background</b>, the scenario <a class="iref" href="#is_busy">is busy</a> and the 
+entire process is handed over to a background thread.  Running in the
+background has a higher start-up and completion cost, but leaves the
+foreground thread responsive as the process runs.  At present, 
+background runs are not <a class="iref" href="#is_interruptible">is interruptible</a>, though this may change.
+
+</p>
+</dd>
+<dt class="defopt"><a name="advance-ticks">-ticks <i>ticks</i></a></dt><dd>
+Specifies the number of ticks to advance time.
+
+</dd>
+<dt class="defopt"><a name="advance-until">-until <i>time</i></a></dt><dd>
+Specifies that time should advance until the specified <i>time</i> in ticks. 
+It's an error if <i>time</i> is less than the current sim time.
+
+</dd>
+<dt class="defopt"><a name="advance-tickcmd">-tickcmd <i>cmd</i></a></dt><dd><p>
+Calls a <i>cmd</i> to be called at the end of each simulation time tick.
+It is called with three arguments: a tag, a tick counter, and the total 
+number of ticks to run.  The tick counter runs from 0 to the total number
+of ticks as time progresses.  While time advances, the tag will be 
+<b>RUNNING</b> if the process can be interrupted and <b>BUSY</b> otherwise; and
+at the end, the <i>cmd</i> will be called once with a tag of <b>COMPLETE</b>.</p>
+
+<p>By <a class="iref" href="#advance">advance</a> automatically updates the <a class="iref" href="#progress">progress</a> as 
+time advances.  If the caller wishes to manage the <a class="iref" href="#progress">progress</a>
+itself, the <span class="tt">-tickcmd</span> can return "NO_PROGRESS".
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="agent"><i>adb</i> agent <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the agents in the scenario.  Agents
+are entities that have strategies, and include all actors plus the 
+"SYSTEM" agent, which is used to control actions not dependent on
+particular actors.  See <a href="../mann/athena_agent.html">athena_agent(n)</a> for the subcommands.
+
+
+</dd>
+<dt class="defitem"><a name="autogen"><i>adb</i> autogen <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command is used to automatically generate entire scenarios 
+or parts of scenarios, if desired. See <a href="../mann/athena_autogen.html">athena_autogen(n)</a>.
+
+</dd>
+<dt class="defitem"><a name="bean"><i>adb</i> bean <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+Some of the objects in athena(n) are stored as <a href="../mann/bean.html">bean(n)</a> objects,
+notably strategies, blocks, conditions, and tactics. This command 
+allows the application to query and manipulate beans.  See
+<a href="../mann/athena_bean.html">athena_bean(n)</a> for the subcommands.
+
+
+</dd>
+<dt class="defitem"><a name="bsys"><i>adb</i> bsys <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the belief systems in the scenario.
+See <a href="../mann/athena_bsys.html">athena_bsys(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="busy"><i>adb</i> busy <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This command manages the scenario's "busy" state.  When the scenario is
+undertaking some long-running task in the context of the event loop, 
+it will mark itself <a class="iref" href="#is_busy">is busy</a>; this prevents orders from being accepted 
+and the scenario from being changed until the task is complete.
+It has the following subcommands:
+
+</p><dl>
+<dt class="defitem"><a name="busy_clear"><i>adb</i> busy clear</a></dt><dd>
+Clears the busy state; the scenario will be <a class="iref" href="#is_idle">is idle</a>.
+
+</dd>
+<dt class="defitem"><a name="busy_set"><i>adb</i> busy set <i>busytext</i> ?<i>pausecmd</i>?</a></dt><dd><p>
+Sets the busy state.  The <i>busytext</i> is a brief statement of the
+task, e.g., "Running until 2014W01" or "Wizard".  If the <i>pausecmd</i>
+is given, it is a command to call to pause or interrupt the task; the
+task is then <a class="iref" href="#is_interruptible">is interruptible</a> by the <a class="iref" href="#interrupt">interrupt</a> order.  Otherwise,
+the task is not interruptible and must run to completion.</p>
+
+<p>While the scenario <a class="iref" href="#is_busy">is busy</a>, the task will often use <a class="iref" href="#progress">progress</a>
+to keep the user informed as to its progress.
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="canlock"><i>adb</i> canlock</a></dt><dd>
+
+Returns 1 if the scenario passes the on-lock sanity check, and hence
+can in theory be locked, and 0 otherwise.
+
+
+</dd>
+<dt class="defitem"><a name="civgroup"><i>adb</i> civgroup <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the civilian groups in the scenario;
+see <a href="../mann/athena_civgroup.html">athena_civgroup(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="clock"><i>adb</i> clock <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+Provides access to the simulation clock, which is an instance of
+<a href="../mann/weekclock.html">weekclock(n)</a>; see that man page for the subcommands.  
+Clients should refrain from modifying the clock directly.
+
+</dd>
+<dt class="defitem"><a name="contribs"><i>adb</i> contribs <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+Provides access to <a href="../mann/uram.html">uram(n)</a>'s <a href="../mann/uram.html#contribs">contribs</a> subcommand,
+which is used for computing contributions to curves and moods by 
+attitude drivers.  See the <a href="../mann/uram.html">uram(n)</a> man page for details.
+
+</dd>
+<dt class="defitem"><a name="curse"><i>adb</i> curse <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the CURSEs in the scenario.  A
+CURSE is a scenario-specific rule set triggered by the CURSE
+tactics.  See <a href="../mann/athena_curse.html">athena_curse(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="dbsync"><i>adb</i> dbsync</a></dt><dd><p>
+
+Sends out a sequence of notifier events to the client, to be used to
+refresh the client when the scenario changes, i.e., after a <a class="iref" href="#load">load</a>
+or <a class="iref" href="#reset">reset</a>.</p>
+
+<p>The sequence is <span class="tt"><code>&lt;PreSync&gt;</code></span>, <span class="tt"><code>&lt;Sync&gt;</code></span>, 
+<span class="tt"><code>&lt;Time&gt;</code></span>, and <span class="tt"><code>&lt;State&gt;</code></span>.  
+See <a href="#notifier_events">NOTIFIER EVENTS</a> for
+more about the notifier events sent by the library.
+
+</p>
+</dd>
+<dt class="defitem"><a name="econ"><i>adb</i> econ <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the economic model in the scenario.
+See <a href="../mann/athena_econ.html">athena_econ(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="enter"><i>adb</i> enter <i>options...</i></a></dt><dd><p>
+
+If Tk is loaded, then this command is used to pop up Tk order dialogs.  If
+Tk is not loaded, it throws an error. The options are as follows:
+
+</p><dl>
+
+<dt class="defopt"><a name="enter-order">-order <i>name</i></a></dt><dd>
+
+Specifies the order name, e.g., <span class="tt">ACTOR:CREATE</span>.
+
+</dd>
+<dt class="defopt"><a name="enter-parmdict">-parmdict <i>dict</i></a></dt><dd>
+
+Specifies a dictionary of order parameter names and values, to be used to
+initialize the dialog.
+
+</dd>
+<dt class="defopt"><a name="enter-master">-master <i>window</i></a></dt><dd>
+
+Specifies the Tk window over which the dialog should appear.
+
+</dd>
+<dt class="defopt"><a name="enter-appname">-appname <i>name</i></a></dt><dd>
+
+Specifies the application name for the dialog title.
+
+</dd>
+<dt class="defopt"><a name="enter-helpcmd">-helpcmd <i>cmd</i></a></dt><dd>
+
+Specifies a command to call if the dialog's help button is pushed.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="eval"><i>adb</i> eval <i>query</i> ?<i>args...</i>?</a></dt><dd>
+
+Evaluates an SQL <i>query</i> with respect to the scenario's run-time 
+database.  The arguments are as for the standard SQLite3 <span class="tt">eval</span>
+subcommand.  Queries that attempt to write to the RDB will be
+rejected.
+
+
+</dd>
+<dt class="defitem"><a name="executive"><i>adb</i> executive <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This ensemble gives access to the scenario's executive interpreter, which 
+executes commands and scripts in the context of the scenario.  See the
+<a href="../mann/executive.html">executive(n)</a> man page for details about the executive.</p>
+
+<p>Further, the application can add its own commands to the executive by defining
+an <span class="tt">-executivecmd</span>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="exists"><i>adb</i> exists <i>query</i></a></dt><dd>
+
+Evaluates an SQL <i>query</i> with respect to the scenario's run-time 
+database, returning 1 if the <i>query</i> would return one or more
+rows, and 0 otherwise.  Queries that attempt to write to the RDB will be
+rejected.
+
+</dd>
+<dt class="defitem"><a name="export"><i>adb</i> export <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+Exports a scenario as an order script.  See
+<a href="../mann/athena_export.html">athena_export(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="frcgroup"><i>adb</i> frcgroup <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the force groups in the scenario;
+see <a href="../mann/athena_frcgroup.html">athena_frcgroup(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="getclock"><i>adb</i> getclock</a></dt><dd>
+
+Returns the scenario's <a href="../mann/weekclock.html">weekclock(n)</a> object, so that it can be 
+passed to other library modules (e.g., <a href="../mann/logger.html">logger(n)</a>).
+
+</dd>
+<dt class="defitem"><a name="gofer"><i>adb</i> gofer <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+Interface to gofers; see <a href="../mann/athena_gofer.html">athena_gofer(n)</a> for the subcommands
+and an explanation of what gofers are.
+
+</dd>
+<dt class="defitem"><a name="group"><i>adb</i> group <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the groups (of all three kinds) in the 
+scenario.  See <a href="../mann/athena_group.html">athena_group(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="halt"><i>adb</i> halt</a></dt><dd>
+
+Returns athena(n) to the <b>PAUSED</b> state if it is in the 
+<b>RUNNING</b> state.  The application can use this if 
+athena(n) throws an unexpected error while advancing time.
+
+</dd>
+<dt class="defitem"><a name="hist"><i>adb</i> hist <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to data related to the history of an athena run.
+see <a href="../mann/athena_hist.html">athena_hist(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="hook"><i>adb</i> hook <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the semantic hooks in the scenario;
+see <a href="../mann/athena_hook.html">athena_hook(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="inject"><i>adb</i> inject <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the CURSE injects
+in the scenario.  See <a href="../mann/athena_inject.html">athena_inject(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="interrupt"><i>adb</i> interrupt</a></dt><dd>
+
+If the scenario <a class="iref" href="#is_busy">is busy</a> with a task that <a class="iref" href="#is_interruptible">is interruptible</a>,
+this command will attempt to interrupt it, causing it to terminate 
+prematurely; see <a class="iref" href="#busy_set">busy set</a> for how to specify that the scenario
+is doing an interruptible task.
+
+</dd>
+<dt class="defitem"><a name="iom"><i>adb</i> iom <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the Information Ops Message (IOM) objects
+in the scenario; see <a href="../mann/athena_iom.html">athena_iom(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="is"><i>adb</i> is <i>predicate</i></a></dt><dd><p>
+
+Returns 1 if the <i>predicate</i> is true and 0 otherwise.  The valid
+predicates are as follows:
+
+</p><dl>
+<dt class="defitem"><a name="is_advanced"><i>adb</i> is advanced</a></dt><dd>
+Returns 1 if the scenario <a class="iref" href="#is_locked">is locked</a> and its simulation time has
+been advanced.
+
+</dd>
+<dt class="defitem"><a name="is_busy"><i>adb</i> is busy</a></dt><dd>
+
+Returns 1 if the scenario is busy, i.e., is performing a task and 
+cannot accept user orders, and 0 otherwise; see <a href="#scenario_states">Scenario States</a>.
+
+</dd>
+<dt class="defitem"><a name="is_idle"><i>adb</i> is idle</a></dt><dd>
+
+Returns 1 if the scenario is idle, i.e., is ready to accept user input,
+and 0 otherwise; see <a href="#scenario_states">Scenario States</a>.
+
+</dd>
+<dt class="defitem"><a name="is_interruptible"><i>adb</i> is interruptible</a></dt><dd>
+
+Returns 1 if the scenario <a class="iref" href="#is_busy">is busy</a> with an interruptible task,
+and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="is_locked"><i>adb</i> is locked</a></dt><dd>
+
+Returns 1 if the scenario is "locked", initialized and ready for a time
+advance, and 0 otherwise; see <a href="#scenario_states">Scenario States</a>.
+
+</dd>
+<dt class="defitem"><a name="is_unlocked"><i>adb</i> is unlocked</a></dt><dd>
+
+Returns 1 if the scenario is "unlocked", ready for editing, and 0
+otherwise; see <a href="#scenario_states">Scenario States</a>.
+
+</dd>
+<dt class="defitem"><a name="is_unsaved"><i>adb</i> is unsaved</a></dt><dd>
+
+Returns 1 if there is unsaved scenario data, and 0 otherwise.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="load"><i>adb</i> load <i>filename</i></a></dt><dd><p>
+
+Loads the scenario from the named <span class="tt">*.adb</span> file into this scenario
+object, throwing away any previous data.  The scenario must be
+<a class="iref" href="#is_idle">is idle</a>.  Afterwards, the scenario will be <i>locked</i> or 
+<i>unlocked</i> depending on the loaded data.</p>
+
+<p>If the client depends on <a href="#notifier_events">NOTIFIER EVENTS</a> to keep its user interface
+in sync with the scenario, it should call <a class="iref" href="#dbsync">dbsync</a> after calling 
+<a class="iref" href="#load">load</a>.</p>
+
+<p>Throws <b>ATHENA BUSY</b> if the scenario <a class="iref" href="#is_busy">is busy</a>, and <b>ATHENA LOAD</b>
+if the scenario file could not be loaded.
+
+</p>
+</dd>
+<dt class="defitem"><a name="loadtemp"><i>adb</i> loadtemp <i>filename</i></a></dt><dd><p>
+
+Reloads the scenario from a temporary file.  When running tasks in the
+background, <a href="../mann/athena.html">athena(n)</a> saves the scenario to a temporary file, which
+is given to the background thread.  The background thread does its work and
+saves the results to the temporary file, which is then reloaded by the main
+thread.  The <a class="iref" href="#savetemp">savetemp</a> command is used to save the temporary file,
+and this command is used to load it again.</p>
+
+<p>If the client depends on <a href="#notifier_events">NOTIFIER EVENTS</a> to keep its user interface
+in sync with the scenario, it should call <a class="iref" href="#dbsync">dbsync</a> after calling 
+<a class="iref" href="#load">load</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="lock"><i>adb</i> lock</a></dt><dd><p>
+
+Locks the scenario, if the scenario <a class="iref" href="#is_idle">is idle</a> and <a class="iref" href="#is_unlocked">is unlocked</a>
+and <a class="iref" href="#canlock">canlock</a>.  The simulation time can only be advanced while the
+scenario is locked.</p>
+
+<p>Throws <b>ATHENA BUSY</b> if the scenario is busy, and <b>ATHENA NOTSANE</b>
+if the scenario fails its on-lock sanity check.
+
+</p>
+</dd>
+<dt class="defitem"><a name="log"><i>adb</i> log <i>subcommand args...</i></a></dt><dd>
+
+This command gives access to the scenario's log component, an instance
+of <a href="../../../mars/docs/mann/logger.html">logger(n)</a>.  See that man page for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="nbhood"><i>adb</i> nbhood <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the neighborhood objects
+in the scenario; see <a href="../mann/athena_nbhood.html">athena_nbhood(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="onecolumn"><i>adb</i> onecolumn <i>query</i></a></dt><dd>
+
+Evaluates an SQL <i>query</i> with respect to the scenario's run-time 
+database, returning only the first column of the first row.
+Queries that attempt to modify the RDB will be rejected.
+
+</dd>
+<dt class="defitem"><a name="order"><i>adb</i> order <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the scenario's <a href="../../../mars/docs/mann/order_flunky.html">order_flunky(n)</a>
+object.  Athena customizes the object somewhat; see
+<a href="../mann/athena_order.html">athena_order(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="orggroup"><i>adb</i> orggroup <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the organizations groups in the scenario;
+see <a href="../mann/athena_orggroup.html">athena_orggroup(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="parm"><i>adb</i> parm <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This component gives access to the scenario's model parameters;
+see <a href="../mann/athena_parm.html">athena_parm(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="paste"><i>adb</i> paste <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+Pastes copied items into scenario, where the subcommand determines the 
+kind of item to paste.  In each case, the paste is done as a sequence of 
+grouped orders, and will be undone and redone as a group.</p>
+
+<p>Each subcommand defines its own notion of a <i>copy set</i>, a set of one 
+or more items to paste.  For each of the existing subcommands, a 
+copy set is a list of copied beans, each copied using the
+<a href="../mann/bean.html">bean(n)</a> <a href="../mann/bean.html#copydata">copydata</a> command.</p>
+
+<p>The available subcommands are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="paste_block"><i>adb</i> paste block <i>agent copysets</i></a></dt><dd>
+
+Pastes <i>copysets</i>, a list of copied strategy blocks, into the strategy
+owned by the named <i>agent</i>.
+
+</dd>
+<dt class="defitem"><a name="paste_condition"><i>adb</i> paste condition <i>block_id copysets</i></a></dt><dd>
+
+Pastes <i>copysets</i>, a list of copied conditions, into the strategy block
+with the given <i>block_id</i>.
+
+</dd>
+<dt class="defitem"><a name="paste_tactic"><i>adb</i> paste tactic <i>block_id copysets</i></a></dt><dd>
+
+Pastes <i>copysets</i>, a list of copied tactics, into the strategy block
+with the given <i>block_id</i>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="payload"><i>adb</i> payload <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the IOM payloads
+in the scenario.  See <a href="../mann/athena_payload.html">athena_payload(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="plant"><i>adb</i> plant <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to the infrastructure plants 
+in the scenario.  See <a href="../mann/athena_plant.html">athena_plant(n)</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="progress"><i>adb</i> progress ?<i>value</i>?</a></dt><dd><p>
+
+Sets and queries the current progress value.  Progress is set while the
+scenario <a class="iref" href="#is_busy">is busy</a>; see <a class="iref" href="#busy_set">busy set</a>.  The <i>value</i> may take three
+forms:
+
+</p><table class="table topiclist">
+<tr>
+<th>Topic</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td><b user></b></td>
+<td>
+        
+The user is in control of the scenario.  This would be the case when the
+scenario is <i>idle</i> and it <a class="iref" href="#is_busy">is busy</a> with something like a wizard GUI,
+where normal order entry is suspended until the wizard is closed.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><b wait></b></td>
+<td>
+        
+The scenario is performing a task of indefinite length, and no actual
+progress can be reported until it is done.
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><b><i fraction></i></b></td>
+<td>
+        
+A completion <i>fraction</i> from 0.0 to 1.0.
+</td>
+</tr>
+        
+</table>
+        
+
+<p><b>TBD</b>: It might also be good to have a mode for tasks where the duration
+cannot be estimated, but many messages are received from the task code.
+This would allow a <span class="tt">ttk::progressbar</span> to be animated by the receipt
+of these messages instead of automatically, which would give the user
+more feedback.
+
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="ptype"><i>adb</i> ptype <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+Parameter type validation subcommands.  This is exposed because it is used by
+the Athena Workbench's "view" mechanism.  Ultimately, that should be replaced 
+by a gofer-based solution; when that happens, this module can become private.
+
+</dd>
+<dt class="defitem"><a name="query"><i>adb</i> query <i>query</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Evaluates an SQL <i>query</i> with respect to the scenario's run-time 
+database, and returns the result set as a formatted string.  The 
+<i>query</i> can contain any valid SQL statements understood by SQLite3,
+but in practice it will be a single statement that returns a result 
+set (i.e., <span class="tt">SELECT</span> or certain <span class="tt">PRAGMA</span> statements).  Queries
+that attempt to write to the RDB will be rejected.</p>
+
+<p>The following options may be used:
+
+</p><dl>
+
+<dt class="defopt"><a name="query-mode">-mode mc|list|csv|json</a></dt><dd><p>
+
+Specifies the output mode; the default is <b>mc</b>, multicolumn.</p>
+
+<p>When <span class="tt">-mode</span> is <b>mc</b>, each record is output on a single
+line.  Fields are formatted in columns, with the field name as the
+column header.</p>
+
+<p>When <span class="tt">-mode</span> is <b>list</b>, the output is a list of records.
+Each record is output on multiple lines, with (nominally) one line
+per field.  Each line consists of the field name and value; the
+record's field names are values are formatted neatly in parallel columns.</p>
+
+<p>When <span class="tt">-mode</span> is <b>csv</b>, the output is in CSV (comma-separated value)
+format, one record per line, beginning with a header record of column labels.
+Non-numeric values are enclosed in double-quotes.</p>
+
+<p>When <span class="tt">-mode</span> is <b>json</b>, the output is a JSON list of objects, one
+object per row.
+
+</p>
+</dd>
+<dt class="defopt"><a name="query-labels">-labels <i>list</i></a></dt><dd>
+
+Normally <a class="iref" href="#query">query</a> uses the column names found in the query to
+label the fields in the output.  If specified, the value of
+<b>-labels</b> is a list of labels to be used instead.
+
+</dd>
+<dt class="defopt"><a name="query-maxcolwidth">-maxcolwidth <i>chars</i></a></dt><dd><p>
+
+Sets the maximum column width, in characters, when <span class="tt">-mode</span> is
+<b>mc</b>; the default is 30.  All
+data values longer than this will be truncated with "...".</p>
+
+<p>If <b>-maxcolwidth</b> is set to 0 then values will not be
+truncated.
+
+</p>
+</dd>
+<dt class="defopt"><a name="query-headercols">-headercols <i>num</i></a></dt><dd>
+
+Sets the number of header columns.  When <span class="tt">-mode</span> is <b>mc</b>,
+repeated values in a column are skipped.  That is, if a column
+contains identical values in consecutive rows, the column will be
+blank in all but the first of the rows.  Defaults to "0".
+
+</dd>
+<dt class="defopt"><a name="query-channel">-channel <i>chan</i></a></dt><dd>
+
+If this option is given, the output is written to output channel
+<i>chan</i> (e.g., <b>stdout</b>) and the command returns nothing.
+
+</dd>
+<dt class="defopt"><a name="query-filename">-filename <i>filename</i></a></dt><dd>
+
+If this option is given, the output is written to the named file
+and the command returns nothing.  Note that this option overrides
+<span class="tt">-channel</span>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="rdb"><i>adb</i> rdb <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives full read/write access to the Run-Time Database (RDB),
+a <a href="../mann/scenariodb.html">scenariodb(n)</a> object.  Its write capability is intended for use
+in debugging and test, and for the creation of temporary tables; 
+use it with care.
+
+</dd>
+<dt class="defitem"><a name="rdbfile"><i>adb</i> rdbfile</a></dt><dd>
+
+Returns the name of the SQLite file containing the scenario's 
+Run-Time Database (RDB).
+
+</dd>
+<dt class="defitem"><a name="reset"><i>adb</i> reset</a></dt><dd><p>
+
+Resets the scenario back to its initial empty state.  It will be 
+<a class="iref" href="#is_idle">is idle</a> and <i>unlocked</i>.</p>
+
+<p>If the client depends on <a href="#notifier_events">NOTIFIER EVENTS</a> to keep its user interface
+in sync with the scenario, it should call <a class="iref" href="#dbsync">dbsync</a> after calling 
+<a class="iref" href="#load">load</a>.</p>
+
+<p>Throws <b>ATHENA BUSY</b> if the scenario <a class="iref" href="#is_busy">is busy</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="ruleset"><i>adb</i> ruleset <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to information about the scenario's
+attitude rule sets.  See <a href="../mann/athena_ruleset.html">athena_ruleset(n)</a> for the subcommands.
+
+
+</dd>
+<dt class="defitem"><a name="sanity"><i>adb</i> sanity <i>subcommand</i></a></dt><dd>
+
+<dl>
+
+<dt class="defitem"><a name="sanity_onlock"><i>adb</i> sanity onlock</a></dt><dd><p>
+
+Performs an "on-lock" sanity check, determining whether or not the 
+scenario can be locked so that time can advance.  Returns a list of
+two items, {<i>severity</i>, <i>flist</i>}, where <i>severity</i> is one of
+<b>OK</b>, <b>WARNING</b>, or <b>ERROR</b>.  In the latter two cases, the 
+<i>flist</i> is a list of sanity check failure records, each of which
+identifies a problem and the entity which has it.  Entities are
+identified by their qualified entity IDs (QIDs).</p>
+
+<p>If the <i>severity</i> is <b>ERROR</b>, then there are problems that must
+be fixed before the scenario is locked.  If the <i>severity</i> is
+<b>WARNING</b>, then the problems are with entities (e.g., CURSEs or
+IOMs) that are not currently in use by any tactic, and hence cannot
+affect any results; the scenario may be locked and time may be advanced.
+
+</p>
+</dd>
+<dt class="defitem"><a name="sanity_ontick"><i>adb</i> sanity ontick</a></dt><dd>
+
+Performs an "on-tick" sanity check.  This is called before each 
+tick to make sure that it is safe for time to advance.  It returns the
+same kind of data as <a class="iref" href="#sanity_onlock">sanity onlock</a>; however, the severity will
+always be either <b>OK</b> or <b>ERROR</b>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="save"><i>adb</i> save ?<i>filename</i>?</a></dt><dd><p>
+
+Saves the scenario to disk as an <span class="tt">.adb</span> file called <i>filename</i>,
+adding the "<span class="tt">.adb</span>" extension if necessary.  If no <i>filename</i> is
+given but the <a class="iref" href="#adbfile">adbfile</a> name is known, the <a class="iref" href="#adbfile">adbfile</a> name is
+used.  The scenario is marked saved.</p>
+
+<p>On failure, throws "<span class="tt">ATHENA SAVE</span>".
+
+</p>
+</dd>
+<dt class="defitem"><a name="savetemp"><i>adb</i> savetemp <i>filename</i></a></dt><dd>
+
+Saves the scenario to a temporary file.  When running tasks in the
+background, <a href="../mann/athena.html">athena(n)</a> saves the scenario to a temporary file, which
+is given to the background thread.  The background thread does its work and
+saves the results to the temporary file, which is then reloaded by the main
+thread.  This command is used to save the temporary file,
+and the <a class="iref" href="#loadtemp">loadtemp</a> command is used to load it again.
+
+</dd>
+<dt class="defitem"><a name="service"><i>adb</i> service <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to information about the scenario's
+civilian services models.  See <a href="../mann/athena_service.html">athena_service(n)</a> for the 
+subcommands.
+
+</dd>
+<dt class="defitem"><a name="state"><i>adb</i> state</a></dt><dd>
+
+Returns the scenario's state, which depends on whether or not it is
+<a class="iref" href="#is_idle">is idle</a> and whether or not it <a class="iref" href="#is_locked">is locked</a>.  The states are
+<b>PREP</b>, <b>PAUSED</b>, <b>BUSY</b>, and <b>RUNNING</b>; see 
+<a href="#scenario_states">Scenario States</a> for more details.
+
+</dd>
+<dt class="defitem"><a name="statetext"><i>adb</i> statetext</a></dt><dd>
+
+Returns a human-readable string that derives from the current 
+<a class="iref" href="#state">state</a>.  If the scenario <a class="iref" href="#is_busy">is busy</a>, the string is simply
+the <i>busytext</i> passes to <a class="iref" href="#busy_set">busy set</a>.
+
+</dd>
+<dt class="defitem"><a name="stats"><i>adb</i> stats <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+Computes statistics from the scenario's simulation history after
+time has been advanced.  See <a href="../mann/athena_stats.html">athena_stats(n)</a> for the 
+subcommands.
+
+</dd>
+<dt class="defitem"><a name="strategy"><i>adb</i> strategy <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to information about the strategies of the
+scenario's agents.  See <a href="../mann/athena_strategy.html">athena_strategy(n)</a> for the 
+subcommands.
+
+</dd>
+<dt class="defitem"><a name="unit"><i>adb</i> unit <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+
+This command gives access to information about the units of the
+scenario's groups.  See <a href="../mann/athena_unit.html">athena_unit(n)</a> for the 
+subcommands.
+
+</dd>
+<dt class="defitem"><a name="unlock"><i>adb</i> unlock</a></dt><dd><p>
+
+Unlocks the scenario, if the scenario <a class="iref" href="#is_idle">is idle</a> and <a class="iref" href="#is_locked">is locked</a>.
+The scenario can only be edited while it is unlocked.</p>
+
+<p>Throws <b>ATHENA BUSY</b> if the scenario <a class="iref" href="#is_busy">is busy</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="version"><i>adb</i> version</a></dt><dd>
+
+Returns the version number of the <a href="../mann/athena.html">athena(n)</a> library.
+
+</dd>
+</dl>
+
+<h2><a name="functions">FUNCTIONS</a></h2>
+<p>athena(n) defines many SQL functions for use in database queries.  The
+functions are TBD.
+
+</p>
+
+<h2><a name="notifier_events">NOTIFIER EVENTS</a></h2>
+<p>athena(n) and its subcomponents send <a href="../mann/notifier.html">notifier(n)</a> events.  Top-level
+events are sent by the <span class="tt">-subject</span> indicated when the instance is created.
+Individual subcomponents can also send events; in this case, the 
+<a href="../mann/notifier.html">notifier(n)</a> subject is "<i>subject</i>.<i>component</i>".  If the 
+<span class="tt">-subject</span> is "<span class="tt">::adb</span>", for example, the order flunky component
+sends events as "<span class="tt">::adb.flunky</span>".</p>
+
+<p><b>TBD</b>: This section should document all notifier events sent by
+athena(n), including those by subcomponents.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="Create"><i>subject</i> <code>&lt;Create&gt;</code></a></dt><dd>
+
+The athena(n) instance sends this event on creation, after it is fully
+initialized.  This is useful when an application reuses the same 
+<span class="tt">-subject</span> for successive scenarios, as it allows GUI modules to 
+initialize themselves.
+
+</dd>
+<dt class="defitem"><a name="Destroy"><i>subject</i> <code>&lt;Destroy&gt;</code></a></dt><dd>
+
+The athena(n) instance sends this event when it is destroyed.  This allows
+client modules to clean up references to the object and its subcomponents.
+
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>New package derived from Athena internals.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:55 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+

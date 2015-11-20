@@ -1,0 +1,1235 @@
+<html>
+<head>
+<title>athena 6.3.3: help(5) -- Help Document Format</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+<script language="javascript">
+//===================================================================
+//Author: Matt Kruse  < matt@mattkruse.com>
+//WWW: http://www.mattkruse.com/
+//
+//NOTICE: You may use this code for any purpose, commercial or
+//private, without any further permission from the author. You may
+//remove this notice from your final code if you wish, however it is
+//appreciated by the author if at least my web site address is kept.
+//
+//You may *NOT* re-distribute this code in any way except through its
+//use. That means, you can include it in your product, or your web
+//site, or any other form where the code is actually being used. You
+//may not put the plain javascript up on your site for download or
+//include it in your javascript libraries for download.
+//If you wish to share this code with others, please just point them
+//to the URL instead.
+//Please DO NOT link directly to my .js files from your site. Copy
+//the files to your server and use them there. Thank you.
+//===================================================================
+//HISTORY
+//------------------------------------------------------------------
+//December 9, 2003: Added script to the Javascript Toolbox
+//December 10, 2003: Added the preProcessTrees variable to allow user
+//     to turn off automatic conversion of UL's onLoad
+//March 1, 2004: Changed it so if a li has a class already attached
+//     to it, that class won't be erased when initialized. This allows
+//     you to set the state of the tree when painting the page simply
+//     by setting some li's class name as being "liOpen" (see example)
+//October 1, 2015: WHD, modified code to prevent false html tag matches
+//                 by htmltrans(n).
+/*
+This code is inspired by and extended from Stuart Langridge's aqlist code:
+        http://www.kryogenix.org/code/browser/aqlists/
+        Stuart Langridge, November 2002
+        sil@kryogenix.org
+        Inspired by Aaron's labels.js (http://youngpup.net/demos/labels/)
+        and Dave Lindquist's menuDropDown.js (http://www.gazingus.org/dhtml/?id=109)
+*/
+
+//Automatically attach a listener to the window onload, to convert the trees
+addEvent(window,"load",convertTrees);
+
+//Utility function to add an event listener
+function addEvent(o,e,f){
+    if (o.addEventListener){ o.addEventListener(e,f,true); return true; }
+    else if (o.attachEvent){ return o.attachEvent("on"+e,f); }
+    else { return false; }
+}
+
+//utility function to set a global variable if it is not already set
+function setDefault(name,val) {
+    if (typeof(window[name])=="undefined" || window[name]==null) {
+        window[name]=val;
+    }
+}
+
+//Full expands a tree with a given ID
+function expandTree(treeId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    expandCollapseList(ul,nodeOpenClass);
+}
+
+//Fully collapses a tree with a given ID
+function collapseTree(treeId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    expandCollapseList(ul,nodeClosedClass);
+}
+
+//Expands enough nodes to expose an LI with a given ID
+function expandToItem(treeId,itemId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    var ret = expandCollapseList(ul,nodeOpenClass,itemId);
+    if (ret) {
+        var o = document.getElementById(itemId);
+        if (o.scrollIntoView) {
+            o.scrollIntoView(false);
+        }
+    }
+}
+
+//Performs 3 functions:
+//a) Expand all nodes
+//b) Collapse all nodes
+//c) Expand all nodes to reach a certain ID
+function expandCollapseList(ul,cName,itemId) {
+    if (!ul.childNodes || ul.childNodes.length==0) { return false; }
+    // Iterate LIs
+    for (var itemi=0;itemi < ul.childNodes.length;itemi++) {
+        var item = ul.childNodes[itemi];
+        if (itemId!=null && item.id==itemId) { return true; }
+        if (item.nodeName == "LI") {
+            // Iterate things in this LI
+            var subLists = false;
+            for (var sitemi=0;sitemi < item.childNodes.length;sitemi++) {
+                var sitem = item.childNodes[sitemi];
+                if (sitem.nodeName=="UL") {
+                    subLists = true;
+                    var ret = expandCollapseList(sitem,cName,itemId);
+                    if (itemId!=null && ret) {
+                        item.className=cName;
+                        return true;
+                    }
+                }
+            }
+            if (subLists && itemId==null) {
+                item.className = cName;
+            }
+        }
+    }
+}
+
+//Search the document for UL elements with the correct CLASS name, then process them
+function convertTrees() {
+    setDefault("treeClass","mktree");
+    setDefault("nodeClosedClass","liClosed");
+    setDefault("nodeOpenClass","liOpen");
+    setDefault("nodeBulletClass","liBullet");
+    setDefault("nodeLinkClass","bullet");
+    setDefault("preProcessTrees",true);
+    if (preProcessTrees) {
+        if (!document.createElement) { return; } // Without createElement, we can't do anything
+        uls = document.getElementsByTagName("ul");
+        for (var uli=0;uli < uls.length;uli++) {
+            var ul=uls[uli];
+            if (ul.nodeName=="UL" && ul.className==treeClass) {
+                processList(ul);
+            }
+        }
+    }
+}
+
+//Process a UL tag and all its children, to convert to a tree
+function processList(ul) {
+    if (!ul.childNodes || ul.childNodes.length==0) { return; }
+    // Iterate LIs
+    for (var itemi=0;itemi < ul.childNodes.length;itemi++) {
+        var item = ul.childNodes[itemi];
+        if (item.nodeName == "LI") {
+            // Iterate things in this LI
+            var subLists = false;
+            for (var sitemi=0;sitemi < item.childNodes.length;sitemi++) {
+                var sitem = item.childNodes[sitemi];
+                if (sitem.nodeName=="UL") {
+                    subLists = true;
+                    processList(sitem);
+                }
+            }
+            var s= document.createElement("SPAN");
+            var t= "";
+            s.className = nodeLinkClass;
+            if (subLists) {
+                // This LI has UL's in it, so it's a +/- node
+                if (item.className==null || item.className=="") {
+                    item.className = nodeClosedClass;
+                    t = "+\u00A0";
+                }
+                if (item.className==nodeOpenClass) {
+                    t = "\u2013\u00A0";
+                }
+                // If it's just text, make the text work as the link also
+                if (item.firstChild.nodeName=="#text") {
+                    t = t+item.firstChild.nodeValue;
+                    item.removeChild(item.firstChild);
+                }
+                s.onclick = function () {
+                    this.parentNode.className = (this.parentNode.className==nodeOpenClass) ? nodeClosedClass : nodeOpenClass;
+                    this.firstChild.nodeValue = (this.firstChild.nodeValue=="+\u00A0") ? "\u2013\u00A0" : "+\u00A0";
+                    return false;
+                }
+            }
+            else {
+                // No sublists, so it's just a bullet node
+                item.className = nodeBulletClass;
+                s.onclick = function () { return false; }
+                t = "\u2022\u00A0";
+            }
+            s.appendChild(document.createTextNode(t));
+            item.insertBefore(s,item.firstChild);
+        }
+    }
+}
+</script>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>help(5)</b> -- Help Document Format
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#entities">ENTITIES</a></li>
+    <ul>
+
+    <li><a href="#pages">Pages</a></li>
+
+    <li><a href="#images">Images</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#macros">MACROS</a></li>
+    
+
+    <li><a href="#objects">OBJECTS</a></li>
+    <ul>
+
+    <li><a href="#object_definition">Object Definition</a></li>
+
+    <li><a href="#object_commands">Object Commands</a></li>
+
+</ul>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#alias">alias <i>parent slug title alias</i></a></li>
+<li><a class="iref" href="#define">define <i>symbol</i> ?<i>value</i></a></li>
+<li><a class="iref" href="#defined">defined <i>symbol</i></a></li>
+<li><a class="iref" href="#dictionary">dictionary <i>parent slug title text</i></a></li>
+<li><a class="iref" href="#getsym">getsym <i>symbol</i></a></li>
+<li><a class="iref" href="#image">image <i>slug title filename</i></a></li>
+<li><a class="iref" href="#include">include <i>filename</i></a></li>
+<li><a class="iref" href="#log">log <i>text</i></a></li>
+<li><a class="iref" href="#macro">macro <i>name arglist</i> ?<i>initbody</i>? <i>template</i></a></li>
+<li><a class="iref" href="#macroproc">macroproc <i>name arglist</i> <i>body</i></a></li>
+<li><a class="iref" href="#object">object <i>name script</i></a></li>
+<li><a class="iref" href="#page">page <i>parent slug title text</i></a></li>
+<li><a class="iref" href="#proc">proc <i>name arglist body</i></a></li>
+<li><a class="iref" href="#super">super <i>command...</i></a></li>
+<li><a class="iref" href="#childlinks"><code>&lt;childlinks ?<i>parent</i>?&gt;</code></a></li>
+<li><a class="iref" href="#children"><code>&lt;children ?<i>parent</i>?&gt;</code></a></li>
+<li><a class="iref" href="#cref"><code>&lt;cref <i>url</i> ?<i>text</i>?&gt;</code></a></li>
+<li><a class="iref" href="#enumdoc"><code>&lt;enumdoc <i>enum</i>&gt;</code></a></li>
+<li><a class="iref" href="#ifdef"><code>&lt;ifdef <i>symbol body</i>&gt;</code></a></li>
+<li><a class="iref" href="#ifndef"><code>&lt;ifndef <i>symbol body</i>&gt;</code></a></li>
+<li><a class="iref" href="#ifsym"><code>&lt;ifsym <i>symbol value body</i>&gt;</code></a></li>
+<li><a class="iref" href="#img"><code>&lt;img <i>slug</i> ?<i>align</i>?&gt;</code></a></li>
+<li><a class="iref" href="#itemlist"><code>&lt;itemlist&gt;</code></a></li>
+<li><a class="iref" href="#item"><code>&lt;item <i>label</i>&gt;</code></a></li>
+<li><a class="iref" href="#/item"><code>&lt;/item&gt;</code></a></li>
+<li><a class="iref" href="#/itemlist"><code>&lt;/itemlist&gt;</code></a></li>
+<li><a class="iref" href="#pageinfo"><code>&lt;pageinfo <i>field</i>&gt;</code></a></li>
+<li><a class="iref" href="#optionlist"><code>&lt;optionlist&gt;</code></a></li>
+<li><a class="iref" href="#option"><code>&lt;option <i>name</i>&gt;</code></a></li>
+<li><a class="iref" href="#/option"><code>&lt;/option&gt;</code></a></li>
+<li><a class="iref" href="#/optionlist"><code>&lt;/optionlist&gt;</code></a></li>
+<li><a class="iref" href="#parmlist"><i>object</i> parmlist <i>options...</i></a></li>
+<li><a class="iref" href="#parm"><code>&lt;parm <i>parm field</i>&gt;</code></a></li>
+<li><a class="iref" href="#/parm"><code>&lt;/parm&gt;</code></a></li>
+<li><a class="iref" href="#/parmlist"><code>&lt;/parmlist&gt;</code></a></li>
+<li><a class="iref" href="#sym"><code>&lt;sym <i>symbol</i>&gt;</code></a></li>
+<li><a class="iref" href="#symdef"><code>&lt;symdef <i>symbol</i>&gt;</code></a></li>
+<li><a class="iref" href="#version"><code>&lt;version&gt;</code></a></li>
+<li><a class="iref" href="#odef_noun">noun <i>noun</i></a></li>
+<li><a class="iref" href="#odef_overview">overview <i>text</i></a></li>
+<li><a class="iref" href="#odef_include">include <i>object</i> ?<i>options</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#odef_include-attrs">-attrs <i>names</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#odef_include-tags">-tags <i>tags</i></a></li>
+<li><a class="iref" href="#odef_attribute">attribute <i>name label text</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#odef_attribute-tags">-tags <i>tags</i></a></li>
+<li><a class="iref" href="#osub_noun"><i>object</i> noun</a></li>
+<li><a class="iref" href="#osub_overview"><i>object</i> overview</a></li>
+<li><a class="iref" href="#osub_attr_names"><i>object</i> attr names</a></li>
+<li><a class="iref" href="#osub_attr_data"><i>object</i> attr data <i>name</i></a></li>
+<li><a class="iref" href="#osub_attr_label"><i>object</i> attr label <i>name</i></a></li>
+<li><a class="iref" href="#osub_attr_text"><i>object</i> attr text <i>name</i></a></li>
+<li><a class="iref" href="#osub_parm"><i>object</i> parm <i>attr</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#osub_parm-label">-label <i>label</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#osub_parm-required">-required</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#osub_parm-optional">-optional</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#osub_parm-display">-display</a></li>
+<li><a class="iref" href="#parms"><i>object</i> parms <i>options...</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#parms-attrs">-attrs <i>names</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#parms-tags">-tags <i>tags</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#parms-required">-required</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#parms-optional">-optional</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#parms-display">-display</a></li>
+<li><a class="iref" href="#parmlist"><i>object</i> parmlist <i>options...</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This man page defines the help(5) format for writing on-line help
+documents.  A help(5) file defines the pages, images, and other
+entities to be used in the on-line help.  The text for each help page
+is defined in "Extended HTML" format, i.e., HTML text extended
+with embedded macros. The basic syntax and capabilities of
+Extended HTML are defined in the <a href="../man5/ehtml.html">ehtml(5)</a> man page.  This man
+page describes a number of extensions to the basic format.</p>
+
+<p><a href="../man1/helptool.html">helptool(1)</a> translates help(5) files into
+"<code>.helpdb</code>" help database files.  These can be queried
+directly using the <a href="../mann/helpserver.html">helpserver(n)</a> API, or browsed using
+<a href="../mann/mybrowser.html">mybrowser(n)</a>.</p>
+
+<p><a href="../man1/helptool.html">helptool(1)</a> takes a single help(5) file as input; however,
+it's possible to break the input into multiple files by use of the
+<a class="iref" href="#include">include</a> command.
+
+</p>
+
+<h2><a name="entities">ENTITIES</a></h2>
+<p>A help(5) file can define two kinds of entities: pages and images.
+
+</p>
+
+<h2><a name="pages">Pages</a></h2>
+<p>Every page has a <i>path</i> and a short human-readable <i>title</i>.
+The path is the basis for the page's URL, as retrieved using
+<a href="../mann/helpserver.html">helpserver(n)</a>.  Pages exist in a hierarchy; the path of the
+topmost page is "/", with child pages extending the path in the usual
+way.  All page paths must be unique, and <a href="../man1/helptool.html">helptool(1)</a> 
+might reserve some for its own use.</p>
+
+<p>A <a class="iref" href="#dictionary">dictionary</a> is a page that represents an alphabetical index of its
+children, i.e., a main glossary page.  The children of a <a class="iref" href="#dictionary">dictionary</a>
+page are always presented in sorted order.</p>
+
+<p>An <a class="iref" href="#alias">alias</a> is pseudo-page that redirects to another page.  A term
+on a glossary page might be an alias to another page in the help file.
+Making it an alias means that it appears in both the glossary and its
+normal location.
+
+</p>
+
+<h2><a name="images">Images</a></h2>
+<p>Every image has a unique "slug", a short string that uniquely
+identifies it.  The slug is the basis for the image's path, which is
+used in URLs.  All image pages look this this:
+
+</p>
+
+<pre>
+    /image/<i>slug</i>
+</pre>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>A help(5) file is a Tcl-formatted file.  It can contain Tcl comments,
+along with the following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="alias">alias <i>parent slug title alias</i></a></dt><dd><p>
+
+Defines a new help page as an alias to the page whose path is
+<i>alias</i>.  The new page will have the given <i>parent</i>,
+<i>slug</i>, and <i>title</i>, just as for the <a class="iref" href="#page">page</a>
+command.</p>
+
+<p>The <i>alias</i> page must already exist, and must not itself be an
+alias to another page.
+
+</p>
+</dd>
+<dt class="defitem"><a name="define">define <i>symbol</i> ?<i>value</i></a></dt><dd>
+
+Defines a compilation symbol called <i>symbol</i>, optionally assigning
+it a <i>value</i>.  Compilation symbols are used to support conditional
+compilation, which is useful if a <a href="../man5/help.html">help(5)</a> file is used as a 
+source for more than one help database.
+
+</dd>
+<dt class="defitem"><a name="defined">defined <i>symbol</i></a></dt><dd>
+
+Returns 1 if the named <i>symbol</i> is defined, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="dictionary">dictionary <i>parent slug title text</i></a></dt><dd><p>
+
+Defines a new dictionary page with the given <i>parent</i>, <i>slug</i>,
+<i>title</i>, and <i>text</i>.  A dictionary page is just like a normal
+<a class="iref" href="#page">page</a>, except that its direct children are always sorted in
+alphabetical order.  Dictionaries are used for things like glossaries
+and other lists of sorted entities; they allow the child pages
+to be defined anywhere in the input, in any order.</p>
+
+<p>A dictionary page's text will usually include 
+the <a class="iref" href="#childlinks">&lt;childlinks&gt;</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="getsym">getsym <i>symbol</i></a></dt><dd>
+
+Returns the value of the named <i>symbol</i>, or "" if the symbol was
+defined without a value.  It's an error if the symbol is undefined.
+
+</dd>
+<dt class="defitem"><a name="image">image <i>slug title filename</i></a></dt><dd><p>
+
+Loads the image stored in <i>filename</i> into the help database
+with the given <i>slug</i> and <i>title</i>.  The image's path is
+then "<code>/image/<i>slug</i></code>".  Help pages may include the
+image using the normal HTML syntax:
+
+</p><pre>    &lt;img src="/image/<i>slug</i>"&gt;</pre>
+<p>Alternatively, the <a class="iref" href="#image">image</a> macro creates the
+"<code>&lt;img&gt;</code>" take given the <i>slug</i>.</p>
+
+<p>The <i>filename</i> may be a relative or absolute path; if relative, it is
+relative to the directory of the help(5) file containing the 
+<a class="iref" href="#image">image</a> command.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="include">include <i>filename</i></a></dt><dd>
+
+Includes another help(5) file into this one.  The <i>filename</i> may be
+absolute or relative to the directory of the including file.
+
+</dd>
+<dt class="defitem"><a name="log">log <i>text</i></a></dt><dd>
+
+Logs the <i>text</i> to the console during compilation.  This command is
+primarily useful for debugging compilation issues.  It can also be
+used as a macro.
+
+</dd>
+<dt class="defitem"><a name="macro">macro <i>name arglist</i> ?<i>initbody</i>? <i>template</i></a></dt><dd><p>
+
+Defines a document-specific macro that can be used in the body of
+subsequent pages.  The <a class="iref" href="#macro">macro</a> is essentially a
+<a href="../mann/template.html">template(n)</a> <a href="../mann/template.html#template">template</a>; see that man page
+for details.</p>
+
+<p>The difference between macros and <a class="iref" href="#proc">proc</a>s is that macros can
+appear in page bodies, whereas <a class="iref" href="#proc">proc</a>s cannot.
+
+</p>
+</dd>
+<dt class="defitem"><a name="macroproc">macroproc <i>name arglist</i> <i>body</i></a></dt><dd><p>
+
+Defines a document-specific macro that can be used in the body of
+subsequent pages.  The <a class="iref" href="#macro">macro</a> is essentially a
+standard proc that can appear in page text; it is called and 
+replaced with its return value.</p>
+
+<p>The difference between macros and <a class="iref" href="#proc">proc</a>s is that macros can
+appear in page bodies, whereas <a class="iref" href="#proc">proc</a>s cannot.</p>
+
+<p>The difference between macroprocs and normal macros is that macroprocs
+simply return their expanded value; they don't have a template string.
+
+</p>
+</dd>
+<dt class="defitem"><a name="object">object <i>name script</i></a></dt><dd>
+
+Defines an object called <i>name</i> given an
+<a href="#object_definition">Object Definition</a> script.  The <i>name</i> can be used as a
+command in <a class="iref" href="#proc">proc</a>s and as a macro in <a class="iref" href="#page">page</a> bodies; it
+should be chosen so as not to conflict with other commands and macros. See
+<a href="#object_commands">Object Commands</a> for the subcommands.
+
+</dd>
+<dt class="defitem"><a name="page">page <i>parent slug title text</i></a></dt><dd><p>
+
+Defines a new help page with the specified <i>title</i> and <i>text</i>.</p>
+
+<p>Every help page is identified by its <i>parent</i> path and a
+<i>slug</i>; these are joined with a "/" character to make the page's
+path.  The root page of the help tree has its <i>parent</i> and
+<i>slug</i> both "", giving it the path "/".  Subsequent pages will
+have a <i>parent</i> of "/" (or some lower-level page) and a non-empty
+<i>slug</i>.</p>
+
+<p>The <i>text</i> is the raw text of the page.  Once all pages have been
+read, the help compiler will expand all of the <a href="../man5/ehtml.html">ehtml(5)</a>
+macros in each page, producing the finished HTML for display.
+
+</p>
+</dd>
+<dt class="defitem"><a name="proc">proc <i>name arglist body</i></a></dt><dd><p>
+
+This command defines a procedure in the context of the help file,
+e.g.., a new command that can be used to define pages of specific
+types.</p>
+
+<p>Procs should not be confused with <a class="iref" href="#macro">macro</a>s.  A macro is a
+special kind of command that can be embedded in a page body and
+expanded in place.  A proc is a command executed in the context of the
+help(5) file that can call other help(5) commands.
+
+</p>
+</dd>
+<dt class="defitem"><a name="super">super <i>command...</i></a></dt><dd>
+
+This is a special command that allows procedures defined using
+<a class="iref" href="#proc">proc</a> to access project libraries and other commands
+defined in the main Tcl interpreter.  It should be used with
+caution.
+
+</dd>
+</dl>
+
+
+<h2><a name="macros">MACROS</a></h2>
+<p>help(5) man pages may use the following macros, as well as all
+macros defined in the <a href="../man5/ehtml.html">ehtml(5)</a> man page.  You can also define
+document-specific macros using the <a class="iref" href="#macro">macro</a> command.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="childlinks"><code>&lt;childlinks ?<i>parent</i>?&gt;</code></a></dt><dd>
+
+Creates a bulleted list of links to the children of the named
+<i>parent</i> page.  If <i>parent</i> is omitted, the children of the
+current page are listed.
+
+</dd>
+<dt class="defitem"><a name="children"><code>&lt;children ?<i>parent</i>?&gt;</code></a></dt><dd>
+
+Returns a dictionary of paths and page titles for the children
+of the named <i>parent</i> page.  If <i>parent</i> is omitted, the 
+children of the current page are return.  This macro can be used
+in a macro's <i>initbody</i> to implement variants of the 
+<a class="iref" href="#childlinks">childlinks</a> macro.
+
+</dd>
+<dt class="defitem"><a name="cref"><code>&lt;cref <i>url</i> ?<i>text</i>?&gt;</code></a></dt><dd><p>
+
+Creates a cross-reference link to another page, identified by
+<i>url</i>.  The <i>url</i> has this syntax:
+
+</p><pre>    <i>path</i>#<i>anchor</i></pre>
+<p>where <i>path</i> is a page path and <i>anchor</i> is an anchor name
+within the page, as defined using
+
+</p>
+
+<pre>    &lt;a name="<i>anchor</i>"&gt;...&lt;/a&gt;</pre>
+<p>The <i>url</i> can contain either or both of the components.</p>
+
+<p>If <i>text</i> is given, it is used as the link text; otherwise, the
+title of the linked page is used.</p>
+
+<p>If the linked page is unknown (as will often be the case when writing a new
+help file) then the link text is prefixed with "TBD:".
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="enumdoc"><code>&lt;enumdoc <i>enum</i>&gt;</code></a></dt><dd>
+
+The <a href="../mann/enum.html">enum(n)</a> data type is capable of producing its own
+HTML documentation string; however, the produced HTML is ugly when
+rendered by <a href="../mann/htmlviewer.html">htmlviewer(n)</a>.  
+appropriate for Athena use.  This macro provides an alternative
+documentation string, given an <a href="../mann/enum.html">enum(n)</a> object called
+<i>enum</i>.
+
+</dd>
+<dt class="defitem"><a name="ifdef"><code>&lt;ifdef <i>symbol body</i>&gt;</code></a></dt><dd>
+
+Returns its <i>body</i> if the named <i>symbol</i> is defined, expanding any
+macros in the <i>body</i>.
+
+</dd>
+<dt class="defitem"><a name="ifndef"><code>&lt;ifndef <i>symbol body</i>&gt;</code></a></dt><dd>
+
+Returns its <i>body</i> if the named <i>symbol</i> is <b>not</b> defined, 
+expanding any macros in the <i>body</i>.
+
+</dd>
+<dt class="defitem"><a name="ifsym"><code>&lt;ifsym <i>symbol value body</i>&gt;</code></a></dt><dd>
+
+Returns its <i>body</i> if the named <i>symbol</i> has the given <i>value</i>,
+expanding any macros in the <i>body</i>.
+
+</dd>
+<dt class="defitem"><a name="img"><code>&lt;img <i>slug</i> ?<i>align</i>?&gt;</code></a></dt><dd>
+
+Inserts an "<code>&lt;img&gt;</code>" tag for the image with the given
+<i>slug</i>.  If <i>align</i> is included, then it must be one of
+<b>right</b>, <b>left</b>, or <b>center</b>; the image's horizontal
+alignment will be as indicated.
+
+</dd>
+<dt class="defitem"><a name="itemlist"><code>&lt;itemlist&gt;</code></a></dt>
+<dt class="defitem"><a name="item"><code>&lt;item <i>label</i>&gt;</code></a></dt>
+<dt class="defitem"><a name="/item"><code>&lt;/item&gt;</code></a></dt>
+<dt class="defitem"><a name="/itemlist"><code>&lt;/itemlist&gt;</code></a></dt><dd><p>
+
+These macros are used together to produce a two-column borderless 
+table of item labels and descriptions.  There are no column headers.</p>
+
+<p>Rows are added using the
+<a class="iref" href="#item">&lt;item&gt;</a>...<a class="iref" href="#/item">&lt;/item&gt;</a> tags; the value of the
+<i>label</i> argument to <a class="iref" href="#item">&lt;item&gt;</a> appears in boldface
+in the first column, and the text between the tags appears in the second.
+
+</p>
+</dd>
+<dt class="defitem"><a name="pageinfo"><code>&lt;pageinfo <i>field</i>&gt;</code></a></dt><dd>
+
+This command returns information about the current page.  The
+<i>field</i> is one of <b>path</b>, <b>title</b>, <b>parent</b>, or
+<b>text</b>.
+
+</dd>
+<dt class="defitem"><a name="optionlist"><code>&lt;optionlist&gt;</code></a></dt>
+<dt class="defitem"><a name="option"><code>&lt;option <i>name</i>&gt;</code></a></dt>
+<dt class="defitem"><a name="/option"><code>&lt;/option&gt;</code></a></dt>
+<dt class="defitem"><a name="/optionlist"><code>&lt;/optionlist&gt;</code></a></dt><dd><p>
+
+These macros are used together to produce a table of command option names
+and descriptions.  Each option has a name, e.g., "<code>-myoption</code>",
+plus a description, which is <a href="../man5/ehtml.html">ehtml(5)</a> input contained between
+<a class="iref" href="#option">&lt;option&gt;</a> and
+<a class="iref" href="#/option">&lt;/option&gt;</a>.</p>
+
+<p>The column headers are "Option" and "Description".
+
+</p>
+</dd>
+<dt class="defitem"><a name="parmlist"><code>&lt;parmlist ?<i>h1</i>? ?<i>h2</i>?&gt;</code></a></dt>
+<dt class="defitem"><a name="parm"><code>&lt;parm <i>parm field</i>&gt;</code></a></dt>
+<dt class="defitem"><a name="/parm"><code>&lt;/parm&gt;</code></a></dt>
+<dt class="defitem"><a name="/parmlist"><code>&lt;/parmlist&gt;</code></a></dt><dd><p>
+
+These macros are used together to produce a table of order parameter
+definitions.  Each parameter has a name as used in the code,
+<i>parm</i>, plus a label used in dialog boxes, <i>field</i>, plus a
+description, which is <a href="../man5/ehtml.html">ehtml(5)</a> input contained between
+<a class="iref" href="#parm">&lt;parm&gt;</a> and
+<a class="iref" href="#/parm">&lt;/parm&gt;</a>.</p>
+
+<p>The column headers default to "Field" and
+"Description", but can be changed using the optional <i>h1</i> and
+<i>h2</i> parameters.
+
+</p>
+</dd>
+<dt class="defitem"><a name="sym"><code>&lt;sym <i>symbol</i>&gt;</code></a></dt><dd>
+
+Returns the value of the named <i>symbol</i>; it's an error if the
+symbol is undefined.
+
+</dd>
+<dt class="defitem"><a name="symdef"><code>&lt;symdef <i>symbol</i>&gt;</code></a></dt><dd>
+
+Returns 1 if the named <i>symbol</i> is defined, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="version"><code>&lt;version&gt;</code></a></dt><dd>
+
+Returns the version number for the current project, as passed to
+the <a href="../man1/helptool.html">helptool(1)</a> help compiler.
+
+
+</dd>
+</dl>
+
+<h2><a name="objects">OBJECTS</a></h2>
+<p>A help(5) "object" is used to document some kind of software
+object: an entity with attributes that require documentation, e.g., a
+record structure, an order, etc.  The <a class="iref" href="#object">object</a> command creates
+new objects; these objects can be used as macros within <a class="iref" href="#page">page</a> bodies,
+and as normal commands with <a class="iref" href="#proc">proc</a>s.  Each object has
+subcommands for querying object data and including it in help
+pages.</p>
+
+<p>Note that just defining an object doesn't produce any help page
+output; the object must explicitly be used in the definition of
+pages.
+
+</p>
+
+<h2><a name="object_definition">Object Definition</a></h2>
+<p>Objects are defined by a script containing the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="odef_noun">noun <i>noun</i></a></dt><dd>
+
+The <a class="iref" href="#object">object</a>'s name is a Tcl command, not an English word.
+This command is used to define the English word used in the help text
+for this kind of object.
+
+</dd>
+<dt class="defitem"><a name="odef_overview">overview <i>text</i></a></dt><dd>
+
+This command provides a general overall description of the object.
+The <i>text</i> is <a href="../man5/ehtml.html">ehtml(5)</a>, and may contain
+<a href="#macros">MACROS</a>.
+
+</dd>
+<dt class="defitem"><a name="odef_include">include <i>object</i> ?<i>options</i>?</a></dt><dd><p>
+
+This command includes attribute definitions from another object.
+Included attributes have the same labels and documentation text as they do
+in the object from which they are taken, but lose their tags so that
+the including object can tag them however is desired.
+
+</p><dl>
+
+<dt class="defopt"><a name="odef_include-attrs">-attrs <i>names</i></a></dt><dd>
+
+If given, <i>names</i> is a list of the attribute names to include.
+By default, all attributes are included..
+
+</dd>
+<dt class="defopt"><a name="odef_include-tags">-tags <i>tags</i></a></dt><dd>
+
+Specifies a list of one-word tags to attach to this attribute.  Tags
+are used to filter the output produced by some of the
+<a href="#object_commands">Object Commands</a>.
+
+</dd>
+</dl>
+
+
+</dd>
+<dt class="defitem"><a name="odef_attribute">attribute <i>name label text</i> ?<i>options...</i>?</a></dt><dd><p>
+
+This command defines one of the object's attributes.  Each attribute
+has a <i>name</i>; this is usually the attribute's name in the program
+code, e.g., the name of a column in an SQL table.  The <i>label</i> is
+the human-readable version of the name.  The <i>text</i> is
+<a href="../man5/ehtml.html">ehtml(5)</a> text that documents the attribute; it may contain
+<a href="#macros">MACROS</a>.  The options are as follows:
+
+</p><dl>
+
+<dt class="defopt"><a name="odef_attribute-tags">-tags <i>tags</i></a></dt><dd>
+
+Specifies a list of one-word tags to attach to this attribute.  Tags
+are used to filter the output produced by some of the
+<a href="#object_commands">Object Commands</a>.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="object_commands">Object Commands</a></h2>
+<p>Each object defined using the <a class="iref" href="#object">object</a> command has the
+following subcommands.  These may be used in <a class="iref" href="#proc">proc</a>s
+or in <a class="iref" href="#page">page</a> or <a class="iref" href="#macro">macro</a> bodies.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="osub_noun"><i>object</i> noun</a></dt><dd>
+
+Returns the object's noun.
+
+</dd>
+<dt class="defitem"><a name="osub_overview"><i>object</i> overview</a></dt><dd>
+
+Returns the object's overview text, first expanding any macros.
+
+</dd>
+<dt class="defitem"><a name="osub_attr_names"><i>object</i> attr names</a></dt><dd>
+
+Returns a list of the object's attribute names, in order of
+definition.
+
+</dd>
+<dt class="defitem"><a name="osub_attr_data"><i>object</i> attr data <i>name</i></a></dt><dd>
+
+Returns a two-item list of the named attribute's label and
+documentation text strings.  No macros are expanded.
+
+</dd>
+<dt class="defitem"><a name="osub_attr_label"><i>object</i> attr label <i>name</i></a></dt><dd>
+
+Returns the label text for the named attributed.
+
+</dd>
+<dt class="defitem"><a name="osub_attr_text"><i>object</i> attr text <i>name</i></a></dt><dd>
+
+Returns the named attribute's documentation text, first expanding
+any macros.
+
+</dd>
+<dt class="defitem"><a name="osub_parm"><i>object</i> parm <i>attr</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Returns an expanded <code>&lt;parm}&gt;</code>...<code>&lt;/parm}&gt;</code> entry
+for a single attribute, given the options.  This is usually done to
+change the label text for the attribute.
+
+</p><dl>
+
+<dt class="defopt"><a name="osub_parm-label">-label <i>label</i></a></dt><dd>
+
+Provides an alternate label string.
+
+</dd>
+<dt class="defopt"><a name="osub_parm-required">-required</a></dt><dd>
+
+The attribute will be marked as being
+<b>Required.</b>
+
+</dd>
+<dt class="defopt"><a name="osub_parm-optional">-optional</a></dt><dd>
+
+The attribute will be marked as being
+<b>Optional.</b>
+
+</dd>
+<dt class="defopt"><a name="osub_parm-display">-display</a></dt><dd>
+
+The attribute will be marked as being
+<b>Display Only.</b>
+
+
+</dd>
+</dl>
+
+
+</dd>
+<dt class="defitem"><a name="parms"><i>object</i> parms <i>options...</i></a></dt><dd><p>
+
+Returns a sequence of one or more expanded
+<code>&lt;parm}&gt;</code>...<code>&lt;/parm}&gt;</code> entries for inclusion in
+a <a class="iref" href="#parmlist">parmlist</a>.  By default, the result
+includes an entry each of the object's attributes.
+The options filter and tailor the results.
+
+</p><dl>
+
+<dt class="defopt"><a name="parms-attrs">-attrs <i>names</i></a></dt><dd>
+
+Lists the names of the attribute or attributes to include in the output.
+
+</dd>
+<dt class="defopt"><a name="parms-tags">-tags <i>tags</i></a></dt><dd>
+
+Only attributes with at least one of the listed <i>tags</i> will be
+included in the output.  This option is ignored if the
+<code>-attrs</code> option has a non-empty value.
+
+</dd>
+<dt class="defopt"><a name="parms-required">-required</a></dt><dd>
+
+All attributes in the output will be marked as being
+<b>Required.</b>
+
+</dd>
+<dt class="defopt"><a name="parms-optional">-optional</a></dt><dd>
+
+All attributes in the output will be marked as being
+<b>Optional.</b>
+
+</dd>
+<dt class="defopt"><a name="parms-display">-display</a></dt><dd>
+
+All attributes in the output will be marked as being
+<b>Display Only.</b>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="parmlist"><i>object</i> parmlist <i>options...</i></a></dt><dd>
+
+Returns a complete <a class="iref" href="#parmlist">parmlist</a>.  By default, the result
+includes an <a class="iref" href="#parm">parm</a> macro for each of the object's attributes.
+The options, which are the same as for the <a class="iref" href="#parms">parms</a> subcommand,
+filter and tailor the results.
+
+</dd>
+</dl>
+
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+    
+
+<table class="table table-wide">
+<tr>
+<th>Status</th>
+<th>Nature of Change</th>
+<th>Date</th>
+<th>Initiator</th>
+</tr>
+        
+
+<tr class="tr-even">
+<td>Added</td>
+<td><p>
+Made changes to support multiple help documents with shared pages:
+
+</p><ul>
+<li> Renamed the <code>&lt;image&gt;</code> macro to <a class="iref" href="#img">&lt;img&gt;</a>, to match the underlying
+     HTML tag and to prevent a name collision with the <a class="iref" href="#image">image</a>
+     command.
+
+</li><li> Added the <a class="iref" href="#dictionary">dictionary</a> page type, to allow (e.g.) glossary
+     entries to be defined out of order.  This allows glossary entries
+     from multiple sources to be merged transparently.
+</li><li>
+</li></ul>
+</td>
+<td>2015-09-03</td>
+<td>whd</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td>Added</td>
+<td><p>
+Added changes to support objects with configure/cget commands:
+
+</p><ul>
+    <li> Added the <a class="iref" href="#optionlist">optionlist</a>, <a class="iref" href="#/optionlist">/optionlist</a>,
+        <a class="iref" href="#option">option</a>, and <a class="iref" href="#/option">/option</a> macros, for producing
+        lists of command or object options.
+
+    </li><li> The <a class="iref" href="#object">object</a> <a class="iref" href="#parms">parms</a> and <a class="iref" href="#parm">parm</a> 
+         commands now take an <code>-asoption</code> option; this
+         produces an <a class="iref" href="#option">option</a>...<a class="iref" href="#/option">/option</a> pair.
+
+</li></ul>
+
+</td>
+<td>2013-12-11</td>
+<td>whd</td>
+</tr>
+        
+
+</table>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:45 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+

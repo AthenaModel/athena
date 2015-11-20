@@ -1,0 +1,357 @@
+<html>
+<head>
+<title>athena 6.3.0a7: myserver(i) -- my:// Server Interface</title>
+<style type="text/css" media="screen,print">
+
+        A {
+            text-decoration: none;
+        }
+
+        TABLE {
+            margin-top:    4px;
+            margin-bottom: 4px;
+        }
+
+        TR {
+            vertical-align: baseline;
+        }
+
+        TH {
+            padding-left: 4px;
+        }
+
+        TD {
+            padding-left: 4px;
+        }
+
+        /* Table Formatting Classes: "pretty" 
+         * Border around the outside, even/odd striping, no internal
+         * border lines.
+         */
+        TABLE.pretty {
+            border: 1px solid black;
+            border-spacing: 0;
+        }
+
+        TABLE.pretty TR.header {
+            font-weight: bold;
+            color: white;
+            background-color: #000099;
+        }
+
+        TABLE.pretty TR.oddrow {
+            color: black;
+            background-color: white;
+        }
+
+        TABLE.pretty TR.evenrow {
+            color: black;
+            background-color: #EEEEEE;
+        }
+
+        /* Examples, listings, and marks */
+        PRE.example {
+            background:     #FFFDD1 ;
+            border:         1px solid blue;
+            padding-top:    2px;
+            padding-bottom: 2px;
+            padding-left:   4px;
+        }
+
+        PRE.listing {
+            background:     #FFFDD1 ;
+            border:         1px solid blue;
+            padding-top:    4px;
+            padding-bottom: 4px;
+            padding-left:   4px;
+        }
+
+        SPAN.linenum {
+            background:     #E3E08F ;
+        }
+
+        DIV.mark {
+            display: inline;
+            font-family: Verdana;
+            font-size: 75%;
+            background: black;
+            color: white;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        DIV.bigmark {
+            display: inline;
+            font-family: Verdana;
+            font-size: 100%;
+            background: black;
+            color: white;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        /* Topic Lists. */
+        TR.topic {
+            vertical-align: baseline;
+        }
+
+        TR.topicname {
+            min-width: 1.5em;
+        }
+
+    
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.0a7: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<b>myserver(i)</b> -- my:// Server Interface
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#url_syntax">URL Syntax</a></li>
+
+</ul>
+    
+
+    <li><a href="#subcommands">SUBCOMMANDS</a></li>
+    
+
+    <li><a href="#standard_urls">STANDARD URLS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<tt><a href="#get">get <i>url</i> ?<i>contentTypes</i>?</a></tt><br>
+
+<tt><a href="#url">url</a></tt><br>
+
+<tt><a href="#contenttype">contentType</a></tt><br>
+
+<tt><a href="#content">content</a></tt><br>
+
+<tt><a href="#urlhelp">/urlhelp</a></tt><br>
+
+<tt><a href="#urlhelp/path">/urlhelp/<i>path</i></a></tt><br>
+
+<p>
+    
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+A myserver(i) object is an object that can serve application data
+(often HTML text) to the GUI given one of a number of supported
+"my:" URLs.  As such, it is conceptually similar to an HTTP server;
+however, it resides within the application and serves data back to the
+application.<p>
+
+The purpose of a myserver(i) is to provide a single namespace for all
+important data in the application, so as to provide:<p>
+
+<ul>
+  <li> One-stop shopping for GUI data queries.
+  <li> Isolation of the GUI from the underlying data structures.
+</ul>
+
+At present, this interface is limited to data retrieval; in time,
+operations for data update may be added, in line with the REST
+architecture.<p>
+
+Clients will usually use an instance of <a href="../mann/myagent.html">myagent(n)</a> to query a
+myserver(i).<p>
+
+<h2><a name="url_syntax">URL Syntax</a></h2>
+    
+
+The server names all resources by means of URLs with the scheme "my:".
+The syntax of "my:" URLs is identical to that of "http:" URLs, except
+that the username, port, and password fields are ignored:<p>
+
+<pre>
+    my://{server}/{path}?{query}#{fragment}
+</pre>
+
+A myserver(i) is entitled to presume that it is given URLs with the
+scheme "my" and the proper <i>server</i> name, which are really the
+domain of the <a href="../mann/myagent.html">myagent(n)</a> used to query the server.<p>
+
+The myserver(i) will take note of the <i>path</i>, and may choose to
+look at the <i>query</i>; it will always ignore the <i>fragment</i>,
+which is also the responsibility of the <a href="../mann/myagent.html">myagent(n)</a>.<p>
+
+<h2><a name="subcommands">SUBCOMMANDS</a></h2>
+    
+
+Each <a href="../mani/myserver.html">myserver(i)</a> ensemble must implement at least the following
+subcommands.
+
+<dl>
+
+<dt><b><tt><a name="get">get <i>url</i> ?<i>contentTypes</i>?</a></tt></b></dt>
+<dd>
+    
+
+Retrieves the <i>url</i> from the server.  If the <i>url</i> cannot be
+retrieved for any reason, the server must throw an error with error
+code <b>NOTFOUND</b>; the error message should be a human-readable
+message explaining why the resource cannot be found.<p>
+
+The <i>contentTypes</i> argument, if given, is a list of content types
+accepted by the client.  Browse the server's <tt><a href="#urlhelp">urlhelp</a></tt> resource
+to see what URLs are accepted, and what content types they can
+provide; the list will usually include
+<b>text/html</b>.  Standard MIME types should be used when
+appropriate; Tcl/Tk data formats should have names like
+<b>tcl/linkdict</b> or <b>tk/image</b>.  The server must document any
+server-specific content types.<p>
+
+If <i>contentTypes</i> is empty, the server will return the first
+available content type for the requested <i>url</i>.  Otherwise, it
+will return the first content type listed in <i>contentTypes</i> which
+is available for the requested <i>url</i>.<p>
+
+Note that the content types listed in <i>contentTypes</i> can include
+wild cards, e.g., <b>text/*</b> and <b>*/*</b>.<p>
+
+On success, the <tt><a href="#get">get</a></tt> command returns a dictionary with the
+following keys:<p>
+
+<dl>
+
+<dt><b><tt><a name="url">url</a></tt></b></dt>
+<dd>
+    
+
+The complete URL given to the server.  This is of interest because the
+<a href="../mann/myagent.html">myagent(n)</a> might have performed address resolution; hence,
+the URL given to the server might not be the same as the URL given to
+the agent.<p>
+
+<dt><b><tt><a name="contenttype">contentType</a></tt></b></dt>
+<dd>
+    
+
+The content type of the returned content.<p>
+
+<dt><b><tt><a name="content">content</a></tt></b></dt>
+<dd>
+    
+
+The returned content itself.
+
+</dl>
+
+<h2><a name="standard_urls">STANDARD URLS</a></h2>
+    
+
+Each myserver(i) should accept the following URLs:<p>
+
+<dl>
+
+<dt><b><tt><a name="urlhelp">/urlhelp</a></tt></b></dt>
+<dd>
+    
+
+This URL should return a <b>text/html</b> page documenting the
+server's URL schema.  The entry for each resource should include the
+content types available for that resource.<p>
+
+<dt><b><tt><a name="urlhelp/path">/urlhelp/<i>path</i></a></tt></b></dt>
+<dd>
+    
+
+This URL should return a <b>text/html</b> page documenting the
+resource given by <i>path</i>, in the same format as <tt><a href="#urlhelp">urlhelp</a></tt>.<p>
+
+</dl>
+
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+    
+
+Will Duquette<p>
+
+<h2><a name="history">HISTORY</a></h2>
+    
+
+Original interface.
+
+<hr>
+<i>athena 6.3.0a7 Man page generated by manpage(n) on 
+Thu Mar 12 11:50:51 PDT 2015</i>
+</body>
+</html>
+    
+
+
+
+

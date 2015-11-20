@@ -1,0 +1,3350 @@
+<html><head>
+<title>athena 6.3.3: Arachne Interface Specification</title>
+<style>
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 1%;
+            margin-right: 1%;
+        }
+    
+</style>
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+<h1>Arachne Interface Specification</h1>
+    
+
+
+
+
+
+<p><b>NOTE:</b> This is a preliminary specification; the Arachne executable
+is an incomplete prototype.
+
+</p>
+
+<hr class="hrule">
+
+<h2>Table of Contents</h2>
+
+<p><b><a href="#changelog" name="toc.changelog">Change Log</a></b></p>
+
+
+<p><b><a href="#overview" name="toc.overview">1. Overview</a></b></p>
+
+<ul>
+
+    <li><a href="#overview.cloud" name="toc.overview.cloud">1.1 Cloud Assumptions</a></li>
+
+    
+
+    <li><a href="#overview.name" name="toc.overview.name">1.2 Why Arachne?</a></li>
+
+    
+
+</ul>
+    
+<p><b><a href="#cmdline" name="toc.cmdline">2. Command Line Interface</a></b></p>
+
+
+<p><b><a href="#scenario" name="toc.scenario">3. Scenario Management</a></b></p>
+
+<ul>
+
+    <li><a href="#scenario.caseid" name="toc.scenario.caseid">3.1 Scenario Case IDs</a></li>
+
+    
+
+    <li><a href="#scenario.staging" name="toc.scenario.staging">3.2 Scenario Staging</a></li>
+
+    
+
+    <li><a href="#scenario.create" name="toc.scenario.create">3.3 Creating Scenarios</a></li>
+
+    
+
+    <li><a href="#scenario.modify" name="toc.scenario.modify">3.4 Modifying Scenarios</a></li>
+
+    
+
+    <li><a href="#scenario.other" name="toc.scenario.other">3.5 Other Operations</a></li>
+
+    
+
+</ul>
+    
+<p><b><a href="#restapi" name="toc.restapi">4. RESTful API</a></b></p>
+
+<ul>
+
+    <li><a href="#restapi.overview" name="toc.restapi.overview">4.1 Overview</a></li>
+
+    
+
+    <li><a href="#restapi.help" name="toc.restapi.help">4.2 Help API</a></li>
+
+    
+
+    <li><a href="#restapi.scenario" name="toc.restapi.scenario">4.3 Scenario Management API</a></li>
+
+    <ul>
+
+    <li><a href="#restapi.scenario.main" name="toc.restapi.scenario.main">4.3.1 Scenario Operations</a></li>
+
+    
+
+    <li><a href="#restapi.scenario.case" name="toc.restapi.scenario.case">4.3.2 Case Operations (Main)</a></li>
+
+    
+
+    <li><a href="#restapi.scenario.group" name="toc.restapi.scenario.group">4.3.3 Case Operations (Groups)</a></li>
+
+    
+
+    <li><a href="#restapi.scenario.actor" name="toc.restapi.scenario.actor">4.3.4 Case Operations (Actors)</a></li>
+
+    
+
+    <li><a href="#restapi.scenario.nbhood" name="toc.restapi.scenario.nbhood">4.3.5 Case Operations (Neighborhoods)</a></li>
+
+    
+
+    <li><a href="#restapi.scenario.history" name="toc.restapi.scenario.history">4.3.6 Case Operations (History)</a></li>
+
+    
+
+    <li><a href="#restapi.scenario.histvars" name="toc.restapi.scenario.histvars">4.3.7 History Table Query Reference</a></li>
+
+    
+
+</ul>
+    
+
+    <li><a href="#restapi.comparison" name="toc.restapi.comparison">4.4 Scenario Comparison API</a></li>
+
+    
+
+    <li><a href="#restapi.json" name="toc.restapi.json">4.5 JSON Conventions</a></li>
+
+    
+
+</ul>
+    
+<p><b><a href="#orders" name="toc.orders">5. Athena Order Definitions</a></b></p>
+
+
+<p><b><a href="#script" name="toc.script">6. Athena Script Commands</a></b></p>
+
+
+
+
+<h2>List of Tables</h2>
+<ul>
+
+    <li><a href="#tab.histvars" name="toc.tab.histvars">Table 4-1: History Variables</a></li>
+
+</ul>
+    
+
+    
+
+<hr class="hrule">
+
+
+<h2><a name="changelog" href="#toc.changelog">Change Log</a></h2>
+    
+
+<table class="table table-wide">
+<tr>
+<th>Status</th>
+<th>Nature of Change</th>
+<th>Date</th>
+<th>Initiator</th>
+</tr>
+        
+
+<tr class="tr-even">
+<td>Update</td>
+<td>
+Many updates to the RESTful API with new sections and lists of URLs for easier
+access by users.  Addition of the -compdb option to the Command Line Interface
+section.
+</td>
+<td>9/10/2015</td>
+<td>dhanks</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td>Update</td>
+<td>
+Updates on the RESTful API, prior to June engineering delivery.
+</td>
+<td>6/2/2015</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td>Update</td>
+<td>
+Added details about the RESTful API.  Also, Arachne is no longer 
+intended for non-server batch runs; <a href="./man1/athena.html">athena(1)</a>'s "build" subcommand
+handles that use-case quite nicely.
+</td>
+<td>4/10/2015</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td>Update</td>
+<td>
+Added the <span class="tt">-web</span> option, which causes the web server to be started;
+the <span class="tt">-port</span> now defaults to 8080.
+</td>
+<td>4/2/2015</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td>Update</td>
+<td>
+<ul>
+<li> Arachne assumes all incoming HTTP requests use "https".
+     (<a href="#restapi">Section 4</a>).
+</li><li> Added <span class="tt">-heartbeat</span>, <span class="tt">-heartbeaturl</span> options.
+</li></ul>
+</td>
+<td>2/3/2015</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td>Update</td>
+<td>
+Preliminary draft
+</td>
+<td>1/28/2015</td>
+<td>will</td>
+</tr>
+        
+</table>
+
+<hr class="hrule">
+
+
+<h2><a name="overview" href="#toc.overview">1. Overview</a></h2>
+<p>Arachne is a version of Athena intended to run as part of a web back-end in
+the cloud.  It includes a web server that provides a RESTful interface
+to Athena's run-time data.</p>
+
+<p>The purpose of this document is to specify Arachne's command-line and
+RESTful interface as an aid to web developers using Arachne in 
+production.</p>
+
+<p><b>NOTE:</b> Arachne is still in development; therefore this document also 
+serves to capture the preliminary design and to record decisions made in
+discussions with the Web Athena developers.
+
+
+</p>
+
+<h3><a name="overview.cloud" href="#toc.overview.cloud">1.1 Cloud Assumptions</a></h3>
+<p>Arachne makes the following assumptions about its run-time environment when
+run as part of the "Web Athena" back end:
+
+</p>
+
+<ul>
+<li> Arachne runs on a cloud node, with an instance of Arachne for each
+     user session.
+</li><li> The node runs 64-bit Linux (this is negotiable).
+</li><li> Arachne is invoked on the node by a wrapper provided by the 
+     web-development team.
+</li><li> The wrapper communicates with Arachne by means of its 
+     command line and its RESTful HTTP interface.
+</li><li> Arachne is insulated from the outside network by the wrapper 
+     (so as to minimize potential security issues).  In other words,
+     the wrapper serves as a proxy server between Arachne and the
+     front end.
+</li><li> The wrapper handles file management, i.e., it is responsible
+     for copying user scenario data to and from the scenario archive,
+     whereever that might be.
+</li></ul>
+
+
+<h3><a name="overview.name" href="#toc.overview.name">1.2 Why Arachne?</a></h3>
+<p>In Greek myth, Arachne was so skilled at spinning thread that she beat
+Athena in a fair contest.  In retaliation, Athena turned Arachne into a 
+spider.  Arachne is therefore Athena's web-spinner.
+
+
+</p>
+
+<h2><a name="cmdline" href="#toc.cmdline">2. Command Line Interface</a></h2>
+    
+
+<p><b>This is a preliminary specification</b>.</p>
+
+<p>Arachne is installed as a Linux executable called <b><span class="tt">arachne</span></b>.
+It runs as a server with a RESTful web interface.</p>
+
+<p>To run Arachne simply invoke it, optionally specifying the HTTP 
+<span class="tt">-port</span> and other options.  Arachne will load 
+any <span class="tt">-scenario</span> and execute any <span class="tt">-script</span> for its "base" case, 
+and then wait for instructions via HTTP.</p>
+
+<p>To invoke Arache without starting the HTTP server, pass the 
+<span class="tt">-test</span> option.  (This is provided as an aid to testing.)</p>
+
+<p>Arachne takes the following command-line options:
+
+</p>
+
+<dl>
+
+<dt class="def">-compdb <i>filename</i></dt><dd>
+
+Specifies a comparison parameter database to be used when output and causality
+analysis is done.  This only needs to be specified if the use of non-defaulted
+comparison parameter values is desired.
+
+</dd>
+<dt class="def">-heartbeat <i>seconds</i></dt><dd>
+
+<b>Not Yet Implemented.</b>  Specifies the number of seconds between 
+heartbeats.
+
+</dd>
+<dt class="def">-heartbeatfile <i>filepath</i></dt><dd>
+
+<b>Not Yet Implemented.</b>  If given, and if Arachne is listening for HTTP 
+requests, it will write the 
+current time in seconds to the named <i>filepath</i> approximately every 
+<span class="tt">-heartbeat</span> seconds.  This allows the enclosing web application to be 
+sure that it is alive.
+
+</dd>
+<dt class="def">-heartbeaturl <i>url</i></dt><dd>
+
+<b>Not Yet Implemented.</b>  If given, and if Arachne is listening for 
+HTTP requests, it will GET the
+specified URL approximately every <span class="tt">-heartbeat</span> seconds.  This allows the 
+enclosing web application to be sure that it is alive.
+
+</dd>
+<dt class="def">-port <i>portid</i></dt><dd>
+
+Specifies the port ID at which Arachne should listen for HTTP requests.
+Defaults to port 8080.
+<b>TBD:</b> Ultimately, Arachne will accept only HTTPS request; at present,
+we are waiting on a bug fix in the Tcl TLS package, so we listen for 
+normal HTTP requests.
+
+</dd>
+<dt class="def">-scenariodir <i>dirpath</i></dt><dd>
+Specifies the name of a directory from which Arachne will import and 
+export Athena scenario (.adb) files and scenario script (.tcl) files at 
+run-time.  The larger application can stage and retrieve files using
+this directory.
+
+</dd>
+<dt class="def">-scenario <i>filename</i></dt><dd><p>
+
+Specifies the path to an Athena scenario (.adb) file to load at start-up
+as Arachne's base case, "<span class="tt">case00</span>".  It is usual to begin with a base 
+scenario and then run excursions from it via the RESTful API.  The 
+<i>filename</i> must be a bare filename in the <span class="tt">-scenariodir</span>.</p>
+
+<p>If no <span class="tt">-scenario</span> is specified, then Arachne creates an empty scenario
+for "<span class="tt">case00</span>".
+
+</p>
+</dd>
+<dt class="def">-scratchdir <i>dirpath</i></dt><dd>
+
+Specifies the name of a directory to use for temporary files.  This directory
+should be somewhere the user has write access.  The directory need not exist,
+it will be created if it does not.  <b>NOTE: If this directory does exist, the
+contents of it will be deleted when the application is launched.  Use great
+care when specifying this directory.</b>
+
+</dd>
+<dt class="def">-script <i>filepath</i></dt><dd>
+
+Specifies the path to an Athena script (.tcl) file to load into the
+base case at start-up. Any <span class="tt">-scenario</span> is loaded into "<span class="tt">case00</span>" 
+first. 
+
+</dd>
+<dt class="def">-test</dt><dd>
+
+If this option is specified, Arachne will halt immediately after loading the
+<span class="tt">-scenario</span> and executing the <span class="tt">-script</span>.  This is provided as an
+aid to testing.
+
+</dd>
+</dl>
+
+
+<h2><a name="scenario" href="#toc.scenario">3. Scenario Management</a></h2>
+<p>Arachne allows the client to work with multiple scenarios at one time.
+The expected use case is that one scenario will be the "base case" and
+the others will be excursions from that base case; but while Arachne
+facilitates this pattern it does not require it, and the loaded scenarios
+can be entirely unrelated.
+
+
+</p>
+
+<h3><a name="scenario.caseid" href="#toc.scenario.caseid">3.1 Scenario Case IDs</a></h3>
+<p>Each scenario has a symbolic "case ID" and a human-readable "long name".
+The case IDs are strings matching the pattern "<span class="tt">case<i>nn</i></span>", 
+where <i>nn</i> is a number from "00" to "99" (or larger).  
+Case IDs are assigned automatically as scenarios are created, cloned, or
+imported.  The long name may be set to any desired string.</p>
+
+<p>The base case would typically be scenario <span class="tt">case00</span>, which is created
+automatically when Arachne is invoked.
+
+
+</p>
+
+<h3><a name="scenario.staging" href="#toc.scenario.staging">3.2 Scenario Staging</a></h3>
+<p>Arachne does not know the details of how users' scenario files will be 
+stored or accessed in the cloud.  Consequently, all scenario data is
+staged through Arachne's "scenario directory".  The scenario directory
+may contain Athena scenarios as scenario files (".adb") or as 
+executive script files (".tcl").</p>
+
+<p>Scenarios to be used in Arachne should be copied to the scenario directory
+and then <b>imported</b> into a running instance of Arachne using the
+<span class="tt">/scenario/import.{json,html}</span> URL.  On import, the client can specify
+the scenario's long name.  The newly imported scenario will have a new
+case ID, or alternatively, it can be imported over an existing case ID.</p>
+
+<p>Similarly, a scenario to be saved to the closed must be <b>exported</b> to the 
+scenario directory using the <span class="tt">/scenario/export.{json,html}</span> URL.  The
+client specifies the file name to use, and is then responsible for
+storing the file in the cloud.
+
+
+</p>
+
+<h3><a name="scenario.create" href="#toc.scenario.create">3.3 Creating Scenarios</a></h3>
+<p>In addition to importing scenarios, they can also be created within 
+Arachne.  The client can create a <b>new</b> empty scenario using
+<span class="tt">/scenario/new.{json,html}</span>, and can <b>clone</b> an existing scenario
+using <span class="tt">/scenario/clone.{json,html}</span>.
+
+
+</p>
+
+<h3><a name="scenario.modify" href="#toc.scenario.modify">3.4 Modifying Scenarios</a></h3>
+<p>Once a scenario has been created, cloned, or imported it can be modified
+by sending it orders using <span class="tt">/scenario/<i>case</i>/order.{html,json}</span>
+or executive scripts using <span class="tt">/scenario/<i>case</i>/script.{html,json}</span>.
+
+
+</p>
+
+<h3><a name="scenario.other" href="#toc.scenario.other">3.5 Other Operations</a></h3>
+<p>Finally, scenarios can be sanity checked, locked, advanced in time, 
+queried, and unlocked using the remaining 
+<span class="tt">/scenario</span> domain URLs; see <a href="#restapi.scenario">Section 4.3</a>.
+
+
+
+</p>
+
+<h2><a name="restapi" href="#toc.restapi">4. RESTful API</a></h2>
+    
+
+
+<h3><a name="restapi.overview" href="#toc.restapi.overview">4.1 Overview</a></h3>
+<p>Arachne's RESTful HTTP interface is accessed at
+<span class="tt">http://127.0.0.1:<i>portid</i>/</span>.  The <i>portid</i> is set using
+the <span class="tt">-port</span> command line option, and defaults to port 8080.</p>
+
+<p>The HTTP interface can only be accessed from the local host, i.e.,
+by the wrapper software, because Arachne doesn't support any kind
+of user authentication.</p>
+
+<p>The set of URLs and HTTP operations supported by Arachne is still 
+<b>TBD</b>, but will certainly allow all of the following:
+
+</p>
+
+<ul>
+<li> Controlling scenario execution.
+</li><li> Retrieving overall status information.
+</li><li> Sending Athena executive scripts to Arachne.
+</li><li> Sending Athena orders to Arachne (possibly as scripts)
+</li><li> Requesting run-time results from Arachne
+</li><li> Comparing two scenarios (or one scenario at different times) to
+     determine significant deltas.
+</li><li> Requesting explanations of significant deltas in terms of 
+     chains of causality. 
+</li></ul>
+<p>Normal requests should be sent as GET requests; form submissions
+should be sent using POST.</p>
+
+<p>Information will be returned to the client as HTML or JSON text.  At
+present, we assume that the front-end will do most of its own presentation,
+and that the HTML will primarily be for debugging.  The return type of
+a URL is indicated by the file extension on the URL, e.g., 
+".html" or ".json".
+
+
+</p>
+
+<h3><a name="restapi.help" href="#toc.restapi.help">4.2 Help API</a></h3>
+<p>We have made the Athena Workbench's on-line help database available via
+the Arachne server because it contains quite of bit of information that
+will be useful to the front-end developer, including order definitions
+and executive script documentation.  Ultimately we plan to provide an
+Arachne-specific help database.</p>
+
+<p>The root of the help pages is at 
+<span class="tt"><a href="/help/index.html">/help/index.html</a></span>.</p>
+
+<p>The <span class="tt">/help</span> domain supports full text search; to make use of it, use 
+the URL
+
+</p>
+
+<pre class="example">/help/?search=<i>target</i></pre>
+<p>In fact, this query string can be used on any page in the <span class="tt">/help</span> 
+domain.
+
+
+</p>
+
+<h3><a name="restapi.scenario" href="#toc.restapi.scenario">4.3 Scenario Management API</a></h3>
+    
+
+<h4><a name="restapi.scenario.main" href="#toc.restapi.scenario.main">4.3.1 Scenario Operations</a></h4>
+<p>Top-level scenario operations hang directly from <span class="tt">/scenario</span> and 
+consist of the following URLs.
+
+
+</p>
+
+<ul class="itemlist">
+<li><a class="iref" href="#/scenario/index.json">/scenario/index.json</a></li>
+<li><a class="iref" href="#/scenario/clone.json">/scenario/clone.json</a></li>
+<li><a class="iref" href="#/scenario/export.json">/scenario/export.json</a></li>
+<li><a class="iref" href="#/scenario/files.json">/scenario/files.json</a></li>
+<li><a class="iref" href="#/scenario/import.json">/scenario/import.json</a></li>
+<li><a class="iref" href="#/scenario/new.json">/scenario/new.json</a></li>
+<li><a class="iref" href="#/scenario/remove.json">/scenario/remove.json</a></li>
+</ul>
+
+
+<dl>
+<dt class="defitem"><a name="/scenario/index.json">/scenario/index.json</a></dt><dd><p>
+
+Query Parameters: None.</p>
+
+<p>Returns a JSON array of scenario metadata objects.
+
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>id</td>
+<td>
+        The ID of the scenario.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>longname</td>
+<td>
+        The user defined long name of a the scenario.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>state</td>
+<td>
+        The current state of the scenario. One of: PREP, PAUSED or BUSY</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>tick</td>
+<td>
+        The current time in ticks of the scenario.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>week</td>
+<td>
+        The current time in weeks of the scenario.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>source</td>
+<td>
+        The name of the file that is the source of the scenario.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>url</td>
+<td>
+        The server relative URL for the scenario.</td>
+</tr>
+        
+</table>
+<p>Example Return:
+</p>
+
+<pre class="example">
+[
+  {
+    "id": "case00",
+    "longname": "Base Case",
+    "state": "PREP",
+    "tick": 0,
+    "week": "2012W01",
+    "source": "n\/a",
+    "url": "\/scenario\/case00\/index.json"
+  },
+  {
+    "id": "case02",
+    "longname": "Scenario #02",
+    "state": "PAUSED",
+    "tick": 10,
+    "week": "2012W11",
+    "source": "elitia.adb",
+    "url": "\/scenario\/case02\/index.json"
+  }
+]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/clone.json">/scenario/clone.json</a></dt><dd>
+
+<table class="table topiclist">
+<tr>
+<th>Query Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>source</td>
+<td>
+        Required. A scenario to be cloned.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>target</td>
+<td>
+        Optional. The scenario to be replaced.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>longname</td>
+<td>
+        Optional. The user defined name of the target scenario.</td>
+</tr>
+        
+</table>
+<p>Clones existing scenario <i>source</i> as a new scenario, assigning
+it an id and longname.  If <i>target</i> is given, it must be an 
+existing scenario other than <i>source</i>; the clone will replace
+the previous state of scenario <i>target</i>.  Otherwise, a 
+case ID will be chosen automatically.
+If <i>longname</i> is given, the scenario will be given the new
+name.  On success, returns a list 
+
+</p>
+
+<pre class="example">
+["OK", "<i>case</i>"]
+</pre>
+<p>where the <i>case</i> is either the selected <i>target</i> or a 
+newly generated case ID.</p>
+
+<p>Example URL:
+</p>
+
+<pre class="example">
+http://localhost:8080/scenario/clone.json?source=case03&target=case04&longname=MyScenario
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/export.json">/scenario/export.json</a></dt><dd>
+
+<table class="table topiclist">
+<tr>
+<th>Query Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>case</td>
+<td>
+        Required. A scenario to be exported.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>filename</td>
+<td>
+        Required. The name of the file for export.</td>
+</tr>
+        
+</table>
+<p>Exports scenario <i>case</i> to the <span class="tt">-scenariodir</span> as
+<i>filename</i>.  The file type may be "<span class="tt">.adb</span>" for a
+standard Athena scenario file or "<span class="tt">.tcl</span>" for a
+scenario script.  If no file type is given, "<span class="tt">.adb</span>"
+is assumed.   On success, returns a list 
+</p>
+
+<pre class="example">
+["OK", "<i>filename</i>"]
+</pre>
+<p>Example URL:
+</p>
+
+<pre class="example">
+http://localhost:8080/scenario/export.json?case=case03&filename=MyScenario.adb
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/files.json">/scenario/files.json</a></dt><dd><p>
+
+Query Parameters: None</p>
+
+<p>Returns a JSON array of scenario file objects.
+
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>id</td>
+<td>
+        The name of a scenario file.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>size</td>
+<td>
+        The size of the file in bytes.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>mtime</td>
+<td>
+        The last time the file was modified.</td>
+</tr>
+        
+</table>
+<p>Example Return:
+</p>
+
+<pre class="example">
+[
+  {
+    "id": "Nangarhar_geo.tcl",
+    "size": 81078,
+    "mtime": 1433274495000
+  },
+  {
+    "id": "Nangarhar.adb",
+    "size": 478208,
+    "mtime": 1436883862000
+  },
+  {
+    "id": "test.adb",
+    "size": 480256,
+    "mtime": 1433965288000
+  }
+]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/import.json">/scenario/import.json</a></dt><dd>
+
+<table class="table topiclist">
+<tr>
+<th>Query Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>filename</td>
+<td>
+        Required. The name of the file for import.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>case</td>
+<td>
+        Optional. The scenario to be imported as.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>longname</td>
+<td>
+        Optional. The user defined name of the imported scenario.</td>
+</tr>
+        
+</table>
+<p>Imports scenario <i>filename</i> and loads it into memory.
+The <i>filename</i> must name a file in the 
+<span class="tt">-scenariodir</span>.  If the <i>case</i> is given,
+the scenario will replace the existing scenario with that 
+ID; otherwise a new ID will be assigned.  
+If the <i>longname</i> is given, the scenario will
+be assigned that name.  On success, returns a list 
+</p>
+
+<pre class="example">
+["OK", "<i>case</i>"]
+</pre>
+<p>where the <i>case</i> is either the selected <i>target</i> or a 
+newly generated case ID.</p>
+
+<p>Example URL:
+</p>
+
+<pre class="example">
+http://localhost:8080/scenario/import.json?case=case01&filename=MyScenario.adb
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/new.json">/scenario/new.json</a></dt><dd>
+
+
+<table class="table topiclist">
+<tr>
+<th>Query Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>case</td>
+<td>
+        Optional. New scenario to be created.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>longname</td>
+<td>
+        Optional. The user defined name of the new scenario.</td>
+</tr>
+        
+</table>
+<p>Creates a new, empty scenario, assigning it an ID and longname.
+If <i>case</i> is given, it must be the case ID of an existing 
+scenario; the scenario's contents will be reset to the empty state.
+If <i>longname</i> is given, the scenario will be given the new
+name.  On success, returns a list 
+</p>
+
+<pre class="example">
+["OK", "<i>case</i>"]
+</pre>
+<p>where the <i>case</i> is either the selected <i>target</i> or a 
+newly generated case ID.</p>
+
+<p>Example URL:
+</p>
+
+<pre class="example">
+http://localhost:8080/scenario/new.json?case=case01&longname=MyScenario
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/remove.json">/scenario/remove.json</a></dt><dd>
+
+
+<table class="table topiclist">
+<tr>
+<th>Query Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>case</td>
+<td>
+        Required. The scenario to be removed.</td>
+</tr>
+        
+</table>
+<p>Removes scenario <i>case</i> from the current session; export it first
+if you wish to keep the data.  On success, returns a list 
+</p>
+
+<pre class="example">
+["OK", "<i>message</i>"]
+</pre>
+<p>where <i>message</i> is an informational message pertaining to any action
+taken.</p>
+
+<p>Example URL:
+</p>
+
+<pre class="example">
+http://localhost:8080/scenario/remove.json?case=case03
+</pre>
+
+</dd>
+</dl>
+
+
+<h4><a name="restapi.scenario.case" href="#toc.restapi.scenario.case">4.3.2 Case Operations (Main)</a></h4>
+<p>The API specific to a particular scenario case appear in the 
+<span class="tt">/scenario/<i>case</i>/</span> subdomain, where <i>case</i> is the scenario's
+"case ID".  Operations on individual scenario cases can be performed with
+the following list of URLs.
+
+</p>
+
+<ul class="itemlist">
+<li><a class="iref" href="#/scenario/case/index.json">/scenario/<i>case</i>/index.json</a></li>
+<li><a class="iref" href="#/scenario/case/lock.json">/scenario/<i>case</i>/lock.json</a></li>
+<li><a class="iref" href="#/scenario/case/unlock.json">/scenario/<i>case</i>/unlock.json</a></li>
+<li><a class="iref" href="#/scenario/case/advance.json">/scenario/<i>case</i>/advance.json</a></li>
+<li><a class="iref" href="#/scenario/case/parmdb.json">/scenario/<i>case</i>/parmdb.json</a></li>
+<li><a class="iref" href="#/scenario/case/order.json">/scenario/<i>case</i>/order.json</a></li>
+<li><a class="iref" href="#/scenario/case/script.json">/scenario/<i>case</i>/script.json</a></li>
+<li><a class="iref" href="#/scenario/case/sanity/onlock.json">/scenario/<i>case</i>/sanity/onlock.json</a></li>
+</ul>
+
+<dl>
+
+<dt class="defitem"><a name="/scenario/case/index.json">/scenario/<i>case</i>/index.json</a></dt><dd><p>
+
+Query Parameters: None.</p>
+
+<p>Returns metadata for scenario <i>case</i>.
+
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>id</td>
+<td>
+        The ID of <i>case</i>.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>longname</td>
+<td>
+        The user defined long name of <i>case</i>.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>state</td>
+<td>
+        The current state of <i>case</i>. One of: PREP, PAUSED or BUSY</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>tick</td>
+<td>
+        The current time in ticks of <i>case</i>.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>week</td>
+<td>
+        The current time in weeks of <i>case</i>.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>source</td>
+<td>
+        The name of the file that is the source of <i>case</i>.</td>
+</tr>
+        
+</table>
+<p>Example Return:
+</p>
+
+<pre class="example">
+{
+  "id": "case01",
+  "longname": "Scenario #01",
+  "state": "PAUSED",
+  "tick": 10,
+  "week": "2012W11",
+  "source": "elitia.adb"
+}
+</pre>
+<p>Example URL:
+</p>
+
+<pre class="example">
+http://localhost:8080/scenario/case01/index.json
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/lock.json">/scenario/<i>case</i>/lock.json</a></dt><dd><p>
+
+Query Parameters: None.</p>
+
+<p>Locks scenario <i>case</i> if it is unlocked.  On success, returns a list 
+</p><pre class="example">["OK", ""]</pre>
+<p>and on failure returns a list
+</p>
+
+<pre class="example">["ERROR","message",""]</pre>
+<p>where <i>message</i> describes the nature of the failure.</p>
+
+<p>Example URL:
+</p>
+
+<pre class="example">
+http://localhost:8080/scenario/case01/lock.json
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/unlock.json">/scenario/<i>case</i>/unlock.json</a></dt><dd><p>
+
+Query Parameters: None.</p>
+
+<p>Unocks scenario <i>case</i> if it is locked.  On success, returns a list 
+</p><pre class="example">["OK", ""]</pre>
+<p>and on failure returns a list
+</p>
+
+<pre class="example">["ERROR","message",""]</pre>
+<p>where <i>message</i> describes the nature of the failure.</p>
+
+<p>Example URL:
+</p>
+
+<pre class="example">
+http://localhost:8080/scenario/case01/unlock.json
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/advance.json">/scenario/<i>case</i>/advance.json</a></dt><dd>
+
+<table class="table topiclist">
+<tr>
+<th>Query Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>weeks</td>
+<td>
+        Optional. The number of weeks to advance time. Defaults to 1 week.
+</td>
+</tr>
+        
+</table>
+<p>Asks for an advance of simulation time in scenario <i>case</i> by <i>weeks</i>, 
+locking the scenario if necessary.  The scenario will be <b>BUSY</b> 
+until the time advance is complete.  On success, returns a list 
+</p>
+
+<pre class="example">["OK", ""]</pre>
+<p>and on failure returns a list
+</p>
+
+<pre class="example">["ERROR","message",""]</pre>
+<p>where <i>messsage</i> describes the nature of the failure.</p>
+
+<p>Example URL:
+</p>
+
+<pre class="example">
+http://localhost:8080/scenario/case01/advance.json?weeks=10
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/parmdb.json">/scenario/<i>case</i>/parmdb.json</a></dt><dd><p>
+
+Query Parameters: None.</p>
+
+<p>Requests the contents of the parameter database for scenario <i>case</i>.  
+The database is returned as an array of JSON objects with parameter names,
+doc strings, current and default values.
+
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>name</td>
+<td>
+        The name of the parameter.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>id</td>
+<td>
+        The unique ID of the parameter.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>parent</td>
+<td>
+        The parent of the parameter or "".</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>docstr</td>
+<td>
+        The documentation string of the parameter.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>value</td>
+<td>
+        The current value of the parameter or "".</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>default</td>
+<td>
+        The default value of the parametr or "".</td>
+</tr>
+        
+</table>
+        
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/order.json">/scenario/<i>case</i>/order.json</a></dt><dd><p>
+
+Query Parameters: Varies.</p>
+
+<p>Accepts an order and its parameters.
+The query parameters are the order name as <span class="tt">order_</span>
+and the order-specific parameters as indicated in the
+<a href="/help/order.html">on-line help</a>.  The result of the order is 
+returned as a JSON list indicating the success of the request with related 
+information.</p>
+
+<p>Example URL (Actor Create Order)
+</p><pre class="example">
+http://localhost:8080/scenario/case00/order.html?op=send&order_=ACTOR%3ACREATE&a=A1&longname=MyActor&bsid=1&supports=SELF&auto_maintain=0&atype=INCOME&
+cash_reserve=0&cash_on_hand=0&income_goods=0&shares_black_nr=0&income_black_tax=0&income_pop=0&income_graft=0&income_world=0&budget=0
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/script.json">/scenario/<i>case</i>/script.json</a></dt><dd>
+
+<table class="table topiclist">
+<tr>
+<th>Query Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>script</td>
+<td>
+        URL encoded script to be executed.</td>
+</tr>
+        
+</table>
+<p>Accepts a Tcl script as a POST query, and attempts to
+execute it in the named scenario's executive interpreter.
+The query data should be just the script itself with a
+content-type of text/plain.  The result of running the script 
+is returned in JSON format.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/sanity/onlock.json">/scenario/<i>case</i>/sanity/onlock.json</a></dt><dd><p>
+
+Query Parameters: None.</p>
+
+<p>Performs an on-lock sanity check for the scenario, and returns the 
+list of failure records.  If the list is empty, there were no 
+problems.  If the list contains a record with a "severity" of
+"error", then the scenario cannot be locked.  The JSON result
+is a list of failure objects.</p>
+
+<p>Example Return for sanity check failure:
+</p><pre class="example">
+[
+  {
+    "severity": "error",
+    "code": "nbhood.none",
+    "entity": "nbhood",
+    "message": "No neighborhoods are defined."
+  },
+  {
+    "severity": "error",
+    "code": "frcgroup.none",
+    "entity": "group\/frc",
+    "message": "No force groups are defined."
+  }
+]
+</pre>
+
+</dd>
+</dl>
+
+
+<h4><a name="restapi.scenario.group" href="#toc.restapi.scenario.group">4.3.3 Case Operations (Groups)</a></h4>
+<p>In this section and the following sections are REST API calls that allow a 
+client to query and inspect scenario data from an individual scenario case.
+
+</p>
+
+<ul class="itemlist">
+<li><a class="iref" href="#/scenario/case/group/index.json">/scenario/<i>case</i>/group/index.json</a></li>
+<li><a class="iref" href="#/scenario/case/group/civ.json">/scenario/<i>case</i>/group/civ.json</a></li>
+<li><a class="iref" href="#/scenario/case/group/frc.json">/scenario/<i>case</i>/group/frc.json</a></li>
+<li><a class="iref" href="#/scenario/case/group/org.json">/scenario/<i>case</i>/group/org.json</a></li>
+<li><a class="iref" href="#/scenario/case/group/g/index.json">/scenario/<i>case</i>/group/<i>g</i>/index.json</a></li>
+</ul>
+
+
+<dl>
+<dt class="defitem"><a name="/scenario/case/group/index.json">/scenario/<i>case</i>/group/index.json</a></dt><dd><p>
+
+Query Parameters: None.</p>
+
+<p>Returns JSON data that is common to all groups in scenario <i>case</i>.
+
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>fancy</td>
+<td>
+        Human readable form of the groups name.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>a</td>
+<td>
+        The owner of the group or "".</td>
+</tr>
+        
+<tr class="tr-even">
+<td>url</td>
+<td>
+        Server relative URL for the group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>demeanor</td>
+<td>
+        Demeanor of the group: APATHETIC, AVERAGE or AGGRESSIVE.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>id</td>
+<td>
+        The unique ID of the group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>qid</td>
+<td>
+        The qualified ID of the group.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>g</td>
+<td>
+        Group's short name.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>gtype</td>
+<td>
+        Type of the group: CIV, FRC or ORG.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>longname</td>
+<td>
+        Group's long name.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>cost</td>
+<td>
+        Deployment cost of the group (only applies to FRC or ORG types).</td>
+</tr>
+        
+<tr class="tr-even">
+<td>bsid</td>
+<td>
+        Belief system of the group or "".</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>a_url</td>
+<td>
+        Server relative URL of the owner or "".</td>
+</tr>
+        
+<tr class="tr-even">
+<td>a_qid</td>
+<td>
+        Qualified ID of the owner or "".</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>color</td>
+<td>
+        The color of the groups icon. (Used for UI display).</td>
+</tr>
+        
+</table>
+<p>Example Return:
+</p>
+
+<pre class="example">
+[
+  {
+    "fancy": "ARMY: Elitian Army",
+    "a": "GOV",
+    "url": "\/scenario\/case01\/group\/ARMY\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "ARMY",
+    "qid": "group\/ARMY",
+    "g": "ARMY",
+    "gtype": "FRC",
+    "longname": "Elitian Army",
+    "cost": 0.00,
+    "bsid": "",
+    "a_url": "\/scenario\/case01\/actor\/GOV\/index.json",
+    "a_qid": "actor\/GOV",
+    "color": "#3B61FF"
+  }
+]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/group/civ.json">/scenario/<i>case</i>/group/civ.json</a></dt><dd><p>
+
+Query Parameters: None.</p>
+
+<p>Returns a JSON list of civilian group entities in the <i>case</i> 
+specified.
+
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>subsistence</td>
+<td>
+        Number of people in the group engaged in subsistence agriculture.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>povfrac</td>
+<td>
+        Fraction of the group that is in poverty.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>hist_flag</td>
+<td>
+        For internal use.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>fancy</td>
+<td>
+        Human readable form of the groups name.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>unemployed</td>
+<td>
+        Number of people in group currently unemployed.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>lfp</td>
+<td>
+        The percentage of the group in the labor force.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>bsysname</td>
+<td>
+        Name of groups belief system.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>basepop</td>
+<td>
+        The base population of the group at simulation start.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>url</td>
+<td>
+        Server relative URL for the group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>eloc</td>
+<td>
+        The expected level of consumption of goods baskets.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>population</td>
+<td>
+        Current popluation of the group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>demeanor</td>
+<td>
+        Demeanor of the group: APATHETIC, AVERAGE or AGGRESSIVE.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>povpct</td>
+<td>
+        Percentage of the group that is in poverty.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>uaf</td>
+<td>
+        The unemployment attitude factor.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>pretty_sa_flag</td>
+<td>
+        Subsistence agriculture flag suitable for display.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>id</td>
+<td>
+        The unique ID of the group.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>labor_force</td>
+<td>
+        Number of people in the group actively seeking employment.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>attrition</td>
+<td>
+        Number of casualties taken by this group since start time.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>qid</td>
+<td>
+        The qualified ID of the group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>mood0</td>
+<td>
+        Mood of the group at simulation start.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>tc</td>
+<td>
+        Total consumption of goods baskets at the current time.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>consumers</td>
+<td>
+        Number of consumers in the group.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>g</td>
+<td>
+        Group's short name.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>n_url</td>
+<td>
+        Server relative URL for the groups resident neighborhood.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>rloc</td>
+<td>
+        The groups required level of consumption of goods baskets.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>upc</td>
+<td>
+        The per-capita unemployment percentage.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>gtype</td>
+<td>
+        Type of the group: CIV.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>longname</td>
+<td>
+        Group's long name.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>sat_funding</td>
+<td>
+        Saturation level of funding for this group for essential non-infrastructure services.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>req_funding</td>
+<td>
+        Required level of funding for this group for essential non-infrastructure services.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>bsid</td>
+<td>
+        Group's belief system ID.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>pop_cr</td>
+<td>
+        Group's population change rate in percent per year.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>n_qid</td>
+<td>
+        Qualified ID of the groups resident neighborhood.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>housing</td>
+<td>
+        The living condition of the group, one of: AT_HOME, DISPLACED or IN_CAMP.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>sa_flag</td>
+<td>
+        Flag indicating whether the group is engaged in subsistence agriculture.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>n</td>
+<td>
+        The ID of the groups resident neighborhood.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>mood</td>
+<td>
+        Current mood of the group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>aloc</td>
+<td>
+        The actual level of consumption of goods baskets.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>ur</td>
+<td>
+        Unemployment rate of the group as a percentange.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>color</td>
+<td>
+        The color of the groups icon. (Used for UI display).</td>
+</tr>
+        
+</table>
+<p>Example Return:
+
+</p>
+
+<pre class="example">
+[
+  {
+    "subsistence": 0,
+    "povfrac": 0.0,
+    "hist_flag": 0,
+    "fancy": "PEONR: Rural Peons",
+    "unemployed": 19200,
+    "lfp": 60,
+    "bsysname": "PEONR (5)",
+    "basepop": 800000,
+    "url": "\/scenario\/case01\/group\/PEONR\/index.json",
+    "eloc": 0.0,
+    "population": 800000,
+    "demeanor": "AGGRESSIVE",
+    "povpct": 0.0,
+    "uaf": 0.00,
+    "pretty_sa_flag": "No",
+    "id": "PEONR",
+    "labor_force": 480000,
+    "attrition": 0,
+    "qid": "group\/PEONR",
+    "mood0": 0.000,
+    "tc": 0.0,
+    "consumers": 800000,
+    "g": "PEONR",
+    "n_url": "\/scenario\/case01\/nbhood\/PE\/index.json",
+    "rloc": 0.0,
+    "upc": 2.4,
+    "gtype": "CIV",
+    "longname": "Rural Peons",
+    "sat_funding": "N\/A",
+    "req_funding": "N\/A",
+    "bsid": 5,
+    "pop_cr": 0.0,
+    "n_qid": "nbhood\/PE",
+    "housing": "AT_HOME",
+    "sa_flag": 0,
+    "n": "PE",
+    "mood": 3.405,
+    "aloc": 0.0,
+    "ur": 4.0,
+    "color": "#AA7744"
+  }
+]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/group/frc.json">/scenario/<i>case</i>/group/frc.json</a></dt><dd><p>
+
+Query Parameters: None.
+
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>forcetype</td>
+<td>
+        Type of forcegroup: REGULAR, IRREGULAR, POLICE, CRIMINAL or PARAMILITARY</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>fancy</td>
+<td>
+        Human readable form of the groups name.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>a</td>
+<td>
+        ID of the owning actor.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>pretty_local</td>
+<td>
+        Display form of flag indicating whether group is local.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>url</td>
+<td>
+        The server relative URL for the group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>equip_level</td>
+<td>
+        Equipment level of group: BEST, GOOD, FAIR or POOR.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>demeanor</td>
+<td>
+        The demeanor of the group: APATHETIC, AVERAGE or AGGRESSIVE.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>training</td>
+<td>
+        Level of training group has received: PROFICIENT, FULL, PARTIAL or NONE.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>id</td>
+<td>
+        ID of group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>qid</td>
+<td>
+        Qualified ID of group.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>g</td>
+<td>
+        Short name of the group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>base_personnel</td>
+<td>
+        The base personnel of the group available to be deployed.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>gtype</td>
+<td>
+        Group type: FRC.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>longname</td>
+<td>
+        Long name of the group.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>cost</td>
+<td>
+        The average deployment cost of a person per week.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>a_url</td>
+<td>
+        Server relative URL for the owning actor.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>local</td>
+<td>
+        Flag indicating whether group is local.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>a_qid</td>
+<td>
+        Qualified ID of the owning actor.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>personnel</td>
+<td>
+        Current number of personnel deployed.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>color</td>
+<td>
+        The color of the groups icon. (Used for UI display).</td>
+</tr>
+        
+</table>
+<p>Example Return:
+
+</p>
+
+<pre class="example">
+[
+  {
+    "forcetype": "REGULAR",
+    "fancy": "ARMY: Elitian Army",
+    "a": "GOV",
+    "pretty_local": "Yes",
+    "url": "\/scenario\/case01\/group\/ARMY\/index.json",
+    "equip_level": "GOOD",
+    "demeanor": "AVERAGE",
+    "training": "FULL",
+    "id": "ARMY",
+    "qid": "group\/ARMY",
+    "g": "ARMY",
+    "base_personnel": 20000,
+    "gtype": "FRC",
+    "longname": "Elitian Army",
+    "cost": 0.00,
+    "a_url": "\/scenario\/case01\/actor\/GOV\/index.json",
+    "local": 1,
+    "a_qid": "actor\/GOV",
+    "personnel": 20000,
+    "color": "#3B61FF"
+  }
+]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/group/org.json">/scenario/<i>case</i>/group/org.json</a></dt><dd><p>
+
+Query Parameters: None.</p>
+
+<p>Returns a JSON list of organization group entities in the <i>case</i> 
+specified.
+
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>fancy</td>
+<td>
+        Human readable form of the groups name.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>a</td>
+<td>
+        ID of the owning actor.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>url</td>
+<td>
+        The server relative URL for the group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>demeanor</td>
+<td>
+        The demeanor of the group: APATHETIC, AVERAGE or AGGRESSIVE.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>id</td>
+<td>
+        ID of group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>qid</td>
+<td>
+        Qualified ID of group.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>g</td>
+<td>
+        Short name of the group.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>base_personnel</td>
+<td>
+        The base personnel of the group available to be deployed.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>gtype</td>
+<td>
+        Group type: FRC.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>longname</td>
+<td>
+        Long name of the group.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>cost</td>
+<td>
+        The average deployment cost of a person per week.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>orgtype</td>
+<td>
+        Type of ORG group: NGO, IGO or CTR.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>a_url</td>
+<td>
+        Server relative URL for owning actor.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>a_qid</td>
+<td>
+        Qualified ID of the owning actor.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>personnel</td>
+<td>
+        Current number of personnel deployed.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>color</td>
+<td>
+        The color of the groups icon. (Used for UI display).</td>
+</tr>
+        
+</table>
+<p>Example Return:
+
+</p>
+
+<pre class="example">
+[{
+    "fancy": "PAL: Peonian Assistance League",
+    "a": "PELF",
+    "url": "\/scenario\/case01\/group\/PAL\/index.json",
+    "demeanor": "AVERAGE",
+    "id": "PAL",
+    "qid": "group\/PAL",
+    "g": "PAL",
+    "base_personnel": 1000,
+    "gtype": "ORG",
+    "longname": "Peonian Assistance League",
+    "cost": 0.00,
+    "orgtype": "NGO",
+    "a_url": "\/scenario\/case01\/actor\/PELF\/index.json",
+    "a_qid": "actor\/PELF",
+    "personnel": 1000,
+    "color": "#B300B3"
+  }
+]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/group/g/index.json">/scenario/<i>case</i>/group/<i>g</i>/index.json</a></dt><dd><p>
+
+Query Parameters: None.</p>
+
+<p>Returns a JSON list of group data for scenario <i>case</i> and 
+group <i>g</i>.</p>
+
+<p>The return parameters for this set of URLs is already documented above:
+</p><ul>
+<li><a href="#/scenario/case/group/civ.json">Civilian Group</a>
+</li><li><a href="#/scenario/case/group/frc.json">Force Group</a>
+</li><li><a href="#/scenario/case/group/org.json">Organization Group</a>
+</li></ul>
+
+</dd>
+</dl>
+
+
+<h4><a name="restapi.scenario.actor" href="#toc.restapi.scenario.actor">4.3.4 Case Operations (Actors)</a></h4>
+    
+<ul class="itemlist">
+<li><a class="iref" href="#/scenario/case/actors/index.json">/scenario/<i>case</i>/actors/index.json</a></li>
+<li><a class="iref" href="#/scenario/case/actor/a/index.json">/scenario/<i>case</i>/actor/<i>a</i>/index.json</a></li>
+</ul>
+
+<dl>
+<dt class="defitem"><a name="/scenario/case/actors/index.json">/scenario/<i>case</i>/actors/index.json</a></dt><dd><p>
+
+Query parameters: None</p>
+
+<p>Returns a JSON list of actor entities in the <i>case</i> specified.
+
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>supports</td>
+<td>
+        ID of actor this actor supports, or <b>SELF</b>.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>income_pop</td>
+<td>
+        Weekly income from the population sector.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>a</td>
+<td>
+        Short name of the actor.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>fancy</td>
+<td>
+        Human readable form of the actors name.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>auto_maintain</td>
+<td>
+        Flag indicating whether goods production infrastructure owned is automatically maintained without cost.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>cash_reserve</td>
+<td>
+        Amount of cash in reserve.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>bsysname</td>
+<td>
+        Name of actors supposed belief system.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>url</td>
+<td>
+        Server relative URL for this actor.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>income</td>
+<td>
+        Computed weekly income.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>budget</td>
+<td>
+        Amount of income if actor is a BUDGET actor.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>atype</td>
+<td>
+        Actors type of monetary resources: BUDGET or INCOME.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>id</td>
+<td>
+        Unique ID.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>qid</td>
+<td>
+        Qualified unique ID.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>shares_black_nr</td>
+<td>
+        Amount of black market net revenue income expressed in shares.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>longname</td>
+<td>
+        Human readable form of the actors name.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>supports_url</td>
+<td>
+        Server relative URL of actor this actor supports or "".</td>
+</tr>
+        
+<tr class="tr-even">
+<td>income_world</td>
+<td>
+        Weekly income from the world sector.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>cash_on_hand</td>
+<td>
+        Amount of cash on hand.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>supports_qid</td>
+<td>
+        Qualified unique ID of supported actor or "".</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>income_graft</td>
+<td>
+        Weekly income from graft.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>income_goods</td>
+<td>
+        Weekly income from the goods sector.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>pretty_am_flag</td>
+<td>
+        Display form of auto-maintain flag.</td>
+</tr>
+        
+</table>
+<p>Example Return:
+</p>
+
+<pre class="example">
+[
+  {
+    "supports": "SELF",
+    "income_pop": 0.00,
+    "a": "EPP",
+    "fancy": "EPP: Elitian People's Party",
+    "auto_maintain": 0,
+    "cash_reserve": 0.00,
+    "bsysname": "EPP (4)",
+    "url": "\/scenario\/case01\/actor\/EPP\/index.json",
+    "income": 0.00,
+    "budget": 0.00,
+    "atype": "INCOME",
+    "id": "EPP",
+    "qid": "actor\/EPP",
+    "shares_black_nr": 0,
+    "longname": "Elitian People's Party",
+    "supports_url": "",
+    "income_world": 0.00,
+    "bsid": 4,
+    "income_black_tax": 0.00,
+    "cash_on_hand": 0.00,
+    "supports_qid": "",
+    "income_graft": 0.00,
+    "income_goods": "1.000M",
+    "pretty_am_flag": "No"
+  }
+]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/actor/a/index.json">/scenario/<i>case</i>/actor/<i>a</i>/index.json</a></dt><dd><p>
+
+Query parameters: None</p>
+
+<p>Returns a JSON object of actor data for scenario <i>case</i> and actor 
+<i>a</i>.
+See the actor <a href="#/scenario/case/actors/index.json">spec</a> for
+a description of the return values.
+</p>
+</dd>
+</dl>
+
+
+
+<h4><a name="restapi.scenario.nbhood" href="#toc.restapi.scenario.nbhood">4.3.5 Case Operations (Neighborhoods)</a></h4>
+    
+<ul class="itemlist">
+<li><a class="iref" href="#/scenario/case/nbhoods/index.json">/scenario/<i>case</i>/nbhoods/index.json</a></li>
+<li><a class="iref" href="#/scenario/case/nbhood/n/index.json">/scenario/<i>case</i>/nbhood/<i>n</i>/index.json</a></li>
+</ul>
+
+<dl>
+<dt class="defitem"><a name="/scenario/case/nbhoods/index.json">/scenario/<i>case</i>/nbhoods/index.json</a></dt><dd><p>
+
+Query parameters: None</p>
+
+<p>Returns a JSON list of neighborhood entities in the <i>case</i> specified.
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>subsistence</td>
+<td>
+        Number of subsistence agriculture civilians in neighborhood.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>polygon</td>
+<td>
+        Polygon vertices expressed in MGRS.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>controller_qid</td>
+<td>
+        Qualified ID of controlling actor or <b>NONE</b>.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>volatility</td>
+<td>
+        Volatility measure of the neighborhood.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>fancy</td>
+<td>
+        Human readable form of the neighborhood name.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>pcf</td>
+<td>
+        Production capacity factor of neighborhood.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>unemployed</td>
+<td>
+        Number of unemployed civilians in neighborhood.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>since</td>
+<td>
+        Time at which controller took control.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>url</td>
+<td>
+        Server relative URL for this neighborhood.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>population</td>
+<td>
+        Total civilian population in neighborhood.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>controller</td>
+<td>
+        ID of controlling actor or <b>NONE</b>.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>id</td>
+<td>
+        Unique ID of neighborhood.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>labor_force</td>
+<td>
+        Size of labor force in neighborhood.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>qid</td>
+<td>
+        Qualified unique ID of neighborhood.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>urbanization</td>
+<td>
+        Level of urbanization: URBAN, SUBURBAN, RURAL.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>mood0</td>
+<td>
+        Composite mood of neighborhood at start time.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>consumers</td>
+<td>
+        Number of consumers in the neighborhood.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>stacking_order</td>
+<td>
+        This neighborhoods position in stacking order.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>since_ticks</td>
+<td>
+        Time in ticks at which controller took control.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>obscured_by</td>
+<td>
+        Name of obscuring neighborhood or "".</td>
+</tr>
+        
+<tr class="tr-even">
+<td>longname</td>
+<td>
+        User defined long name of neighborhood.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>local</td>
+<td>
+        Flag indicating whether neighborhood is considered local.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>controller_url</td>
+<td>
+        Server relative URL of controlling actor or "".</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>n</td>
+<td>
+        Short name of neighborhood.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>mood</td>
+<td>
+        Current composite mood of neighborhood.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>refpoint</td>
+<td>
+        Reference point in neighborhood that is guaranteed to be inside polygon and not obscured.</td>
+</tr>
+        
+</table>
+<p>Example Return:
+</p>
+
+<pre class="example">
+[
+  {
+    "subsistence": 100000,
+    "polygon": "38TNL4582553998 38TNL0862002796 38TNK9116028747 38TNL8468203274 38TPL3404250197",
+    "controller_qid": "actor\/PELF",
+    "volatility": 3,
+    "fancy": "PE: Peonia",
+    "pcf":  1.0,
+    "unemployed": 19200,
+    "since": "2012W06",
+    "url": "\/scenario\/case01\/nbhood\/PE\/index.json",
+    "population": 900000,
+    "controller": "PELF",
+    "id": "PE",
+    "labor_force": 480000,
+    "qid": "nbhood\/PE",
+    "urbanization": "RURAL",
+    "mood0": 0.000,
+    "consumers": 800000,
+    "stacking_order": 3,
+    "since_ticks": 5,
+    "obscured_by": "",
+    "longname": "Peonia",
+    "local": "YES",
+    "controller_url": "\/scenario\/case01\/actor\/PELF\/index.json",
+    "n": "PE",
+    "mood": 3.068,
+    "refpoint": "38TNL5764723441"
+  }
+]
+</pre>
+</dd>
+<dt class="defitem"><a name="/scenario/case/nbhood/n/index.json">/scenario/<i>case</i>/nbhood/<i>n</i>/index.json</a></dt><dd><p>
+
+Query parameters: None</p>
+
+<p>Returns JSON list of neighborhood data for scenario <i>case</i> and neighborhood <i>n</i>.
+See the neighborhood <a href="#/scenario/case/nbhoods/index.json">spec</a> for
+a description of the return values.
+
+</p>
+</dd>
+</dl>
+
+<h4><a name="restapi.scenario.history" href="#toc.restapi.scenario.history">4.3.6 Case Operations (History)</a></h4>
+    
+<dl>
+
+<ul class="itemlist">
+<li><a class="iref" href="#/scenario/case/history/meta.json">/scenario/<i>case</i>/history/meta.json</a></li>
+<li><a class="iref" href="#/scenario/case/history/var/index.json">/scenario/<i>case</i>/history/<i>var</i>/index.json</a></li>
+</ul>
+
+
+<dt class="defitem"><a name="/scenario/case/history/meta.json">/scenario/<i>case</i>/history/meta.json</a></dt><dd><p>
+
+Query parameters: None</p>
+
+<p>Returns all meta data associated with history variables as an
+array of JSON objects.  The exact contents of the array depends on
+which <i>case</i> is queried for meta data.  The meta data returned contains
+only the variables for which their corresponding history table
+actually has data along with the valid key/value pairs for that table.
+Using the variable names and, optionally, the key/value pairs history 
+data can be requested by using the 
+<a href="#/scenario/case/history/var/index.json">history variable URL</a>.
+
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>name</td>
+<td>
+        The history variable used to query history.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>desc</td>
+<td>
+        Human readable description of history variable.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>size</td>
+<td>
+        The number of records in the history variable table.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>keys</td>
+<td>
+        Array of JSON objects that varies depending on the history variable. (<a href="#restapi.scenario.histvars">spec</a>).</td>
+</tr>
+        
+</table>
+<p>All history <span class="tt">keys</span> objects contain the following fields.
+</p>
+
+<table class="table topiclist">
+<tr>
+<th>Keys Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>key</td>
+<td>
+        A key to be used to request history data</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>label</td>
+<td>
+        Human readable description of the <i>key</i>.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>values</td>
+<td>
+        Array of valid values for the <i>key</i>.</td>
+</tr>
+        
+</table>
+<p>Example Return:
+
+</p>
+
+<pre class="example">
+[
+  {
+    "name": "coop",
+    "desc": "Civilian Group Cooperation",
+    "size": 154,
+    "keys": [
+      {
+        "key": "f",
+        "label": "Civilian Group",
+        "values": [
+          "ALL",
+          "ELR",
+          "ELU",
+          "ICS",
+          "NOBODY",
+          "PEONR",
+          "PEONU",
+          "SA"
+        ]
+      },
+      {
+        "key": "g",
+        "label": "Force Group",
+        "values": [
+          "ALL",
+          "ARMY",
+          "PELFM"
+        ]
+      }
+    ]
+  }
+]
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/scenario/case/history/var/index.json">/scenario/<i>case</i>/history/<i>var</i>/index.json</a></dt><dd><p>
+
+Query Parameters: Vary depending on <i>case</i> and <i>var</i>.</p>
+
+<p>Retrieves the history associated with a history variable called <i>var</i>
+from scenario <i>case</i>.</p>
+
+<p>Without any query parameters, all history data for the history variable
+<i>var</i> is returned from scenario <i>case</i>.</p>
+
+<p>By using the data returned by a call to the 
+<a href="#/scenario/case/history/meta.json">meta data URL</a>
+the data returned can be constrained to specific key values and time
+periods. See the <a href="#restapi.scenario.histvars">spec</a> below
+for how to construct a query to get specific history data.
+
+</p>
+</dd>
+</dl>
+
+
+<h4><a name="restapi.scenario.histvars" href="#toc.restapi.scenario.histvars">4.3.7 History Table Query Reference</a></h4>
+<p>History for a particular scenario case can be extracted using the proper
+<a href="#/scenario/case/history/var/index.json">REST API call</a>.  Without
+any query parameters, requests made with that URL will return the entire
+contents of the table containing the history for that variable.   It is
+possible, however, that knowing which keys and valid values for those keys
+only a subset of the history can be requested.  Below is a table of history
+variable names and valid keys with descriptions.  The values for the
+keys depend on the case being queried and are contained within the meta
+data returned by <a href="#/scenario/case/history/meta.json">this URL</a>.</p>
+
+<p>All history variable queries recognize <span class="tt">t1</span> and <span class="tt">t2</span> as valid
+query parameters.  <span class="tt">t1</span> is the start time for the returned data and
+<span class="tt">t2</span> the end time.  If <span class="tt">t1</span> is greater than <span class="tt">t2</span> no data is
+returned.  If <span class="tt">t1</span> is greater than the end time of the simulation run
+no data is returned. Setting these query parameters as the empty string or
+omitting them altogether will result in all history being returned from 
+the simulation start time to simulation end time.
+
+</p>
+
+<center><table class="table">
+<caption><b><a name="tab.histvars" href="#toc.tab.histvars">Table 4-1: History Variables</a><b></b></b></caption>
+    
+<tr>
+<th>Variable Name</th>
+<th>Keys</th>
+<th>Description</th>
+</tr>
+
+
+        <tr class="tr-even"><td><span class="tt">aam_battle</span></td>
+            <td><span class="tt">n f g</span></td>
+            <td>Attrition History, force and civilian
+attrition taken due to battle.</td>
+        </tr>
+    
+
+        <tr class="tr-odd"><td><span class="tt">activity_nga</span></td>
+            <td><span class="tt">n g a</span></td>
+            <td>Neighborhood Activities, activities
+performed by force and organization groups.</td>
+        </tr>
+    
+
+        <tr class="tr-even"><td><span class="tt">control</span></td>
+            <td><span class="tt">n</span></td>
+            <td>Neighborhood Control, actor(s) in control of
+neighborhoods.</td>
+        </tr>
+    
+
+        <tr class="tr-odd"><td><span class="tt">coop</span></td>
+            <td><span class="tt">f g</span></td>
+            <td>Civilian Group Cooperation, cooperation of civilian
+groups with force groups.</td>
+        </tr>
+    
+
+        <tr class="tr-even"><td><span class="tt">deploy_ng</span></td>
+            <td><span class="tt">n g</span></td>
+            <td>Force/Org Group Deployments, personnel deployed
+to neighborhoods.</td>
+        </tr>
+    
+
+        <tr class="tr-odd"><td><span class="tt">econ</span></td>
+            <td><span class="tt">None</span></td>
+            <td>Economy, key economic factors such as GDP.</td>
+        </tr>
+    
+
+        <tr class="tr-even"><td><span class="tt">flow</span></td>
+            <td><span class="tt">f g</span></td>
+            <td>Civilian Group Population Flow, the movement of
+civilian groups from one group to another.</td>
+        </tr>
+    
+
+        <tr class="tr-odd"><td><span class="tt">hrel</span></td>
+            <td><span class="tt">f g</span></td>
+            <td>Horizontal Relationships, relationships between 
+civilian, force and organization groups.</td>
+        </tr>
+    
+
+        <tr class="tr-even"><td><span class="tt">mood</span></td>
+            <td><span class="tt">g</span></td>
+            <td>Civilian Group Mood, mood of civilian groups over time.</td>
+        </tr>
+    
+
+        <tr class="tr-odd"><td><span class="tt">nbmood</span></td>
+            <td><span class="tt">n</span></td>
+            <td>Neighborhood Mood, composite mood of neighborhoods over
+time.</td>
+        </tr>
+    
+
+        <tr class="tr-even"><td><span class="tt">nbur</span></td>
+            <td><span class="tt">n</span></td>
+            <td>Neighborhood Unemployment, unemployment rate by
+neighborhood.</td>
+        </tr>
+    
+
+        <tr class="tr-odd"><td><span class="tt">npop</span></td>
+            <td><span class="tt">n</span></td>
+            <td>Neighborhood Population, population statistics by 
+neighborhood.</td>
+        </tr>
+     
+
+        <tr class="tr-even"><td><span class="tt">plant_a</span></td>
+            <td><span class="tt">a</span></td>
+            <td>Goods Plants by Owner, goods production infrastructure
+by owning actor.</td>
+        </tr>
+    
+
+        <tr class="tr-odd"><td><span class="tt">plant_n</span></td>
+            <td><span class="tt">n</span></td>
+            <td>Goods Plants by Neighborhood, goods production
+infrastructure by neighborhood.</td>
+        </tr>
+    
+
+        <tr class="tr-even"><td><span class="tt">plant_na</span></td>
+            <td><span class="tt">n a</span></td>
+            <td>Goods Plants by Nbhood/Owner, goods production
+infrastructure by neighborhood and owning actor.</td>
+        </tr>
+    
+
+        <tr class="tr-odd"><td><span class="tt">pop</span></td>
+            <td><span class="tt">g</span></td>
+            <td>Civilian Group Population, population statistics by
+civilian group.</td>
+        </tr>
+    
+
+        <tr class="tr-even"><td><span class="tt">sat</span></td>
+            <td><span class="tt">g c</span></td>
+            <td>Civilian Group Satisfaction, satisfaction by group
+and by concern.</td>
+        </tr>
+    
+
+        <tr class="tr-odd"><td><span class="tt">security</span></td>
+            <td><span class="tt">n g</span></td>
+            <td>Neighborhood/Group Security, the level of security
+by neighborhood and group.</td>
+        </tr>
+    
+
+        <tr class="tr-even"><td><span class="tt">service_sg</span></td>
+            <td><span class="tt">s g</span></td>
+            <td>Service Levels, the various levels of service
+by service type and civilian group.</td>
+        </tr>
+    
+
+        <tr class="tr-odd"><td><span class="tt">support</span></td>
+            <td><span class="tt">n a</span></td>
+            <td>Political Support, the political support received
+by neighborhood and actor.</td>
+        </tr>
+    
+
+        <tr class="tr-even"><td><span class="tt">volatility</span></td>
+            <td><span class="tt">n</span></td>
+            <td>Neighborhood Volatility, the level of volatility
+by neighborhood.</td>
+        </tr>
+    
+
+        <tr class="tr-odd"><td><span class="tt">vrel</span></td>
+            <td><span class="tt">g a</span></td>
+            <td>Vertical Relationship, the relationship between
+groups and actors.</td>
+        </tr>
+    
+
+</table></center>
+<p>Some example URLs for extracting history data from <span class="tt">case01</span> using 
+key/value pairs:
+</p>
+
+<pre class="example">
+Request for neighborhood population for the neighborhood with id "N1":
+http://localhost:8080/scenario/case01/history/npop/index.json?n=N1
+
+The same request but for a smaller time window:
+http://localhost:8080/scenario/case01/history/npop/index.json?n=N1&t1=2&t2=10
+
+Request for neighborhood activities for a the group with id "FRC1":
+http://localhost:8080/scenario/case01/history/activity_nga/index.json?g=FRC1
+
+Same request, but also for a the neighborhood with id "N1" as well:
+http://localhost:8080/scenario/case01/history/activity_nga/index.json?g=FRC1&n=N1
+</pre>
+
+
+<h3><a name="restapi.comparison" href="#toc.restapi.comparison">4.4 Scenario Comparison API</a></h3>
+<p>URLs related to comparing the results of scenarios reside in the 
+<span class="tt">/comparison</span> domain.  The following list of URLs is the 
+complete list of REST API calls available in this domain.
+
+</p>
+
+<ul class="itemlist">
+<li><a class="iref" href="#/comparison/index.json">/comparison/index.json</a></li>
+<li><a class="iref" href="#/comparison/request.json">/comparison/request.json</a></li>
+<li><a class="iref" href="#/comparison/chain.json">/comparison/chain.json</a></li>
+</ul>
+
+
+<dl>
+<dt class="defitem"><a name="/comparison/index.json">/comparison/index.json</a></dt><dd><p>
+
+Query Parameters: None.</p>
+
+<p>Returns a JSON list of comparison objects.
+
+</p><table class="table topiclist">
+<tr>
+<th>Return Parameters</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>id</td>
+<td>
+        The Unique ID of the comparison object.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>longname</td>
+<td>
+        Long name of the comparison object.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>case1</td>
+<td>
+        Scenario used as the first case in the comparison.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>case2</td>
+<td>
+        Scenario used as the second case in the comparison. 
+<i>This may be the same as case1</i></td>
+</tr>
+        
+<tr class="tr-even">
+<td>t1</td>
+<td>
+        The time used for <span class="tt">case1</span> in the comparison.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>t2</td>
+<td>
+        The time used for <span class="tt">case2</span> in the comparison.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>week1</td>
+<td>
+        The time string corresponding to <span class="tt">t1</span>.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>week2</td>
+<td>
+        The time string corresponding to <span class="tt">t2</span>.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>outputs</td>
+<td>
+        Array of JSON objects representing the output of the comparison. Detailed in following table.</td>
+</tr>
+        
+</table>
+<p>The outputs returned from a comparison vary greatly. However, each object
+in the JSON return found in the <span class="tt">outputs</span> array contains these fields:
+
+</p>
+
+<table class="table topiclist">
+<tr>
+<th>Outputs Field</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>type</td>
+<td>
+        The type of output.</td>
+</tr>
+         
+<tr class="tr-odd">
+<td>name</td>
+<td>
+        The name of the output.</td>
+</tr>
+         
+<tr class="tr-even">
+<td>category</td>
+<td>
+        The PMESII category of the output.</td>
+</tr>
+         
+<tr class="tr-odd">
+<td>leaf</td>
+<td>
+        Flag indicating whether this output is a leaf node.</td>
+</tr>
+         
+<tr class="tr-even">
+<td>val1</td>
+<td>
+        Value of the output in <span class="tt">case1</span> at <span class="tt">t1</span>.</td>
+</tr>
+         
+<tr class="tr-odd">
+<td>val2</td>
+<td>
+        Value of the output in <span class="tt">case2</span> at <span class="tt">t2</span>.</td>
+</tr>
+         
+<tr class="tr-even">
+<td>fancy1</td>
+<td>
+        Human readable version of <span class="tt">val1</span>.</td>
+</tr>
+         
+<tr class="tr-odd">
+<td>fancy2</td>
+<td>
+        Human readable version of <span class="tt">val2</span>.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>delta</td>
+<td>
+        Computed delta between the cases for the output.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>narrative</td>
+<td>
+        Human readable text for the output.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>context</td>
+<td>
+        A context string for the output or "".</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>inputs</td>
+<td>
+        A JSON object showing which of the other outputs are also inputs to this output.  This field is computed on demand when a causality chain is requested.</td>
+</tr>
+        
+<tr class="tr-even">
+<td>score</td>
+<td>
+        This outputs score as computed relative to all other outputs.</td>
+</tr>
+        
+</table>
+<p>Example Return:
+
+</p>
+
+<pre class="example">
+[{
+    "id": "case01",
+    "longname": "case01 @ 0 vs. case01 @ 10",
+    "case1": "case01",
+    "case2": "case01",
+    "t1": 0,
+    "t2": 10,
+    "week1": "2012W01",
+    "week2": "2012W11",
+    "outputs": [
+      {
+        "type": "control",
+        "name": "control.PE",
+        "category": "political",
+        "leaf": 1,
+        "n": "PE",
+        "val1": "GOV",
+        "fmt1": "GOV",
+        "fancy1": "Actor GOV is in control",
+        "val2": "PELF",
+        "fmt2": "PELF",
+        "fancy2": "Actor PELF is in control",
+        "delta": 1.0,
+        "narrative": "Neighborhood PE was controlled by GOV, is controlled by PELF.",
+        "context": "",
+        "inputs": {
+          
+        },
+        "score": 100.0
+      },
+
+      ...
+    ]
+}]
+
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/comparison/request.json">/comparison/request.json</a></dt><dd>
+<table class="table topiclist">
+<tr>
+<th>Query Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>case1</td>
+<td>
+        Required. The first scenario case in the comparison request.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>case2</td>
+<td>
+        Optional. The second case in the comparison request.</td>
+</tr>
+        
+</table>
+<p>Requests a comparison object for the case with ID <i>case1</i> or for a 
+pair of cases <i>case1</i> and <i>case2</i>.  On success, returns
+<span class="tt">['ok', <i>comparison</i>]</span>, where 
+<i>comparison</i> is the same kind of object returned by 
+<a href="#/comparison/index.json">/comparison/index.json</a>, which is where
+the return values are defined.</p>
+
+<p>Example Request:
+</p>
+
+<pre class="example">
+http://localhost:8080/comparison/request.json?case1=case01
+</pre>
+
+</dd>
+<dt class="defitem"><a name="/comparison/chain.json">/comparison/chain.json</a></dt><dd>
+<table class="table topiclist">
+<tr>
+<th>Query Parameter</th> 
+<th>Description</th>
+</tr>
+        
+<tr class="tr-even">
+<td>comp</td>
+<td>
+        Required. The comparison object ID.</td>
+</tr>
+        
+<tr class="tr-odd">
+<td>varname</td>
+<td>
+        Required. An output variable that exists in the
+comparison object.</td>
+</tr>
+        
+</table>
+<p>Returns a list of the significant inputs driving change in 
+a specific output variable <i>varname</i> in comparison <i>comp</i>.  
+The list is recursive: we drill
+down as far as we can, producing a "causality chain".  The <i>varname</i>
+must be one of the variables included in the list returned by
+<a href="#/comparison/request.json">/comparison/request.json</a>.</p>
+
+<p>Example Request:
+</p>
+
+<pre class="example">
+http://localhost:8080/comparison/chain.json?comp=case01&varname=support.PE.PELF
+</pre>
+
+</dd>
+</dl>
+
+
+<h3><a name="restapi.json" href="#toc.restapi.json">4.5 JSON Conventions</a></h3>
+<p>All URLs that return JSON content end in a file name with extension
+"<span class="tt">.json</span>".  In many cases, the result is simply the JSON object or 
+list.</p>
+
+<p>In cases where error returns are possible (e.g., when using
+the JSON interface to perform some action, or when invalid query 
+parameters are sent) the JSON result is a list of 
+two or more elements.  The first element is a
+code, "OK", "ERROR", "REJECT", or "EXCEPTION".
+
+</p>
+
+<ul>
+<li>  If the code is "OK", the request was
+      accepted; the remaining elements constitute the request's data
+      result string.  Typically there is a single additional element,
+      a message or a single object. Look up the
+      particular URL in the domain's schema
+      for specifics.
+
+</li><li> If the code is "REJECT", the request was rejected because of input
+     errors.  The second 
+     element is a JSON object with one field for each problem parameter
+     in the request.  The field names are query parameter names 
+     (or "*" for errors affecting the whole request); the field values 
+     are error messages for display to the user.
+
+</li><li> If the code is "ERROR", there was an error while processing
+     the request.  The second element is an error message.  An "ERROR"
+     usually implies that the input parameters were OK but the request
+     could not be performed successfully for some other reason.
+
+</li><li> If the code is "EXCEPTION", there was an unexpected error while executing
+     the request.  The second element is an error message, and the third
+     element is a TCL stack trace.
+</li></ul>
+
+
+
+<h2><a name="orders" href="#toc.orders">5. Athena Order Definitions</a></h2>
+<p>The RESTful interface allows Athena orders to be sent to a particular
+scenario; thus, the order definitions are part of the 
+interface specification.  We already have high-quality documentation of
+all Athena orders as on-line help in the Athena Workbench; for now,
+we are making this same help database available through Arachne's web 
+interface, at <span class="tt"><a href="/help/index.html">/help/index.html</a></span>.</p>
+
+<p>In time, we hope to provide a help database tailored to the Arachne 
+user.  In addition, the Athena Workbench has a sophisticated set of
+infrastructure for creating interactive data entry forms from order
+definitions.  At present, this infrastructure only works with TK GUIs,
+not with web UIs.  We plan to extend this "dynaform" infrastructure to 
+work with web forms as well, so as to reduce the burden on the web
+developers and to make order modifications in the back-end 
+require minimal (or zero) changes to the front-end.
+
+
+</p>
+
+<h2><a name="script" href="#toc.script">6. Athena Script Commands</a></h2>
+<p>The RESTful interface allows executive scripts to be sent to a particular
+scenario and executed by it; thus, the executive commands are part of the 
+interface specification.  We already have high-quality documentation of
+the executive commands as on-line help in the Athena Workbench; for now,
+we are making this same help database available through Arachne's 
+web interface, at <span class="tt"><a href="/help/index.html">/help/index.html</a></span>.</p>
+
+<p>In time, we hope to provide a help database tailored to the 
+Arachne user.
+
+</p>
+
+<hr>
+<p><address><a href="mailto:William.H.Duquette@jpl.nasa.gov">William.H.Duquette@jpl.nasa.gov</a></address>
+</p>
+
+</body>
+</html>
+    
+
+
+
+<!-- List of Anchors
+changelog                  Change Log
+overview                   1. Overview
+overview.cloud             1.1 Cloud Assumptions
+overview.name              1.2 Why Arachne?
+cmdline                    2. Command Line Interface
+scenario                   3. Scenario Management
+scenario.caseid            3.1 Scenario Case IDs
+scenario.staging           3.2 Scenario Staging
+scenario.create            3.3 Creating Scenarios
+scenario.modify            3.4 Modifying Scenarios
+scenario.other             3.5 Other Operations
+restapi                    4. RESTful API
+restapi.overview           4.1 Overview
+restapi.help               4.2 Help API
+restapi.scenario           4.3 Scenario Management API
+restapi.scenario.main      4.3.1 Scenario Operations
+restapi.scenario.case      4.3.2 Case Operations (Main)
+restapi.scenario.group     4.3.3 Case Operations (Groups)
+restapi.scenario.actor     4.3.4 Case Operations (Actors)
+restapi.scenario.nbhood    4.3.5 Case Operations (Neighborhoods)
+restapi.scenario.history   4.3.6 Case Operations (History)
+restapi.scenario.histvars  4.3.7 History Table Query Reference
+    tab.histvars           Table 4-1: History Variables
+restapi.comparison         4.4 Scenario Comparison API
+restapi.json               4.5 JSON Conventions
+orders                     5. Athena Order Definitions
+script                     6. Athena Script Commands
+
+-->

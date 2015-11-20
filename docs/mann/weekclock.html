@@ -1,0 +1,604 @@
+<html>
+<head>
+<title>athena 6.3.3: weekclock(n) -- Week-based Simulation Clock, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>weekclock(n)</b> -- Week-based Simulation Clock, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#advancing_time">Advancing Time</a></li>
+
+    <li><a href="#marks">Marks</a></li>
+
+    <li><a href="#time_specification_strings">Time Specification Strings</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#weekclock">weekclock <i>name ?options?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#weekclock-tick0">-tick0 <i>tick</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#weekclock-week0">-week0 <i>wstring</i></a></li>
+<li><a class="iref" href="#advance">$weekclock advance <i>t</i></a></li>
+<li><a class="iref" href="#asString">$weekclock asString ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#cget">$weekclock cget <i>option</i></a></li>
+<li><a class="iref" href="#checkpoint">$weekclock checkpoint</a></li>
+<li><a class="iref" href="#configure">$weekclock configure ?<i>option value...</i>?</a></li>
+<li><a class="iref" href="#delta">$weekclock delta</a></li>
+<li><a class="iref" href="#fromString">$weekclock fromString <i>wstring</i></a></li>
+<li><a class="iref" href="#timespec_validate">$weekclock timespec validate <i>spec</i></a></li>
+<li><a class="iref" href="#now">$weekclock now ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#reset">$weekclock reset</a></li>
+<li><a class="iref" href="#restore">$weekclock restore <i>checkpoint</i></a></li>
+<li><a class="iref" href="#tick">$weekclock tick</a></li>
+<li><a class="iref" href="#toString">$weekclock toString <i>ticks</i> ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#mark">$weekclock mark <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#mark_set">$weekclock mark set <i>name</i> ?<i>offset</i>?</a></li>
+<li><a class="iref" href="#mark_get">$weekclock mark get <i>name</i></a></li>
+<li><a class="iref" href="#mark_names">$weekclock mark names</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>weekclock(n) defines a <a href="../mani/simclock.html">simclock(i)</a> simulation clock type
+that tracks simulation in integer ticks, each tick corresponding to
+one week.  Simulation time is converted to julian calendar weeks
+using <a href="../mann/week.html">week(n)</a>.</p>
+
+<p>The <b>-tick0</b> option specifies the simulation time in ticks when
+the scenario is locked.  Normally this will be 0, but if a scenario is
+designed to follow on to a previous scenario it might be greater than 0.</p>
+
+<p>The <b>-week0</b> option specifies the "start week", a <a href="../mann/week.html">week(n)</a>
+string for the specific calendar week corresponding to
+t=0.  Consequently, the weekclock(n) can convert between
+sim times in ticks and <a href="../mann/week.html">week(n)</a> strings.  <b>Note:</b>
+it is not necessary to change <b>-week0</b> when changing <b>-tick0</b>;
+<b>-week0</b> is always tied to t=0, even if <b>-tick0</b> has
+been advanced.
+
+</p>
+
+<h2><a name="advancing_time">Advancing Time</a></h2>
+<p>Time is advanced manually by calling the weekclock(n)'s 
+<a class="iref" href="#advance">advance</a> method.  Use <a class="iref" href="#reset">reset</a> to reset the clock to
+<b>-tick0</b>.
+
+</p>
+
+<h2><a name="marks">Marks</a></h2>
+<p>Significant points in time in the life of the simulation can be "marked"
+with a name, so that they can be used  
+<a href="#time_specification_strings">Time Specification Strings</a>.  For example, the "RUN" mark can
+be set to the time at which the analyst last pressed the simulation's
+RUN button.  The "RUN" mark will then indicate the beginning of the
+most recent run. 
+
+</p>
+
+<h2><a name="time_specification_strings">Time Specification Strings</a></h2>
+<p>To ease user input, weekclock(n) supports time specification strings,
+or "time specs".  A time spec consists of a base time, specified in
+one of a number of ways, with an optional positive or negative offset
+in ticks.  The time spec can be validated and translated into
+ticks.</p>
+
+<p>The base time can be specified in the following ways:
+
+</p>
+
+<ul>
+  <li> As a <a href="../mann/week.html">week(n)</a> string.
+  </li><li> As a sim time in integer ticks.
+  </li><li> As the string <b>T0,</b> which translates to <b>-tick0</b>.
+  </li><li> As the string <b>NOW</b>, which translates to the current simulation
+       time in ticks.
+  </li><li> As a named mark.
+</li></ul>
+<p>Thus, the following are all valid time specs:
+
+</p>
+
+<ul>
+  <li> <b>NOW</b>: the current simulation time.
+  </li><li> <b>NOW+10</b>: Ten ticks from now.
+  </li><li> <b>NOW-10</b>: Ten ticks ago.
+  </li><li> <b>2012W02</b>: The second week of 2012.
+  </li><li> <b>2012W02-26</b>: half-a-year prior to the second week of
+  2012.
+</li></ul>
+<p>If the base time is omitted, it is presumed to be the current
+simulation time; thus <b>+10</b> means 10 ticks from now and
+<b>-10</b> means 10 ticks ago.  Note that <b>+10</b> and
+<b>10</b> are two different times; the former is 10 ticks from now,
+and the latter is sim time 10.</p>
+
+<p>See also the <a class="iref" href="#timespec_validate">timespec validate</a> command.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="weekclock">weekclock <i>name ?options?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#weekclock">weekclock</a> object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#weekclock">weekclock</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>The <a class="iref" href="#weekclock">weekclock</a> object may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="weekclock-tick0">-tick0 <i>tick</i></a></dt><dd>
+
+Sets the simulation start tick to <i>tick</i>, which should be
+greater than or equal to 0.  This would usually be used when running
+a sequence of scenarios, each beginning where its predecessor ends,
+so as to have a consistent set of times across the whole set of runs.
+The default start tick is 0.
+
+</dd>
+<dt class="defopt"><a name="weekclock-week0">-week0 <i>wstring</i></a></dt><dd>
+
+Sets the calendar date corresponding to t=0 to <i>wstring</i>.
+The default date is "2012W01".
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of weekclock(n) has the following subcommands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="advance">$weekclock advance <i>t</i></a></dt><dd>
+
+Manually advances simulation time to <i>t</i>
+ticks in response to some external time update.  The value of <i>t</i>
+must be greater than <b>-tick0</b>.
+
+</dd>
+<dt class="defitem"><a name="asString">$weekclock asString ?<i>offset</i>?</a></dt><dd>
+
+Returns the current simulation time as a <a href="../mann/week.html">week(n)</a> time
+string.  If given, <i>offset</i> should be an offset in ticks; it is
+added to the returned time.
+
+</dd>
+<dt class="defitem"><a name="cget">$weekclock cget <i>option</i></a></dt><dd>
+
+Retrieve the value of any of the object's options.
+
+</dd>
+<dt class="defitem"><a name="checkpoint">$weekclock checkpoint</a></dt><dd>
+
+Returns the state of the clock as a string.  The state can be restored in
+this or another <a href="../mann/weekclock.html">weekclock(n)</a> object using the <a class="iref" href="#restore">restore</a>
+subcommand.
+
+</dd>
+<dt class="defitem"><a name="configure">$weekclock configure ?<i>option value...</i>?</a></dt><dd>
+
+Set any of the object's options.
+
+</dd>
+<dt class="defitem"><a name="delta">$weekclock delta</a></dt><dd>
+
+Returns the number of ticks since the start of simulation, i.e., the
+time <a class="iref" href="#now">now</a> minus <b>-tick0</b>.  The <a class="iref" href="#delta">delta</a> is always
+0 on <a class="iref" href="#reset">reset</a>.
+
+</dd>
+<dt class="defitem"><a name="fromString">$weekclock fromString <i>wstring</i></a></dt><dd>
+
+Converts a <a href="../mann/week.html">week(n)</a> time string into a simulation time
+in ticks.
+
+</dd>
+<dt class="defitem"><a name="timespec_validate">$weekclock timespec validate <i>spec</i></a></dt><dd>
+
+Validates the <i>spec</i> and returns the corresponding sim time in
+ticks.  Throws <b>INVALID</b> if the <i>spec</i> is invalid.
+
+</dd>
+<dt class="defitem"><a name="now">$weekclock now ?<i>offset</i>?</a></dt><dd>
+
+Returns the current simulation time in ticks.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the returned time.
+
+</dd>
+<dt class="defitem"><a name="reset">$weekclock reset</a></dt><dd>
+
+Resets simulation time to <b>-tick0</b> ticks, clearing all marks
+
+</dd>
+<dt class="defitem"><a name="restore">$weekclock restore <i>checkpoint</i></a></dt><dd>
+
+Restores the state of the clock to the given <a class="iref" href="#checkpoint">checkpoint</a>.
+
+</dd>
+<dt class="defitem"><a name="tick">$weekclock tick</a></dt><dd>
+
+Advances simulation time by one tick.
+
+</dd>
+<dt class="defitem"><a name="toString">$weekclock toString <i>ticks</i> ?<i>offset</i>?</a></dt><dd>
+
+Converts a simulation time in integer <i>ticks</i> into a
+<a href="../mann/week.html">week(n)</a> time string.  If given,
+<i>offset</i> should be an offset in ticks; it is added to
+the specified time.
+
+</dd>
+<dt class="defitem"><a name="mark">$weekclock mark <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This command manages "marks", named points in time.  See 
+<a href="#marks">Marks</a>.  The subcommands are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="mark_set">$weekclock mark set <i>name</i> ?<i>offset</i>?</a></dt><dd>
+
+Marks the current time (plus the <i>offset</i>, if any) 
+with the given <i>name</i>.
+
+</dd>
+<dt class="defitem"><a name="mark_get">$weekclock mark get <i>name</i></a></dt><dd>
+
+Returns the time tick associated with the named mark, or "" if the mark
+is undefined.
+
+</dd>
+<dt class="defitem"><a name="mark_names">$weekclock mark names</a></dt><dd>
+
+Returns the names of all currently defined marks.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mann/week.html">week(n)</a>
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>weekclock(n) requires Tcl 8.5 or later.</p>
+
+<p>To use week(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the projectlib(n)
+library directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:49:01 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+

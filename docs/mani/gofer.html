@@ -1,0 +1,527 @@
+<html>
+<head>
+<title>athena 6.3.3: gofer(i) -- Gopher Type Interface</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>gofer(i)</b> -- Gopher Type Interface
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#overview">OVERVIEW</a></li>
+    <ul>
+
+    <li><a href="#operations">Operations</a></li>
+
+    <li><a href="#gofer_dictionaries">Gofer Dictionaries</a></li>
+
+    <li><a href="#required_rules">Required Rules</a></li>
+
+    <li><a href="#raw_value_conversion">Raw Value Conversion</a></li>
+
+</ul>
+    
+
+    <li><a href="#editing">EDITING</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A gofer type is a collection of recipes for computing a particular kind of
+output value, so called because it goes and gets the output value on
+demand.  A value of a gofer type specifies a particular recipe and the
+ingredients it needs to compute the desired output.</p>
+
+<p>This man page originally described the interface that one would implement 
+by hand; given the increasing maturity of the <a href="../mann/gofer.html">gofer(n)</a> 
+infrastucture, there is no little reason to do so: it is better to simply
+use <a href="../mann/gofer.html">gofer(n)</a>'s <a href="../mann/gofer.html#gofer_define">gofer define</a> command.  As
+a result, rather than describing the gofer type interface, as such, 
+this man page now documents the gofer type architecture.
+
+</p>
+
+<h2><a name="overview">OVERVIEW</a></h2>
+<p>The Athena application has many orders and tactics that operate on a 
+list of groups.  Typically, the order dialogs allow the user to select
+the desired groups from a list.  However, there are many other ways
+one might want to select a specific set of groups.  For example,
+
+</p>
+
+<ul>
+    <li> All non-empty civilian groups
+    </li><li> All civilian groups resident in neighborhood <i>n</i>
+    </li><li> All civilian groups with a mood greater than <i>x</i>
+    </li><li> All civilian groups that support actor <i>a</i>
+</li></ul>
+<p>These are four recipes that a <code>::gofer::CIVGROUPS</code> type might 
+allow the user to use, in addition to simply selecting the groups from
+a list.</p>
+
+<p>The first recipe has no ingredients, i.e., no additional parameters required
+to compute the desired list of groups.</p>
+
+<p>In the second recipe, the ingredient is the identity of the neighborhood,
+<i>n</i>, and so on for the third and fourth.</p>
+
+<p>Gofer types can be used as parameter types for orders, and especially for
+tactics.  Consider a tactic that requires a list of civilian groups: by
+using a gofer type, the analyst can select a dynamic set of groups, a set that 
+might change as the simulation runs, simply by specifying the rule used to 
+identify the groups in the set.  For this reason, we refer to a gofer type's
+recipes as <i>gofer rules</i>, or just <i>rules</i> for short.</p>
+
+<p>A gofer type is implemented as a Tcl ensemble command using the
+<a href="../mann/gofer.html">gofer(n)</a> infrastructure.  Each gofer type has a name, an identifier
+in upper case like "CIVGROUPS"; the command will always be in the
+<code>::gofer</code> namespace, e.g., <code>::gofer::CIVGROUPS</code>.
+
+</p>
+
+<h2><a name="operations">Operations</a></h2>
+<p>Gofer types support the following operations on their values.</p>
+
+<p>First, a value can be validated.  Validation finds any errors, and if valid
+puts the value in canonical form.  In other words, a gofer type is a validation
+type like all of the others in Athena and Mars.</p>
+
+<p>Second, a narrative can be computed from a value.  The narrative is a 
+human-readable string, usually a noun phrase, that describes the output and 
+how it will be computed, 
+e.g., "all non-empty civilian groups resident in N1".</p>
+
+<p>Third, a value can be evaluated, resulting in an output value of the desired
+type.</p>
+
+<p>Suppose a tactic has a parameter of a gofer type.  The tactic will validate
+parameter values using the gofer type, as it does for any other parameter.  
+It will include the parameter's narrative in its own narrative, e.g.,
+
+</p>
+
+<blockquote>
+Actor JOE funds $25M of ENI for <b>all non-empty civilian groups in N1</b>
+</blockquote>
+<p>Finally, when the tactic executes it will evaluate the value, and make use
+of the output.
+
+</p>
+
+<h2><a name="gofer_dictionaries">Gofer Dictionaries</a></h2>
+<p>Every gofer type value is a Tcl dictionary with at least two keys:
+<b>_type</b>, which is the name of the type (e.g., "CIVGROUPS"), and
+<b>_rule</b>, whose value is the name of the rule to apply.  Other keys 
+may be added depending on the rule.  For example, values for the four rules given above might be represented like this:
+
+</p>
+
+<pre>
+    _type CIVGROUPS _rule ALL
+    _type CIVGROUPS _rule BY_NBHOOD n N1
+    _type CIVGROUPS _rule BY_MOODGT x 30.0
+    _type CIVGROUPS _rule SUPPORTS  a JOE 
+</pre>
+<p>These values are called <i>gofer dictionaries</i>, or <i>gdicts</i>.  In 
+canonical form,
+
+</p>
+
+<ul>
+    <li> The <b>_type</b> key will be the first key.
+    </li><li> The <b>_rule</b> key will be the second key.
+    </li><li> The type and rule names will be in upper case.
+    </li><li> The remaining keys will be only those related to the selected rule.
+    </li><li> The values of those keys will be in canonical form for their types.
+</li></ul>
+
+<h2><a name="required_rules">Required Rules</a></h2>
+<p>The set of rules will usually vary significantly from one gofer type to
+another.  However, every gofer type must implement at least the
+<b>BY_VALUE</b> rule, which simply returns its input <b>raw_value</b>.</p>
+
+<p>After all, the analyst will sometimes want to just specify the value to
+use, rather than telling the application how to compute it.  The 
+<b>BY_VALUE</b> rule is how the gofer type supports this.</p>
+
+<p>Thus,
+
+</p>
+
+<pre>
+    _type <i>typename</i> _rule BY_VALUE raw_value {A B C} 
+</pre>
+<p>will evaluate (if valid) to "A B C". 
+
+</p>
+
+<h2><a name="raw_value_conversion">Raw Value Conversion</a></h2>
+<p>Gofer types are a new construct, and there are many existing orders and
+tactics that ought to use them.  For example, the FUNDENI tactic has a 
+<b>glist</b> parameter whose value is a list of civilian groups.  At present,
+the user must always select an explicit list; and there are existing Athena
+scenarios that use this tactic.  How do we transition the tactic to use
+a gofer type without breaking existing scenarios?</p>
+
+<p>The answer lies in the canonical form of a gofer type value.  A raw value
+will never begin with the token "<b>_type</b>"; a gofer value always will.
+The application can check for the presence of "<b>_type</b>"; if absent, it
+can assume that the value is a raw value and convert it to a gofer value
+using the <b>BY_VALUE</b> rule.  (This is another reason why all types
+must support the <b>BY_VALUE</b> rule.)
+
+</p>
+
+<h2><a name="editing">EDITING</a></h2>
+<p>Gofer type values can be edited by using the <b>gofer</b> field type
+in <a href="../mann/dynaform.html">dynaform(n)</a> scripts, or by using the <a href="../mann/goferfield.html">goferfield(n)</a>
+widget directly in other contexts.</p>
+
+<p>Because gofer type values can be arbitrarily complex, each type must define
+a <a href="../mann/dynaform.html">dynaform(n)</a> script that will be used to display and edit its values
+in an appropriate way.  The form will be used by itself in a 
+<a href="../mann/dynabox.html">dynabox(n)</a> popup, rather than being embedded within a larger form,
+so it can use all of the space it needs to.</p>
+
+<p>The dynaform script should include prose that makes it clear what the user is
+selecting.  The first data field in the form should always be a selector
+called <b>_rule</b>; each rule supported by the type should have a case 
+within the selector.  For example:
+
+</p>
+
+<pre>
+    rc "" -width 3in -span 3
+    label {
+        Enter a rule for selecting a set of civilian groups.
+    }
+
+    rc "" -for _rule
+    selector _rule {
+        case BY_VALUE "By name" {
+            cc "  " -for raw_value
+            enumlonglist raw_value -dictcmd {::civgroup namedict} \
+                -width 30 -height 10 
+        }
+        case RESIDENT_IN "Resident in" {
+            cc "  " -for n
+            enumlong n -showkeys yes -dictcmd {::nbhood namedict}
+        }
+    }
+</pre>
+<p>Note that the form is free to use whatever text strings it likes to present
+the rules to the user; thus, the <b>BY_VALUE</b> rule is presented as 
+"By name", which is friendlier for this particular type.</p>
+
+<p><b>NOTE:</b> The dynaform script must have a field for each <i>gdict</i>
+key, in the required order; thus, the first two fields in the dynaform script
+must be the <b>_type</b> and the <b>_rule</b> selector.  However, the
+<a href="../mann/gofer.html">gofer(n)</a> infrastructure automatically inserts the <b>_type</b>
+as an invisible context field, so it is omitted from the example.  
+
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original interface.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+

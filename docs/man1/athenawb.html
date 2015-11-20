@@ -1,0 +1,380 @@
+<html>
+<head>
+<title>athena 6.3.3: athenawb(1) -- Athena Workbench</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>athenawb(1)</b> -- Athena Workbench
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#mods">MODS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#athenawb">athenawb ?options...? ?<i>filename</i>.adb?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athenawb-scratch">-scratch <i>dir</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athenawb-script">-script <i>filename</i>.tcl</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athenawb-ignoreuser">-ignoreuser</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athenawb-url">-url <i>url</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="athenawb">athenawb ?options...? ?<i>filename</i>.adb?</a></dt>
+</dl>
+<p>Athena Workbench is the desktop Athena simulation application.  Details of
+the simulation model are to be found in the <i>Athena Analyst's
+Guide</i> and related documents, rather than here.  The models and 
+algorithms, along with tools for scenario-building, are found in 
+<a href="../mann/athena.html">athena(n)</a>.</p>
+
+<p><a href="../man1/athenawb.html">athenawb(1)</a> is a documentic-centric application, like a
+word-processor; here, however, the documents are Athena scenario
+files, which conventionally have a "<code>.adb</code>" extension.
+If a scenario file name is given on the command line, it will be
+opened automatically.</p>
+
+<p>Athena Workbench is usually invoked from the Windows Start Menu or a 
+desktop shortcut; it may also be invoked from a Windows console command
+line, in which case the following options may be used:
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="athenawb-scratch">-scratch <i>dir</i></a></dt><dd>
+
+Names a directory to use for writing runtime files to.  Log files and
+temporary database files are written here.  If left out, Athena defaults
+to a temporary directory defined by the operating system.  For Windows 
+systems, this is typically a directory under the user's home directory.
+
+</dd>
+<dt class="defopt"><a name="athenawb-script">-script <i>filename</i>.tcl</a></dt><dd>
+
+Names an Athena executive script to be executed at start-up,
+immediately after loading scenario file (if any).  This option is
+usually used to execute exported order scripts.
+
+</dd>
+<dt class="defopt"><a name="athenawb-ignoreuser">-ignoreuser</a></dt><dd>
+
+This option is intended for use during testing; it tells the
+application to ignore user preference settings, so that the tests
+always begin with the application in a known state.
+
+</dd>
+<dt class="defopt"><a name="athenawb-url">-url <i>url</i></a></dt><dd>
+
+If given, Athena will show the <i>url</i> in the Detail Browser on
+start-up.
+
+</dd>
+</dl>
+<p>The application has extensive on-line help; invoke the application
+and see the <b>Help</b> menu.
+
+</p>
+
+<h2><a name="mods">MODS</a></h2>
+<p>It is possible to patch Athena post-delivery by means of Athena
+mod files.  To use a mod, just copy the mod file to the installation's
+<code>mods/</code> directory, typically <code>~/athena/mods</code>.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:41 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+

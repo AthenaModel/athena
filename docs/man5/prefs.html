@@ -1,0 +1,676 @@
+<html>
+<head>
+<title>athena 6.3.3: prefs(5) -- User Preference Definitions</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+<script language="javascript">
+//===================================================================
+//Author: Matt Kruse  < matt@mattkruse.com>
+//WWW: http://www.mattkruse.com/
+//
+//NOTICE: You may use this code for any purpose, commercial or
+//private, without any further permission from the author. You may
+//remove this notice from your final code if you wish, however it is
+//appreciated by the author if at least my web site address is kept.
+//
+//You may *NOT* re-distribute this code in any way except through its
+//use. That means, you can include it in your product, or your web
+//site, or any other form where the code is actually being used. You
+//may not put the plain javascript up on your site for download or
+//include it in your javascript libraries for download.
+//If you wish to share this code with others, please just point them
+//to the URL instead.
+//Please DO NOT link directly to my .js files from your site. Copy
+//the files to your server and use them there. Thank you.
+//===================================================================
+//HISTORY
+//------------------------------------------------------------------
+//December 9, 2003: Added script to the Javascript Toolbox
+//December 10, 2003: Added the preProcessTrees variable to allow user
+//     to turn off automatic conversion of UL's onLoad
+//March 1, 2004: Changed it so if a li has a class already attached
+//     to it, that class won't be erased when initialized. This allows
+//     you to set the state of the tree when painting the page simply
+//     by setting some li's class name as being "liOpen" (see example)
+//October 1, 2015: WHD, modified code to prevent false html tag matches
+//                 by htmltrans(n).
+/*
+This code is inspired by and extended from Stuart Langridge's aqlist code:
+        http://www.kryogenix.org/code/browser/aqlists/
+        Stuart Langridge, November 2002
+        sil@kryogenix.org
+        Inspired by Aaron's labels.js (http://youngpup.net/demos/labels/)
+        and Dave Lindquist's menuDropDown.js (http://www.gazingus.org/dhtml/?id=109)
+*/
+
+//Automatically attach a listener to the window onload, to convert the trees
+addEvent(window,"load",convertTrees);
+
+//Utility function to add an event listener
+function addEvent(o,e,f){
+    if (o.addEventListener){ o.addEventListener(e,f,true); return true; }
+    else if (o.attachEvent){ return o.attachEvent("on"+e,f); }
+    else { return false; }
+}
+
+//utility function to set a global variable if it is not already set
+function setDefault(name,val) {
+    if (typeof(window[name])=="undefined" || window[name]==null) {
+        window[name]=val;
+    }
+}
+
+//Full expands a tree with a given ID
+function expandTree(treeId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    expandCollapseList(ul,nodeOpenClass);
+}
+
+//Fully collapses a tree with a given ID
+function collapseTree(treeId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    expandCollapseList(ul,nodeClosedClass);
+}
+
+//Expands enough nodes to expose an LI with a given ID
+function expandToItem(treeId,itemId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    var ret = expandCollapseList(ul,nodeOpenClass,itemId);
+    if (ret) {
+        var o = document.getElementById(itemId);
+        if (o.scrollIntoView) {
+            o.scrollIntoView(false);
+        }
+    }
+}
+
+//Performs 3 functions:
+//a) Expand all nodes
+//b) Collapse all nodes
+//c) Expand all nodes to reach a certain ID
+function expandCollapseList(ul,cName,itemId) {
+    if (!ul.childNodes || ul.childNodes.length==0) { return false; }
+    // Iterate LIs
+    for (var itemi=0;itemi < ul.childNodes.length;itemi++) {
+        var item = ul.childNodes[itemi];
+        if (itemId!=null && item.id==itemId) { return true; }
+        if (item.nodeName == "LI") {
+            // Iterate things in this LI
+            var subLists = false;
+            for (var sitemi=0;sitemi < item.childNodes.length;sitemi++) {
+                var sitem = item.childNodes[sitemi];
+                if (sitem.nodeName=="UL") {
+                    subLists = true;
+                    var ret = expandCollapseList(sitem,cName,itemId);
+                    if (itemId!=null && ret) {
+                        item.className=cName;
+                        return true;
+                    }
+                }
+            }
+            if (subLists && itemId==null) {
+                item.className = cName;
+            }
+        }
+    }
+}
+
+//Search the document for UL elements with the correct CLASS name, then process them
+function convertTrees() {
+    setDefault("treeClass","mktree");
+    setDefault("nodeClosedClass","liClosed");
+    setDefault("nodeOpenClass","liOpen");
+    setDefault("nodeBulletClass","liBullet");
+    setDefault("nodeLinkClass","bullet");
+    setDefault("preProcessTrees",true);
+    if (preProcessTrees) {
+        if (!document.createElement) { return; } // Without createElement, we can't do anything
+        uls = document.getElementsByTagName("ul");
+        for (var uli=0;uli < uls.length;uli++) {
+            var ul=uls[uli];
+            if (ul.nodeName=="UL" && ul.className==treeClass) {
+                processList(ul);
+            }
+        }
+    }
+}
+
+//Process a UL tag and all its children, to convert to a tree
+function processList(ul) {
+    if (!ul.childNodes || ul.childNodes.length==0) { return; }
+    // Iterate LIs
+    for (var itemi=0;itemi < ul.childNodes.length;itemi++) {
+        var item = ul.childNodes[itemi];
+        if (item.nodeName == "LI") {
+            // Iterate things in this LI
+            var subLists = false;
+            for (var sitemi=0;sitemi < item.childNodes.length;sitemi++) {
+                var sitem = item.childNodes[sitemi];
+                if (sitem.nodeName=="UL") {
+                    subLists = true;
+                    processList(sitem);
+                }
+            }
+            var s= document.createElement("SPAN");
+            var t= "";
+            s.className = nodeLinkClass;
+            if (subLists) {
+                // This LI has UL's in it, so it's a +/- node
+                if (item.className==null || item.className=="") {
+                    item.className = nodeClosedClass;
+                    t = "+\u00A0";
+                }
+                if (item.className==nodeOpenClass) {
+                    t = "\u2013\u00A0";
+                }
+                // If it's just text, make the text work as the link also
+                if (item.firstChild.nodeName=="#text") {
+                    t = t+item.firstChild.nodeValue;
+                    item.removeChild(item.firstChild);
+                }
+                s.onclick = function () {
+                    this.parentNode.className = (this.parentNode.className==nodeOpenClass) ? nodeClosedClass : nodeOpenClass;
+                    this.firstChild.nodeValue = (this.firstChild.nodeValue=="+\u00A0") ? "\u2013\u00A0" : "+\u00A0";
+                    return false;
+                }
+            }
+            else {
+                // No sublists, so it's just a bullet node
+                item.className = nodeBulletClass;
+                s.onclick = function () { return false; }
+                t = "\u2022\u00A0";
+            }
+            s.appendChild(document.createTextNode(t));
+            item.insertBefore(s,item.firstChild);
+        }
+    }
+}
+</script>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>prefs(5)</b> -- User Preference Definitions
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#parameters">PARAMETERS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="mktree" id="::projectlib::prefs::parmset3">
+<li><a class="iref" href="#app.*">app.*</a>
+<ul>
+<li><a class="iref" href="#app.bgticks">app.bgticks</a></li>
+</ul></li>
+<li><a class="iref" href="#appwin.*">appwin.*</a>
+<ul>
+<li><a class="iref" href="#appwin.cli">appwin.cli</a></li>
+<li><a class="iref" href="#appwin.orders">appwin.orders</a></li>
+<li><a class="iref" href="#appwin.scripts">appwin.scripts</a></li>
+<li><a class="iref" href="#appwin.slog">appwin.slog</a></li>
+</ul></li>
+<li><a class="iref" href="#cli.*">cli.*</a>
+<ul>
+<li><a class="iref" href="#cli.maxlines">cli.maxlines</a></li>
+</ul></li>
+<li><a class="iref" href="#wms.*">wms.*</a>
+<ul>
+<li><a class="iref" href="#wms.urls">wms.urls</a></li>
+</ul></li>
+<li><a class="iref" href="#helper.*">helper.*</a>
+<ul>
+<li><a class="iref" href="#helper.linux.*">helper.linux.*</a>
+<ul>
+<li><a class="iref" href="#helper.linux.browser">helper.linux.browser</a></li>
+</ul></li>
+<li><a class="iref" href="#helper.osx.*">helper.osx.*</a>
+<ul>
+<li><a class="iref" href="#helper.osx.browser">helper.osx.browser</a></li>
+</ul></li>
+<li><a class="iref" href="#helper.windows.*">helper.windows.*</a>
+<ul>
+<li><a class="iref" href="#helper.windows.browser">helper.windows.browser</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>prefs(5) defines the Athena user preference settings.  These are
+distinct from the model parameters defined in <a href="../man5/parmdb.html">parmdb(5)</a> in
+that they apply to the application rather than to individual
+scenarios.  Therefore,
+
+</p>
+
+<ul>
+  <li> They are not saved in scenario files.
+  </li><li> They may not affect the outcome of simulation runs.
+</li></ul>
+
+<p><a href="../mann/prefs.html">prefs(n)</a> handles prefs(5) files using the <a href="../../../mars/docs/mann/parmset.html">parmset(n)</a>
+mechanism.  A valid file consists of zero or more parameter settings,
+each of which has this basic syntax,
+
+</p>
+
+<pre>parm <i>name</i> <i>value</i></pre>
+<p>where <i>value</i> must be quoted if it contains whitespace.  See
+<a href="../../../mars/docs/mann/parmset.html">parmset(n)</a> for more details.
+
+</p>
+
+<h2><a name="parameters">PARAMETERS</a></h2>
+<p>The valid parameters are as follows:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="app.*">app.*</a></dt><dd><p>
+Parameters which affect the workbench app as a whole.
+</p><dl>
+
+<dt class="defitem"><a name="app.bgticks">app.bgticks <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">2</span></b>".
+When advancing time, the Workbench will advance time in a background thread if the number of ticks is greater than or equal to this value. If the parameter's value is negative, then time will always be advanced in the foreground thread.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="appwin.*">appwin.*</a></dt><dd><p>
+Parameters which affect the main window.
+</p><dl>
+
+<dt class="defitem"><a name="appwin.cli">appwin.cli <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">off</span></b>".
+If on, the Command Line Interface (CLI) is visible; otherwise not.
+</dd>
+<dt class="defitem"><a name="appwin.orders">appwin.orders <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">off</span></b>".
+If on, the Time/Orders tab is visible; otherwise not.
+</dd>
+<dt class="defitem"><a name="appwin.scripts">appwin.scripts <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">off</span></b>".
+If on, the Scripts tab is visible; otherwise not.
+</dd>
+<dt class="defitem"><a name="appwin.slog">appwin.slog <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">off</span></b>".
+If on, the Time/Log tab is visible; otherwise not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="cli.*">cli.*</a></dt><dd><p>
+Parameters which affect the Command Line Interface (CLI).
+</p><dl>
+
+<dt class="defitem"><a name="cli.maxlines">cli.maxlines <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">500</span></b>".
+The maximum number of lines of text to be retained in the main window's command line interface scrollback buffer: an integer number no less than 100.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="wms.*">wms.*</a></dt><dd><p>
+Parameters which configure the WMS client.
+</p><dl>
+
+<dt class="defitem"><a name="wms.urls">wms.urls <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">http://demo.cubewerx.com/demo/cubeserv/simple</span></b>".
+A list of previously visited WMS URLs stored as history in the WMS client.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="helper.*">helper.*</a></dt><dd><p>
+Names of helper applications.
+</p><dl>
+
+<dt class="defitem"><a name="helper.linux.*">helper.linux.*</a></dt><dd><p>
+Helper applications for the "linux" operating system.
+</p><dl>
+
+<dt class="defitem"><a name="helper.linux.browser">helper.linux.browser <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">firefox</span></b>".
+Name of the command that invokes the system web browser, e.g., for viewing Detail Browser pages.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="helper.osx.*">helper.osx.*</a></dt><dd><p>
+Helper applications for the "osx" operating system.
+</p><dl>
+
+<dt class="defitem"><a name="helper.osx.browser">helper.osx.browser <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">open</span></b>".
+Name of the command that invokes the system web browser, e.g., for viewing Detail Browser pages.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="helper.windows.*">helper.windows.*</a></dt><dd><p>
+Helper applications for the "windows" operating system.
+</p><dl>
+
+<dt class="defitem"><a name="helper.windows.browser">helper.windows.browser <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">cmd /C start</span></b>".
+Name of the command that invokes the system web browser, e.g., for viewing Detail Browser pages.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

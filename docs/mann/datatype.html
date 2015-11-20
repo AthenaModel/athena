@@ -1,0 +1,379 @@
+<html>
+<head>
+<title>athena 6.3.1a3: datatype(n) -- Abstract datatype(i) Base Class, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+
+        A {
+            text-decoration: none;
+        }
+
+        TABLE {
+            margin-top:    4px;
+            margin-bottom: 4px;
+        }
+
+        TR {
+            vertical-align: baseline;
+        }
+
+        TH {
+            padding-left: 4px;
+        }
+
+        TD {
+            padding-left: 4px;
+        }
+
+        /* Table Formatting Classes: "pretty" 
+         * Border around the outside, even/odd striping, no internal
+         * border lines.
+         */
+        TABLE.pretty {
+            border: 1px solid black;
+            border-spacing: 0;
+        }
+
+        TABLE.pretty TR.header {
+            font-weight: bold;
+            color: white;
+            background-color: #000099;
+        }
+
+        TABLE.pretty TR.oddrow {
+            color: black;
+            background-color: white;
+        }
+
+        TABLE.pretty TR.evenrow {
+            color: black;
+            background-color: #EEEEEE;
+        }
+
+        /* Examples, listings, and marks */
+        PRE.example {
+            background:     #FFFDD1 ;
+            border:         1px solid blue;
+            padding-top:    2px;
+            padding-bottom: 2px;
+            padding-left:   4px;
+        }
+
+        PRE.listing {
+            background:     #FFFDD1 ;
+            border:         1px solid blue;
+            padding-top:    4px;
+            padding-bottom: 4px;
+            padding-left:   4px;
+        }
+
+        SPAN.linenum {
+            background:     #E3E08F ;
+        }
+
+        DIV.mark {
+            display: inline;
+            font-family: Verdana;
+            font-size: 75%;
+            background: black;
+            color: white;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        DIV.bigmark {
+            display: inline;
+            font-family: Verdana;
+            font-size: 100%;
+            background: black;
+            color: white;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        /* Topic Lists. */
+        TR.topic {
+            vertical-align: baseline;
+        }
+
+        TR.topicname {
+            min-width: 1.5em;
+        }
+
+    
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.1a3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<b>datatype(n)</b> -- Abstract datatype(i) Base Class, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#defining_subclasses">Defining Subclasses</a></li>
+
+    <li><a href="#configurable_data_types">Configurable Data Types</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.1a3
+</pre>
+
+<tt><a href="#datatype_define">datatype define <i>name script</i></a></tt><br>
+
+<tt><a href="#configure"><i>datatype</i> Configure <i>options...</i></a></tt><br>
+
+<tt><a href="#validate"><i>datatype</i> validate <i>value</i> ?<i>options...</i>?</a></tt><br>
+
+<tt><a href="#validate"><i>datatype</i> Validate <i>value</i></a></tt><br>
+
+<tt><a href="#format"><i>datatype</i> format <i>value</i> ?<i>flavor</i>?</a></tt><br>
+
+<tt><a href="#sqltype"><i>datatype</i> sqltype</a></tt><br>
+
+<p>
+    
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+Datatype(n) is an abstract TclOO base class for defining <a href="../mani/datatype.html">datatype(i)</a> 
+validation data types.<p>
+
+<h2><a name="defining_subclasses">Defining Subclasses</a></h2>
+    
+
+Each subclass should override the <tt><a href="#validate">Validate</a></tt> method to do the actual
+work, and the <tt><a href="#sqltype">sqltype</a></tt> to allow for use with SQLite3 schemas.  The
+subclass may also override the <tt><a href="#format">format</a></tt> method if special formatting
+is required.<p>
+
+If the subclass supports constraint options (e.g., <tt>-min</tt>), the 
+constructor and <tt>Configure</tt> method should be overridden as described
+in the next section.<p>
+
+<h2><a name="configurable_data_types">Configurable Data Types</a></h2>
+    
+
+Some data types are simple types; they validate what they validate.  
+Others can be configured by adding constraint options; for example,
+an integer type might be customized with <tt>-min</tt> and <tt>-max</tt> options.<p>
+
+A configurable type must define a <tt>Configure</tt> method that takes 
+an option list and parses it into the <tt>constraints</tt> dictionary 
+variable, which is defined automatically:<p>
+
+<pre class="example">
+method Configure {options} {
+    foroption opt options -all {
+        -min { dict set constraints min [lshift options] }
+        -max { dict set constraints max [lshift options] }
+    }
+}
+</pre>
+
+Then, it must define a constructor that initializes the <tt>constraints</tt>
+dictionary and calls <tt>Configure</tt>:<p>
+
+<pre class="example">
+constructor {args} {
+    set constraints {
+        min ""
+        max ""
+    }
+
+    my Configure $args
+}
+</pre>
+
+The application can now create constrained instances of the data type
+in the normal way; further, the constraint options can be passed to
+<tt><a href="#validate">validate</a></tt>, to constrain the validation in an <i>ad hoc</i> way.<p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<tt>::projectlib::datatype</tt> is an abstract base <tt>oo::class</tt>.  
+It provides the  following commands.<p>
+
+<dl>
+
+<dt><b><tt><a name="datatype_define">datatype define <i>name script</i></a></tt></b></dt>
+<dd>
+    
+
+To build a <a href="../mani/datatype.html">datatype(i)</a>-compliant data type using datatype(n),
+you need to subclass datatype(n), and then create an instance of the 
+subclass.  This command does both steps in one operation.<p>
+
+Given the <i>name</i>, which should be a qualified command name conventionally
+ending in an underscore (e.g., "::projectlib::integer_"), this command
+defines a subclass called "<i>name</i>datatype" using the <i>script</i> and
+creates an instance called <i>name</i>, making the <tt>constraints</tt> variable
+available to subclass methods.  If it is desired to subclass some
+other subclass of datatype(n), add the relevant <tt>superclass</tt> command
+to the <i>script</i>.<p>
+
+Returns the newly created instance.<p>
+
+</dl>
+
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+    
+
+Instances of datatype(n) provide the following subcommands.<p>
+
+<dl>
+
+<dt><b><tt><a name="configure"><i>datatype</i> Configure <i>options...</i></a></tt></b></dt>
+<dd>
+    
+
+<b>OVERRIDE</b>.  If the datatype has configurable constraint options, it
+must define this method and have it parse the <i>options</i> into the 
+pre-defined <i>constraints</i> variable.  Otherwise, it is an error to
+pass constraint options to <tt><a href="#validate">validate</a></tt>.<p>
+
+<dt><b><tt><a name="validate"><i>datatype</i> validate <i>value</i> ?<i>options...</i>?</a></tt></b></dt>
+<dd>
+    
+
+Validates the value using the subclass's <tt><a href="#validate">Validate</a></tt> method, applying
+the subclass constraint <i>options</i>, as described in <a href="../mani/datatype.html">datatype(i)</a>.<p>
+
+<dt><b><tt><a name="validate"><i>datatype</i> Validate <i>value</i></a></tt></b></dt>
+<dd>
+    
+
+<b>OVERRIDE</b>.  By default, this method simply returns the <i>value</i>
+unchanged.  Subclasses should always override this method to validate 
+and return the <i>value</i>, throwing <b>VALIDITY</b> if the value is invalid,
+as described in <a href="../mani/datatype.html">datatype(i)</a> for
+the required behavior.  If the datatype is configurable, the constraints
+should be taken into account.<p>
+
+<dt><b><tt><a name="format"><i>datatype</i> format <i>value</i> ?<i>flavor</i>?</a></tt></b></dt>
+<dd>
+    
+
+<b>OVERRIDE.</b>  Formats and returns the <i>value</i>; the <i>flavor</i> influences 
+the formatting.<p>
+
+If the type has particular formatting requirements,
+the subclass should override this command, calling the superclass
+<tt><a href="#format">format</a></tt> subcommand in two cases: when the raw (internal) value 
+should be returned, and when the flavor is a %-conversion (e.g.,
+"%.2f").<p>
+
+See <a href="../mani/datatype.html">datatype(i)</a> for the required behavior.<p>
+
+<dt><b><tt><a name="sqltype"><i>datatype</i> sqltype</a></tt></b></dt>
+<dd>
+    
+
+<b>OVERRIDE.</b> This subcommand should return an appropriate SQLite3 column 
+type, e.g., "TEXT" for a string value.  It is usually defined as a 
+<a href="../../../mars/docs/mann/oohelpers.html#meta">meta</a> attribute.<p>
+
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+    
+
+Will Duquette<p>
+
+<h2><a name="history">HISTORY</a></h2>
+    
+
+Original package, as a generalization of a long-standing validation
+type pattern.<p>
+
+<hr>
+<i>athena 6.3.1a3 Man page generated by manpage(n) on 
+Tue Aug 18 08:15:25 PDT 2015</i>
+</body>
+</html>
+    
+
+
+
+
+
+

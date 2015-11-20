@@ -1,0 +1,338 @@
+<html>
+<head>
+<title>athena 6.3.1a3: datatype(i) -- Validation Data Type Interface</title>
+<style type="text/css" media="screen,print">
+
+        A {
+            text-decoration: none;
+        }
+
+        TABLE {
+            margin-top:    4px;
+            margin-bottom: 4px;
+        }
+
+        TR {
+            vertical-align: baseline;
+        }
+
+        TH {
+            padding-left: 4px;
+        }
+
+        TD {
+            padding-left: 4px;
+        }
+
+        /* Table Formatting Classes: "pretty" 
+         * Border around the outside, even/odd striping, no internal
+         * border lines.
+         */
+        TABLE.pretty {
+            border: 1px solid black;
+            border-spacing: 0;
+        }
+
+        TABLE.pretty TR.header {
+            font-weight: bold;
+            color: white;
+            background-color: #000099;
+        }
+
+        TABLE.pretty TR.oddrow {
+            color: black;
+            background-color: white;
+        }
+
+        TABLE.pretty TR.evenrow {
+            color: black;
+            background-color: #EEEEEE;
+        }
+
+        /* Examples, listings, and marks */
+        PRE.example {
+            background:     #FFFDD1 ;
+            border:         1px solid blue;
+            padding-top:    2px;
+            padding-bottom: 2px;
+            padding-left:   4px;
+        }
+
+        PRE.listing {
+            background:     #FFFDD1 ;
+            border:         1px solid blue;
+            padding-top:    4px;
+            padding-bottom: 4px;
+            padding-left:   4px;
+        }
+
+        SPAN.linenum {
+            background:     #E3E08F ;
+        }
+
+        DIV.mark {
+            display: inline;
+            font-family: Verdana;
+            font-size: 75%;
+            background: black;
+            color: white;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        DIV.bigmark {
+            display: inline;
+            font-family: Verdana;
+            font-size: 100%;
+            background: black;
+            color: white;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        /* Topic Lists. */
+        TR.topic {
+            vertical-align: baseline;
+        }
+
+        TR.topicname {
+            min-width: 1.5em;
+        }
+
+    
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.1a3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<b>datatype(i)</b> -- Validation Data Type Interface
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#classic_validation_types">Classic Validation Types</a></li>
+
+</ul>
+    
+
+    <li><a href="#subcommands">SUBCOMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<tt><a href="#validate"><i>datatype</i> validate <i>value</i> ?<i>options...</i>?</a></tt><br>
+
+<tt><a href="#format"><i>datatype</i> format <i>value</i> ?<i>flavor</i>?</a></tt><br>
+
+<tt><a href="#sqltype"><i>datatype</i> sqltype</a></tt><br>
+
+<p>
+    
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+A datatype(i) is an ensemble command used for validating and formatting 
+data values of a given type.  <a href="../mann/projectlib.html">projectlib(n)</a> provides an abstract 
+base class, <a href="../mann/datatype.html">datatype(n)</a>, for this purpose; however, there is no
+requirement that all validation data type objects be implemented as 
+subclasses of <a href="../mann/datatype.html">datatype(n)</a>.  Instead, this man page specifies the 
+behavior of datatype(i) ensembles.<p>
+
+<h2><a name="classic_validation_types">Classic Validation Types</a></h2>
+    
+
+The datatype(i) specification is a replacement for an earlier notion of 
+validation type, which had these characteristics:<p>
+
+<ul>
+<li> The type is a Tcl object of some kind, usually a singleton.
+<li> The type has a <tt>validate</tt> subcommand.
+<li> Given a value, the <tt>validate</tt> subcommand validates the value,
+     returning it in canonical form if it is valid, and throwing
+     <b>INVALID</b> with an error message otherwise.
+</ul><p>
+
+The classic specification has the following problems:<p>
+
+<ul>
+<li> Error messages should be formatted in different ways for different
+     uses.  In a script error, you want to see a detailed message that
+     includes the invalid value.  In a GUI, you want a short message that
+     appears next to the control that contains the invalid value.  The
+     classic spec can only support one such use well.
+
+<li> It leads to an explosion of types.  Even though all are documented,
+     it can be hard to find the documentation for a given type.<p>
+
+<li> It offers no help in formatting values of a type in a generic way.<p>
+</ul>
+
+<h2><a name="subcommands">SUBCOMMANDS</a></h2>
+    
+
+Each <a href="../mani/datatype.html">datatype(i)</a> ensemble must implement at least the following
+subcommands.<p>
+
+<dl>
+
+<dt><b><tt><a name="validate"><i>datatype</i> validate <i>value</i> ?<i>options...</i>?</a></tt></b></dt>
+<dd>
+    
+
+Validates the <i>value</i>, and if it is valid returns it in the preferred 
+internal (i.e., canonical) form.  This can involve the following kinds of
+steps:<p>
+
+<ul>
+<li> Transforming the value in some way, e.g., normalizing whitespace or
+     converting it to upper case.
+<li> Checking it for inclusion in a set.
+<li> Checking it against a range.
+<li> Matching it against a pattern.  
+<li> Returning the transformed and validated value.
+</ul>
+
+The preferred internal form must also be a valid input form, i.e., if you
+pass a validated value back to the <tt><a href="#validate">validate</a></tt> subcommand it should
+be returned unchanged.<p>
+
+The value can be further constrained or transformed according to the
+<i>options...</i>.  Each type may have its own distinct options, or no
+options at all.<p>
+
+If the value is invalid, the subcommand must throw <b>VALIDITY</b>; the 
+result is a dictionary with the following elements:<p>
+
+<ul>
+<li><b>value</b>:
+The invalid value itself, before any transformations.
+
+<li><b>message</b>:
+A brief message, e.g., "out of range", "not an integer"
+
+<li><b>expects</b>:
+<b>Optional:</b> A message giving more detail about the kind of value 
+expected.
+
+<li><b>values</b>:
+<b>Optional:</b> A list of the valid values.
+</ul>
+
+
+The <b>value</b> and <b>message</b> elements are required; others may be 
+included if available.<p>
+
+<dt><b><tt><a name="format"><i>datatype</i> format <i>value</i> ?<i>flavor</i>?</a></tt></b></dt>
+<dd>
+    
+
+Formats and returns the value.  If <i>flavor</i> is omitted or "" the 
+command should return the value in a form acceptable to <tt><a href="#validate">validate</a></tt>.
+This might be the form usually displayed to the user; e.g., booleans are
+usually displayed as "Yes" or "No" but stored as 1 or 0.  Either form is
+an acceptable input, but <tt><a href="#format">format</a></tt> would return the former.<p>
+
+If <i>flavor</i> is <b>raw</b>, then the command should return the internal 
+form (e.g., 1 instead of "Yes").<p>
+
+If <i>flavor</i> is <b>pretty</b>, then the command may return the value in
+a human-readable form that need not be acceptable to <tt><a href="#validate">validate</a></tt>.<p>
+
+The data type can define any number of other flavors.<p>
+
+<dt><b><tt><a name="sqltype"><i>datatype</i> sqltype</a></tt></b></dt>
+<dd>
+    
+
+This subcommand should return an appropriate SQLite3 column type, e.g.,
+"TEXT" for a string value.<p>
+
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+    
+
+Will Duquette<p>
+
+<h2><a name="history">HISTORY</a></h2>
+    
+
+Original interface.
+
+<hr>
+<i>athena 6.3.1a3 Man page generated by manpage(n) on 
+Tue Aug 18 08:15:22 PDT 2015</i>
+</body>
+</html>
+    
+
+
+
+

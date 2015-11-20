@@ -1,0 +1,459 @@
+<html>
+<head>
+<title>athena 6.3.3: linktree(n) -- Link Tree Widget, submodule of projectgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>linktree(n)</b> -- Link Tree Widget, submodule of <a href="../mann/projectgui.html">projectgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectgui 6.3.3
+namespace import ::projectgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#linktree">linktree <i>pathName</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#linktree-changecmd">-changecmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#linktree-errorcmd">-errorcmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#linktree-lazy">-lazy <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#linktree-url">-url <i>url</i></a></li>
+<li><a class="iref" href="#cget"><i>pathName</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>pathName</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#get"><i>pathName</i> get</a></li>
+<li><a class="iref" href="#refresh"><i>pathName</i> refresh</a></li>
+<li><a class="iref" href="#set"><i>pathName</i> set <i>url</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The linktree(n) widget displays a tree of links, each with an icon
+and label.  The top-level set of links is read from a <a href="../mani/mydomain.html">mydomain(i)</a>
+URL returning a <b>tcl/linkdict</b> given the <code>-url</code>.  The
+widget will follow these links recursively until the entire tree is
+built.</p>
+
+<p>If <code>-lazy</code> is true, the tree is built lazily; linktree(n)
+doesn't add child links until a parent link is expanded by the user.
+For large trees, this can be much faster.
+
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="linktree">linktree <i>pathName</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new <a class="iref" href="#linktree">linktree</a> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following
+options, in addition to those provided by the underlying frame widget:
+
+</p><dl>
+
+<dt class="defopt"><a name="linktree-changecmd">-changecmd <i>command</i></a></dt><dd>
+
+Specifies a <i>command</i> to be called
+whenever the selected entity changes, for any reason whatsoever
+(including explicit calls to <a class="iref" href="#set">set</a>.  The newly selected
+entity's name is appended to the <i>command</i> as an argument.
+
+</dd>
+<dt class="defopt"><a name="linktree-errorcmd">-errorcmd <i>command</i></a></dt><dd>
+
+Specifies a <i>command</i> to be called with one argument, an
+error message, if the widget catches an error while retrieving the
+<code>-url</code> or one of its subsidiary links.
+
+</dd>
+<dt class="defopt"><a name="linktree-lazy">-lazy <i>flag</i></a></dt><dd>
+
+If true, the widget will retrieve child links in a lazy fashion, e.g.,
+subtrees will not be populated until the parent item is expanded by
+the user.  Otherwise, the entire tree is populated immediately on
+<a class="iref" href="#refresh">refresh</a>.  Defaults to false.
+
+</dd>
+<dt class="defopt"><a name="linktree-url">-url <i>url</i></a></dt><dd>
+
+Specifies the URL at which the widget can retrieve a
+<b>tcl/linkdict</b>.  The widget will attempt to
+recursively retrieve a <b>tcl/linkdict</b> for each link in
+the returned dictionary.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>linktree(n) widgets have the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>pathName</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>pathName</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's
+options.
+
+</dd>
+<dt class="defitem"><a name="get"><i>pathName</i> get</a></dt><dd>
+
+Returns the URL of the currently selected entity, or "" if none.
+
+</dd>
+<dt class="defitem"><a name="refresh"><i>pathName</i> refresh</a></dt><dd>
+
+Causes the widget to reload the displayed entities from the
+server.  Call this when the set of entities to display has
+changed.  Note that this call will not change the open/close state of
+the entity type folders, nor will it change the selected entity,
+unless the selected entity no longer exists.
+
+</dd>
+<dt class="defitem"><a name="set"><i>pathName</i> set <i>url</i></a></dt><dd><p>
+
+Selects the entity with the given <i>url</i>.  If <i>url</i> is
+unrecognized, or is the empty string, the selection is cleared.</p>
+
+<p>Note that a sequence of calls to <a class="iref" href="#set">set</a> with the same
+<i>url</i> will result in at most one call of the
+<code>-changecmd</code>.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>projectgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use projectgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:58 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

@@ -1,0 +1,856 @@
+<html>
+<head>
+<title>athena 6.3.1a3: eschema(5) -- Entity Schema Format</title>
+<style type="text/css" media="screen,print">
+
+        A {
+            text-decoration: none;
+        }
+
+        TABLE {
+            margin-top:    4px;
+            margin-bottom: 4px;
+        }
+
+        TR {
+            vertical-align: baseline;
+        }
+
+        TH {
+            padding-left: 4px;
+        }
+
+        TD {
+            padding-left: 4px;
+        }
+
+        /* Table Formatting Classes: "pretty" 
+         * Border around the outside, even/odd striping, no internal
+         * border lines.
+         */
+        TABLE.pretty {
+            border: 1px solid black;
+            border-spacing: 0;
+        }
+
+        TABLE.pretty TR.header {
+            font-weight: bold;
+            color: white;
+            background-color: #000099;
+        }
+
+        TABLE.pretty TR.oddrow {
+            color: black;
+            background-color: white;
+        }
+
+        TABLE.pretty TR.evenrow {
+            color: black;
+            background-color: #EEEEEE;
+        }
+
+        /* Examples, listings, and marks */
+        PRE.example {
+            background:     #FFFDD1 ;
+            border:         1px solid blue;
+            padding-top:    2px;
+            padding-bottom: 2px;
+            padding-left:   4px;
+        }
+
+        PRE.listing {
+            background:     #FFFDD1 ;
+            border:         1px solid blue;
+            padding-top:    4px;
+            padding-bottom: 4px;
+            padding-left:   4px;
+        }
+
+        SPAN.linenum {
+            background:     #E3E08F ;
+        }
+
+        DIV.mark {
+            display: inline;
+            font-family: Verdana;
+            font-size: 75%;
+            background: black;
+            color: white;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        DIV.bigmark {
+            display: inline;
+            font-family: Verdana;
+            font-size: 100%;
+            background: black;
+            color: white;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        /* Topic Lists. */
+        TR.topic {
+            vertical-align: baseline;
+        }
+
+        TR.topicname {
+            min-width: 1.5em;
+        }
+
+    
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+<script language="javascript">
+//===================================================================
+//Author: Matt Kruse <matt@mattkruse.com>
+//WWW: http://www.mattkruse.com/
+//
+//NOTICE: You may use this code for any purpose, commercial or
+//private, without any further permission from the author. You may
+//remove this notice from your final code if you wish, however it is
+//appreciated by the author if at least my web site address is kept.
+//
+//You may *NOT* re-distribute this code in any way except through its
+//use. That means, you can include it in your product, or your web
+//site, or any other form where the code is actually being used. You
+//may not put the plain javascript up on your site for download or
+//include it in your javascript libraries for download.
+//If you wish to share this code with others, please just point them
+//to the URL instead.
+//Please DO NOT link directly to my .js files from your site. Copy
+//the files to your server and use them there. Thank you.
+//===================================================================
+//HISTORY
+//------------------------------------------------------------------
+//December 9, 2003: Added script to the Javascript Toolbox
+//December 10, 2003: Added the preProcessTrees variable to allow user
+//     to turn off automatic conversion of UL's onLoad
+//March 1, 2004: Changed it so if a <li> has a class already attached
+//     to it, that class won't be erased when initialized. This allows
+//     you to set the state of the tree when painting the page simply
+//     by setting some <li>'s class name as being "liOpen" (see example)
+/*
+This code is inspired by and extended from Stuart Langridge's aqlist code:
+        http://www.kryogenix.org/code/browser/aqlists/
+        Stuart Langridge, November 2002
+        sil@kryogenix.org
+        Inspired by Aaron's labels.js (http://youngpup.net/demos/labels/)
+        and Dave Lindquist's menuDropDown.js (http://www.gazingus.org/dhtml/?id=109)
+*/
+
+//Automatically attach a listener to the window onload, to convert the trees
+addEvent(window,"load",convertTrees);
+
+//Utility function to add an event listener
+function addEvent(o,e,f){
+    if (o.addEventListener){ o.addEventListener(e,f,true); return true; }
+    else if (o.attachEvent){ return o.attachEvent("on"+e,f); }
+    else { return false; }
+}
+
+//utility function to set a global variable if it is not already set
+function setDefault(name,val) {
+    if (typeof(window[name])=="undefined" || window[name]==null) {
+        window[name]=val;
+    }
+}
+
+//Full expands a tree with a given ID
+function expandTree(treeId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    expandCollapseList(ul,nodeOpenClass);
+}
+
+//Fully collapses a tree with a given ID
+function collapseTree(treeId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    expandCollapseList(ul,nodeClosedClass);
+}
+
+//Expands enough nodes to expose an LI with a given ID
+function expandToItem(treeId,itemId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    var ret = expandCollapseList(ul,nodeOpenClass,itemId);
+    if (ret) {
+        var o = document.getElementById(itemId);
+        if (o.scrollIntoView) {
+            o.scrollIntoView(false);
+        }
+    }
+}
+
+//Performs 3 functions:
+//a) Expand all nodes
+//b) Collapse all nodes
+//c) Expand all nodes to reach a certain ID
+function expandCollapseList(ul,cName,itemId) {
+    if (!ul.childNodes || ul.childNodes.length==0) { return false; }
+    // Iterate LIs
+    for (var itemi=0;itemi<ul.childNodes.length;itemi++) {
+        var item = ul.childNodes[itemi];
+        if (itemId!=null && item.id==itemId) { return true; }
+        if (item.nodeName == "LI") {
+            // Iterate things in this LI
+            var subLists = false;
+            for (var sitemi=0;sitemi<item.childNodes.length;sitemi++) {
+                var sitem = item.childNodes[sitemi];
+                if (sitem.nodeName=="UL") {
+                    subLists = true;
+                    var ret = expandCollapseList(sitem,cName,itemId);
+                    if (itemId!=null && ret) {
+                        item.className=cName;
+                        return true;
+                    }
+                }
+            }
+            if (subLists && itemId==null) {
+                item.className = cName;
+            }
+        }
+    }
+}
+
+//Search the document for UL elements with the correct CLASS name, then process them
+function convertTrees() {
+    setDefault("treeClass","mktree");
+    setDefault("nodeClosedClass","liClosed");
+    setDefault("nodeOpenClass","liOpen");
+    setDefault("nodeBulletClass","liBullet");
+    setDefault("nodeLinkClass","bullet");
+    setDefault("preProcessTrees",true);
+    if (preProcessTrees) {
+        if (!document.createElement) { return; } // Without createElement, we can't do anything
+        uls = document.getElementsByTagName("ul");
+        for (var uli=0;uli<uls.length;uli++) {
+            var ul=uls[uli];
+            if (ul.nodeName=="UL" && ul.className==treeClass) {
+                processList(ul);
+            }
+        }
+    }
+}
+
+//Process a UL tag and all its children, to convert to a tree
+function processList(ul) {
+    if (!ul.childNodes || ul.childNodes.length==0) { return; }
+    // Iterate LIs
+    for (var itemi=0;itemi<ul.childNodes.length;itemi++) {
+        var item = ul.childNodes[itemi];
+        if (item.nodeName == "LI") {
+            // Iterate things in this LI
+            var subLists = false;
+            for (var sitemi=0;sitemi<item.childNodes.length;sitemi++) {
+                var sitem = item.childNodes[sitemi];
+                if (sitem.nodeName=="UL") {
+                    subLists = true;
+                    processList(sitem);
+                }
+            }
+            var s= document.createElement("SPAN");
+            var t= "";
+            s.className = nodeLinkClass;
+            if (subLists) {
+                // This LI has UL's in it, so it's a +/- node
+                if (item.className==null || item.className=="") {
+                    item.className = nodeClosedClass;
+                    t = "+\u00A0";
+                }
+                if (item.className==nodeOpenClass) {
+                    t = "\u2013\u00A0";
+                }
+                // If it's just text, make the text work as the link also
+                if (item.firstChild.nodeName=="#text") {
+                    t = t+item.firstChild.nodeValue;
+                    item.removeChild(item.firstChild);
+                }
+                s.onclick = function () {
+                    this.parentNode.className = (this.parentNode.className==nodeOpenClass) ? nodeClosedClass : nodeOpenClass;
+                    this.firstChild.nodeValue = (this.firstChild.nodeValue=="+\u00A0") ? "\u2013\u00A0" : "+\u00A0";
+                    return false;
+                }
+            }
+            else {
+                // No sublists, so it's just a bullet node
+                item.className = nodeBulletClass;
+                s.onclick = function () { return false; }
+                t = "\u2022\u00A0";
+            }
+            s.appendChild(document.createTextNode(t));
+            item.insertBefore(s,item.firstChild);
+        }
+    }
+}
+</script>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.1a3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<b>eschema(5)</b> -- Entity Schema Format
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#basic_syntax">Basic Syntax</a></li>
+
+    <li><a href="#concepts">Concepts</a></li>
+
+</ul>
+    
+
+    <li><a href="#schema_statements">SCHEMA STATEMENTS</a></li>
+    
+
+    <li><a href="#type_definitions">TYPE DEFINITIONS</a></li>
+    
+
+    <li><a href="#to_be_done">TO BE DONE</a></li>
+    <ul>
+
+    <li><a href="#boolean_expressions">Boolean Expressions</a></li>
+
+    <li><a href="#computed_attribute_defaults">Computed Attribute Defaults</a></li>
+
+    <li><a href="#entity_type_definition_statements">Entity Type Definition Statements</a></li>
+
+    <li><a href="#external_entity_types">External Entity Types</a></li>
+
+    <li><a href="#controllers">Controllers</a></li>
+
+</ul>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<tt><a href="#abstract">abstract <i>typename</i> <i>script</i></a></tt><br>
+
+<tt><a href="#component">component <i>typename</i> <i>script</i></a></tt><br>
+
+<tt><a href="#constraint">constraint <i>condition narrative</i></a></tt><br>
+
+<tt><a href="#dependent">dependent <i>typename</i> <i>script</i></a></tt><br>
+
+<tt><a href="#primary">primary <i>typename</i> <i>script</i></a></tt><br>
+
+<tt><a href="#reserved">reserved <i>words</i></a></tt><br>
+
+<tt><a href="#singleton">singleton <i>typename</i> <i>script</i></a></tt><br>
+
+<tt><a href="#">@ <i>name datatype</i> ?<i>default</i>? ?<i>options...</i>?</a></tt><br>
+
+<tt><a href="#key">@key <i>name</i></a></tt><br>
+
+<tt><a href="#list">@list <i>name datatype</i> ?<i>options...</i>?</a></tt><br>
+
+<tt><a href="#">& <i>name entity_type</i> ?<i>default</i>? ?<i>options</i>?</a></tt><br>
+
+<tt><a href="#key">&key <i>name entity_type</i></a></tt><br>
+
+<tt><a href="#list">&list <i>name entity_type</i> ?<i>default</i>? ?<i>options...</i>?</a></tt><br>
+
+<tt><a href="#">+ <i>name entity_type</i> ?default? ?<i>options...</i>?</a></tt><br>
+
+<tt><a href="#list">+list <i>name entity_type</i> ?default? ?<i>options...</i>?</a></tt><br>
+
+<tt><a href="#">? <i>name</i></a></tt><br>
+
+<tt><a href="#inherits">inherits <i>entity_type</i></a></tt><br>
+
+<tt><a href="#validate">validate <i>script</i></a></tt><br>
+
+<tt><a href="#view">view <i>script</i></a></tt><br>
+
+<tt><a href="#virtuals">virtuals <i>flag</i></a></tt><br>
+
+<p>
+    
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+The eschema(5) format is used for defining Tcl entity schemas:  
+families of related record structures used to define a data model, e.g.,
+the inputs to a simulation like <a href="../mann/athena.html">athena(n)</a>.<p>
+
+<b>This work is experimental!</b>
+
+The eschema(5) definition is compiled, validated, and made available by
+an instance of <a href="../mann/eschema.html">eschema(n)</a>.  Then, an instance of <a href="../mann/emodel.html">emodel(n)</a> is
+used to contain and manipulate data that corresponds to the schema.<p>
+
+See <a href="#to_be_done">TO BE DONE</a>, below, for a list of work that remains to be 
+done.<p> 
+
+<h2><a name="basic_syntax">Basic Syntax</a></h2>
+    
+
+A block of eschema(5) text is a Tcl-formatted script consisting of 
+some number of <a href="#schema_statements">SCHEMA STATEMENTS</a> that build up the schema.  
+Standard Tcl comments may be used.<p>
+
+In general, statements may appear in any order.  Further, there is no
+requirement that a schema must be defined in a single file; rather, it can
+be defined in a sequence of files that are eval'd consecutively by an
+<a href="../mann/eschema.html">eschema(n)</a> instance.<p>
+
+<h2><a name="concepts">Concepts</a></h2>
+    
+
+An <i>entity type</i> is a record structure containing the data that 
+defines one <i>entity</i>.  Each entity record has an implicit numeric ID, or 
+<i>nid</i>, which is used to link and reference entities within the 
+data model.  The <i>nid</i> attribute is defined automatically.<p>
+
+<h2><a name="schema_statements">SCHEMA STATEMENTS</a></h2>
+    
+
+An eschema(5) file may contain the following statements:<p>
+
+<dl>
+
+<dt><b><tt><a name="abstract">abstract <i>typename</i> <i>script</i></a></tt></b></dt>
+<dd>
+    
+
+Defines an abstract entity type called <i>typename</i> given the <i>script</i>.
+Abstract entity types can be inherited by <tt><a href="#primary">primary</a></tt> and 
+<tt><a href="#component">component</a></tt> entity types, and are used to factor out commonality
+among types.<p>
+
+It is not possible to create an instance of an abstract entity type;
+however, it is possible to query an entity model for all <i>primary</i>
+entities that inherit the abstract type in a given context.<p>
+
+An abstract entity type's script may contain most of the statements
+used to define <tt><a href="#primary">primary</a></tt> and <tt><a href="#component">component</a></tt> types; it may also
+contain <tt><a href="#">?</a></tt>, which represents an attribute whose details are
+filled in by a subtype.<p>
+
+<dt><b><tt><a name="component">component <i>typename</i> <i>script</i></a></tt></b></dt>
+<dd>
+    
+
+Defines a component entity type called <i>typename</i> given the <i>script</i>.
+Entities of a component type are always contained within a parent entity
+and are addressable given their parent and their key attribute, which
+must be unique across the parent's child components.<p> 
+
+The script may contain the following statements; it must contain 
+exactly one <tt><a href="#key">@key</a></tt> statement, or inherit from an 
+<tt><a href="#abstract">abstract</a></tt> type that defines a <tt><a href="#key">@key</a></tt> attribute.<p>
+
+<b>TBD.</b><p>
+
+<dt><b><tt><a name="constraint">constraint <i>condition narrative</i></a></tt></b></dt>
+<dd>
+    
+
+Defines a global constraint on data models defined using the schema; the
+model is not "sane" until all defined constraints are met.<p>
+
+The constraint is defined by a logical <i>condition</i> and the <i>narrative</i>,
+which is a human-readable statement of the condition.<p>
+
+TBD: The condition syntax isn't yet defined; 
+see <a href="#boolean_expressions">Boolean Expressions</a>.<p>
+
+<dt><b><tt><a name="dependent">dependent <i>typename</i> <i>script</i></a></tt></b></dt>
+<dd>
+    
+
+Defines a dependent entity type called <i>typename</i> given the <i>script</i>.
+Dependent entity types relate two or more primary types, having one
+key attribute for each related type (e.g., a group and an actor).<p>
+
+Entities of dependent types may be created virtually or actually.<p>
+
+The script may contain the following statements; it must contain 
+one or more <tt><a href="#key">&key</a></tt> statement, each naming the relevant
+primary entity type.<p>
+
+<b>TBD.</b><p>
+
+
+<dt><b><tt><a name="primary">primary <i>typename</i> <i>script</i></a></tt></b></dt>
+<dd>
+    
+
+Defines a primary entity type called <i>typename</i> given the <i>script</i>.
+Entities of a primary type are addressable given their key attribute 
+(also known as the entity's ID or name).<p>
+
+The script may contain the following statements; it must contain 
+exactly one <tt><a href="#key">@key</a></tt> statement, or inherit from an 
+<tt><a href="#abstract">abstract</a></tt> type that defines a <tt><a href="#key">@key</a></tt> attribute.<p>
+
+<b>TBD.</b><p>
+
+<dt><b><tt><a name="reserved">reserved <i>words</i></a></tt></b></dt>
+<dd>
+    
+
+Adds a list of one or more <i>words</i> to the list of reserved words in
+this schema.  Reserved words cannot be used as entity IDs in the 
+data model.<p>
+
+Eschema(5) defines two reserved words by default, <b>SELF</b> and <b>NONE</b>.
+The individual schema may define others as needed.<p>
+
+All entity IDs are <i>symbols</i>, strings consisting of uppercase letters,
+digits, and underscores and beginning with an uppercase letter.  Other IDs
+in eschema(5) are <i>identifiers</i>, strings consisting of lowercase letters,
+digits, and underscores and beginning with a lowercase letter.  If a string
+doesn't match one of these matters, there's no reason to define it as a 
+reserved word.<p>
+
+<dt><b><tt><a name="singleton">singleton <i>typename</i> <i>script</i></a></tt></b></dt>
+<dd>
+    
+
+Defines a singleton entity type called <i>typename</i> given the <i>script</i>.
+A singleton entity type is like a primary entity type with a single 
+member.  Every data model defined using the schema will contain exactly
+one instance of the singleton type, addressable by its type name.<p>
+
+Singleton types may not be created or destroyed.<p>
+
+The script may contain the following statements:<p>
+
+<b>TBD.</b><p>
+
+</dl>
+
+<h2><a name="type_definitions">TYPE DEFINITIONS</a></h2>
+    
+
+Entity type definition scripts may contain the statements defined below.
+Most of them are used to define entity attributes; these have several
+things in common:<p>
+
+<ul>
+<li> Attribute names must be <a href="../mann/datatype.html#identifier_">identifier_</a>'s, and unique
+     within the entity type.<p>
+<li> Attribute data types must be <a href="../mani/datatype.html">datatype(i)</a> objects; note that
+     <a href="../mann/datatype.html">datatype(n)</a> provides some common ones.<p>
+<li> Default values need not be valid; if not, they simply represent
+     values the user must set in order to have a sane data model.<p>
+</ul><p>
+
+<dl>
+
+<dt><b><tt><a name="">@ <i>name datatype</i> ?<i>default</i>? ?<i>options...</i>?</a></tt></b></dt>
+<dd>
+    
+
+Defines a normal attribute called <i>name</i> which has the specified
+<i>datatype</i> and <i>default</i> value, which might not be valid.  If no
+<i>default</i> is given, the value is simply missing and must be provided
+by the user.<p>
+
+The options are TBD, but probably include <tt>-view</tt>, which states
+the datatype(i) "flavor" used to present the attribute's value in 
+ordinary circumstances, and also <tt>-constant</tt>, which indicates that
+the attribute's value is constant and cannot be edited, i.e., it always
+has its default value.<p>
+
+<dt><b><tt><a name="key">@key <i>name</i></a></tt></b></dt>
+<dd>
+    
+
+Specifies the name of the key attribute for <tt><a href="#primary">primary</a></tt>, 
+<tt><a href="#abstract">abstract</a></tt>, and <tt><a href="#component">component</a></tt> entity types.  Each such type
+must have eactly one <tt><a href="#key">@key</a></tt> attribute.  Types that inherit from an
+<tt><a href="#abstract">abstract</a></tt> type will usually inherit their key from their
+topmost ancestor.<p>
+
+<dt><b><tt><a name="list">@list <i>name datatype</i> ?<i>options...</i>?</a></tt></b></dt>
+<dd>
+    
+
+Defines an attribute called <i>name</i> whose value is a list of unique
+values of the given <i>datatype</i>.  The attribute's value is initially
+empty; values can be added and removed individually, and the values
+can be reordered.<p>
+
+Use this statement if the data model should support access at the
+level of individual values; otherwise, define an <tt><a href="#">@</a></tt> attribute
+and a list-valued <i>datatype</i>.  For example, consider using the 
+<a href="../mann/datatype.html#list_">list_</a> datatype as a wrapper for the desired value
+<i>datatype</i>.<p>
+
+The options are TBD, but will likely include the following:<p>
+
+<ul>
+<li> <tt>-minlen</tt>, the minimum length of the list.  Defaults to 0.<p>
+</ul>
+
+<dt><b><tt><a name="">& <i>name entity_type</i> ?<i>default</i>? ?<i>options</i>?</a></tt></b></dt>
+<dd>
+    
+
+Defines a reference attribute called <i>name</i> whose the value must be 
+the name of an entity of the given <tt><a href="#primary">primary</a></tt> or <tt><a href="#abstract">abstract</a></tt>
+<i>entity_type</i>.  A <i>default</i>
+may be specified; if not given, the default value will be <b>NONE</b>,
+which might or might not be valid.<p>
+
+The options are TBD, but will likely include the following:<p>
+
+<ul>
+<li> <tt>-required</tt>, which means that the data model is not sane until
+the attribute is set to an actual entity.  Otherwise, <b>NONE</b> is a 
+valid value.<p>
+
+<li> <tt>-extras</tt>, which lists reserved words that are also valid values
+for this attribute.<p>
+</ul>
+
+<dt><b><tt><a name="key">&key <i>name entity_type</i></a></tt></b></dt>
+<dd>
+    
+
+Defines a key attribute called <i>name</i> 
+for a <tt><a href="#dependent">dependent</a></tt> entity type; the attribute's value must be the
+ID of an instance of the given <i>entity_type</i>.  Each
+<tt><a href="#dependent">dependent</a></tt> entity type must define at least one such key.<p>
+
+<dt><b><tt><a name="list">&list <i>name entity_type</i> ?<i>default</i>? ?<i>options...</i>?</a></tt></b></dt>
+<dd>
+    
+
+Defines a reference attribute called <i>name</i> whose value is a list of 
+the IDs of entities of the given <tt><a href="#primary">primary</a></tt> or <tt><a href="#abstract">abstract</a></tt>
+<i>entity_type</i>.  The list will be empty by default, which might or
+might not be valid.  If a <i>default</i> is given, it should one of the
+<tt>-extras</tt> symbols.<p>
+
+The data model will provide operations to added and remove entities from
+the list, and to manipulate the order of the 
+entities in the list.<p>
+
+The options are TBD, but will likely include the following:<p>
+
+<ul>
+<li> <tt>-minlen</tt>, the minimum length of the list.  Defaults to 0.<p>
+<li> <tt>-extras</tt>, a list of reserved words that can be used in place
+     of a list of references.<p>
+</ul>
+
+<dt><b><tt><a name="">+ <i>name entity_type</i> ?default? ?<i>options...</i>?</a></tt></b></dt>
+<dd>
+    
+
+Defines an attribute called <i>name</i> that will contain a single 
+entity of the given <tt><a href="#component">component</a></tt> <i>entity_type</i>.  The attribute's
+value will default to <b>NONE</b>, which might or might not be valid.<p>
+
+The options are TBD, but will include:<p>
+
+<ul>
+<li> <tt>-required</tt>, which means that the data model is not sane until
+the attribute is set to an actual entity.  Otherwise, <b>NONE</b> is a 
+valid value.<p>
+
+<li> <tt>-extras</tt>, which defines a set of one or more reserved words 
+that may replace the component entity.<p>
+</ul>
+
+
+<dt><b><tt><a name="list">+list <i>name entity_type</i> ?default? ?<i>options...</i>?</a></tt></b></dt>
+<dd>
+    
+
+Defines an attribute called <i>name</i> that will contain a list of
+zero or more entities of the given <tt><a href="#component">component</a></tt> <i>entity_type</i>.  
+The attribute's value will be empty by default, which might or might 
+not be valid.<p>
+
+The data model will provide operations to added and remove entities from
+the list, and to manipulate the order of the 
+entities in the list.<p>
+
+The options are TBD, but include:<p>
+
+<ul>
+<li> <tt>-minlen</tt>, the minimum length of the list.  Defaults to 0.<p>
+
+<li> <tt>-extras</tt>, which defines a set of one or more reserved words 
+that may replace the list of component entities.<p>
+</ul>
+
+<dt><b><tt><a name="">? <i>name</i></a></tt></b></dt>
+<dd>
+    
+
+For <tt><a href="#abstract">abstract</a></tt> entity types only, defines an attribute called
+<i>name</i> that must exist in every entity type that inherits this abstract 
+type, but which may be defined differently in each.<p>
+
+<dt><b><tt><a name="inherits">inherits <i>entity_type</i></a></tt></b></dt>
+<dd>
+    
+
+In <tt><a href="#abstract">abstract</a></tt>, <tt><a href="#primary">primary</a></tt>, and <tt><a href="#component">component</a></tt> entity types,
+states that the type inherits the named abstract <i>entity_type</i>.  The
+abstract <i>entity_type</i> must already be defined in the schema.<p>
+
+<dt><b><tt><a name="validate">validate <i>script</i></a></tt></b></dt>
+<dd>
+    
+
+Defines a validation script for the entity type.  The script syntax
+is TBD.  It has the job of doing any additional validations that aren't
+captured by the attribute data types.  It is only done if all attribute
+validators succeed.<p>
+
+<b>TBD</b>: What should this script do on failure?  How does it compare
+with the order body mechanism?<p>
+
+<dt><b><tt><a name="view">view <i>script</i></a></tt></b></dt>
+<dd>
+    
+
+Defines additional computed attributes to include in the standard view 
+of the entity type.  Details are completely TBD, but might include 
+formatting attributes using different flavors.<p>
+
+<dt><b><tt><a name="virtuals">virtuals <i>flag</i></a></tt></b></dt>
+<dd>
+    
+
+In <tt><a href="#dependent">dependent</a></tt> types, entities may come into existence virtually,
+with default values, for each combination of <tt><a href="#key">&key</a></tt> values.  Actual
+entity records are not created until attributes are updated for a set of
+keys.  This is the standard behavior; however, there are dependent types
+for which records should only be created on demand, i.e., for which there
+are no virtual records.  Use this command to indicate whether virtual
+entities exist or not.<p>
+
+
+</dl>
+
+<h2><a name="to_be_done">TO BE DONE</a></h2>
+    
+
+<h2><a name="boolean_expressions">Boolean Expressions</a></h2>
+    
+
+The <tt><a href="#constraint">constraint</a></tt> statement, among others, specifies a constraint on
+the data model as a boolean expression.  The syntax of this expression
+isn't yet known; it could simply be a Tcl expression in some interpreter,
+but it would be nice if it were not Tcl-specific.<p>
+
+<h2><a name="computed_attribute_defaults">Computed Attribute Defaults</a></h2>
+    
+
+We would often like to be able to compute default attribute values in
+some way.  If we allow the schema to contain TCL scripts for this purpose,
+then this functionality isn't available if we generate code for other
+languages.<p>
+
+<h2><a name="entity_type_definition_statements">Entity Type Definition Statements</a></h2>
+    
+
+The syntax of entity type definition statements is still in flux.<p>
+
+<h2><a name="external_entity_types">External Entity Types</a></h2>
+    
+
+Entity types defined outside the schema but linked to it.<p>
+
+<h2><a name="controllers">Controllers</a></h2>
+    
+
+How shall we specify controller panels for attributes/entities?
+Using dynaforms, presumably.<p>
+
+<h2><a name="author">AUTHOR</a></h2>
+    
+
+Will Duquette, Dave Hanks<p>
+
+<h2><a name="history">HISTORY</a></h2>
+    
+
+Original interface.
+
+<hr>
+<i>athena 6.3.1a3 Man page generated by manpage(n) on 
+Tue Aug 18 08:15:13 PDT 2015</i>
+</body>
+</html>
+    
+
+
+
+

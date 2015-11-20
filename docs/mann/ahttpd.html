@@ -1,0 +1,911 @@
+<html>
+<head>
+<title>athena 6.3.3: ahttpd(n) -- Athena Web Server</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>ahttpd(n)</b> -- Athena Web Server
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#features">FEATURES</a></li>
+    <ul>
+
+    <li><a href="#domain_handlers">Domain Handlers</a></li>
+
+    <li><a href="#the_document_domain">The Document Domain</a></li>
+
+    <li><a href="#direct_urls">Direct URLs</a></li>
+
+    <li><a href="#templates">Templates</a></li>
+
+    <li><a href="#authentication">Authentication</a></li>
+
+    <li><a href="#redirection">Redirection</a></li>
+
+    <li><a href="#server_status">Server Status</a></li>
+
+    <li><a href="#debugging">Debugging</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#abandoned_features">ABANDONED FEATURES</a></li>
+    <ul>
+
+    <li><a href="#session_management">Session Management</a></li>
+
+    <li><a href="#template_interpreters">Template Interpreters</a></li>
+
+    <li><a href="#email_forms">E-Mail Forms</a></li>
+
+    <li><a href="#password_checking">Password Checking</a></li>
+
+    <li><a href="#file_upload">File Upload</a></li>
+
+    <li><a href="#debugging_uis">Debugging UIs</a></li>
+
+    <li><a href="#threading">Threading</a></li>
+
+    <li><a href="#image_maps">Image Maps</a></li>
+
+    <li><a href="#includes">Includes</a></li>
+
+    <li><a href="#cgi_scripting">CGI Scripting</a></li>
+
+    <li><a href="#virtual_hosts">Virtual Hosts</a></li>
+
+    <li><a href="#server_administration">Server Administration</a></li>
+
+    <li><a href="#backwards_compatibility">Backwards Compatibility</a></li>
+
+</ul>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require ahttpd 6.3.3
+namespace import ::ahttpd::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#ahttpd_init">ahttpd init ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-allowtml">-allowtml</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-allowsubst">-allowsubst</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-debug">-debug</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-docroot">-docroot <i>path</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-errorpage">-errorpage <i>path</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-host">-host <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-ipaddr">-ipaddr <i>ip_address</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-logcmd">-logcmd <i>logger</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-notfoundpage">-notfoundpage <i>path</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-port">-port <i>port</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-secureport">-secureport <i>port</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#ahttpd init-webmaster">-webmaster <i>email</i></a></li>
+<li><a class="iref" href="#ahttpd_domain_install">ahttpd domain install <i>domain handler</i></a></li>
+<li><a class="iref" href="#ahttpd_log">ahttpd log <i>level comp message</i></a></li>
+<li><a class="iref" href="#ahttpd_mimetype">ahttpd mimetype <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#ahttpd_mimetype_frompath">ahttpd mimetype frompath <i>suffix</i></a></li>
+<li><a class="iref" href="#ahttpd_mimetype_add">ahttpd mimetype add <i>mappings</i></a></li>
+<li><a class="iref" href="#ahttpd_mimetype_add">ahttpd mimetype add <i>mappings</i></a></li>
+<li><a class="iref" href="#ahttpd_notfound">ahttpd notfound <i>sock</i> ?<i>reason</i>?</a></li>
+<li><a class="iref" href="#ahttpd_port">ahttpd port</a></li>
+<li><a class="iref" href="#ahttpd_querydict">ahttpd querydict <i>sock</i></a></li>
+<li><a class="iref" href="#ahttpd_return">ahttpd return <i>sock ctype result</i></a></li>
+<li><a class="iref" href="#ahttpd_secureport">ahttpd secureport</a></li>
+<li><a class="iref" href="#ahttpd_version">ahttpd version</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>ahttpd(n) is a web server derived from the classic TclHTTPD web server.
+On the one hand, ahttpd(n) doesn't provide all of TclHTTPD's facilities;
+on the other, it is a well-behaved library package that plays nicely with
+applications.  This man page explains how to use ahttpd(n) and its 
+various features; it also documents the features that were removed.</p>
+
+<p>To initialize and start the server, call <a class="iref" href="#ahttpd_init">ahttpd init</a>.  The following
+call causes the server to listen for connections only on the local host
+at ports 8080 for normal traffic and 8081 for https traffic.  The served
+files will be found in the <span class="tt">~/htdocs</span> directory.
+
+</p>
+
+<pre class="example">
+ahttpd init -docroot ~/htdocs
+</pre>
+
+<h2><a name="features">FEATURES</a></h2>
+<p>The following features have been retained from TclHTTP, more or less 
+"as is".
+
+</p>
+
+<h2><a name="domain_handlers">Domain Handlers</a></h2>
+<p>The most powerful way for the application to define dynamic content is
+to define a new "domain handler" using <a class="iref" href="#ahttpd_domain_install">ahttpd domain install</a>.
+However, it's generally better to use
+an existing domain handler if one exists that will do the job.
+
+</p>
+
+<h2><a name="the_document_domain">The Document Domain</a></h2>
+<p>ahttpd(n) serves up files from the directory tree rooted at 
+<span class="tt">-docroot</span>.  In addition, it is possible to define URL domains for
+other directory trees.  The public API is TBD because we haven't needed
+to expose it yet.
+
+</p>
+
+<h2><a name="direct_urls">Direct URLs</a></h2>
+<p>So-called "Direct URLs" are a way of mapping specific URLs to specific
+Tcl procedures.  The procedure can receive any query parameters included
+in the URL as procedure arguments, and returns the HTML to display to the
+user.  There is also a mechanism for returning non-HTML content.</p>
+
+<p>The public API is TBD because we haven't needed to expose it yet.
+
+</p>
+
+<h2><a name="templates">Templates</a></h2>
+<p>An ahttpd(n) template is a file in the <span class="tt">-docroot</span> tree that is expanded
+into an HTML page at run-time.  ahttpd(n) supports two kinds, 
+<span class="tt">.subst</span> templates and <span class="tt">.tml</span> templates.</p>
+
+<p>A <span class="tt">.subst</span> template is a file with a <span class="tt">.subst</span> extension that contains
+HTML with interpolated Tcl variable and command references.  When the file
+is requested its contents is read and the Tcl <span class="tt">subst</span> command is 
+called on it.  The <span class="tt">subst</span>'d content is then returned to the user
+with content-type <span class="tt">text/html</span>.</p>
+
+<p>A <span class="tt">.tml</span> template is a file with a <span class="tt">.tml</span> extension.  Its contents
+are the same as for a <span class="tt">.subst</span> file, but ahttpd(n) provides some
+additional features:
+
+</p>
+
+<ul>
+<li> If <span class="tt">filename.html</span> is requested, and there is a file called
+     <span class="tt">filename.tml</span> with a newer date, then <span class="tt">filename.tml</span> will
+     be expanded and the result saved as <span class="tt">filename.html</span>.  This allows
+     <span class="tt">.tml</span> templates to be used to automate the creation of static
+     web content.
+
+</li><li> If <span class="tt">filename.tml</span> is requested, it is always expanded and the
+     result returned.
+
+</li><li> Before expanding any <span class="tt">filename.tml</span> template, ahttpd(n) will look 
+     for files called just "<span class="tt">.tml</span>" in every directory from 
+     <span class="tt">-docroot</span> down to the directory containing the file.  These
+     files contain Tcl code that is used to initialize the Tcl interpreter
+     before the substitution is done.  <b>Note:</b>  Use of these files is
+     not recommended; the application should provide all needed commands
+     to the template.
+</li></ul>
+<p>While expanding either kind of template, the variable 
+<span class="tt">::ahttpd::cgienv</span> will contain environmental variable settings similar 
+to those used in CGI-BIN scripts.
+
+</p>
+
+<h2><a name="authentication">Authentication</a></h2>
+<p>ahttpd(n) supports <span class="tt">.htaccess</span>-based Basic and Digest authentication of 
+directories in the <span class="tt">-doctree</span>.  (TBD: This remains untested; it's 
+not clear we will need it.)
+
+</p>
+
+<h2><a name="redirection">Redirection</a></h2>
+<p>ahttpd(n) provides an API for allowing automatic redirection of 
+URLs to other URLs on or off the server.  This API can be used directly
+by the application; and if the file <span class="tt">redirect</span> exists in the 
+<span class="tt">-docroot</span> it is expected to be a .Tcl file of redirection commands
+and will be loaded automatically.</p>
+
+<p>If the <span class="tt">-debug</span> option is given, then the current set of redirections
+can be seen at URL <span class="tt">/redirect/status</span>, and the <span class="tt">redirect</span> file
+can be reloaded by browsing <span class="tt">/redirect/reload</span>.</p>
+
+<p>The API is provided by ahttpd(n)'s "redirect" module.
+The public API is TBD because we haven't needed to expose it yet.
+
+</p>
+
+<h2><a name="server_status">Server Status</a></h2>
+<p>If the <span class="tt">-debug</span> option is given, then a number of server-related 
+statistics can be seen by browsing URL <span class="tt">/status</span>.
+
+</p>
+
+<h2><a name="debugging">Debugging</a></h2>
+<p>If the <span class="tt">-debug</span> option is given, then quite a few debugging URLs
+become available at URL <span class="tt">/debug/...</span>.  See <span class="tt">ahttpd/debug.tcl</span> 
+for the full set.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="ahttpd_init">ahttpd init ?<i>options...</i>?</a></dt><dd><p>
+
+Initializes the server and prepares it to listen for connections.  The
+application must enter the Tcl event loop before any connections will be
+handled.</p>
+
+<p>The following options may be used:
+
+</p><dl>
+
+<dt class="defopt"><a name="ahttpd init-allowtml">-allowtml</a></dt><dd>
+
+If given, then any <span class="tt">.tml</span> templates in the server's <span class="tt">-docroot</span> tree 
+will be expanded to <span class="tt">.html</span> pages at run time.  
+See <a href="#templates">Templates</a> for details.  Otherwise, <span class="tt">.tml</span> files will get
+no special handling.
+
+</dd>
+<dt class="defopt"><a name="ahttpd init-allowsubst">-allowsubst</a></dt><dd>
+
+If given, then any <span class="tt">.subst</span> templates in the server's <span class="tt">-docroot</span> tree 
+will be expanded to <span class="tt">.html</span> pages at run time.  
+See <a href="#templates">Templates</a> for details.  Otherwise, <span class="tt">.subst</span> files will get
+no special handling.
+
+</dd>
+<dt class="defopt"><a name="ahttpd init-debug">-debug</a></dt><dd>
+
+If given, the server will provide <span class="tt">/status</span>, <span class="tt">/debug</span>, and 
+<span class="tt">/redirect</span> URLs for use while debugging the server and the served
+pages.
+
+</dd>
+<dt class="defopt"><a name="ahttpd init-docroot">-docroot <i>path</i></a></dt><dd>
+
+<b>Required</b>.  Specifies the root directory of the server's file space; any
+files in this space will be served to clients.
+
+</dd>
+<dt class="defopt"><a name="ahttpd init-errorpage">-errorpage <i>path</i></a></dt><dd>
+
+Specifies the server-absolute <i>path</i> of the file to display on unexpected
+server errors.  The file must be in the tree rooted at <span class="tt">-docroot</span>, 
+must be relative to the <span class="tt">-docroot</span>, and must begin with a "/".  The
+error page defaults to "<span class="tt">/error.html</span>"; i.e., a file called 
+"error.html" in the <span class="tt">-docroot</span> directory.
+
+</dd>
+<dt class="defopt"><a name="ahttpd init-host">-host <i>name</i></a></dt><dd>
+
+The server's host name.  Defaults to the server platform's actual host
+name.
+
+</dd>
+<dt class="defopt"><a name="ahttpd init-ipaddr">-ipaddr <i>ip_address</i></a></dt><dd>
+
+The IP address at which the server should accept connections.  If it is
+set to "", it will receive connections at any of the host platform's 
+IP addresses.  Defaults to "127.0.0.1", so that it will only accept
+connections from the local host.
+
+</dd>
+<dt class="defopt"><a name="ahttpd init-logcmd">-logcmd <i>logger</i></a></dt><dd>
+
+Specifies a command for logging server activity.  The command will be
+called with three additional arguments, the log level, the component, and
+the log message.  The command may be (but need not be) a
+<a href="../../../mars/docs/mann/logger.html">logger(n)</a> instance.
+
+</dd>
+<dt class="defopt"><a name="ahttpd init-notfoundpage">-notfoundpage <i>path</i></a></dt><dd>
+
+Specifies the server-absolute <i>path</i> of the file to display for URLs
+not found on the server.  The file must be in the tree rooted at 
+<span class="tt">-docroot</span>, must be relative to the <span class="tt">-docroot</span>, and must begin 
+with a "/".  The not-found page defaults to "<span class="tt">/notfound.html</span>", i.e., 
+a file called "notfound.html" in the <span class="tt">-docroot</span> directory.
+
+</dd>
+<dt class="defopt"><a name="ahttpd init-port">-port <i>port</i></a></dt><dd>
+
+The TCP/IP port at which the server will accept "http:" connections.
+Defaults to "8080"; if it is "", then the server will not listen for
+"http:" connections.
+
+</dd>
+<dt class="defopt"><a name="ahttpd init-secureport">-secureport <i>port</i></a></dt><dd>
+
+The TCP/IP port at which the server will accept "https:" connections.
+Defaults to "8081"; if it is "", then the server will not listen for 
+"https:" connections.
+
+</dd>
+<dt class="defopt"><a name="ahttpd init-webmaster">-webmaster <i>email</i></a></dt><dd>
+
+Specifies the e-mail address of the webmaster, for display on status
+pages.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="ahttpd_domain_install">ahttpd domain install <i>domain handler</i></a></dt><dd><p>
+
+Installs a new domain handler.  The <i>domain</i> is the URL prefix for the
+domain's subtree (e.g., "/my/sub/domain").  The <i>handler</i> is the domain
+handler itself, a command prefix to which will be added two arguments, the
+connection socket and the URL suffix within the domain.  For example,
+a request to "/my/sub/domain/this/that" will call the handler with
+the suffix "/this/that".</p>
+
+<p>The handler must terminate the request in some way.  It may:
+
+</p><ul>
+<li> Call <a class="iref" href="#ahttpd_notfound">ahttpd notfound</a> if the requested URL doesn't exist.
+</li><li> Call <a class="iref" href="#ahttpd_return">ahttpd return</a> to return the requested data.
+</li><li> Throw HTTPD_REDIRECT to redirect to a different URL.  The errorcode
+     must be a two item list, <span class="tt">{HTTPD_REDIRECT <i>newurl</i>}</span>.
+</li><li> Throw an error.  An error page will be return to the client.
+</li></ul>
+<p>Domain handlers are tricky; before writing a new one, review the 
+implementation of one or more existing domain handlers.  See 
+<span class="tt">doc.tcl</span> and <span class="tt">direct.tcl</span> in the ahttpd(n) code base, or
+<a href="../mann/smartdomain.html">smartdomain(n)</a> in <a href="../mann/projectlib.html">projectlib(n)</a>.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="ahttpd_log">ahttpd log <i>level comp message</i></a></dt><dd>
+
+Writes a log message using the <span class="tt">-logcmd</span>.
+
+</dd>
+<dt class="defitem"><a name="ahttpd_mimetype">ahttpd mimetype <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+Gives access to ahttpd(n)'s database of MIME type mappings.
+
+</p><dl>
+
+<dt class="defitem"><a name="ahttpd_mimetype_frompath">ahttpd mimetype frompath <i>suffix</i></a></dt><dd>
+
+Given a URL <i>suffix</i>, extracts the file extension and looks up and
+returns the MIME content-type.  If there is no extension or it is 
+unknown, returns "text/plain".
+
+</dd>
+<dt class="defitem"><a name="ahttpd_mimetype_add">ahttpd mimetype add <i>mtype extlist</i>...</a></dt>
+<dt class="defitem"><a name="ahttpd_mimetype_add">ahttpd mimetype add <i>mappings</i></a></dt><dd><p>
+
+Adds new content-type mappings to the database.  In the first form,
+<i>mtype</i> is a content-type, e.g., "application/json" and <i>extlist</i> is
+a list of one or more file extensions that map to that content type, 
+e.g., ".json".  Any number of <i>mtype</i> and <i>extlist</i> pairs may appear 
+on the command line.</p>
+
+<p>In the second form, <i>mappings</i> is a flat list of <i>mtype</i> and 
+<i>extlist</i> pairs.
+
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="ahttpd_notfound">ahttpd notfound <i>sock</i> ?<i>reason</i>?</a></dt><dd>
+
+For use in domain handlers.  This command terminates a request
+with a 404 Not Found message.  The <i>reason</i> is made available
+to the "Not Found" page; it defaults to "n/a".
+
+</dd>
+<dt class="defitem"><a name="ahttpd_port">ahttpd port</a></dt><dd>
+
+Returns the configured value of <span class="tt">-port</span>.
+
+</dd>
+<dt class="defitem"><a name="ahttpd_querydict">ahttpd querydict <i>sock</i></a></dt><dd>
+
+For use in domain handlers.  Parses the request's query
+data in the usual way and returns a dictionary of query
+variables and values as returned by <span class="tt">ncgi::nvlist</span>.
+
+</dd>
+<dt class="defitem"><a name="ahttpd_return">ahttpd return <i>sock ctype result</i></a></dt><dd>
+
+For use in domain handlers.  Returns the requested data and
+terminates the request.  The <i>sock</i> is the connection socket, the
+<i>ctype</i> is the content-type of the returned data (e.g., "text/html"),
+and the <i>result</i> is data with that content-type.
+
+
+</dd>
+<dt class="defitem"><a name="ahttpd_secureport">ahttpd secureport</a></dt><dd>
+
+Returns the configured value of <span class="tt">-secureport</span>.
+
+</dd>
+<dt class="defitem"><a name="ahttpd_version">ahttpd version</a></dt><dd>
+
+Returns the ahttpd(n) package version number.
+
+
+
+</dd>
+</dl>
+
+
+<h2><a name="abandoned_features">ABANDONED FEATURES</a></h2>
+<p>This section describes the features of TclHTTPD which were removed while 
+creating ahttpd(n).  The changes all stem from the difference in use case.
+ahttpd(n) is intended to be embedded in an application, and to serve up 
+data from within that application.  It is not intended for use as a 
+general purpose web server.  Consequently, features intended to provide
+disk-based dynamic content (such as cgi-bin capability) and features 
+intended to protect the server's interpreter from that dynamic content
+have largely been dropped.</p>
+
+<p>Abandoned features are listed in order from most attractive to least
+attractive.
+
+</p>
+
+<h2><a name="session_management">Session Management</a></h2>
+<p>TclHTTP provides cookie-based session management; each session is associated
+with a Tcl interpreter in which session data can be stored.  At present
+we see no need for this capability, but it might well be reclaimed in
+whole or in part at a later time.
+
+</p>
+
+<h2><a name="template_interpreters">Template Interpreters</a></h2>
+<p>TclHTTPD provides a scheme for creating HTML pages from templates containing
+interpolated Tcl commands and variables.  It provides a number of nice 
+features:
+
+</p>
+
+<ul>
+<li> It will rebuild the <span class="tt">.html</span> file automatically, if the 
+     <span class="tt">.tml</span> file is newer.
+</li><li> It can mark the generated page as dynamic content so that it isn't
+     cached.
+</li><li> <span class="tt">.tml</span> files can be linked directly, in which case the dynamic
+     content is always returned.
+</li><li> Templates can be expanded in a safe interpreter, to protect the 
+     server.
+</li><li> Tcl code definitions can be placed in files called just ".tml", to
+     provide Tcl commands to be used in templates.
+</li></ul>
+<p>On the other hand, the template feature has some drawbacks:
+
+</p>
+
+<ul>
+<li> Setting up the safe interpreter so that it is properly configured
+     for use by templates is non-trivial.
+
+</li><li> It only works with HTML content, at present. 
+
+</li><li> It isn't clear that ahttpd(n) needs to cache template-based
+     HTML files.
+
+</li><li> <span class="tt">textutil::expander</span> is not as efficient as <span class="tt">subst</span>, but
+    provides considerably more control over the expansion.
+
+</li><li> Any commands provided for use by templates should be provided by
+     the application, not in ".tml" files on disk.
+
+</li></ul>
+<p>In short, the template feature is for content providers using TclHTTPD
+as a stand-alone web server, rather than for the application in which
+ahttpd(n) is embedded.  ".subst" files appear to do most or
+all of what templates do, so far as they are likely to be useful to 
+ahttpd(n).  And a template system based on <span class="tt">texutil::expander</span> and
+on a safe interpreter providing an application-specific template API
+is likely to be more useful than ".subst" files.</p>
+
+<p>At present, then, ahttpd(n) allows the use of templates in its document 
+tree, but does not support use of a safe interpreter for templates, as all 
+templates are presumed to be part of the application code base; and it's
+possible that the whole feature will be abandoned and replaced by
+something more suitable at some point in the future.
+
+</p>
+
+<h2><a name="email_forms">E-Mail Forms</a></h2>
+<p>TclHTTPD provides pages for sending e-mail to the webmaster in case of
+problems.  However, most web browsers will now handle this automatically
+for e-mail links; and in any event, ahttpd(n) will often be used in 
+environments where sending e-mail will not be possible.  This feature
+could be reclaimed if necessary. 
+
+</p>
+
+<h2><a name="password_checking">Password Checking</a></h2>
+<p>TclHTTP provides a module for doing authentication checks against the
+server platform's own password databases.  This feature could be reclaimed
+if necessary, in whole or in part.
+
+</p>
+
+<h2><a name="file_upload">File Upload</a></h2>
+<p>TclHTTPD provides a module for uploading files to the server.  We have no
+immediate need of this; ahttpd(n) is intended provide a browser-based UI
+for command line tools (a la <span class="tt">fossil ui</span>) or to be used as part of a 
+larger back-end on a cloud node.  In either case, the local environment
+is a given.  This feature could be reclaimed if necessary.
+
+</p>
+
+<h2><a name="debugging_uis">Debugging UIs</a></h2>
+<p>TclHTTPD provides a Tk-based server user interface and a module for 
+interacting with a running server from the command line.  For ahttpd(n),
+it is up to the application to provide the UI; and <a href="../../../mars/docs/mann/marsgui.html">marsgui(n)</a>'s
+<a href="../../../mars/docs/mann/debugger.html">debugger(n)</a> can provide command-line access to a running 
+server.  However, the ability to use the "/debug" and "/status"
+URLs has been retained.
+
+</p>
+
+<h2><a name="threading">Threading</a></h2>
+<p>Threading is intended to allow multiple clients to efficiently retrieve 
+disk-based content at the same time.  In the embedded context, where 
+maintaining a consistent view of application state across threads can be
+difficult, and where high performance is much less important (the server 
+will usually be talking to a single client), in-server threads are an
+unnecessary complication.  Hence, the threading code has been removed.</p>
+
+<p>Note that the application itself can still use threads, with ahttpd(n)
+providing access to the client.
+
+</p>
+
+<h2><a name="image_maps">Image Maps</a></h2>
+<p>TclHTTPD provides support for client-side and server-side image maps.
+This simply isn't the way web applications are developed anymore, and so
+the feature was not retained.  It could be reclaimed if necessary.
+
+</p>
+
+<h2><a name="includes">Includes</a></h2>
+<p>TclHTTPD supports server-side includes: <span class="tt">.shtml</span> files that can include
+other server files to create the final page.  This is an old-fashioned 
+way of building pages, and so the feature was not retained.
+
+</p>
+
+<h2><a name="cgi_scripting">CGI Scripting</a></h2>
+<p>TclHTTPD provides a full "cgi-bin" capability; this is a way for users
+of a conventional web-server to add dynamic pages.  With ahttpd(n), dynamic
+content is provided by the application itself; there is no reason to wrap
+content-provision in external CGI scripts.
+
+</p>
+
+<h2><a name="virtual_hosts">Virtual Hosts</a></h2>
+<p>TclHTTPD provides a features called "virtual hosts", which does not seem
+necessary for our purposes.  The relevant code was removed.
+
+
+</p>
+
+<h2><a name="server_administration">Server Administration</a></h2>
+<p>TclHTTPD provides a rudimentary set of server administration pages.
+These were judged to be unnecessary.
+
+</p>
+
+<h2><a name="backwards_compatibility">Backwards Compatibility</a></h2>
+<p>TclHTTPD provides backwards compatibility for ancient versions of Tcl
+and for code written to work with older versions of TclHTTPD.  Under
+the circumstances, all such code has been removed.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>New package derived from Athena internals.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:55 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+

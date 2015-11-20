@@ -1,0 +1,683 @@
+<html>
+<head>
+<title>athena 6.3.3: beanpot(n) -- Bean Container, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>beanpot(n)</b> -- Bean Container, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#bean_ids">Bean IDs</a></li>
+
+    <li><a href="#detecting_changes">Detecting Changes</a></li>
+
+    <li><a href="#checkpoint/restore">Checkpoint/Restore</a></li>
+
+    <li><a href="#delete/undelete">Delete/Undelete</a></li>
+
+</ul>
+    
+
+    <li><a href="#class_commands">CLASS COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#beanpot">beanpot <i>name</i> ?<i>options</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanpot-rdb">-rdb <i>rdb</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#beanpot-dbid">-dbid <i>dbid</i></a></li>
+<li><a class="iref" href="#changed"><i>pot</i> changed</a></li>
+<li><a class="iref" href="#cget"><i>pot</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#checkpoint"><i>pot</i> checkpoint ?-saved?</a></li>
+<li><a class="iref" href="#configure"><i>pot</i> configure <i>option value ...</i></a></li>
+<li><a class="iref" href="#delete"><i>pot</i> delete <i>id</i></a></li>
+<li><a class="iref" href="#dump"><i>pot</i> dump</a></li>
+<li><a class="iref" href="#forget"><i>pot</i> forget <i>id</i></a></li>
+<li><a class="iref" href="#get"><i>pot</i> get <i>id</i></a></li>
+<li><a class="iref" href="#has"><i>pot</i> has <i>id</i></a></li>
+<li><a class="iref" href="#hasa"><i>pot</i> hasa <i>cls id</i></a></li>
+<li><a class="iref" href="#ids"><i>pot</i> ids ?<i>cls</i>?</a></li>
+<li><a class="iref" href="#lastid"><i>pot</i> lastid</a></li>
+<li><a class="iref" href="#markchanged"><i>pot</i> markchanged</a></li>
+<li><a class="iref" href="#new"><i>pot</i> new <i>cls</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#nextid"><i>pot</i> nextid</a></li>
+<li><a class="iref" href="#reset"><i>pot</i> reset</a></li>
+<li><a class="iref" href="#restore"><i>pot</i> restore <i>checkpoint</i> ?-saved?</a></li>
+<li><a class="iref" href="#setnextid"><i>pot</i> setnextid <i>nid</i></a></li>
+<li><a class="iref" href="#uncreate"><i>pot</i> uncreate <i>bean</i></a></li>
+<li><a class="iref" href="#undelete"><i>pot</i> undelete <i>deleteSet</i></a></li>
+<li><a class="iref" href="#validate"><i>pot</i> validate <i>id</i></a></li>
+<li><a class="iref" href="#valclass"><i>pot</i> valclass <i>cls id</i></a></li>
+<li><a class="iref" href="#view"><i>pot</i> view <i>id</i> ?<i>view</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>An <a href="../mann/bean.html">bean(n)</a> object is a TclOO object that can be automatically 
+checkpointed and restored as part of the program's state, i.e., as part 
+of an Athena scenario.  Every bean is defined in the context of a
+beanpot(n) object; beans in the same pot are saved and restored together.
+The beanpot(n) is also responsible for creating bean objects, 
+assigning bean IDs (which are unique and persistent within a pot) and for
+various bean-ID-related queries.</p>
+
+<p>Essentially, the application will create a bean pot for each distinct set of 
+beans in memory (i.e., a pot for each scenario), and then use that pot to 
+manage, save, and restore the set of beans.  All beans should be created
+using beanpot(n)'s <a class="iref" href="#new">new</a> subcommand.</p>
+
+<p>Each bean knows what pot it is in; the pot's instance command is stored
+in the bean's <span class="tt">pot</span> instance variable, which cannot be changed.
+
+</p>
+
+<h2><a name="bean_ids">Bean IDs</a></h2>
+<p>Every instance of <a href="../mann/bean.html">bean(n)</a> and its subclasses has a unique numeric 
+ID within its bean pot; beans can be looked up given their IDs.  
+The ID is stored in a predefined instance 
+variable called <code>id</code>, which cannot be changed.</p>
+
+<p>The bean ID is assigned by the bean pot's <a class="iref" href="#new">new</a> method when the bean
+is first created, and persists across <a class="iref" href="#checkpoint">checkpoint</a> and 
+<a class="iref" href="#restore">restore</a>.
+
+
+</p>
+
+<h2><a name="detecting_changes">Detecting Changes</a></h2>
+<p>Each beanpot(n) instance is a <a href="../mani/saveable.html">saveable(i)</a>, so that the beans in a 
+pot can be checkpointed and restored with the Athena scenario.  
+Consequently, beanpot(n) needs to know when there are unsaved changes to 
+beans.  Bean subclass methods can signal that
+changes have been made by calling their pot's <a class="iref" href="#markchanged">markchanged</a> method.
+Further, the bean's <a href="../mann/bean.html#set">set</a> method always sets the changed 
+flag.  Thus, it is often useful for bean methods to set instance variables 
+using the <span class="tt">set</span> method, like this:
+
+</p>
+
+<pre>
+    my set <i>var</i> <i>value</i>
+</pre>
+<p>A method that makes many changes to the subclass's own variables can instead
+use the normal Tcl <code>set</code> command, and call
+<a class="iref" href="#markchanged">markchanged</a> when done.</p>
+
+<p>The <a href="../mann/bean.html">bean(n)</a> class provides <span class="tt">lappend</span> and <span class="tt">ldelete</span> 
+methods as well, for modifying list-valued variables with notification.
+In general, all <a href="../mann/bean.html">bean(n)</a> methods that update instance variables 
+notify the containing beanpot automatically.
+
+</p>
+
+<h2><a name="checkpoint/restore">Checkpoint/Restore</a></h2>
+<p>Each beanpot(n) instance is a <a href="../mani/saveable.html">saveable(i)</a>, and thus can be plugged
+into Athena's checkpoint/restore mechanism.  Note that bean IDs are 
+preserved across checkpoint/restore, but bean object names are not.</p>
+
+<p>The beanpot(n)'s <a class="iref" href="#checkpoint">checkpoint</a> method doesn't actually return a 
+checkpoint.  Rather, it's a trigger for the pot to save its beans in its
+configured <span class="tt">-rdb</span>'s <span class="tt">beans</span> table.  The entries are tagged with 
+the pot's <span class="tt">-dbid</span>, which defaults to "<span class="tt">pot</span>".
+
+</p>
+
+<h2><a name="delete/undelete">Delete/Undelete</a></h2>
+<p>The <a class="iref" href="#delete">delete</a> and <a class="iref" href="#undelete">undelete</a> commands support 
+cascading deletion of beans with undo.  To delete a bean, pass its ID
+to <a class="iref" href="#delete">delete</a>, which returns a checkpoint-like delete set.  To 
+undo the deletion, pass the delete set to <a class="iref" href="#undelete">undelete</a>.
+
+</p>
+
+<h2><a name="class_commands">CLASS COMMANDS</a></h2>
+<p>This module defines the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="beanpot">beanpot <i>name</i> ?<i>options</i>?</a></dt><dd><p>
+
+Creates a new beanpot object with the given <i>name</i> and options, within
+which new beans may be created.  The pot's contents may be checkpointed 
+and restored.  When the pot is <a class="iref" href="#reset">reset</a> or destroyed, all beans 
+contained within it are destroyed as well.</p>
+
+<p>The valid options are as follows:
+
+</p><dl>
+
+<dt class="defopt"><a name="beanpot-rdb">-rdb <i>rdb</i></a></dt><dd><p>
+
+Gives the name of the run-time database (RDB), an 
+<a href="../mann/scenariodb.html">scenariodb(n)</a> instance (or equivalent) Checkpoints and restores 
+will be done relative to this RDB.  Note that in larger applications,
+the <i>rdb</i> is often an object that wraps the actual RDB handle and 
+provides other services; it may be used as such by the beans in the
+pot.</p>
+
+<p>If the <span class="tt">-rdb</span> is not set, the bean pot cannot be checkpointed or 
+restored.</p>
+
+<p>This option is read-only after the bean pot is created.
+
+</p>
+</dd>
+<dt class="defopt"><a name="beanpot-dbid">-dbid <i>dbid</i></a></dt><dd><p>
+
+The application can checkpoint multiple bean pots to a single
+<span class="tt">-rdb</span>.  When a bean pot is checkpointed, its entries are tagged with
+the <i>dbid</i>, which defaults to "<span class="tt">pot</span>".  If an application uses 
+multiple bean pots with respect to a single scenario, each pot should
+be given a <span class="tt">-dbid</span> corresponding to its role.</p>
+
+<p>It is an error for two bean pots two have the same <span class="tt">-rdb</span> and 
+<span class="tt">-dbid</span> in the same application.</p>
+
+<p>This option is read-only after the bean pot is created.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+<p>Each instance of the beanpot(n) type has the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="changed"><i>pot</i> changed</a></dt><dd>
+
+Returns 1 if any of the pot's bean data has changed, and 0 otherwise.  
+(This is part of beanpot(n)'s <a href="../mani/saveable.html">saveable(i)</a> interface.)
+
+</dd>
+<dt class="defitem"><a name="cget"><i>pot</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the named configuration option.  See
+<a class="iref" href="#beanpot">beanpot</a> for a list of options. 
+
+</dd>
+<dt class="defitem"><a name="checkpoint"><i>pot</i> checkpoint ?-saved?</a></dt><dd>
+
+Checkpoints the beans in the pot to the configured <span class="tt">-rdb</span>, tagging
+them with the configured <span class="tt">-dbid</span>.  If <b>-saved</b> is given, then
+the <a class="iref" href="#changed">changed</a> flag is cleared.  (This is part of
+beanpot(n)'s <a href="../mani/saveable.html">saveable(i)</a> interface.)
+
+</dd>
+<dt class="defitem"><a name="configure"><i>pot</i> configure <i>option value ...</i></a></dt><dd>
+
+In principle, this sets the value of one or more of the 
+<a href="../mann/beanpot.html">beanpot(n)</a> configuration options; however, all of the options
+are read-only after the pot is created.
+
+
+</dd>
+<dt class="defitem"><a name="delete"><i>pot</i> delete <i>id</i></a></dt><dd>
+
+Deletes the bean with the given <i>id</i>, and returns a "delete set" 
+that can be used to undelete it (under normal undo conditions).  If the
+bean owns other beans and uses bean slots properly 
+(see <a href="../mann/bean.html">bean(n)</a>) the owned beans will be 
+included in the delete set and will be undeleted
+with their owner.
+
+</dd>
+<dt class="defitem"><a name="dump"><i>pot</i> dump</a></dt><dd>
+
+Returns a dump of information about all beans in the pot.
+
+</dd>
+<dt class="defitem"><a name="forget"><i>pot</i> forget <i>id</i></a></dt><dd>
+
+<b>Private.</b> Unregisters the bean with the given <i>id</i> when it is 
+destroyed.  This command is solely for the use of the <a href="../mann/bean.html">bean(n)</a>
+and should not be used by other clients.
+
+</dd>
+<dt class="defitem"><a name="get"><i>pot</i> get <i>id</i></a></dt><dd>
+
+Returns the bean object with the given ID, throwing an error if there is 
+no such bean in the pot.
+
+</dd>
+<dt class="defitem"><a name="has"><i>pot</i> has <i>id</i></a></dt><dd>
+
+Returns 1 if the pot contains a bean with the given <i>id</i>, and
+0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="hasa"><i>pot</i> hasa <i>cls id</i></a></dt><dd>
+
+Returns 1 if the pot contains a bean with the given <i>id</i> which is also
+a member of the given <i>cls</i> (or one of its subclasses) and 0 
+otherwise.
+
+</dd>
+<dt class="defitem"><a name="ids"><i>pot</i> ids ?<i>cls</i>?</a></dt><dd>
+
+By default, returns a list of the IDs of all beans in the pot.  If
+<i>cls</i> is given, returns a list of the IDs of the beans that are 
+members of that class or its subclasses.
+
+
+</dd>
+<dt class="defitem"><a name="lastid"><i>pot</i> lastid</a></dt><dd>
+
+Returns the unique ID of the most recently created bean in the pot
+(which is, not coincidentally, the bean with the largest ID number).
+
+</dd>
+<dt class="defitem"><a name="markchanged"><i>pot</i> markchanged</a></dt><dd>
+
+Sets the pot's <a class="iref" href="#changed">changed</a> flag.  A bean instance should call 
+this when it knows that its data has changed.  Note that all 
+<a href="../mann/bean.html">bean(n)</a> subcommands that modify the bean's data call this routine
+automatically.
+
+</dd>
+<dt class="defitem"><a name="new"><i>pot</i> new <i>cls</i> ?<i>args...</i>?</a></dt><dd><p>
+
+Creates an instance of the named <a href="../mann/bean.html">bean(n)</a> subclass, <i>cls</i>,  
+passing any additional arguments to the subclass constructor, and 
+returning the new object's name.  The new bean
+is automatically assigned an ID and placed in the pot.</p>
+
+<p>The bean's name will include the <i>pot</i>, an indicator of the bean's
+subclass, and the bean's ID, as an aid to debugging.
+
+</p>
+</dd>
+<dt class="defitem"><a name="nextid"><i>pot</i> nextid</a></dt><dd>
+
+Returns the unique ID that will be assigned to the next bean to be created.
+Application code should generally not need to call this, though it might
+be useful in some circumstances.  Note that <a class="iref" href="#setnextid">setnextid</a> can
+be used to control ID assignment.
+
+</dd>
+<dt class="defitem"><a name="reset"><i>pot</i> reset</a></dt><dd>
+
+Deletes all beans from the pot resets the pot to its creation state.  
+This command is primarily for use by the test suite, though it can
+also be called when creating a new scenario.
+
+</dd>
+<dt class="defitem"><a name="restore"><i>pot</i> restore <i>checkpoint</i> ?-saved?</a></dt><dd>
+
+Triggers the restoration of a checkpoint stored in the 
+<span class="tt">-rdb</span>; the <i>checkpoint</i> value is empty and ignored.  By
+default, the <a class="iref" href="#changed">changed</a> flag is set; if <b>-saved</b> is given,
+the <a class="iref" href="#changed">changed</a> flag is cleared.  (This is part of
+beanpot(n)'s <a href="../mani/saveable.html">saveable(i)</a> interface.)
+
+</dd>
+<dt class="defitem"><a name="setnextid"><i>pot</i> setnextid <i>nid</i></a></dt><dd><p>
+
+Sets the bean ID, <i>nid</i>, to be returned the next time 
+<a class="iref" href="#nextid">nextid</a> is used to assign a bean ID.  The <i>nid</i> must
+be greater than <a class="iref" href="#lastid">lastid</a> to have any effect.</p>
+
+<p>This command is for use in <a href="../mann/order.html">order(n)</a> <a href="../mann/order.html#setredo">setredo</a>
+scripts, to ensure that an order produces the same bean IDs on redo.
+
+
+</p>
+</dd>
+<dt class="defitem"><a name="uncreate"><i>pot</i> uncreate <i>bean</i></a></dt><dd>
+
+This command is used by the undo code for bean(n) mutators that create new 
+beans.  This command verifies that the <i>bean</i> is
+the most recently created bean and destroys it 
+
+</dd>
+<dt class="defitem"><a name="undelete"><i>pot</i> undelete <i>deleteSet</i></a></dt><dd>
+
+Undoes a call to <a class="iref" href="#delete">delete</a> given the <i>deleteSet</i> returned
+by <a class="iref" href="#delete">delete</a>.  Normal undo conditions apply; if any other changes
+have been made to beans since the deletion, they must be undone first.
+
+</dd>
+<dt class="defitem"><a name="validate"><i>pot</i> validate <i>id</i></a></dt><dd>
+
+Returns <i>id</i> unchanged if there is a bean with that ID in the pot, and
+throws <b>INVALID</b> otherwise.
+
+</dd>
+<dt class="defitem"><a name="valclass"><i>pot</i> valclass <i>cls id</i></a></dt><dd>
+
+Returns <i>id</i> unchanged if there <a class="iref" href="#hasa">hasa</a> bean with that class and ID
+in the pot, and throws <b>INVALID</b> otherwise.
+
+</dd>
+<dt class="defitem"><a name="view"><i>pot</i> view <i>id</i> ?<i>view</i>?</a></dt><dd>
+
+Returns a view dictionary for the bean with the given <i>id</i>.
+
+</dd>
+</dl>
+
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl 8.5 or later, plus the TclOO package.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>New module, based on code abstracted from <a href="../mann/bean.html">bean(n)</a>.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:57 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+

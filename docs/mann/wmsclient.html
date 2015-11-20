@@ -1,0 +1,537 @@
+<html>
+<head>
+<title>athena 6.3.3: wmsclient(n) -- Web Map Service (WMS) client, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>wmsclient(n)</b> -- Web Map Service (WMS) client, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    <ul>
+
+    <li><a href="#query_parms">Query Parms</a></li>
+
+</ul>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::wmsclient
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#wmsclient">wmsclient <i>name</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#wmsclient-agent">-agent <i>httpagent</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#wmsclient-servercmd">-servercmd <i>cmd</i></a></li>
+<li><a class="iref" href="#server">$client server <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#server_connect">$client server connect <i>url</i></a></li>
+<li><a class="iref" href="#server_getmap">$client server getmap <i>qparms</i></a></li>
+<li><a class="iref" href="#server_url">$client server url</a></li>
+<li><a class="iref" href="#server_state">$client server state</a></li>
+<li><a class="iref" href="#server_status">$client server status</a></li>
+<li><a class="iref" href="#server_error">$client server error</a></li>
+<li><a class="iref" href="#server_wmscap">$client server wmscap</a></li>
+<li><a class="iref" href="#map">$client map <i>subcommand</i></a></li>
+<li><a class="iref" href="#map_data">$client map data</a></li>
+<li><a class="iref" href="#map_bbox">$client map bbox</a></li>
+<li><a class="iref" href="#map_crs">$client map crs</a></li>
+<li><a class="iref" href="#map_width">$client map width</a></li>
+<li><a class="iref" href="#map_height">$client map height</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>wmsclient(n) is an implementation of a client interface to an Open GIS
+(OGC) compliant Web Map Service (WMS).  The WMS standard has been around
+for many years and is well documented.  A detailed discussion of WMS is
+outside the scope of this man page.</p>
+
+<p>An application using the wmsclient(n) is able to extract the pertinent meta
+data from a WMS to make requests for geo-referenced maps served up by the
+WMS server.</p>
+
+<p>For now, it is assumed that maps served up by the WMS has the content type
+of <b>image/png</b>. It would be trivial to expand this to other image types,
+but PNG is recommended by the Open GIS as a minumum for compliant servers.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>wmsclient(n) provides the following commands for use by the
+application.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="wmsclient">wmsclient <i>name</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new instance of wmsclient(n) called <i>name</i>; returns the
+fully-qualified command name.</p>
+
+<p>wmsclient(n) has the following option:
+
+</p><dl>
+
+<dt class="defopt"><a name="wmsclient-agent">-agent <i>httpagent</i></a></dt><dd>
+
+Specifies an agent used to process http requests. This is normally left
+empty, in which case the wmsclient(n) uses <a href="../mann/httpagent.html">httpagent(n)</a> for 
+processing http requests.
+
+</dd>
+<dt class="defopt"><a name="wmsclient-servercmd">-servercmd <i>cmd</i></a></dt><dd>
+
+Specifies a callback command that is executed as a result of an http server
+state change.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+<p>Instances of wmsclient(n) provide the following subcommands for use by
+the application.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="server">$client server <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This command is used to connect and retrieve data from the WMS server.
+The subcommands are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="server_connect">$client server connect <i>url</i></a></dt><dd>
+
+Attempts to connect to a WMS server located at the specified URL.  If a
+connection is successful the WMS server capabilities are automatically 
+retrieved and stored in a dictionary that can be accessed using other
+commands provided by wmsclient(n).
+
+</dd>
+<dt class="defitem"><a name="server_getmap">$client server getmap <i>qparms</i></a></dt><dd>
+
+Attempts to retrieve a map from the WMS server using any supplied query
+parameters in the form of a dictionary of WMS server parameters and values.
+See <a href="#query_parms">Query Parms</a> for the list of recognized parameters.
+
+</dd>
+<dt class="defitem"><a name="server_url">$client server url</a></dt><dd>
+
+Returns the URL of the currently connected WMS server.
+
+</dd>
+<dt class="defitem"><a name="server_state">$client server state</a></dt><dd><p>
+
+Returns the current state of the WMS server. Possible server states are:
+
+</p><ul>
+  <li> <b>OK</b>: The server request was completed normally.
+  </li><li> <b>IDLE</b>: The server is idle.
+  </li><li> <b>WAITING</b>: Waiting for a response from the server.
+  </li><li> <b>ERROR</b>: An error occurred due to a server request.
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="server_status">$client server status</a></dt><dd>
+
+Returns nicely formatted, human-readable text of the server status based on
+the <a class="iref" href="#server_state">server state</a>.
+
+</dd>
+<dt class="defitem"><a name="server_error">$client server error</a></dt><dd>
+
+Returns a nicely formatted, human-readable text of the error encountered by
+the server if the <a class="iref" href="#server_state">server state</a> is <b>ERROR</b>.
+
+</dd>
+<dt class="defitem"><a name="server_wmscap">$client server wmscap</a></dt><dd><p>
+
+Returns the capabilities of the WMS server in dictionary format. Not all the
+data in a <b>WMS GetCapabilities</b> request is stored in this dictionary. The
+available data is parsed out by the <a href="../mann/wmscap.html">wmscap(n)</a> object. See 
+<a href="../mann/wmscap.html">wmscap(n)</a> for a description of the data.
+
+</p><h2><a name="query_parms">Query Parms</a></h2>
+<p>By default wmsclient(n) makes an initial request for a map using default
+query parameters once a successful connection to a WMS server has been made 
+and the WMS server capabilities retrieved.  The query parameters used for
+requesting this default map are entirely defined by the capabilities returned
+from the server. Whenever a new request is made for a map, the default 
+query parameters are used unless they are overridden.  The following query
+parameters are ones that can be overridden by passing them in as a dictionary
+using the <a class="iref" href="#server_getmap">server getmap</a> command:
+
+</p>
+
+<ul>
+  <li><b>CRS</b> - The coordinate reference system. Usually, this does not need to be specified. If it is, it must be one supported by the WMS server.
+  </li><li><b>BBOX</b> - A list of four bounding box coordinates in the CRS, usually two lat/long pairs as follows: minimum lat, minimum long, maximum lat, maximum long.
+  </li><li><b>LAYERS</b> - A list of map layers to be retrieved. The names of layers to appear in this list are defined by the WMS server.
+  </li><li><b>WIDTH</b> - The width in pixels of the map to be retrieved.
+  </li><li><b>HEIGHT</b> - The height in pixels of the map to be retrieved.
+</li></ul>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="map">$client map <i>subcommand</i></a></dt><dd><p>
+
+This command is used to retrieve information about the currently requested
+map. The subcommands are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="map_data">$client map data</a></dt><dd>
+Returns the image of the map in binary form.  The data is suitable for 
+conversion to an image using the Tk image command.
+
+</dd>
+<dt class="defitem"><a name="map_bbox">$client map bbox</a></dt><dd>
+Returns the bounding box of the current map using the coordinate reference
+system as specified in the map request.  The bounding box consists of a list
+of four values corresponding to two lat/long pairs, one for the lower left
+of the box and one for the upper right. Thus, the returned list is, in order,
+minumum latitude, minimum longitude, maximum latitude and maximum longitude.
+
+</dd>
+<dt class="defitem"><a name="map_crs">$client map crs</a></dt><dd>
+Returns the coordinate reference system in use.  Only CRS:84 or EPSG:4326
+coordinate reference systems are recognized.
+
+</dd>
+<dt class="defitem"><a name="map_width">$client map width</a></dt><dd>
+Returns the width of the current map in pixels.
+
+</dd>
+<dt class="defitem"><a name="map_height">$client map height</a></dt><dd>
+Returns the height of the current map in pixels.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Dave Hanks
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:49:01 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

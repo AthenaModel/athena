@@ -1,0 +1,515 @@
+<html>
+<head>
+<title>athena 6.3.3: listbuttonfield(n) -- Compact List Selection Widget, submodule of projectgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>listbuttonfield(n)</b> -- Compact List Selection Widget, submodule of <a href="../mann/projectgui.html">projectgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#field_type">FIELD TYPE</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectgui 6.3.3
+namespace import ::projectgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#listbuttonfield">listbuttonfield <i>pathName</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-changecmd">-changecmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-emptymessage">-emptymessage <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-itemdict">-itemdict <i>dict</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-message">-message <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-listrows">-listrows <i>rows</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-listwidth">-listwidth <i>chars</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-showkeys">-showkeys <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-showmaxitems">-showmaxitems <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-state">-state <i>state</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-stripe">-stripe <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-wraplength">-wraplength <i>pixels</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#listbuttonfield-width">-width <i>chars</i></a></li>
+<li><a class="iref" href="#cget"><i>pathName</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>pathName</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#get"><i>pathName</i> get</a></li>
+<li><a class="iref" href="#set"><i>pathName</i> set <i>value</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The listbuttonfield(n) widget is used for the same purpose as the
+<a href="../../../mars/docs/mann/listfield.html">listfield(n)</a> widget, to select one or more items from a 
+list of items; however, it is designed for use when space is at a 
+premium.  The widget displays a label and an "Edit" button; the label
+displays the chosen value, and the "Edit" button pops up a 
+<a href="../../../mars/docs/mann/messagebox.html">messagebox(n)</a> in which the user can select the desired
+items.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="listbuttonfield">listbuttonfield <i>pathName</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new <a class="iref" href="#listbuttonfield">listbuttonfield</a> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following
+options, in addition to those provided by the underlying frame widget:
+
+</p><dl>
+
+<dt class="defopt"><a name="listbuttonfield-changecmd">-changecmd <i>command</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  Specifies a <i>command</i> to be called
+whenever the field's value changes, for any reason whatsoever
+(including explicit calls to <a class="iref" href="#set">set</a>.  The new value is appended
+to the <i>command</i> as an argument.
+
+</dd>
+<dt class="defopt"><a name="listbuttonfield-emptymessage">-emptymessage <i>text</i></a></dt><dd>
+
+The text to display in the field when no items are selected.  Defaults to 
+"No items selected."
+
+</dd>
+<dt class="defopt"><a name="listbuttonfield-itemdict">-itemdict <i>dict</i></a></dt><dd>
+
+The items from which the user can choose, specified as a dictionary of
+keys and values.  The dictionary values are displayed in the dialog's
+"include" and "omit" lists, optionally prefixed by the keys (see
+<b>-showkeys</b>); the <a class="iref" href="#get">get</a> and <a class="iref" href="#set">set</a> methods
+return and accept a list of keys.
+
+</dd>
+<dt class="defopt"><a name="listbuttonfield-message">-message <i>text</i></a></dt><dd>
+
+Specifies the message to be shown at the top of the pop-up dialog.  
+Defaults to "Select items from the list:".
+
+</dd>
+<dt class="defopt"><a name="listbuttonfield-listrows">-listrows <i>rows</i></a></dt><dd>
+
+The height of the "include" and "omit" lists, in rows, in the dialog.
+
+</dd>
+<dt class="defopt"><a name="listbuttonfield-listwidth">-listwidth <i>chars</i></a></dt><dd>
+
+The width in text characters of each of the item lists.
+
+</dd>
+<dt class="defopt"><a name="listbuttonfield-showkeys">-showkeys <i>flag</i></a></dt><dd>
+
+If true (the default), the text shown for each item in the dialog's
+item lists is "<i>key</i>: <i>value</i>".  Otherwise only the 
+<b>-itemdict</b> values are displayed.
+
+</dd>
+<dt class="defopt"><a name="listbuttonfield-showmaxitems">-showmaxitems <i>num</i></a></dt><dd>
+
+Specifies the maximum number of list items to show in the narrative
+box; defaults to 10.  If <i>num</i> is the empty string, there is no limit.
+
+</dd>
+<dt class="defopt"><a name="listbuttonfield-state">-state <i>state</i></a></dt><dd>
+
+From <a href="../mani/field.html">field(i)</a>.  listfield(i) widgets have states, just as the
+normal <code>tk::</code> and <code>ttk::</code> widgets do.  The valid
+states are <b>normal</b> and <b>disabled</b>.
+
+</dd>
+<dt class="defopt"><a name="listbuttonfield-stripe">-stripe <i>flag</i></a></dt><dd>
+
+If true (the default) the even items in each list in the dialog
+are striped with a
+distinctive background color.  This is useful if item values might
+wrap to multiple lines.
+
+</dd>
+<dt class="defopt"><a name="listbuttonfield-wraplength">-wraplength <i>pixels</i></a></dt><dd>
+
+Specifies the width in pixels at which the widget will wrap the narrative
+across multiple lines.  Defaults to 300.
+
+</dd>
+<dt class="defopt"><a name="listbuttonfield-width">-width <i>chars</i></a></dt><dd>
+
+Specifies the width of the widget's narrative box in characters.  If
+negative, specifies the minimum width.  Defaults to -30.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>listbuttonfield(n) widgets have the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>pathName</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>pathName</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="get"><i>pathName</i> get</a></dt><dd>
+
+Returns the current value of the field, i.e., a list of keys from the
+<b>-itemdict</b>. 
+
+</dd>
+<dt class="defitem"><a name="set"><i>pathName</i> set <i>value</i></a></dt><dd>
+
+Sets the current <i>value</i> of the field, a list of keys from the
+<b>-itemdict</b>.
+
+</dd>
+</dl>
+
+<h2><a name="field_type">FIELD TYPE</a></h2>
+<p>projectlib(n) defines a
+<a href="../../../mars/docs/mani/dynaform_field.html">dynaform_field(i)</a> field type called <b>listbutton</b>. 
+The field type takes the same <b>-listrows</b>, <b>-listwidth</b>,
+<b>-message</b>, <b>-showmaxitems</b>, <b>-showkeys</b>, 
+<b>-stripe</b> and <b>-wraplength</b> options as listbuttonfield(n) does.  
+The <b>-width</b> option sets the minimum width of the field, since that's
+usually what's wanted.</p>
+
+<p>The widget's <b>itemdict</b> is set using either <b>-dict</b> or 
+<b>-dictcmd</b>, as for the <b>enumlist</b> field type; one of these
+two options is required.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>projectgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use projectgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:58 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

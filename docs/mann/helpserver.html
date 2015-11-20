@@ -1,0 +1,545 @@
+<html>
+<head>
+<title>athena 6.3.3: helpserver(n) -- help(5) mydomain(i) Server, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>helpserver(n)</b> -- help(5) mydomain(i) Server, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#searching">Searching</a></li>
+
+</ul>
+    
+
+    <li><a href="#content_types">CONTENT TYPES</a></li>
+    
+
+    <li><a href="#resources">RESOURCES</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::helpserver
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#/">/<i>domain</i>/</a></li>
+<li><a class="iref" href="#/image">/<i>domain</i>/image/<i>name</i></a></li>
+<li><a class="iref" href="#helpserver">helpserver <i>name</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#helpserver-domain">-domain <i>domain</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#helpserver-helpdb">-helpdb <i>database</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#helpserver-headercmd">-headercmd <i>command</i></a></li>
+<li><a class="iref" href="#ctypes">$server ctypes <i>rtype</i></a></li>
+<li><a class="iref" href="#get">$server get <i>url</i> ?<i>contentTypes</i>?</a></li>
+<li><a class="iref" href="#url">url</a></li>
+<li><a class="iref" href="#contentType">contentType</a></li>
+<li><a class="iref" href="#content">content</a></li>
+<li><a class="iref" href="#resources">$server resources</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>helpserver(n) is a <a href="../mani/mydomain.html">mydomain(i)</a> implementation designed for
+browsing <a href="../man5/help.html">help(5)</a> help files.
+The application creates an instance of helpserver(n), specifying a
+help database using the <code>-helpdb</code> option, and registers the
+instance with <a href="../mann/myagent.html">myagent(n)</a>.  At that point, <a href="../mann/myagent.html">myagent(n)</a>
+clients like <a href="../mann/mybrowser.html">mybrowser(n)</a> can query it.</p>
+
+<p>The resources known to the server are listed under <a href="#resources">RESOURCES</a>;
+they can also be seen by querying the server's 
+<code>/<i>domain</i>/urlhelp</code> resource.
+
+</p>
+
+<h2><a name="searching">Searching</a></h2>
+<p>A page URL can include a query in the usual way, delimited with a
+question mark, e.g.,
+
+</p>
+
+<pre>
+    /<i>domain</i>/?my search text
+</pre>
+<p>A query can be added to any page URL; however, the page path is
+discarded and doesn't affect the search.</p>
+
+<p>Searching proceeds as follows:
+
+</p>
+
+<ol>
+  <li> If the search text exactly matches a page title, that page is
+       returned.  This match is case-insensitive.
+
+  </li><li> Otherwise, the search text is passed to SQLite3's full text
+       search engine, and a page of links to matched pages is returned.
+</li></ol>
+
+
+<h2><a name="content_types">CONTENT TYPES</a></h2>
+<p>All <a href="../man5/help.html">help(5)</a> pages have the content type <b>text/html</b>.
+Embedded images have the content type <b>tk/image</b>.  All page URLs
+can also be retrieved as <b>tcl/linkdict</b>, in which the data
+returned is a dictionary of links to the page's children, if any.
+
+</p>
+
+<h2><a name="resources">RESOURCES</a></h2>
+<p>In addition to the standard resources provided by
+<a href="../mann/mydomain.html">mydomain(n)</a>, helpserver(n) provides the following:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="/">/<i>domain</i>/</a></dt><dd><p>
+
+This is the main help page; lower level pages can be referenced by
+adding on to the path in the usual way.  The <b>text/html</b> content type
+is the help text itself; the <b>tcl/linkdict</b> content type is a
+dictionary of links to the child pages, if any.</p>
+
+<p>If the URL contains a query, the help database will be searched.  See
+<a href="#searching">Searching</a> for details.
+
+</p>
+</dd>
+<dt class="defitem"><a name="/image">/<i>domain</i>/image/<i>name</i></a></dt><dd>
+
+Returns the <b>tk/image</b> resources compiled into the help database
+with the given name.
+
+</dd>
+</dl>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>helpserver(n) provides the following commands for use by the
+application.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="helpserver">helpserver <i>name</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new instance of helpserver(n) called <i>name</i>; returns the
+fully-qualified command name.</p>
+
+<p>helpserver(n) has the following option:
+
+</p><dl>
+
+<dt class="defopt"><a name="helpserver-domain">-domain <i>domain</i></a></dt><dd>
+
+The help server's folder in the application's URL tree.  It must begin
+with a "/" and consist of a single folder name.  Defaults to "/help".
+All help resources are accessed at URLs beginning with this name.
+
+</dd>
+<dt class="defopt"><a name="helpserver-helpdb">-helpdb <i>database</i></a></dt><dd>
+
+Specifies the <a href="../man5/help.html">help(5)</a> database to query, expressed as an
+<a href="../mann/sqldocument.html">sqldocument(n)</a> object.
+
+</dd>
+<dt class="defopt"><a name="helpserver-headercmd">-headercmd <i>command</i></a></dt><dd>
+
+Specifies a <i>command</i> that will be called for each returned
+<b>text/html</b> help page.  It take one argument, the "udict" passed
+to the <a href="../mann/mydomain.html">mydomain(n)</a> content handler, and returns a snippet of
+HTML text to be inserted at the top of the HTML page.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+<p>Instances of helpserver(n) provide the following subcommands for use by
+the application.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="ctypes">$server ctypes <i>rtype</i></a></dt><dd>
+
+Given a resource type name, <i>rtype</i>, returns a list of the
+available content types.
+
+</dd>
+<dt class="defitem"><a name="get">$server get <i>url</i> ?<i>contentTypes</i>?</a></dt><dd><p>
+
+<b>From <a href="../mani/mydomain.html">mydomain(i)</a>:</b> Retrieves the <i>url</i> from the
+server.  If the <i>url</i> cannot be retrieved for any reason, the
+server throws an error with error code <b>NOTFOUND</b>; the error
+message is a human-readable message explaining why the resource cannot
+be found.</p>
+
+<p>The <i>contentTypes</i> argument, if given, is a list of content types
+accepted by the client.  Browse the server's <code>/urlhelp</code> resource
+to see what URLs are accepted, and what content types they can
+provide.  Custom content types should be documented by the application.</p>
+
+<p>If <i>contentTypes</i> is empty, the server will return the first
+available content type for the requested <i>url</i>.  Otherwise, it
+will return the first content type listed in <i>contentTypes</i> which
+is available for the requested <i>url</i>.</p>
+
+<p>Note that the content types listed in <i>contentTypes</i> can include
+wild cards, e.g., <b>text/*</b> and <b>*/*</b>.</p>
+
+<p>On success, the <a class="iref" href="#get">get</a> command returns a dictionary with the
+following keys:
+
+</p><dl>
+
+<dt class="defitem"><a name="url">url</a></dt><dd>
+
+The complete URL given to the server.  This is of interest because the
+<a href="../mann/myagent.html">myagent(n)</a> might have performed address resolution; hence,
+the URL given to the server might not be the same as the URL given to
+the agent.
+
+</dd>
+<dt class="defitem"><a name="contentType">contentType</a></dt><dd>
+
+The content type of the returned content.
+
+</dd>
+<dt class="defitem"><a name="content">content</a></dt><dd>
+
+The returned content itself.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="resources">$server resources</a></dt><dd>
+
+Returns a list of the names of the registered resource types.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:57 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

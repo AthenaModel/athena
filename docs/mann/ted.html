@@ -1,0 +1,659 @@
+<html>
+<head>
+<title>athena 6.3.3: ted(n) -- Athena Test Execution Deputy</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>ted(n)</b> -- Athena Test Execution Deputy
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#entities">ENTITIES</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#test_match_algorithms">TEST MATCH ALGORITHMS</a></li>
+    
+
+    <li><a href="#test_constraints">TEST CONSTRAINTS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#ted_init">ted init <i>argv</i></a></li>
+<li><a class="iref" href="#ted_cleanup">ted cleanup</a></li>
+<li><a class="iref" href="#ted_create">ted create <i>name</i> ?<i>name...</i>?</a></li>
+<li><a class="iref" href="#ted_dictdiff">ted dictdiff <i>a b...</i></a></li>
+<li><a class="iref" href="#ted_dictmatch">ted dictmatch <i>a b...</i></a></li>
+<li><a class="iref" href="#ted_entity">ted entity <i>name</i> ?<i>key value...</i>?</a></li>
+<li><a class="iref" href="#ted_entity">ted entity <i>name</i> ?<i>key value...</i>?</a></li>
+<li><a class="iref" href="#ted_lock">ted lock</a></li>
+<li><a class="iref" href="#ted_notifier">ted notifier <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#ted_notifier_bind">ted notifier bind <i>subject event</i></a></li>
+<li><a class="iref" href="#ted_notifier_diff">ted notifier diff <i>ndx event dict...</i></a></li>
+<li><a class="iref" href="#ted_notifier_match">ted notifier match <i>ndx event dict...</i></a></li>
+<li><a class="iref" href="#ted_notifier_forget">ted notifier forget</a></li>
+<li><a class="iref" href="#ted_notifier_received">ted notifier received</a></li>
+<li><a class="iref" href="#ted_order">ted order ?-reject? <i>name parmdict</i></a></li>
+<li><a class="iref" href="#ted_pdict">ted pdict <i>dict</i></a></li>
+<li><a class="iref" href="#ted_query">ted query <i>sql</i></a></li>
+<li><a class="iref" href="#ted_querylist">ted querylist <i>sql</i></a></li>
+<li><a class="iref" href="#ted_sendex">ted sendex ?-error? <i>command...</i></a></li>
+<li><a class="iref" href="#ted_unit">ted unit <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#ted_unit_activity">ted unit activity <i>u</i> ?<i>a</i>?</a></li>
+<li><a class="iref" href="#ted_unit_location">ted unit location <i>u</i> ?<i>location</i>?</a></li>
+<li><a class="iref" href="#ted_unit_personnel">ted unit personnel <i>u</i> ?<i>personnel</i>?</a></li>
+<li><a class="iref" href="#match_dict">-match dict</a></li>
+<li><a class="iref" href="#match_indict">-match indict</a></li>
+<li><a class="iref" href="#match_dictglob">-match dictglob</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The test execution deputy, or TED, is a module of test harness code
+available to the test files in <span class="tt">test/app_athena</span>.  It is loaded
+automatically by the test scripts.</p>
+
+<p>Every test script begins by calling <a class="iref" href="#ted_init">ted init</a> if it hasn't
+already been called.
+
+</p>
+
+<h2><a name="entities">ENTITIES</a></h2>
+<p>TED defines a number of standard entities--neighborhoods, groups, and
+so on--for use in test suites.  The complete list is found in
+<code>test/app_athena/ted.tcl</code>.  The <a class="iref" href="#ted_create">ted create</a> routine is
+used to create them, and <a class="iref" href="#ted_entity">ted entity</a> is used to retrieve the
+parameters with which they are created.  Note that these parameters
+are defined to be used with the relevant "<b>mutate create</b>"
+commands, not with the <b>*:CREATE</b> orders (i.e., data values are
+in canonical internal form).</p>
+
+<p>The command <a class="iref" href="#ted_lock">ted lock</a> will reconcile the scenario, thus
+creating all dependent entities, and send the <b>SIM:LOCK</b> order.</p>
+
+<p>The <a class="iref" href="#ted_cleanup">ted cleanup</a> command will
+delete all entities created using <a class="iref" href="#ted_create">ted create</a>, among other things.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This section documents the commands provided by the TED.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="ted_init">ted init <i>argv</i></a></dt><dd><p>
+
+This command should be called exactly once each time tests are executed.
+The <i>argv</i> parameter is the argument list given to the test script;
+if it includes the <span class="tt">-notk</span> option, Tk will not be loaded.  (Tests requiring
+Tk should use "<span class="tt">-constraints tk</span>".)  Any remaining arguments are passed
+to tcltest(n).</p>
+
+<p>Then, this command loads the app_athena(n) code and initializes the 
+athena(1) application in a neutral state, destroying its GUI, and initializes
+tcltest(n).  If the <span class="tt">test/app_athena/all_tests.test</span> script is run, all 
+of the app_athena(n) tests will run; otherwise, the named script will run.
+
+</p>
+</dd>
+<dt class="defitem"><a name="ted_cleanup">ted cleanup</a></dt><dd><p>
+
+This command is to be used in a test's <code>-cleanup</code> script.
+It cleans up in the following ways:
+
+</p><ul>
+  <li> It calls <a class="iref" href="#ted_notifier_forget">ted notifier forget</a>.
+  </li><li> It deletes entities from the scenario tables in the RDB and
+       reconfigures the related modules.
+  </li><li> It clears the CIF history.
+  </li><li> It resets all <a href="../mansim/parms.html">parms(sim)</a> parameters to their
+       programmatic defaults.
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="ted_create">ted create <i>name</i> ?<i>name...</i>?</a></dt><dd>
+
+Creates one or more named entities using "<code>mutate
+create</code>".  If an entity depends on the existence of
+other entities (e.g., as the civilian group SHIA depends on
+the neighborhood NB1), the "parent" entities are created automatically.
+
+</dd>
+<dt class="defitem"><a name="ted_dictdiff">ted dictdiff <i>a b...</i></a></dt><dd><p>
+
+Compares two dictionaries <i>a</i> and <i>b</i> and outputs a
+pretty-printed list of differences, formatted to look nice in a test's
+<code>-result</code>.  Dictionary <i>a</i> is always specified as a
+single argument; dictionary <i>b</i> may be specified as a single
+argument or as keys and values on the command line.</p>
+
+<p>The output, though pretty-printed, is a valid Tcl list-of-lists, with
+each entry representing a value in <i>a</i> or <i>b</i> that's
+different than what's in the other.  Each entry looks like this:
+
+</p><pre>
+    {A|B <i>key</i> <i>value</i>}
+</pre>
+
+</dd>
+<dt class="defitem"><a name="ted_dictmatch">ted dictmatch <i>a b...</i></a></dt><dd><p>
+
+Compares a dictionary <i>a</i> with a dictionary of glob-patterns
+<i>b</i> and outputs a pretty-printed list of entries of <i>a</i> which
+do not match the entries of <i>b</i>.  Keys appearing in <i>a</i>
+but not in <i>b</i> are ignored; keys appearing in <i>b</i> but not in
+<i>a</i> appear in the output as "<i>key</i> *null*".</p>
+
+<p>The output is either "OK", if all patterns match, or
+a list of the keys and values that didn't match, with one key/value
+pair per line, indented so as to fit nicely in a <code>-result</code>.
+
+
+</p>
+</dd>
+<dt class="defitem"><a name="ted_entity">ted entity <i>name</i> ?<i>dict</i>?</a></dt>
+<dt class="defitem"><a name="ted_entity">ted entity <i>name</i> ?<i>key value...</i>?</a></dt><dd>
+
+Returns a "<b>mutate create</b>" parameter dictionary for the
+named entity.  If additional parameters are provided, either as a
+single <i>dict</i> or as individual keys and values, they are merged
+into the returned dictionary.
+
+</dd>
+<dt class="defitem"><a name="ted_lock">ted lock</a></dt><dd>
+
+Locks the scenario so that time can advance, but first calls
+<b>scenario reconcile</b> so that all dependent entities are
+created.
+
+</dd>
+<dt class="defitem"><a name="ted_notifier">ted notifier <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+The deputy can bind to any number of <a href="../../../mars/docs/mann/notifier.html">notifier(n)</a> events; the
+received events are simply accumulated in a list without further
+processing.
+
+</p><dl>
+
+<dt class="defitem"><a name="ted_notifier_bind">ted notifier bind <i>subject event</i></a></dt><dd>
+
+Binds the deputy to the specified <i>subject</i> and <i>event</i>.
+
+</dd>
+<dt class="defitem"><a name="ted_notifier_diff">ted notifier diff <i>ndx event dict...</i></a></dt><dd>
+
+Used to verify that notifier events were sent as expected.
+First, verifies that the <i>ndx</i> event in the
+<a class="iref" href="#ted_notifier_received">ted notifier received</a> queue has the right <i>event</i> type.
+Next, computes and returns the <a class="iref" href="#ted_dictdiff">ted dictdiff</a> of the
+event's dictionary with <i>dict</i>, which may be specified as a single
+argument or as keys and values on the command line.  <b>Note: This
+presumes that the event has one argument, which is a dictionary!</b>
+
+</dd>
+<dt class="defitem"><a name="ted_notifier_match">ted notifier match <i>ndx event dict...</i></a></dt><dd>
+
+Used to verify that notifier events were sent as expected.
+First, verifies that the <i>ndx</i> event in the
+<a class="iref" href="#ted_notifier_received">ted notifier received</a> queue has the right <i>event</i> type.
+Next, does a <a class="iref" href="#ted_dictmatch">ted dictmatch</a> of the keys and patterns in
+<i>dict</i> with the event's dictionary.  Note that <i>dict</i>
+may be specified as a single argument or as keys and values on the
+command line.  <b>Note: This presumes that the event has one argument,
+which is a dictionary!</b>
+
+</dd>
+<dt class="defitem"><a name="ted_notifier_forget">ted notifier forget</a></dt><dd>
+
+Causes the deputy to forget all bindings and received events.  This
+should be done in the <code>-cleanup</code> of any test that uses
+<a class="iref" href="#ted_notifier">ted notifier</a>.
+
+</dd>
+<dt class="defitem"><a name="ted_notifier_received">ted notifier received</a></dt><dd>
+
+Returns the events received since the last
+<a class="iref" href="#ted_notifier_forget">ted notifier forget</a>, each pretty-printed and indented on its
+own line, so as to look nice as a test's <code>-result</code>.  Note
+that the output is also a valid Tcl list of lists, one for each event,
+where each event list has the syntax "<i>subject event args...</i>".
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="ted_order">ted order ?-reject? <i>name parmdict</i></a></dt><dd>
+
+Sends the order with the specified <i>name</i> and <i>parmdict</i>,
+using the <b>normal</b> order mode.  By default, the order is expected 
+to be successful; if
+<b>-reject</b> is specified, the order should be rejected, i.e.,
+should have an error code of REJECT.  If so, <a class="iref" href="#ted_order">ted order</a>
+returns a pretty-printed REJECT dictionary; otherwise, the rejection
+doesn't follow the protocol.  On any other kind of error,
+<a class="iref" href="#ted_order">ted order</a> propagates the error.
+
+</dd>
+<dt class="defitem"><a name="ted_pdict">ted pdict <i>dict</i></a></dt><dd>
+
+Pretty-prints a dictionary, with keys and values in left-justified
+parallel columns, indented to look nice in the <b>-result</b> of a
+test.
+
+</dd>
+<dt class="defitem"><a name="ted_query">ted query <i>sql</i></a></dt><dd>
+
+Does a query on the RDB given the <i>sql</i>, and pretty-prints the
+result so that it looks nice in a test <b>-result</b>.  The result is
+in standard tabular format.
+
+</dd>
+<dt class="defitem"><a name="ted_querylist">ted querylist <i>sql</i></a></dt><dd>
+
+Does a query on the RDB given the <i>sql</i>, and pretty-prints the
+result so that it looks nice in a test <b>-result</b>.  The result is
+in "list" format, with each row in the result written as a block
+of column name/value pairs.
+
+</dd>
+<dt class="defitem"><a name="ted_sendex">ted sendex ?-error? <i>command...</i></a></dt><dd><p>
+
+Sends the <i>command...</i> to the Athena executive as the "test"
+client, and returns the result.  <a class="iref" href="#ted_sendex">ted sendex</a> is therefore used
+when testing executive commands.  If the <code>-error</code> option
+is included, <a class="iref" href="#ted_sendex">ted sendex</a> expects the command to throw an
+error, and will return the error message.  If the command does not
+throw an error in this case, <a class="iref" href="#ted_sendex">ted sendex</a> will in turn throw an
+error.</p>
+
+<p>A <i>command...</i> may be passed as a single argument or as
+individual arguments which are aggregated into a single command.</p>
+
+<p><b>TBD:</b> This command pre-dates the Athena executive interface,
+and so commands are currently sent directly to the main interpreter.
+This will need to be fixed eventually.
+
+</p>
+</dd>
+<dt class="defitem"><a name="ted_unit">ted unit <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+Commands for easily manipulating units.
+
+</p><dl>
+
+<dt class="defitem"><a name="ted_unit_activity">ted unit activity <i>u</i> ?<i>a</i>?</a></dt><dd>
+
+Sets/queries the unit's activity.
+
+</dd>
+<dt class="defitem"><a name="ted_unit_location">ted unit location <i>u</i> ?<i>location</i>?</a></dt><dd>
+
+Moves unit <i>u</i> to the specified <i>location</i> (if given), which
+may be a neighborhood name or a map reference.  Returns the unit's
+location.
+
+</dd>
+<dt class="defitem"><a name="ted_unit_personnel">ted unit personnel <i>u</i> ?<i>personnel</i>?</a></dt><dd>
+
+Sets/queries the unit's personnel.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="test_match_algorithms">TEST MATCH ALGORITHMS</a></h2>
+<p>ted(n) defines the following custom resulting matching
+algorithms, available via the TclTest <code>-match</code> option:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="match_dict">-match dict</a></dt><dd>
+
+The <code>-result</code> is a dictionary; the test result must be a 
+dictionary with exactly the same keys and all keys must have 
+identical values.
+
+</dd>
+<dt class="defitem"><a name="match_indict">-match indict</a></dt><dd>
+
+The <code>-result</code> is a dictionary; the test result must be a dictionary
+containing at least the keys in the <code>-result</code>, and those keys
+must have identical values.
+
+</dd>
+<dt class="defitem"><a name="match_dictglob">-match dictglob</a></dt><dd>
+
+The <code>-result</code> is a dictionary whose values may contain
+glob-wildcards; the test result must be a 
+dictionary with exactly the same keys and the key values must match
+the patterns in <code>-result</code>.
+
+</dd>
+</dl>
+
+<h2><a name="test_constraints">TEST CONSTRAINTS</a></h2>
+<p>ted(n) defines one constraint, <b>tk</b>, which is to be used with tests
+that require Tk.  The test suite can be run with a <span class="tt">-notk</span> flag to
+prevent Tk from being loaded.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:49:00 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

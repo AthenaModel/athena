@@ -1,0 +1,547 @@
+<html>
+<head>
+<title>athena 6.3.3: executive(n) -- Athena Executive Interpreter, submodule of athena(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>executive(n)</b> -- Athena Executive Interpreter, submodule of <a href="../mann/athena.html">athena(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#internal_scripts">INTERNAL SCRIPTS</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require athena 6.3.3
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#executive">executive <i>obj</i> <i>adb_</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#executive-executivecmd">-executivecmd <i>cmd</i></a></li>
+<li><a class="iref" href="#ensemble"><i>obj</i> ensemble ...</a></li>
+<li><a class="iref" href="#expr"><i>obj</i> expr ...</a></li>
+<li><a class="iref" href="#function"><i>obj</i> function ...</a></li>
+<li><a class="iref" href="#proc"><i>obj</i> proc ...</a></li>
+<li><a class="iref" href="#smartalias"><i>obj</i> smartalias ...</a></li>
+<li><a class="iref" href="#call"><i>obj</i> call <i>scriptName</i></a></li>
+<li><a class="iref" href="#check"><i>obj</i> check <i>script</i></a></li>
+<li><a class="iref" href="#commands"><i>obj</i> commands</a></li>
+<li><a class="iref" href="#errtrace"><i>obj</i> errtrace</a></li>
+<li><a class="iref" href="#eval"><i>obj</i> eval <i>script</i></a></li>
+<li><a class="iref" href="#reset"><i>obj</i> reset</a></li>
+<li><a class="iref" href="#script"><i>obj</i> script <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#script_names"><i>obj</i> script names</a></li>
+<li><a class="iref" href="#script_list"><i>obj</i> script list</a></li>
+<li><a class="iref" href="#script_get"><i>obj</i> script get <i>name</i></a></li>
+<li><a class="iref" href="#script_exists"><i>obj</i> script exists <i>name</i></a></li>
+<li><a class="iref" href="#script_load"><i>obj</i> script load <i>name</i></a></li>
+<li><a class="iref" href="#script_save"><i>obj</i> script save <i>name</i> ?<i>body</i>? ?-silent?</a></li>
+<li><a class="iref" href="#script_auto"><i>obj</i> script auto <i>name</i> ?<i>flag</i>?</a></li>
+<li><a class="iref" href="#script_import"><i>obj</i> script import <i>filename</i></a></li>
+<li><a class="iref" href="#script_rename"><i>obj</i> script rename <i>oldName newName</i></a></li>
+<li><a class="iref" href="#script_sequence"><i>obj</i> script sequence <i>name priority</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>Each instance of <a href="../mann/athena.html">athena(n)</a> contains an executive interpreter for 
+processing scripts and expressions; the interpreter's complete API is
+exposed via the <a href="../mann/athena.html">athena(n)</a> instance's <span class="tt">executive</span> subcommand.</p>
+
+<p>The heart of the executive is a <a href="../../../mars/docs/mann/marsutil.html">marsutil(n)</a>
+<a href="../../../mars/docs/mann/smartinterp.html">smartinterp(n)</a> object; many of the executive's commands are
+delegated to the <a href="../../../mars/docs/mann/smartinterp.html">smartinterp(n)</a>.</p>
+
+<p>This man page documents the executive API.
+
+</p>
+
+<h2><a name="internal_scripts">INTERNAL SCRIPTS</a></h2>
+<p>The executive's <a class="iref" href="#script">script</a> command is used to manage the scenario's
+collection of internal scripts.  Any number of internal scripts may
+be saved using <a class="iref" href="#script_save">script save</a>.  A saved script can be executed on 
+demand, using the <a class="iref" href="#call">call</a> method or executive command; alternatively,
+a script that defines Tcl procedures can be loaded automaticaly on 
+<a class="iref" href="#reset">reset</a> by setting its <a class="iref" href="#script_auto">script auto</a> flag.</p>
+
+<p>Scripts can be used to automate tasks (i.e., the set up for particular
+excursions from a base case) or with EXECUTIVE tactics.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>executive(n) provides the following commands for use by the application.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="executive">executive <i>obj</i> <i>adb_</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new <a class="iref" href="#executive">executive</a> instance named <i>obj</i>, and
+returns the fully qualified object name.  The <i>adb_</i> is the name of the
+enclosing <a href="../mann/athenadb.html">athenadb(n)</a> object.  The object takes the following 
+options:
+
+</p><dl>
+
+<dt class="defopt"><a name="executive-executivecmd">-executivecmd <i>cmd</i></a></dt><dd>
+
+This option names a command to be called whenever the executive is reset.
+The <i>cmd</i> is a prefix to be called with one additional argument, the 
+executive object itself.  The application will usually use this to define
+additional application-specific commands for use in executive scripts.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+<p>Each instance of executive(n) provides the following.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="ensemble"><i>obj</i> ensemble ...</a></dt>
+<dt class="defitem"><a name="expr"><i>obj</i> expr ...</a></dt>
+<dt class="defitem"><a name="function"><i>obj</i> function ...</a></dt>
+<dt class="defitem"><a name="proc"><i>obj</i> proc ...</a></dt>
+<dt class="defitem"><a name="smartalias"><i>obj</i> smartalias ...</a></dt><dd>
+
+These commands are delegated to the underlying
+<a href="../../../mars/docs/mann/smartalias.html">smartalias(n)</a> interpreter; they are used to define new
+executive commands and functions.  See the <a href="../../../mars/docs/mann/smartalias.html">smartalias(n)</a>
+man page for details.
+
+</dd>
+<dt class="defitem"><a name="call"><i>obj</i> call <i>scriptName</i></a></dt><dd>
+
+Executes the named script in the interpreter.  The <i>scriptName</i> should
+either be a script name as returned by <a class="iref" href="#script_names">script names</a>, or an 
+absolute or relative path to a file on the local disk.
+
+</dd>
+<dt class="defitem"><a name="check"><i>obj</i> check <i>script</i></a></dt><dd>
+
+Checks a script for obvious syntax errors.  Returns a flat list of
+line numbers and error messages.
+
+</dd>
+<dt class="defitem"><a name="commands"><i>obj</i> commands</a></dt><dd>
+
+Returns a list of the commands defined in the interpreter.
+
+</dd>
+<dt class="defitem"><a name="errtrace"><i>obj</i> errtrace</a></dt><dd>
+
+Returns the error stack trace from the last <a class="iref" href="#eval">eval</a> or <a class="iref" href="#call">call</a> 
+that threw an error.
+
+</dd>
+<dt class="defitem"><a name="eval"><i>obj</i> eval <i>script</i></a></dt><dd>
+
+Evaluates the script in the interpreter, returning the result.  If the
+script throws an error, the stack trace is available by calling
+<a class="iref" href="#errtrace">errtrace</a>.
+
+</dd>
+<dt class="defitem"><a name="reset"><i>obj</i> reset</a></dt><dd>
+
+Resets the executive interpreter, restoring it to a pristine state with
+all standard executive commands and functions defined.  If there is a
+<span class="tt">-executivecmd</span> callback, it will be called when the reset is complete,
+allowing application commands to be defined in the interpreter.
+
+</dd>
+<dt class="defitem"><a name="script"><i>obj</i> script <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+The client can save scripts into the scenario for later execution
+via the <i>call</i> method or executive command.  This command's 
+subcommands are used to manage the scenario's collection of scripts.
+
+</p><dl>
+
+<dt class="defitem"><a name="script_names"><i>obj</i> script names</a></dt><dd>
+
+Returns a list of the names of the scripts in sequence order.
+
+</dd>
+<dt class="defitem"><a name="script_list"><i>obj</i> script list</a></dt><dd>
+
+Returns a human-readable list of the names of the defined executive
+scripts in sequence order, one per line.  The result is not a 
+proper Tcl list if any of the names contain whitespace.
+
+</dd>
+<dt class="defitem"><a name="script_get"><i>obj</i> script get <i>name</i></a></dt><dd>
+
+Returns the body of the named script.
+
+</dd>
+<dt class="defitem"><a name="script_exists"><i>obj</i> script exists <i>name</i></a></dt><dd>
+
+Returns 1 if there's a script with the given name, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="script_load"><i>obj</i> script load <i>name</i></a></dt><dd>
+
+Loads the named script into the executive interpreter.  No special 
+error handling is done; it's assumed that the caller will handle any
+errors.
+
+</dd>
+<dt class="defitem"><a name="script_save"><i>obj</i> script save <i>name</i> ?<i>body</i>? ?-silent?</a></dt><dd><p>
+
+Saves a script called <i>name</i> into the scenario.  If <i>body</i> is given,
+it's the script's new body; if not, the script is given a body consisting
+of a single header comment.</p>
+
+<p>By default, the executive will send the <span class="tt"><code>&lt;Scripts&gt;</code></span> event on 
+save; if the <span class="tt">-silent</span> option is given, it will not.  (See
+<a href="../mann/athena.html">athena(n)</a> for more about notifier events.)
+
+</p>
+</dd>
+<dt class="defitem"><a name="script_auto"><i>obj</i> script auto <i>name</i> ?<i>flag</i>?</a></dt><dd>
+
+Queries and sets the value of the named script's "auto" flag,
+which is false by default.  If true, the script will be loaded
+automatically on executive <i>reset</i>.
+
+</dd>
+<dt class="defitem"><a name="script_import"><i>obj</i> script import <i>filename</i></a></dt><dd>
+
+Imports a script from the named file into the scenario; a name is
+assigned automatically.
+
+</dd>
+<dt class="defitem"><a name="script_rename"><i>obj</i> script rename <i>oldName newName</i></a></dt><dd>
+
+Renames a script.
+
+</dd>
+<dt class="defitem"><a name="script_sequence"><i>obj</i> script sequence <i>name priority</i></a></dt><dd>
+
+Scripts are saved in priority order; on <a class="iref" href="#reset">reset</a>, all scripts with
+their <a class="iref" href="#script_auto">script auto</a> flag set are <a class="iref" href="#script_load">script load</a>ed in priority order.  This
+command is used to move the named script in the sequence.  The 
+<i>priority</i> can be one of <b>top</b>, <b>raise</b>, <b>lower</b>, or <b>bottom</b>.
+
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:57 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

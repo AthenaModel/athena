@@ -1,0 +1,611 @@
+<html>
+<head>
+<title>athena 6.3.3: vardiff(n) -- Athena Scenario Variable Difference, submodule of athena(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>vardiff(n)</b> -- Athena Scenario Variable Difference, submodule of <a href="../mann/athena.html">athena(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#metadata">METADATA</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#public_instance_commands">PUBLIC INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#private_instance_commands">PRIVATE INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require athena 6.3.3
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#type">meta type <i>vartype</i></a></li>
+<li><a class="iref" href="#category">meta category <i>category</i></a></li>
+<li><a class="iref" href="#normfunc">meta normfunc <i>func</i></a></li>
+<li><a class="iref" href="#afactors">meta afactors <i>dict</i></a></li>
+<li><a class="iref" href="#leaf">meta leaf <i>boolean</i></a></li>
+<li><a class="iref" href="#::athena::vardiff_create">::athena::vardiff create <i>obj</i> <i>comp keydict val1 val2</i></a></li>
+<li><a class="iref" href="#::athena::vardiff_new">::athena::vardiff new <i>comp keydict val1 val2</i></a></li>
+<li><a class="iref" href="#context"><i>obj</i> context</a></li>
+<li><a class="iref" href="#delta"><i>obj</i> delta</a></li>
+<li><a class="iref" href="#fancy"><i>obj</i> fancy <i>value</i></a></li>
+<li><a class="iref" href="#fancy1"><i>obj</i> fancy1</a></li>
+<li><a class="iref" href="#fancy2"><i>obj</i> fancy2</a></li>
+<li><a class="iref" href="#fmt1"><i>obj</i> fmt1</a></li>
+<li><a class="iref" href="#fmt2"><i>obj</i> fmt2</a></li>
+<li><a class="iref" href="#format"><i>obj</i> format <i>value</i></a></li>
+<li><a class="iref" href="#gotInputs"><i>obj</i> gotInputs</a></li>
+<li><a class="iref" href="#huddle"><i>obj</i> huddle</a></li>
+<li><a class="iref" href="#inputs"><i>obj</i> inputs</a></li>
+<li><a class="iref" href="#key"><i>obj</i> key <i>name</i></a></li>
+<li><a class="iref" href="#keys"><i>obj</i> keys</a></li>
+<li><a class="iref" href="#keydict"><i>obj</i> keydict</a></li>
+<li><a class="iref" href="#name"><i>obj</i> name</a></li>
+<li><a class="iref" href="#narrative"><i>obj</i> narrative</a></li>
+<li><a class="iref" href="#trivial"><i>obj</i> trivial</a></li>
+<li><a class="iref" href="#val1"><i>obj</i> val1</a></li>
+<li><a class="iref" href="#val2"><i>obj</i> val2</a></li>
+<li><a class="iref" href="#view"><i>obj</i> view</a></li>
+<li><a class="iref" href="#AddInput"><i>obj</i> AddInput <i>vartype val1 val2 keys...</i></a></li>
+<li><a class="iref" href="#FindInputs"><i>obj</i> FindInputs</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The <a href="../mann/comparison.html">comparison(n)</a> object compares two
+scenarios for significant differences, and returns a
+<a href="../mann/comparison.html">comparison(n)</a> object that contains them.  The differences are 
+captures as a set of <a href="../mann/vardiff.html">vardiff(n)</a> objects, each of which represents
+a significant difference in a particular variable, e.g., a significant
+different in the mood of a particular civilian group.  Then, the user
+may produce a "causality" chain for a particular significant output,
+which traces the difference back through the output variable's inputs,
+to their inputs and beyond; these differences are also captured as
+<a href="../mann/vardiff.html">vardiff(n)</a> objects.</p>
+
+<p>The <a href="../mann/vardiff.html">vardiff(n)</a> class is an abstract base class; it is subclassed
+for each of the important variable types, e.g., group mood, neighborhood
+mood, and average neighborhood security.</p>
+
+<p>This man page describes the conventions and methods common to all 
+<a href="../mann/vardiff.html">vardiff(n)</a> subclasses.
+
+</p>
+
+<h2><a name="metadata">METADATA</a></h2>
+<p>Each vardiff(n) subclass is expected to define the following metadata
+using the <a href="../../../mars/docs/mann/oohelpers.html#meta">meta</a> class definition statement.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="type">meta type <i>vartype</i></a></dt><dd>
+
+States the variable type name, e.g., <b>sat</b>, <b>nbmood</b>.  By convention,
+this will also be the bare name of the subclass, e.g., 
+<span class="tt">::athena::vardiff::sat</span>, <span class="tt">::athena::vardiff::nbmood</span>.
+
+</dd>
+<dt class="defitem"><a name="category">meta category <i>category</i></a></dt><dd>
+States the variable's PMESII category, e.g., <b>political</b>, <b>military</b>,
+or <b>social</b>.
+
+</dd>
+<dt class="defitem"><a name="normfunc">meta normfunc <i>func</i></a></dt><dd>
+
+Specifies the normalization function to use when scoring a set of 
+variables of this type.  The <i>func</i> may be a constant number or 
+one of a number of symbols; see <a href="../mann/comparison.html#normalizer">normalizer</a> for
+the full set and for their meanings.
+
+</dd>
+<dt class="defitem"><a name="afactors">meta afactors <i>dict</i></a></dt><dd>
+
+Specifies a dictionary of <i>A</i> factors by input variable type, e.g.,
+the <b>mood</b> type depends on the <i>sat</i> and <i>population</i> types.  The
+<i>A</i> factor is a factor used to rate the type's importance relative to
+other variable types in the same context as an aid to scoring.  The 
+nominal value is 1.0.
+
+</dd>
+<dt class="defitem"><a name="leaf">meta leaf <i>boolean</i></a></dt><dd>
+
+If 1, the vardiff is a leaf in the causality tree, i.e., it either has
+no inputs or input chaining has not yet been implemented.  If 0, inputs
+can and will be chained.
+
+</dd>
+</dl>
+
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>vardiff(n) provides the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="::athena::vardiff_create">::athena::vardiff create <i>obj</i> <i>comp keydict val1 val2</i></a></dt>
+<dt class="defitem"><a name="::athena::vardiff_new">::athena::vardiff new <i>comp keydict val1 val2</i></a></dt><dd><p>
+
+Creates a new vardiff(n) instance, returning the fully qualified object 
+name.  The object exists in the context of <a href="../mann/comparison.html">comparison(n)</a> object
+<i>comp</i>.  Instances of this type of variable are distinguished by their
+key dictionary, <i>keydict</i>, which names the relevant keys and their values,
+e.g., <span class="tt">{g SHIA c SFT}</span>.  The vardiff is created for values 
+<i>val1</i> and <i>val2</i>, from the two scenarios being compared.</p>
+
+<p><b>NOTE:</b> Subclass constructors will take the relevant key values as 
+additional arguments, and construct the <i>keydict</i> internally.  Thus, the
+argument list for a <b>sat</b> vardiff might look like this:
+<span class="tt">{<i>comp</i> 25.5 15.5 SHIA SFT}</span>.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="public_instance_commands">PUBLIC INSTANCE COMMANDS</a></h2>
+<p>Each instance of vardiff(n) provides the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="context"><i>obj</i> context</a></dt><dd>
+
+<b>Subclasses should override this method as needed.</b>
+Returns a string of context information about the difference, for 
+example the numeric range.
+
+</dd>
+<dt class="defitem"><a name="delta"><i>obj</i> delta</a></dt><dd>
+
+For variables with numeric values, returns the absolute difference
+between <a class="iref" href="#val1">val1</a> and <a class="iref" href="#val2">val2</a>.  For variables with symbolic
+values, returns some number representing the degree of difference; or,
+minimally, a constant 1.0.
+
+</dd>
+<dt class="defitem"><a name="fancy"><i>obj</i> fancy <i>value</i></a></dt><dd>
+
+<b>Subclasses should override this method as needed.</b>
+Given a <i>value</i> of the variable's type, formats it for display in a 
+"fancy" way, i.e., includes symbolic values and units as well as the
+bare number.rounds decimals to one or two decimal places.  By 
+default, calls <a class="iref" href="#format">format</a>.
+
+</dd>
+<dt class="defitem"><a name="fancy1"><i>obj</i> fancy1</a></dt><dd>
+
+Returns the result of calling <a class="iref" href="#fancy">fancy</a> on <a class="iref" href="#val1">val1</a>.
+
+</dd>
+<dt class="defitem"><a name="fancy2"><i>obj</i> fancy2</a></dt><dd>
+
+Returns the result of calling <a class="iref" href="#fancy">fancy</a> on <a class="iref" href="#val2">val2</a>.
+
+</dd>
+<dt class="defitem"><a name="fmt1"><i>obj</i> fmt1</a></dt><dd>
+
+Returns the result of calling <a class="iref" href="#format">format</a> on <a class="iref" href="#val1">val1</a>.
+
+</dd>
+<dt class="defitem"><a name="fmt2"><i>obj</i> fmt2</a></dt><dd>
+
+Returns the result of calling <a class="iref" href="#format">format</a> on <a class="iref" href="#val2">val2</a>.
+
+</dd>
+<dt class="defitem"><a name="format"><i>obj</i> format <i>value</i></a></dt><dd>
+
+<b>Subclasses should override this method as needed.</b>
+Given a <i>value</i> of the variable's type, formats it for display, i.e.,
+rounds decimals to one or two decimal places.  By 
+default, returns <i>value</i> unchanged.
+
+</dd>
+<dt class="defitem"><a name="gotInputs"><i>obj</i> gotInputs</a></dt><dd>
+
+Returns 1 if we've computed significant inputs for this object, and
+0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="huddle"><i>obj</i> huddle</a></dt><dd>
+
+Returns a huddle(n) object corresponding to <i>obj</i>.  It has a field
+for each entry in the <a class="iref" href="#view">view</a>, plus one for the dictionary of
+of input names and scores.
+
+</dd>
+<dt class="defitem"><a name="inputs"><i>obj</i> inputs</a></dt><dd>
+
+Returns a dictionary of the input <a href="../mann/vardiff.html">vardiff(n)</a>
+objects with their scores in the context of this variable, computing
+them if necessary.
+
+</dd>
+<dt class="defitem"><a name="key"><i>obj</i> key <i>name</i></a></dt><dd>
+
+Returns the value of the named key.
+
+</dd>
+<dt class="defitem"><a name="keys"><i>obj</i> keys</a></dt><dd>
+
+Returns the names of the variable's key parameters in canonical order.
+
+</dd>
+<dt class="defitem"><a name="keydict"><i>obj</i> keydict</a></dt><dd>
+
+Returns the variable's key dictionary.
+
+</dd>
+<dt class="defitem"><a name="name"><i>obj</i> name</a></dt><dd>
+
+Returns the variable's name, which is a qualified entity ID (qid) based
+on the variable type and the key values.  For example, the satisfaction
+of group SHIA with concern SFT has a variable type name of <b>sat</b> and
+key values <b>SHIA</b> and <b>SFT</b>; the qid is then "sat/SHIA/SFT".
+
+</dd>
+<dt class="defitem"><a name="narrative"><i>obj</i> narrative</a></dt><dd>
+
+<b>Subclasses should override this method as needed.</b>
+Returns a brief narrative description of the difference between 
+<a class="iref" href="#val1">val1</a> and <a class="iref" href="#val2">val2</a>.
+
+</dd>
+<dt class="defitem"><a name="trivial"><i>obj</i> trivial</a></dt><dd>
+
+<b>Subclasses should override this method as needed.</b>
+Returns 1 if the difference between <a class="iref" href="#val1">val1</a> and <a class="iref" href="#val2">val2</a> is 
+trivial, and 0 otherwise.  By default, this method simply returns 0; 
+we wouldn't normally create a <a href="../mann/vardiff.html">vardiff(n)</a> instance unless the 
+two values were known to be non-identical.  Subclasses can override this 
+method to provide an additional check, e.g., an epsilon test.
+
+</dd>
+<dt class="defitem"><a name="val1"><i>obj</i> val1</a></dt><dd>
+
+Returns the raw value of the variable in the first scenario.
+
+</dd>
+<dt class="defitem"><a name="val2"><i>obj</i> val2</a></dt><dd>
+
+Returns the raw value of the variable in the second scenario.
+
+</dd>
+<dt class="defitem"><a name="view"><i>obj</i> view</a></dt><dd>
+
+Returns a view dictionary for the vardiff, including the type, name,
+category, key values, and so forth.
+
+</dd>
+</dl>
+
+<h2><a name="private_instance_commands">PRIVATE INSTANCE COMMANDS</a></h2>
+<p>Each instance of vardiff(n) provides the following private subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="AddInput"><i>obj</i> AddInput <i>vartype val1 val2 keys...</i></a></dt><dd>
+
+Given a vardiff(n) type, a pair of values, and the variable keys, checks
+whether the two values are non-trivially different and if so saves a
+vardiff object for them.  This is intended to be used in each subclass's
+<a class="iref" href="#FindInputs">FindInputs</a> method.
+
+</dd>
+<dt class="defitem"><a name="FindInputs"><i>obj</i> FindInputs</a></dt><dd>
+
+<b>Subclasses should override this method as needed.</b>
+Compares the inputs to the variable across the two scenarios,
+and adds possible differences using the private method <a class="iref" href="#AddInput">AddInput</a>.
+The differences are also added to the <a href="../mann/comparison.html">comparison(n)</a>
+object.  This is used when drilling down to provide an explanation of 
+a particular difference.
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:49:01 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

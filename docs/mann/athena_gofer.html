@@ -1,0 +1,446 @@
+<html>
+<head>
+<title>athena 6.3.3: athena_gofer(n) -- Athena Gofer Component, submodule of athena(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>athena_gofer(n)</b> -- Athena Gofer Component, submodule of <a href="../mann/athena.html">athena(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    <ul>
+
+    <li><a href="#public_subcommands">Public Subcommands</a></li>
+
+    <li><a href="#private_subcommands">Private Subcommands</a></li>
+
+</ul>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require athena 6.3.3
+namespace import ::athena::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#eval"><i>adb</i> gofer eval <i>gdict</i></a></li>
+<li><a class="iref" href="#get"><i>adb</i> gofer get <i>typename rulename</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#gtype"><i>adb</i> gofer gtype <i>typename</i></a></li>
+<li><a class="iref" href="#keys"><i>adb</i> gofer keys <i>typename</i></a></li>
+<li><a class="iref" href="#make"><i>adb</i> gofer make <i>typename rulename</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#narrative"><i>adb</i> gofer narrative <i>gdict</i> ?-brief?</a></li>
+<li><a class="iref" href="#validate"><i>adb</i> gofer validate <i>gdict</i></a></li>
+<li><a class="iref" href="#delegate"><i>adb</i> gofer <i>typename</i> <i>subcommand args...</i></a></li>
+<li><a class="iref" href="#check"><i>adb</i> gofer check</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This man page describes a component of the <a href="../mann/athena.html">athena(n)</a> package
+that allows the user to select and retrieve specific kinds of values 
+according to rules.</p>
+
+<p>A <i>gofer value</i> is a member of a <i>gofer type</i> that represents a
+particular data value or set of values to be returned on demand. This
+component defines a set of commands used to create, validate, and 
+evaluate gofer values.</p>
+
+<p>Each gofer type has a type name, e.g., <b>CIVGROUPS</b> and defines one or
+more rules for retrieving data of that type, each of which has a rule name, 
+e.g., <b>BY_VALUE</b>.</p>
+
+<p>A gofer value, then, is a dictionary which contains at least two keys, 
+<span class="tt">_type</span> and <span class="tt">_rule</span>, which are set to the gofer type name and rule 
+name respectively.  The number and names of the remaining keys are type 
+and rule-specific.</p>
+
+<p>The complete set of gofer types defined by <a href="../mann/athena.html">athena(n)</a> may be found
+in the Athena on-line help.</p>
+
+<p>The component is accessible as a subcommand of the <a href="../mann/athena.html">athena(n)</a> and
+<a href="../mann/athenadb.html">athenadb(n)</a> objects; <a href="#public_subcommands">Public Subcommands</a> are accessible
+from <a href="../mann/athena.html">athena(n)</a> and (usually) from <a href="../mann/athenadb.html">athenadb(n)</a>, and
+<a href="#private_subcommands">Private Subcommands</a> only from <a href="../mann/athenadb.html">athenadb(n)</a>.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<h2><a name="public_subcommands">Public Subcommands</a></h2>
+<p>The <span class="tt"><i>adb</i> gofer</span> command takes the following subcommands,
+where <i>adb</i> is an instance of <a href="../mann/athena.html">athena(n)</a>.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="eval"><i>adb</i> gofer eval <i>gdict</i></a></dt><dd>
+
+Evaluates gofer value <i>gdict</i>, returning the requested data according
+to the type and rule.
+
+</dd>
+<dt class="defitem"><a name="get"><i>adb</i> gofer get <i>typename rulename</i> ?<i>args...</i>?</a></dt><dd>
+
+Makes a new gofer value with the given <i>typename</i>, <i>rulename</i> and
+argument list, and immediately evaluates it, returning the result.
+
+</dd>
+<dt class="defitem"><a name="gtype"><i>adb</i> gofer gtype <i>typename</i></a></dt><dd>
+
+Returns the Tcl object that implements the named gofer type.
+
+</dd>
+<dt class="defitem"><a name="keys"><i>adb</i> gofer keys <i>typename</i></a></dt><dd>
+
+Returns the gofer type's keys, i.e., the list of parameter names
+defined by the type's rules.
+
+</dd>
+<dt class="defitem"><a name="make"><i>adb</i> gofer make <i>typename rulename</i> ?<i>args...</i>?</a></dt><dd>
+
+Makes a new gofer value with the given <i>typename</i>, <i>rulename</i> and
+argument list.  The arguments must match the rule's parameter list.
+
+</dd>
+<dt class="defitem"><a name="narrative"><i>adb</i> gofer narrative <i>gdict</i> ?-brief?</a></dt><dd>
+
+Returns a narrative string for gofer value <i>gdict</i>.  The narrative
+describes the rule for retrieving the data in human-readable terms, 
+e.g., e.g., "all civilian groups resident in neighborhood NB1".  If
+the <span class="tt">-brief</span> option is included, long lists in the narrative might 
+be abbreviated with an ellipsis ("...").
+
+</dd>
+<dt class="defitem"><a name="validate"><i>adb</i> gofer validate <i>gdict</i></a></dt><dd>
+
+Validates gofer value <i>gdict</i>, returning it in canonical form if valid
+and throwing <b>INVALID</b> otherwise.
+
+</dd>
+<dt class="defitem"><a name="delegate"><i>adb</i> gofer <i>typename</i> <i>subcommand args...</i></a></dt><dd><p>
+
+This command passes the <i>subcommand</i> and <i>args</i> along to the gofer
+type's Tcl object.  This is primarily useful when working with a
+gofer value that is supposed to be of a specific type, e.g.,
+
+</p><pre class="example">
+# Validate a value of the CIVGROUPS gofer type
+
+<i>adb</i> gofer CIVGROUPS validate <i>gdict</i>
+</pre>
+<p>The full set of gofer type subcommands is beyond the scope of this
+man page; see <span class="tt">lib/athena/gofer_type.tcl</span>.
+
+</p>
+
+</dd>
+</dl>
+
+<h2><a name="private_subcommands">Private Subcommands</a></h2>
+<p>The <span class="tt"><i>adb</i> gofer</span> command takes the following subcommands, where
+where <i>adb</i> is an instance of <a href="../mann/athenadb.html">athenadb(n)</a>.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="check"><i>adb</i> gofer check</a></dt><dd>
+
+Does a sanity check on all defined gofer types.  This is provided for
+use by the test suite.
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette, Dave Hanks.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:55 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+

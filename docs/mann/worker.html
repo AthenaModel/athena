@@ -1,0 +1,429 @@
+<html>
+<head>
+<title>athena 6.3.3: worker(n) -- Event Loop Worker Manager, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>worker(n)</b> -- Event Loop Worker Manager, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#cancelling_a_process">CANCELLING A PROCESS</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::worker
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#worker">worker <i>name</i> ?<i>options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#worker-command">-command <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#worker-delay">-delay <i>msec</i></a></li>
+<li><a class="iref" href="#start"><i>object</i> start</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This module defines a "worker" object: an object that implements a 
+long-running process by repeatedly calling a <span class="tt">-command</span> in the 
+context of the Tcl event loop until the process is complete.
+
+</p>
+
+<h2><a name="cancelling_a_process">CANCELLING A PROCESS</a></h2>
+<p>The worker instance provides no "cancel" method, because generally the
+process needs to know that it has been cancelled and worker(n) has no
+way of informing it.  Consequently, the usual way to cancel the process
+is to set some variable that the <span class="tt">-command</span> looks at; it can then
+clean up on its next execution and return true.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="worker">worker <i>name</i> ?<i>options...?</i></a></dt><dd><p>
+
+Creates a new worker(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#worker">worker</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>The worker(n) may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="worker-command">-command <i>cmd</i></a></dt><dd><p>
+
+The command to call to do work.  The command should return a true 
+value when the work is done, and false otherwise.</p>
+
+<p>The command will be called immediately on <a class="iref" href="#start">start</a>; after each
+execution that returns a false value, the next call will be scheduled
+to execute after <span class="tt">-delay</span> milliseconds.</p>
+
+<p>The process terminates if the <span class="tt">-command</span> throws an error. 
+
+</p>
+</dd>
+<dt class="defopt"><a name="worker-delay">-delay <i>msec</i></a></dt><dd>
+
+Specifies the length of delay between calls, in milliseconds.  The point of
+the delay is to allow the user to interact with the event loop, possibly
+canceling the process.  The default is 100 milliseconds.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of worker(n) has the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="start"><i>object</i> start</a></dt><dd>
+
+Performs the first execution of the <span class="tt">-command</span>, and schedules the
+next if the first execution returns false.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mani/mydomain.html">mydomain(i)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:49:01 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

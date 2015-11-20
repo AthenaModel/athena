@@ -1,0 +1,516 @@
+<html>
+<head>
+<title>athena 6.3.3: sorter(n) -- Bin Sorting Widget, submodule of projectgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>sorter(n)</b> -- Bin Sorting Widget, submodule of <a href="../mann/projectgui.html">projectgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#configuration">Configuration</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectgui 6.3.3
+namespace import ::projectgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#sorter">sorter <i>win ?options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sorter-bincols">-bincols <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sorter-binspec">-binspec <i>dict</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sorter-changecmd">-changecmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sorter-detailcmd">-detailcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sorter-helptext">-helptext <i>html</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sorter-itemcmd">-itemcmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sorter-itemlabel">-itemlabel <i>text</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#sorter-itemlayout">-itemlayout <i>spec</i></a></li>
+<li><a class="iref" href="#cget"><i>win</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>win</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#clear"><i>win</i> clear</a></li>
+<li><a class="iref" href="#get"><i>win</i> get ?<i>bin</i>?</a></li>
+<li><a class="iref" href="#set"><i>win</i> set <i>bindict</i></a></li>
+<li><a class="iref" href="#sortset"><i>win</i> sortset <i>idlist</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This module defines the <code>::projectgui::sorter</code> widget,
+which allows the user to sort a list of items into bins.  The widget
+implements most of the <a href="../mani/field.html">field(i)</a> interface, with the exception
+of the <b>-state</b> option.</p>
+
+<p>The use case is as follows.  The application has a set of items (e.g.,
+human-readable reports from some external source) and needs the user's 
+help to sort them into bins to enable further automated processing.  The
+application sets up the sorter(n) widget with the set of bins, a list of
+unique IDs for the items to sort, and the means to retrieve information 
+about the items.  The user sorts the items into bins, and then returns
+control to the application to use the sorted data.
+
+</p>
+
+<h2><a name="configuration">Configuration</a></h2>
+<p>A sorter(n) widget contains three panes: the bin set, the item list, and 
+the detail pane.  The bin set is a collection of bin buttons; it always
+contains at least two bins, <b>unsorted</b> and <b>ignored</b>.  
+Items start out in the <b>unsorted</b> bin.  The user may put items that
+don't fit any of the other bins into the <b>ignored</b> bin.</p>
+
+<p>The bin set is configured using the <b>-bincols</b> and <b>-binspec</b> 
+options.</p>
+
+<p>The item list is a <a href="../mann/databrowser.html">databrowser(n)</a> widget; it is configured using
+the <b>-itemcmd</b> and <b>-itemlayout</b> options.</p>
+
+<p>The detail pane is an <a href="../mann/htmlviewer.html">htmlviewer(n)</a>; it is configured using the
+<b>-detailcmd</b> and <b>-helptext</b> options.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following command:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="sorter">sorter <i>win ?options...?</i></a></dt><dd><p>
+
+Creates a new <a class="iref" href="#sorter">sorter</a> widget named <i>win</i>.</p>
+
+<p>The <a class="iref" href="#sorter">sorter</a> widget may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="sorter-bincols">-bincols <i>num</i></a></dt><dd>
+
+Bins can be layed out in 1, 2, or more columns.  The default is 2.
+
+</dd>
+<dt class="defopt"><a name="sorter-binspec">-binspec <i>dict</i></a></dt><dd>
+
+The "bin specification" is a dictionary of bin ID strings and text labels
+that specifies the bins into which items can be sorted.
+The IDs should be short ID strings containing no whitespace or special
+characters.  The labels are displayed to the user.
+
+</dd>
+<dt class="defopt"><a name="sorter-changecmd">-changecmd <i>cmd</i></a></dt><dd>
+
+The <i>cmd</i> is called each time the value of the widget changes; the
+new value is passed to the command as an additional argument.  The value
+of the widget is a dictionary whose keys are the bin IDs (including
+<b>unsorted</b> and <b>ignored</b>) and whose values are lists of item
+IDs in the bins.
+
+</dd>
+<dt class="defopt"><a name="sorter-detailcmd">-detailcmd <i>cmd</i></a></dt><dd>
+
+This command is called when an item is selected in the item list; it is
+passed the selected item's ID as an additional argument.  It should 
+return an HTML string that gives all of the item's details, for 
+display in the detail pane.
+
+</dd>
+<dt class="defopt"><a name="sorter-helptext">-helptext <i>html</i></a></dt><dd>
+
+This option specifies HTML text to be displayed in the detail pane when 
+no item is selected in the item list.  Usually this text will explain
+what the items are, what the bins mean, and how to use the widget.
+
+</dd>
+<dt class="defopt"><a name="sorter-itemcmd">-itemcmd <i>cmd</i></a></dt><dd>
+
+This command is called by the item list to retrieve a dictionary of
+information about each item in the list.  The keys should match the
+column names in the <b>-itemlayout</b> specification.  It is mapped to the 
+<a href="../mann/databrowser.html">databrowser(n)</a>'s <b>-dictcmd</b> option.
+
+</dd>
+<dt class="defopt"><a name="sorter-itemlabel">-itemlabel <i>text</i></a></dt><dd>
+
+The sorter(n) widget can sort all kinds of items.  The <i>text</i> is a
+plural noun indicating the kind of items being sorted; it defaults to
+"Items".
+
+</dd>
+<dt class="defopt"><a name="sorter-itemlayout">-itemlayout <i>spec</i></a></dt><dd>
+
+This option defines the column layout for the itemlist.  It is mapped to
+the <a href="../mann/databrowser.html">databrowser(n)</a>'s <b>-layout</b> option, and has the identical
+syntax.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>win</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>win</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the values of the specified <i>options</i>.
+
+</dd>
+<dt class="defitem"><a name="clear"><i>win</i> clear</a></dt><dd>
+
+Clears the widget of all item data, and calls the <b>-changecmd</b>.
+
+</dd>
+<dt class="defitem"><a name="get"><i>win</i> get ?<i>bin</i>?</a></dt><dd><p>
+
+By default, returns the widget's value, which is a <i>bindict</i>: a 
+dictionary whose keys are bin IDs (including <b>unsorted</b> and 
+<b>ignored</b>) and whose values are lists of item IDs.</p>
+
+<p>If a <i>bin</i> ID is given, returns the list of item IDs currently
+in that bin.  Note that a single item can be sorted into multiple bins.  
+
+</p>
+</dd>
+<dt class="defitem"><a name="set"><i>win</i> set <i>bindict</i></a></dt><dd>
+
+Sets the widget's value to given <i>bindict</i>, where the <i>bindict</i>
+is as described for the <a class="iref" href="#get">get</a> subcommand.  
+Calls the <b>-changecmd</b>.
+
+</dd>
+<dt class="defitem"><a name="sortset"><i>win</i> sortset <i>idlist</i></a></dt><dd>
+
+Clears the widget and puts the IDs in the <i>idlist</i> into the
+<b>unsorted</b> bin.
+
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>sorter(n) requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Dave Hanks, Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original widget.
+
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:49:00 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

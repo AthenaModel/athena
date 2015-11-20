@@ -1,0 +1,469 @@
+<html>
+<head>
+<title>athena 6.3.3: mydomain(i) -- my:// Domain Handler Interface</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>mydomain(i)</b> -- my:// Domain Handler Interface
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#url_syntax">URL Syntax</a></li>
+
+</ul>
+    
+
+    <li><a href="#subcommands">SUBCOMMANDS</a></li>
+    
+
+    <li><a href="#standard_urls">STANDARD URLS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#get">get <i>url</i> ?<i>contentTypes</i>?</a></li>
+<li><a class="iref" href="#url">url</a></li>
+<li><a class="iref" href="#contentType">contentType</a></li>
+<li><a class="iref" href="#content">content</a></li>
+<li><a class="iref" href="#urlhelp">/<i>domain</i>/urlhelp</a></li>
+<li><a class="iref" href="#urlhelp/path">/<i>domain</i>/urlhelp/<i>path</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A mydomain(i) object is an object that can serve application data
+(often HTML text) to the GUI given one of a number of supported
+"my:" URLs.  As such, it is conceptually similar to a domain handler
+for an HTTP server; however, it resides within the application and 
+serves data back to the application.  The notion is that all of the
+application's data resides in a file system rooted at "/", and that
+a mydomain object handles a top-level folder, e.g., "/app" or "/help".</p>
+
+<p>The purpose of a set of mydomain(i) objects is to provide a 
+single namespace for all important data in the application, so as to 
+provide:
+
+</p>
+
+<ul>
+  <li> One-stop shopping for GUI data queries.
+  </li><li> Isolation of the GUI from the underlying data structures.
+</li></ul>
+<p>At present, this interface is limited to data retrieval; in time,
+operations for data update may be added, in line with the REST
+architecture.</p>
+
+<p>Clients will usually use an instance of <a href="../mann/myagent.html">myagent(n)</a> to query a
+mydomain(i).
+
+</p>
+
+<h2><a name="url_syntax">URL Syntax</a></h2>
+<p>The mydomain(i) file system can be accessed by URLs using the 
+"my:" scheme; however, it is more typical to simply use
+server-relative URLs.  In otherwords, the following URLs are 
+equivalent, and the first is preferred:
+
+</p>
+
+<pre>
+    /{domain}/{suffix}?{query}#{fragment}
+    my:/{domain}/{suffix}?{query}#{fragment}
+    my:///{domain}/{suffix}?{query}#{fragment}
+</pre>
+<p>The syntax is the same as that for "http:" URLs, but the host, port,
+and other fields are never used.  It is an error to include a host,
+for historical reasons; the other fields are simply ignored if present.</p>
+
+<p>A mydomain(i) is entitled to presume that it is given URLs that 
+begin with the proper <i>domain</i> name, which is the object's own
+domain of responsibility.  It is the <a href="../mann/myagent.html">myagent(n)</a>'s responsibility
+to dispatch URLs to the proper domain handler</p>
+
+<p>The mydomain(i) will take note of the <i>path</i>, and may choose to
+look at the <i>query</i>; it will always ignore the <i>fragment</i>,
+which is the responsibility of the <a href="../mann/myagent.html">myagent(n)</a>.
+
+</p>
+
+<h2><a name="subcommands">SUBCOMMANDS</a></h2>
+<p>Each <a href="../mani/mydomain.html">mydomain(i)</a> ensemble must implement at least the following
+subcommands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="get">get <i>url</i> ?<i>contentTypes</i>?</a></dt><dd><p>
+
+Retrieves the <i>url</i> from the server.  If the <i>url</i> cannot be
+retrieved for any reason, the server must throw an error with error
+code <b>NOTFOUND</b>; the error message should be a human-readable
+message explaining why the resource cannot be found.</p>
+
+<p>The <i>contentTypes</i> argument, if given, is a list of content types
+accepted by the client.  Browse the server's <a class="iref" href="#urlhelp">urlhelp</a> resource
+to see what URLs are accepted, and what content types they can
+provide; the list will usually include
+<b>text/html</b>.  Standard MIME types should be used when
+appropriate; Tcl/Tk data formats should have names like
+<b>tcl/linkdict</b> or <b>tk/image</b>.  The server must document any
+server-specific content types.</p>
+
+<p>If <i>contentTypes</i> is empty, the server will return the first
+available content type for the requested <i>url</i>.  Otherwise, it
+will return the first content type listed in <i>contentTypes</i> which
+is available for the requested <i>url</i>.</p>
+
+<p>Note that the content types listed in <i>contentTypes</i> can include
+wild cards, e.g., <b>text/*</b> and <b>*/*</b>.</p>
+
+<p>On success, the <a class="iref" href="#get">get</a> command returns a dictionary with the
+following keys:
+
+</p><dl>
+
+<dt class="defitem"><a name="url">url</a></dt><dd>
+
+The complete URL given to the server.  This is of interest because the
+<a href="../mann/myagent.html">myagent(n)</a> might have performed address resolution; hence,
+the URL given to the server might not be the same as the URL given to
+the agent.
+
+</dd>
+<dt class="defitem"><a name="contentType">contentType</a></dt><dd>
+
+The content type of the returned content.
+
+</dd>
+<dt class="defitem"><a name="content">content</a></dt><dd>
+
+The returned content itself.
+
+</dd>
+</dl>
+
+<h2><a name="standard_urls">STANDARD URLS</a></h2>
+<p>Each mydomain(i) should accept the following URLs:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="urlhelp">/<i>domain</i>/urlhelp</a></dt><dd>
+
+This URL should return a <b>text/html</b> page documenting the
+server's URL schema.  The entry for each resource should include the
+content types available for that resource.
+
+</dd>
+<dt class="defitem"><a name="urlhelp/path">/<i>domain</i>/urlhelp/<i>path</i></a></dt><dd>
+
+This URL should return a <b>text/html</b> page documenting the
+resource given by <i>path</i>, in the same format as <a class="iref" href="#urlhelp">urlhelp</a>.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original interface.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+

@@ -1,0 +1,400 @@
+<html>
+<head>
+<title>athena 6.3.3: athena(1) -- Athena Tool</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>athena(1)</b> -- Athena Tool
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#subcommands">SUBCOMMANDS</a></li>
+    
+
+    <li><a href="#mods">MODS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#athena">athena <i>subcommand</i> <i>arguments...</i></a></li>
+<li><a class="iref" href="#athena_build">athena build ?<i>infile</i>? ?<i>script...</i>? ?<i>options...</i>? <i>outfile</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athena build-run">-run <i>t</i></a></li>
+<li><a class="iref" href="#athena_help">athena help ?<i>subcommand</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="athena">athena <i>subcommand</i> <i>arguments...</i></a></dt>
+</dl>
+
+<p><a href="../man1/athena.html">athena(1)</a> is tool for working with Athena scenarios from the command
+line.  It does not require GUI libraries at run-time, and will execute 
+happily on "headless" cloud nodes.
+
+</p>
+
+<h2><a name="subcommands">SUBCOMMANDS</a></h2>
+<p>Athena(1) is primarily a development and debugging tool, and its features
+come and go at the need of the developers.  Its primary capability for
+other users is the ability to run Athena scenarios in batch mode using
+the <a class="iref" href="#athena_build">athena build</a> subcommand; this is
+useful for doing "large N" runs on clouds or clusters.</p>
+
+<p>This section documents the most useful and stable subcommands; to see
+the current set, use the <a class="iref" href="#athena_help">athena help</a> subcommand.
+
+</p>
+
+<dl>
+<dt class="defitem"><a name="athena_build">athena build ?<i>infile</i>? ?<i>script...</i>? ?<i>options...</i>? <i>outfile</i></a></dt><dd><p>
+
+This command is used to build Athena scenario files, producing an output
+scenario file from an optional input file and zero or more scripts, and
+advancing time if desired.
+
+</p><ul>
+<li> First, the <i>infile</i> (if any) is loaded.  If given, it should be
+     an Athena scenario file with an ".adb" extension.  Otherwise, 
+     the tool creates a new, empty scenario.
+
+</li><li> Next, any number of Athena executive scripts are executed in sequence.
+     These will usually contain "<span class="tt">send</span>" commands.  See the on-line 
+     help for more about Athena's executive commands.
+
+</li><li> Next, any user options are applied; see below.
+
+</li><li> Finally, the resulting scenario is saved as <i>outfile</i>.
+</li></ul>
+<p>The available options are as follows:
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="athena build-run">-run <i>t</i></a></dt><dd>
+
+If this option is given, the tool will attempt to lock the scenario and
+advance time to week <i>t</i>.
+
+</dd>
+</dl>
+<p>For example, the following command will load the order script from 
+<span class="tt">myorders.tcl</span>, lock the scenario, advance time by 30 weeks, and
+save the result in <span class="tt">myscenario.adb</span>:
+
+</p>
+
+<pre class="example">
+athena build myorders.tcl -run 30 myscenario.adb
+</pre>
+
+</dd>
+<dt class="defitem"><a name="athena_help">athena help ?<i>subcommand</i>?</a></dt><dd>
+
+Invoked with no arguments, this command lists the tool's subcommands.
+If a <i>subcommand</i> name is given, the command provides help for the 
+specific subcommand.
+
+</dd>
+</dl>
+
+<h2><a name="mods">MODS</a></h2>
+<p>It is possible to patch Athena post-delivery by means of Athena
+mod files.  To use a mod, just copy the mod file to the installation's
+<code>mods/</code> directory, typically <code>~/athena/mods</code>.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:41 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+

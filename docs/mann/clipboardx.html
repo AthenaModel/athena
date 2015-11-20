@@ -1,0 +1,400 @@
+<html>
+<head>
+<title>athena 6.3.3: clipboardx(n) -- Extended Clipboard, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>clipboardx(n)</b> -- Extended Clipboard, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::clipboardx
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#clipboardx_clear">clipboardx clear</a></li>
+<li><a class="iref" href="#clipboardx_get">clipboardx get <i>tag</i></a></li>
+<li><a class="iref" href="#clipboardx_has">clipboardx has <i>tag</i> ?<i>tag...</i>?</a></li>
+<li><a class="iref" href="#clipboardx_set">clipboardx set <i>tag value</i></a></li>
+<li><a class="iref" href="#clipboardx_tags">clipboardx tags</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>clipboardx(n) is a clipboard for internal Athena objects, especially
+<a href="../mann/bean.html">bean(n)</a> objects such as blocks, tactics, and conditions.</p>
+
+<p>In response to a &lt;&lt;Cut&gt;&gt; or &lt;&lt;Copy&gt;&gt; event,
+a widget will use <a class="iref" href="#clipboardx_clear">clipboardx clear</a> to erase the clipboard and 
+then use <a class="iref" href="#clipboardx_set">clipboardx set</a> to place the copied data
+on it using the "tag" for the widget's preferred data type.
+If the data can be represented in multiple
+ways, the widget can place it on the clipboard in each of the ways,
+using the appropriate type tag for each.</p>
+
+<p>Later, in response to a &lt;&lt;Paste&gt;&gt; another widget can request
+the copied data using the <a class="iref" href="#clipboardx_get">clipboardx get</a> subcommand, specifying the 
+tag that it understands.  If there is data available for that tag, it will
+be returned.</p>
+
+<p>If the widget understands multiple types, it can use the 
+<a class="iref" href="#clipboardx_has">clipboardx has</a> subcommand to determine which if any of the 
+types is available.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>clipboardx(n) provides the following commands for use by the
+application.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="clipboardx_clear">clipboardx clear</a></dt><dd>
+
+Erases all data from the clipboard.
+
+</dd>
+<dt class="defitem"><a name="clipboardx_get">clipboardx get <i>tag</i></a></dt><dd>
+
+Retrieves any data on the clipboard with the given data type <i>tag</i>.
+If none, returns the empty string. 
+
+</dd>
+<dt class="defitem"><a name="clipboardx_has">clipboardx has <i>tag</i> ?<i>tag...</i>?</a></dt><dd>
+
+Given one or more data type <i>tag</i> names, returns the name of the
+first tag for which there is clipboard data, or the empty string if no
+data is found.  A client that supports pasting of multiple data types
+can use this to retrieve the name of its most preferred type.
+
+</dd>
+<dt class="defitem"><a name="clipboardx_set">clipboardx set <i>tag value</i></a></dt><dd>
+
+Puts the <i>value</i> on the clipboard with the given data type
+<i>tag</i>, replacing any previous data for that <i>tag</i>.
+
+</dd>
+<dt class="defitem"><a name="clipboardx_tags">clipboardx tags</a></dt><dd>
+
+Returns the names of the tags for which data is on the clipboard.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:57 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

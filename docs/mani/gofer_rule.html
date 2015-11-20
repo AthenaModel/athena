@@ -1,0 +1,397 @@
+<html>
+<head>
+<title>athena 6.3.3: gofer_rule(i) -- Gofer Rule Interface</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>gofer_rule(i)</b> -- Gofer Rule Interface
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#subcommands">SUBCOMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#construct">construct <i>args...</i></a></li>
+<li><a class="iref" href="#eval">eval <i>gdict</i></a></li>
+<li><a class="iref" href="#keys">keys</a></li>
+<li><a class="iref" href="#narrative">narrative <i>gdict</i> ?-brief?</a></li>
+<li><a class="iref" href="#validate">validate <i>gdict</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A <a href="../mani/gofer.html">gofer(i)</a> type is a collection of recipes for computing a particular
+kind of output value.  These recipes are called gofer rules; they are
+implemented as Tcl ensemble commands with the interface described in this 
+man page.  They are usually created using the <a href="../mann/gofer.html">gofer(n)</a>
+<a href="../mann/gofer.html#gofer_rule">gofer rule</a> command, but can also be created as bare
+type ensembles and linked to a gofer type using the 
+<a href="../mann/gofer.html#gofer_rulefrom">gofer rulefrom</a> command.</p>
+
+<p>See <a href="../mani/gofer.html">gofer(i)</a> before continuing here.
+
+
+</p>
+
+<h2><a name="subcommands">SUBCOMMANDS</a></h2>
+<p>Each <a href="../mani/gofer_rule.html">gofer_rule(i)</a> ensemble must implement at least the following
+subcommands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="construct">construct <i>args...</i></a></dt><dd>
+
+Given the rule's parameters in some appropriate order, returns a 
+<i>gdict</i> that contains them.  The gofer type will add the 
+<b>_type</b> and <b>_rule</b> keys.
+
+</dd>
+<dt class="defitem"><a name="eval">eval <i>gdict</i></a></dt><dd>
+
+Evaluates the <i>gdict</i> to produce the desired output value, e.g., 
+a particular list of civilian groups.  The rule may assume that the
+<i>gdict</i> is valid, but should only look at the keys listed by
+<a class="iref" href="#keys">keys</a>.
+    
+</dd>
+<dt class="defitem"><a name="keys">keys</a></dt><dd>
+
+Every rule adds zero or more keys to the gofer type's gofer dictionary,
+representing the rule's parameters.  This subcommand must return a list of the
+names of the keys required by this particular rule.
+
+</dd>
+<dt class="defitem"><a name="narrative">narrative <i>gdict</i> ?-brief?</a></dt><dd><p>
+
+Returns a human-readable narrative description of the rule given the
+parameters in the <i>gdict</i>.  The narrative should include all of the 
+relevant parameters, and should be stated as a noun phrase so that it can be 
+included in other strings (e.g., in <a href="../mani/tactic.html">tactic(i)</a> narratives).</p>
+
+<p>If the <b>-brief</b> option is included, then the length of the narrative
+should be constrained in cases where the full narrative could be 
+arbitrarily long, e.g., rule parameters whose values are lists can be
+truncated with an ellipsis.  There is no hard constraint, but 
+typical brief narratives should be no more than about 120 characters.</p>
+
+<p>The rule may assume that the <i>gdict</i> is valid.
+
+</p>
+</dd>
+<dt class="defitem"><a name="validate">validate <i>gdict</i></a></dt><dd><p>
+
+Validates the <i>gdict</i>, returning it if valid, and throwing
+<b>INVALID</b> on any error.  Each of the key values should be returned in
+canonical form.</p>
+
+<p>The rule can assume that the <i>gdict</i> contains all of the keys
+that the rule requires.
+
+</p>
+</dd>
+</dl>
+
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original interface.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+

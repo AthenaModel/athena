@@ -1,0 +1,410 @@
+<html>
+<head>
+<title>athena 6.3.3: athena_absit(n) -- Athena Abstract Situation Component, submodule of athena(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>athena_absit(n)</b> -- Athena Abstract Situation Component, submodule of <a href="../mann/athena.html">athena(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    <ul>
+
+    <li><a href="#public_subcommands">Public Subcommands</a></li>
+
+    <li><a href="#private_subcommands">Private Subcommands</a></li>
+
+</ul>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require athena 6.3.3
+namespace import ::athena::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#exists"><i>adb</i> absit exists <i>s</i></a></li>
+<li><a class="iref" href="#get"><i>adb</i> absit get <i>s</i> ?<i>parm</i>?</a></li>
+<li><a class="iref" href="#isinitial"><i>adb</i> absit isinitial <i>s</i></a></li>
+<li><a class="iref" href="#islive"><i>adb</i> absit islive <i>s</i></a></li>
+<li><a class="iref" href="#move"><i>adb</i> absit move <i>s location</i></a></li>
+<li><a class="iref" href="#names"><i>adb</i> absit names</a></li>
+<li><a class="iref" href="#validate"><i>adb</i> absit validate <i>s</i></a></li>
+<li><a class="iref" href="#view"><i>adb</i> absit view <i>s</i> ?<i>tag</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This man page describes a component of the <a href="../mann/athena.html">athena(n)</a> package that
+is used to manage and access abstract situation entities.</p>
+
+<p>The component is accessible as a subcommand of the <a href="../mann/athena.html">athena(n)</a> and
+<a href="../mann/athenadb.html">athenadb(n)</a> objects; <a href="#public_subcommands">Public Subcommands</a> are accessible
+from <a href="../mann/athena.html">athena(n)</a> and (usually) from <a href="../mann/athenadb.html">athenadb(n)</a>, and
+<a href="#private_subcommands">Private Subcommands</a> only from <a href="../mann/athenadb.html">athenadb(n)</a>.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<h2><a name="public_subcommands">Public Subcommands</a></h2>
+<p>The <span class="tt"><i>adb</i> absit</span> command takes the following subcommands,
+where <i>adb</i> is an instance of <a href="../mann/athena.html">athena(n)</a>.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="exists"><i>adb</i> absit exists <i>s</i></a></dt><dd>
+
+Returns 1 if there is an absit with ID <i>s</i>, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="get"><i>adb</i> absit get <i>s</i> ?<i>parm</i>?</a></dt><dd>
+
+By default, returns a dictionary of information about the absit with
+ID <i>s</i> (the dictionary is consistent with the <span class="tt">absits</span> SQL table).
+If <i>parm</i> is given, it returns the value of that entry in the dict.
+
+</dd>
+<dt class="defitem"><a name="isinitial"><i>adb</i> absit isinitial <i>s</i></a></dt><dd>
+
+Returns 1 if absit <i>s</i> is in the initial state, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="islive"><i>adb</i> absit islive <i>s</i></a></dt><dd>
+
+Returns 1 if absit <i>s</i> is "live", i.e., it has not been resolved,
+and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="move"><i>adb</i> absit move <i>s location</i></a></dt><dd><p>
+
+Moves absit <i>s</i> to the new <i>location</i>, which must be in the same
+neighborhood.  The <i>location</i> may be a lat/long pair in decimal 
+degrees, or an MGRS string.  Throws INVALID if the location is invalid
+or outside the situation's neighborhood.</p>
+
+<p><b>NOTE:</b> Moving an absit has no effect on the simulation results, but 
+will affect how the absit is displayed on a map.
+
+</p>
+</dd>
+<dt class="defitem"><a name="names"><i>adb</i> absit names</a></dt><dd>
+Returns a list of the IDs of the existing absits.
+
+</dd>
+<dt class="defitem"><a name="validate"><i>adb</i> absit validate <i>s</i></a></dt><dd>
+Validates <i>s</i> as an absit ID, returning it if it is valid and
+throwing <b>INVALID</b> otherwise.
+
+</dd>
+<dt class="defitem"><a name="view"><i>adb</i> absit view <i>s</i> ?<i>tag</i>?</a></dt><dd>
+
+By default, returns a dictionary of information about the absit with
+ID <i>s</i>, consistent with the <span class="tt">fmt_absits</span> SQL view.  The <i>tag</i>
+allows the command to tailor its output for different output formats
+(e.g., html); at present it is ignored.
+
+</dd>
+</dl>
+
+<h2><a name="private_subcommands">Private Subcommands</a></h2>
+<p>The <span class="tt"><i>adb</i> absit</span> command takes the following subcommands,
+where <i>adb</i> is an instance of <a href="../mann/athenadb.html">athenadb(n)</a>.</p>
+
+<p>TBD: None yet defined.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette, Dave Hanks.
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:55 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+    
+

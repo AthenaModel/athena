@@ -1,0 +1,588 @@
+<html>
+<head>
+<title>athena 6.3.3: athena_bsys(n) -- Athena Belief System Component, submodule of athena(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>athena_bsys(n)</b> -- Athena Belief System Component, submodule of <a href="../mann/athena.html">athena(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    <ul>
+
+    <li><a href="#public_subcommands">Public Subcommands</a></li>
+
+    <li><a href="#private_subcommands">Private Subcommands</a></li>
+
+</ul>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require athena 6.3.3
+namespace import ::athena::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#affinity"><i>adb</i> bsys affinity <i>sid1 sid2</i></a></li>
+<li><a class="iref" href="#belief"><i>adb</i> bsys belief <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#belief_cget"><i>adb</i> bsys belief cget <i>option</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#belief cget-position">-position <i>number</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#belief cget-emphasis">-emphasis <i>number</i></a></li>
+<li><a class="iref" href="#belief_view"><i>adb</i> bsys belief view <i>sid tid</i></a></li>
+<li><a class="iref" href="#belief_validate"><i>adb</i> bsys belief validate <i>bid</i></a></li>
+<li><a class="iref" href="#belief_isdefault"><i>adb</i> bsys belief isdefault <i>bid</i></a></li>
+<li><a class="iref" href="#playbox"><i>adb</i> bsys playbox <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#playbox_cget"><i>adb</i> bsys playbox cget <i>option</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#playbox cget-gamma">-gamma <i>value</i></a></li>
+<li><a class="iref" href="#playbox_view"><i>adb</i> bsys playbox view</a></li>
+<li><a class="iref" href="#system"><i>adb</i> bsys system <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#system_cget"><i>adb</i> bsys system cget <i>sid option</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#system cget-name">-name name</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#system cget-commonality">-commonality value</a></li>
+<li><a class="iref" href="#system_exists"><i>adb</i> bsys system exists <i>sid</i></a></li>
+<li><a class="iref" href="#system_ids"><i>adb</i> bsys system ids</a></li>
+<li><a class="iref" href="#system_inuse"><i>adb</i> bsys system inuse <i>sid</i></a></li>
+<li><a class="iref" href="#system_validate"><i>adb</i> bsys system validate <i>sid</i></a></li>
+<li><a class="iref" href="#system_view"><i>adb</i> bsys system view <i>sid</i></a></li>
+<li><a class="iref" href="#topic"><i>adb</i> bsys topic <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#topic_cget"><i>adb</i> bsys topic cget <i>tid option</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#topic cget-name">-name name</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#topic cget-affinity">-affinity <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#topic cget-relevance">-relevance <i>fraction</i></a></li>
+<li><a class="iref" href="#topic_exists"><i>adb</i> bsys topic exists <i>tid</i></a></li>
+<li><a class="iref" href="#topic_ids"><i>adb</i> bsys topic ids</a></li>
+<li><a class="iref" href="#topic_inuse"><i>adb</i> bsys topic inuse <i>tid</i></a></li>
+<li><a class="iref" href="#topic_validate"><i>adb</i> bsys topic validate <i>tid</i></a></li>
+<li><a class="iref" href="#topic_view"><i>adb</i> bsys topic view <i>tid</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This man page describes a component of the <a href="../mann/athena.html">athena(n)</a> package that 
+gives access to the scenario's belief systems.</p>
+
+<p>The component is accessible as a subcommand of the <a href="../mann/athena.html">athena(n)</a> and
+<a href="../mann/athenadb.html">athenadb(n)</a> objects; <a href="#public_subcommands">Public Subcommands</a> are accessible
+from <a href="../mann/athena.html">athena(n)</a> and (usually) from <a href="../mann/athenadb.html">athenadb(n)</a>, and
+<a href="#private_subcommands">Private Subcommands</a> only from <a href="../mann/athenadb.html">athenadb(n)</a>.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<h2><a name="public_subcommands">Public Subcommands</a></h2>
+<p>The <span class="tt"><i>adb</i> bsys</span> command takes the following subcommands,
+where <i>adb</i> is an instance of <a href="../mann/athena.html">athena(n)</a>.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="affinity"><i>adb</i> bsys affinity <i>sid1 sid2</i></a></dt><dd>
+Returns the belief system <i>sid1</i>'s affinity for belief system
+<i>sid2</i>.  Affinity is a number between -1.0 and 1.0.
+
+</dd>
+<dt class="defitem"><a name="belief"><i>adb</i> bsys belief <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+This command is used to query the beliefs in a belief system.  The
+subcommands are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="belief_cget"><i>adb</i> bsys belief cget <i>option</i></a></dt><dd><p>
+
+Returns the value of the named option.  Options include:
+
+</p><dl>
+
+<dt class="defopt"><a name="belief cget-position">-position <i>number</i></a></dt><dd>
+
+Retrieves the system's position with respect to the topic, a real number
+from -1.0 to +1.0. Defaults to 0.0. The client can use 
+<a href="../../../mars/docs/mann/simtypes.html#qposition">qposition</a> to format position values.
+
+</dd>
+<dt class="defopt"><a name="belief cget-emphasis">-emphasis <i>number</i></a></dt><dd>
+
+Retrieves the system's emphasis on agreement or disagreement with respect
+to this topic, where 0.0 represents a complete emphasis on disagreement and
+1.0 represents a complete emphasis on agreement. The default is 0.5. The
+client can use <a href="../../../mars/docs/mann/simtypes.html#qemphasis">qemphasis</a> to format emphasis values.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="belief_view"><i>adb</i> bsys belief view <i>sid tid</i></a></dt><dd>
+Returns a dictionary of information about system <i>sid</i>'s belief about
+topic <i>tid</i>.
+
+</dd>
+<dt class="defitem"><a name="belief_validate"><i>adb</i> bsys belief validate <i>bid</i></a></dt><dd>
+
+Validates <i>bid</i> as an {<i>sid tid</i>} pair for this scenario.  Returns
+the <i>bid</i>, or throws <b>INVALID</b> on failure.
+
+</dd>
+<dt class="defitem"><a name="belief_isdefault"><i>adb</i> bsys belief isdefault <i>bid</i></a></dt><dd>
+
+Returns 1 if belief <i>bid</i> has its default value, and 0 otherwise, where
+<i>bid</i> is a valid {<i>sid tid</i>} pair.
+
+</dd>
+</dl>
+
+
+</dd>
+<dt class="defitem"><a name="playbox"><i>adb</i> bsys playbox <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+This command is used to query information about the beliefs of the entire
+playbox.
+
+</p><dl>
+
+<dt class="defitem"><a name="playbox_cget"><i>adb</i> bsys playbox cget <i>option</i></a></dt><dd><p>
+
+Returns the value of the named option.  Options include:
+
+</p><dl>
+
+<dt class="defopt"><a name="playbox cget-gamma">-gamma <i>value</i></a></dt><dd> 
+This is the playbox "commonality" dial; it
+controls the degree of implicit commonality among the entities in the
+playbox, that is, the number of implicit topics about which there is
+general (and passionate) agreement in the playbox. If <span class="tt">-gamma</span> is 0,
+there is no implicit commonality; only explicit topics are considered. If
+<span class="tt">-gamma</span> is 1.0 there are as many implicit topics as explicit topics; if
+0.5, half as many; if 2.0, twice as many. The value must be no less than
+0.0; default is 1.0.     
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="playbox_view"><i>adb</i> bsys playbox view</a></dt><dd>
+
+Returns a dictionary of the playbox data with the values formatted for
+display.
+
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="system"><i>adb</i> bsys system <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+This command is used to query information about entire belief systems.
+
+</p><dl>
+<dt class="defitem"><a name="system_cget"><i>adb</i> bsys system cget <i>sid option</i></a></dt><dd><p>
+Retrieves the value of the given <i>option</i> for belief system <i>sid</i>.
+Valid options are as follows:
+
+</p><dl>
+<dt class="defopt"><a name="system cget-name">-name name</a></dt><dd>
+This is the name of the belief system, for display to the user. 
+Names must be unique across belief systems. The default name is 
+"System sid".
+
+</dd>
+<dt class="defopt"><a name="system cget-commonality">-commonality value</a></dt><dd>
+This is the belief system "commonality" dial; it specifies the extent of
+the system's participation in the dominant culture in the playbox. If 1.0,
+the system shares all of the implicit cultural commonality; if 0.0, none of
+it. Defaults to 1.0. Note that the effect of this option depends on the
+playbox <span class="tt">-gamma</span> value; see <a class="iref" href="#playbox_cget">playbox cget</a>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="system_exists"><i>adb</i> bsys system exists <i>sid</i></a></dt><dd>
+Returns 1 if the belief system exists, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="system_ids"><i>adb</i> bsys system ids</a></dt><dd>
+Returns a list of the IDs of the defined belief systems.
+
+</dd>
+<dt class="defitem"><a name="system_inuse"><i>adb</i> bsys system inuse <i>sid</i></a></dt><dd>
+Returns 1 if the given belief system is assigned to at least one
+actor or group, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="system_validate"><i>adb</i> bsys system validate <i>sid</i></a></dt><dd>
+
+Returns <i>sid</i> if it is a valid belief system ID, and throws 
+<b>INVALID</b> otherwise.
+
+</dd>
+<dt class="defitem"><a name="system_view"><i>adb</i> bsys system view <i>sid</i></a></dt><dd>
+
+Returns a dictionary of the system's data with the values formatted for
+display.
+
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="topic"><i>adb</i> bsys topic <i>subcommand</i> ?<i>args</i>?</a></dt><dd>
+
+<dl>
+
+<dt class="defitem"><a name="topic_cget"><i>adb</i> bsys topic cget <i>tid option</i></a></dt><dd><p>
+Retrieves the value of the given <i>option</i> for belief topic <i>tid</i>.
+Valid options are as follows:
+
+</p><dl>
+<dt class="defopt"><a name="topic cget-name">-name name</a></dt><dd>
+This is the name of the belief topic, for display to the user. 
+Names must be unique across belief topics. The default name is 
+"Topic <i>tid</i>".
+
+</dd>
+<dt class="defopt"><a name="topic cget-affinity">-affinity <i>flag</i></a></dt><dd>
+Specifies a numeric flag, 0 or 1. If 1 (the default), then beliefs on this 
+topic will be included in the computation of affinity; if 0, then it will
+be excluded.
+
+</dd>
+<dt class="defopt"><a name="topic cget-relevance">-relevance <i>fraction</i></a></dt><dd>
+
+Specifies the relevance of the topic as a fraction from 0.0 to 1.0 (the 
+default). Positions on a topic have decreasing effect as the topic's 
+relevance declines.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="topic_exists"><i>adb</i> bsys topic exists <i>tid</i></a></dt><dd>
+Returns 1 if the belief topic exists, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="topic_ids"><i>adb</i> bsys topic ids</a></dt><dd>
+Returns a list of the IDs of the defined belief topics.
+
+</dd>
+<dt class="defitem"><a name="topic_inuse"><i>adb</i> bsys topic inuse <i>tid</i></a></dt><dd>
+Returns 1 if the given belief topic is assigned to at least one
+semantic hook, and 0 otherwise.  See <a href="../mann/athena_hook.html">athena_hook(n)</a>.
+
+</dd>
+<dt class="defitem"><a name="topic_validate"><i>adb</i> bsys topic validate <i>tid</i></a></dt><dd>
+
+Returns <i>tid</i> if it is a valid belief topic ID, and throws 
+<b>INVALID</b> otherwise.
+
+</dd>
+<dt class="defitem"><a name="topic_view"><i>adb</i> bsys topic view <i>tid</i></a></dt><dd>
+
+Returns a dictionary of the topic's data with the values formatted for
+display.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="private_subcommands">Private Subcommands</a></h2>
+<p>The <span class="tt"><i>adb</i> bsys</span> command takes the following subcommands, where
+where <i>adb</i> is an instance of <a href="../mann/athenadb.html">athenadb(n)</a>.</p>
+
+<p>TBD: None yet documented.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette, Dave Hanks.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:55 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+

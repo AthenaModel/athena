@@ -1,0 +1,418 @@
+<html>
+<head>
+<title>athena 6.3.3: profiler(n) -- Athena Command Profiler, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>profiler(n)</b> -- Athena Command Profiler, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#profiler_clear">profiler clear</a></li>
+<li><a class="iref" href="#profiler_dump">profiler dump</a></li>
+<li><a class="iref" href="#profiler_profile">profiler profile <i>cmd</i> ?<i>subcmd...</i>?</a></li>
+<li><a class="iref" href="#profiler_reset">profiler reset</a></li>
+<li><a class="iref" href="#profiler_unprofile">profiler unprofile <i>cmd</i> ?<i>subcmd...</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+    
+
+<p><a href="../mann/profiler.html">profiler(n)</a> allows the developer to dynamically instrument
+routines of interest, and determine how many times they are being
+called, and for how long, as an aid to performance optimization.  The
+results should be interpreted with care, as the instrumentation adds
+some performance overhead; e.g., if command A calls command B, and
+both are instrumented, A's run-time will include the cost of B's
+instrumentation.</p>
+
+<p>Use <a class="iref" href="#profiler_profile">profiler profile</a> to instrument a procedure, Snit
+typemethod, or Snit instance method.  Use <a class="iref" href="#profiler_unprofile">profiler unprofile</a>
+to de-instrument a procedure, or <a class="iref" href="#profiler_reset">profiler reset</a> to remove all
+instrumentation.  Use <a class="iref" href="#profiler_dump">profiler dump</a> to dump the current
+measurements, and <a class="iref" href="#profiler_clear">profiler clear</a> to delete them in
+preparation for subsequent runs.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="profiler_clear">profiler clear</a></dt><dd>
+
+Clears all measurements, leaving a clean slate.
+
+</dd>
+<dt class="defitem"><a name="profiler_dump">profiler dump</a></dt><dd>
+
+Returns a dump of the current results.  The dump includes, for each
+profiled command, the number of times it was called, and the total
+time in microseconds.
+
+</dd>
+<dt class="defitem"><a name="profiler_profile">profiler profile <i>cmd</i> ?<i>subcmd...</i>?</a></dt><dd><p>
+
+Instruments the named command, which can be a procedure, a Snit
+typemethod, or a Snit instance method.  For instance:
+
+</p><pre>
+    # Procedure MyProc
+    profiler profile MyProc
+
+    # Typemethod "assess"
+    profiler profile ::mytype assess
+
+    # Instance method "compute"
+    profiler profile $object compute
+</pre>
+<p>Notice that when you profile an instance method, you're profiling that
+method for all instances of the type, not just the object named in the
+call.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="profiler_reset">profiler reset</a></dt><dd>
+
+Resets the package, removing all measured results and de-instrumenting
+all instrumented commands.
+
+</dd>
+<dt class="defitem"><a name="profiler_unprofile">profiler unprofile <i>cmd</i> ?<i>subcmd...</i>?</a></dt><dd>
+
+Removes the instrumentation on the specified command, which is named
+as in <a class="iref" href="#profiler_profile">profiler profile</a>.
+
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl 8.5 or later.</p>
+
+<p>To use the package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Derived from the JNEM dirman(n) package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:58 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+

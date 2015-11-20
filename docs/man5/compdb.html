@@ -1,0 +1,1266 @@
+<html>
+<head>
+<title>athena 6.3.3: compdb(5) -- Athena Scenario Comparison Parameter Definitions</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+<script language="javascript">
+//===================================================================
+//Author: Matt Kruse  < matt@mattkruse.com>
+//WWW: http://www.mattkruse.com/
+//
+//NOTICE: You may use this code for any purpose, commercial or
+//private, without any further permission from the author. You may
+//remove this notice from your final code if you wish, however it is
+//appreciated by the author if at least my web site address is kept.
+//
+//You may *NOT* re-distribute this code in any way except through its
+//use. That means, you can include it in your product, or your web
+//site, or any other form where the code is actually being used. You
+//may not put the plain javascript up on your site for download or
+//include it in your javascript libraries for download.
+//If you wish to share this code with others, please just point them
+//to the URL instead.
+//Please DO NOT link directly to my .js files from your site. Copy
+//the files to your server and use them there. Thank you.
+//===================================================================
+//HISTORY
+//------------------------------------------------------------------
+//December 9, 2003: Added script to the Javascript Toolbox
+//December 10, 2003: Added the preProcessTrees variable to allow user
+//     to turn off automatic conversion of UL's onLoad
+//March 1, 2004: Changed it so if a li has a class already attached
+//     to it, that class won't be erased when initialized. This allows
+//     you to set the state of the tree when painting the page simply
+//     by setting some li's class name as being "liOpen" (see example)
+//October 1, 2015: WHD, modified code to prevent false html tag matches
+//                 by htmltrans(n).
+/*
+This code is inspired by and extended from Stuart Langridge's aqlist code:
+        http://www.kryogenix.org/code/browser/aqlists/
+        Stuart Langridge, November 2002
+        sil@kryogenix.org
+        Inspired by Aaron's labels.js (http://youngpup.net/demos/labels/)
+        and Dave Lindquist's menuDropDown.js (http://www.gazingus.org/dhtml/?id=109)
+*/
+
+//Automatically attach a listener to the window onload, to convert the trees
+addEvent(window,"load",convertTrees);
+
+//Utility function to add an event listener
+function addEvent(o,e,f){
+    if (o.addEventListener){ o.addEventListener(e,f,true); return true; }
+    else if (o.attachEvent){ return o.attachEvent("on"+e,f); }
+    else { return false; }
+}
+
+//utility function to set a global variable if it is not already set
+function setDefault(name,val) {
+    if (typeof(window[name])=="undefined" || window[name]==null) {
+        window[name]=val;
+    }
+}
+
+//Full expands a tree with a given ID
+function expandTree(treeId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    expandCollapseList(ul,nodeOpenClass);
+}
+
+//Fully collapses a tree with a given ID
+function collapseTree(treeId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    expandCollapseList(ul,nodeClosedClass);
+}
+
+//Expands enough nodes to expose an LI with a given ID
+function expandToItem(treeId,itemId) {
+    var ul = document.getElementById(treeId);
+    if (ul == null) { return false; }
+    var ret = expandCollapseList(ul,nodeOpenClass,itemId);
+    if (ret) {
+        var o = document.getElementById(itemId);
+        if (o.scrollIntoView) {
+            o.scrollIntoView(false);
+        }
+    }
+}
+
+//Performs 3 functions:
+//a) Expand all nodes
+//b) Collapse all nodes
+//c) Expand all nodes to reach a certain ID
+function expandCollapseList(ul,cName,itemId) {
+    if (!ul.childNodes || ul.childNodes.length==0) { return false; }
+    // Iterate LIs
+    for (var itemi=0;itemi < ul.childNodes.length;itemi++) {
+        var item = ul.childNodes[itemi];
+        if (itemId!=null && item.id==itemId) { return true; }
+        if (item.nodeName == "LI") {
+            // Iterate things in this LI
+            var subLists = false;
+            for (var sitemi=0;sitemi < item.childNodes.length;sitemi++) {
+                var sitem = item.childNodes[sitemi];
+                if (sitem.nodeName=="UL") {
+                    subLists = true;
+                    var ret = expandCollapseList(sitem,cName,itemId);
+                    if (itemId!=null && ret) {
+                        item.className=cName;
+                        return true;
+                    }
+                }
+            }
+            if (subLists && itemId==null) {
+                item.className = cName;
+            }
+        }
+    }
+}
+
+//Search the document for UL elements with the correct CLASS name, then process them
+function convertTrees() {
+    setDefault("treeClass","mktree");
+    setDefault("nodeClosedClass","liClosed");
+    setDefault("nodeOpenClass","liOpen");
+    setDefault("nodeBulletClass","liBullet");
+    setDefault("nodeLinkClass","bullet");
+    setDefault("preProcessTrees",true);
+    if (preProcessTrees) {
+        if (!document.createElement) { return; } // Without createElement, we can't do anything
+        uls = document.getElementsByTagName("ul");
+        for (var uli=0;uli < uls.length;uli++) {
+            var ul=uls[uli];
+            if (ul.nodeName=="UL" && ul.className==treeClass) {
+                processList(ul);
+            }
+        }
+    }
+}
+
+//Process a UL tag and all its children, to convert to a tree
+function processList(ul) {
+    if (!ul.childNodes || ul.childNodes.length==0) { return; }
+    // Iterate LIs
+    for (var itemi=0;itemi < ul.childNodes.length;itemi++) {
+        var item = ul.childNodes[itemi];
+        if (item.nodeName == "LI") {
+            // Iterate things in this LI
+            var subLists = false;
+            for (var sitemi=0;sitemi < item.childNodes.length;sitemi++) {
+                var sitem = item.childNodes[sitemi];
+                if (sitem.nodeName=="UL") {
+                    subLists = true;
+                    processList(sitem);
+                }
+            }
+            var s= document.createElement("SPAN");
+            var t= "";
+            s.className = nodeLinkClass;
+            if (subLists) {
+                // This LI has UL's in it, so it's a +/- node
+                if (item.className==null || item.className=="") {
+                    item.className = nodeClosedClass;
+                    t = "+\u00A0";
+                }
+                if (item.className==nodeOpenClass) {
+                    t = "\u2013\u00A0";
+                }
+                // If it's just text, make the text work as the link also
+                if (item.firstChild.nodeName=="#text") {
+                    t = t+item.firstChild.nodeValue;
+                    item.removeChild(item.firstChild);
+                }
+                s.onclick = function () {
+                    this.parentNode.className = (this.parentNode.className==nodeOpenClass) ? nodeClosedClass : nodeOpenClass;
+                    this.firstChild.nodeValue = (this.firstChild.nodeValue=="+\u00A0") ? "\u2013\u00A0" : "+\u00A0";
+                    return false;
+                }
+            }
+            else {
+                // No sublists, so it's just a bullet node
+                item.className = nodeBulletClass;
+                s.onclick = function () { return false; }
+                t = "\u2022\u00A0";
+            }
+            s.appendChild(document.createTextNode(t));
+            item.insertBefore(s,item.firstChild);
+        }
+    }
+}
+</script>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>compdb(5)</b> -- Athena Scenario Comparison Parameter Definitions
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#parameters">PARAMETERS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="mktree" id="::athena::compdb::parmset3">
+<li><a class="iref" href="#primary.*">primary.*</a>
+<ul>
+<li><a class="iref" href="#primary.a.*">primary.a.*</a>
+<ul>
+<li><a class="iref" href="#primary.a.bsysmood">primary.a.bsysmood</a></li>
+<li><a class="iref" href="#primary.a.bsyssat">primary.a.bsyssat</a></li>
+<li><a class="iref" href="#primary.a.control">primary.a.control</a></li>
+<li><a class="iref" href="#primary.a.gdp">primary.a.gdp</a></li>
+<li><a class="iref" href="#primary.a.goodscap">primary.a.goodscap</a></li>
+<li><a class="iref" href="#primary.a.influence">primary.a.influence</a></li>
+<li><a class="iref" href="#primary.a.mood">primary.a.mood</a></li>
+<li><a class="iref" href="#primary.a.nbinfluence">primary.a.nbinfluence</a></li>
+<li><a class="iref" href="#primary.a.nbmood">primary.a.nbmood</a></li>
+<li><a class="iref" href="#primary.a.nbsat">primary.a.nbsat</a></li>
+<li><a class="iref" href="#primary.a.nbsecurity">primary.a.nbsecurity</a></li>
+<li><a class="iref" href="#primary.a.nbunemp">primary.a.nbunemp</a></li>
+<li><a class="iref" href="#primary.a.pbmood">primary.a.pbmood</a></li>
+<li><a class="iref" href="#primary.a.pbsat">primary.a.pbsat</a></li>
+<li><a class="iref" href="#primary.a.sat">primary.a.sat</a></li>
+<li><a class="iref" href="#primary.a.security">primary.a.security</a></li>
+<li><a class="iref" href="#primary.a.support">primary.a.support</a></li>
+<li><a class="iref" href="#primary.a.unemp">primary.a.unemp</a></li>
+<li><a class="iref" href="#primary.a.vrel">primary.a.vrel</a></li>
+</ul></li>
+</ul></li>
+<li><a class="iref" href="#bsysmood.*">bsysmood.*</a>
+<ul>
+<li><a class="iref" href="#bsysmood.active">bsysmood.active</a></li>
+<li><a class="iref" href="#bsysmood.a.*">bsysmood.a.*</a>
+<ul>
+<li><a class="iref" href="#bsysmood.a.sat">bsysmood.a.sat</a></li>
+<li><a class="iref" href="#bsysmood.a.population">bsysmood.a.population</a></li>
+<li><a class="iref" href="#bsysmood.a.saliency">bsysmood.a.saliency</a></li>
+</ul></li>
+</ul></li>
+<li><a class="iref" href="#bsyssat.*">bsyssat.*</a>
+<ul>
+<li><a class="iref" href="#bsyssat.active">bsyssat.active</a></li>
+<li><a class="iref" href="#bsyssat.a.*">bsyssat.a.*</a>
+<ul>
+<li><a class="iref" href="#bsyssat.a.sat">bsyssat.a.sat</a></li>
+<li><a class="iref" href="#bsyssat.a.population">bsyssat.a.population</a></li>
+<li><a class="iref" href="#bsyssat.a.saliency">bsyssat.a.saliency</a></li>
+</ul></li>
+</ul></li>
+<li><a class="iref" href="#control.*">control.*</a>
+<ul>
+<li><a class="iref" href="#control.active">control.active</a></li>
+</ul></li>
+<li><a class="iref" href="#driversat.*">driversat.*</a>
+<ul>
+<li><a class="iref" href="#driversat.active">driversat.active</a></li>
+</ul></li>
+<li><a class="iref" href="#drivervrel.*">drivervrel.*</a>
+<ul>
+<li><a class="iref" href="#drivervrel.active">drivervrel.active</a></li>
+</ul></li>
+<li><a class="iref" href="#gdp.*">gdp.*</a>
+<ul>
+<li><a class="iref" href="#gdp.active">gdp.active</a></li>
+</ul></li>
+<li><a class="iref" href="#goodscap.*">goodscap.*</a>
+<ul>
+<li><a class="iref" href="#goodscap.active">goodscap.active</a></li>
+</ul></li>
+<li><a class="iref" href="#influence.*">influence.*</a>
+<ul>
+<li><a class="iref" href="#influence.active">influence.active</a></li>
+</ul></li>
+<li><a class="iref" href="#mood.*">mood.*</a>
+<ul>
+<li><a class="iref" href="#mood.active">mood.active</a></li>
+<li><a class="iref" href="#mood.a.*">mood.a.*</a>
+<ul>
+<li><a class="iref" href="#mood.a.sat">mood.a.sat</a></li>
+<li><a class="iref" href="#mood.a.saliency">mood.a.saliency</a></li>
+<li><a class="iref" href="#mood.a.population">mood.a.population</a></li>
+</ul></li>
+</ul></li>
+<li><a class="iref" href="#nbinfluence.*">nbinfluence.*</a>
+<ul>
+<li><a class="iref" href="#nbinfluence.active">nbinfluence.active</a></li>
+</ul></li>
+<li><a class="iref" href="#nbmood.*">nbmood.*</a>
+<ul>
+<li><a class="iref" href="#nbmood.active">nbmood.active</a></li>
+<li><a class="iref" href="#nbmood.a.*">nbmood.a.*</a>
+<ul>
+<li><a class="iref" href="#nbmood.a.sat">nbmood.a.sat</a></li>
+<li><a class="iref" href="#nbmood.a.population">nbmood.a.population</a></li>
+<li><a class="iref" href="#nbmood.a.saliency">nbmood.a.saliency</a></li>
+</ul></li>
+</ul></li>
+<li><a class="iref" href="#nbsat.*">nbsat.*</a>
+<ul>
+<li><a class="iref" href="#nbsat.active">nbsat.active</a></li>
+<li><a class="iref" href="#nbsat.a.*">nbsat.a.*</a>
+<ul>
+<li><a class="iref" href="#nbsat.a.sat">nbsat.a.sat</a></li>
+<li><a class="iref" href="#nbsat.a.population">nbsat.a.population</a></li>
+<li><a class="iref" href="#nbsat.a.saliency">nbsat.a.saliency</a></li>
+</ul></li>
+</ul></li>
+<li><a class="iref" href="#nbsecurity.*">nbsecurity.*</a>
+<ul>
+<li><a class="iref" href="#nbsecurity.active">nbsecurity.active</a></li>
+<li><a class="iref" href="#nbsecurity.a.*">nbsecurity.a.*</a>
+<ul>
+<li><a class="iref" href="#nbsecurity.a.population">nbsecurity.a.population</a></li>
+<li><a class="iref" href="#nbsecurity.a.security">nbsecurity.a.security</a></li>
+</ul></li>
+</ul></li>
+<li><a class="iref" href="#nbunemp.*">nbunemp.*</a>
+<ul>
+<li><a class="iref" href="#nbunemp.active">nbunemp.active</a></li>
+</ul></li>
+<li><a class="iref" href="#pbmood.*">pbmood.*</a>
+<ul>
+<li><a class="iref" href="#pbmood.active">pbmood.active</a></li>
+<li><a class="iref" href="#pbmood.a.*">pbmood.a.*</a>
+<ul>
+<li><a class="iref" href="#pbmood.a.sat">pbmood.a.sat</a></li>
+<li><a class="iref" href="#pbmood.a.population">pbmood.a.population</a></li>
+<li><a class="iref" href="#pbmood.a.saliency">pbmood.a.saliency</a></li>
+</ul></li>
+</ul></li>
+<li><a class="iref" href="#pbsat.*">pbsat.*</a>
+<ul>
+<li><a class="iref" href="#pbsat.active">pbsat.active</a></li>
+<li><a class="iref" href="#pbsat.a.*">pbsat.a.*</a>
+<ul>
+<li><a class="iref" href="#pbsat.a.sat">pbsat.a.sat</a></li>
+<li><a class="iref" href="#pbsat.a.population">pbsat.a.population</a></li>
+<li><a class="iref" href="#pbsat.a.saliency">pbsat.a.saliency</a></li>
+</ul></li>
+</ul></li>
+<li><a class="iref" href="#personnel.*">personnel.*</a>
+<ul>
+<li><a class="iref" href="#personnel.active">personnel.active</a></li>
+</ul></li>
+<li><a class="iref" href="#population.*">population.*</a>
+<ul>
+<li><a class="iref" href="#population.active">population.active</a></li>
+</ul></li>
+<li><a class="iref" href="#saliency.*">saliency.*</a>
+<ul>
+<li><a class="iref" href="#saliency.active">saliency.active</a></li>
+</ul></li>
+<li><a class="iref" href="#sat.*">sat.*</a>
+<ul>
+<li><a class="iref" href="#sat.active">sat.active</a></li>
+<li><a class="iref" href="#sat.a.*">sat.a.*</a>
+<ul>
+<li><a class="iref" href="#sat.a.driversat">sat.a.driversat</a></li>
+</ul></li>
+</ul></li>
+<li><a class="iref" href="#security.*">security.*</a>
+<ul>
+<li><a class="iref" href="#security.active">security.active</a></li>
+</ul></li>
+<li><a class="iref" href="#support.*">support.*</a>
+<ul>
+<li><a class="iref" href="#support.active">support.active</a></li>
+<li><a class="iref" href="#support.a.*">support.a.*</a>
+<ul>
+<li><a class="iref" href="#support.a.population">support.a.population</a></li>
+<li><a class="iref" href="#support.a.personnel">support.a.personnel</a></li>
+<li><a class="iref" href="#support.a.security">support.a.security</a></li>
+<li><a class="iref" href="#support.a.vrel">support.a.vrel</a></li>
+</ul></li>
+</ul></li>
+<li><a class="iref" href="#unemp.*">unemp.*</a>
+<ul>
+<li><a class="iref" href="#unemp.active">unemp.active</a></li>
+</ul></li>
+<li><a class="iref" href="#vrel.*">vrel.*</a>
+<ul>
+<li><a class="iref" href="#vrel.active">vrel.active</a></li>
+<li><a class="iref" href="#vrel.a.*">vrel.a.*</a>
+<ul>
+<li><a class="iref" href="#vrel.a.drivervrel">vrel.a.drivervrel</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>compdb(5) defines the parameters that govern the comparison of two
+<a href="../mann/athena.html">athena(n)</a> scenarios.</p>
+
+<p><a href="../mann/compdb.html">compdb(n)</a> handles compdb(5) files using the <a href="../../../mars/docs/mann/parmset.html">parmset(n)</a>
+mechanism.  A valid file consists of zero or more parameter settings,
+each of which has this basic syntax,
+
+</p>
+
+<pre>parm <i>name</i> <i>value</i></pre>
+<p>where <i>value</i> must be quoted if it contains whitespace.  See
+<a href="../../../mars/docs/mann/parmset.html">parmset(n)</a> for more details.
+
+</p>
+
+<h2><a name="parameters">PARAMETERS</a></h2>
+<p>The valid parameters are as follows:
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="primary.*">primary.*</a></dt><dd><p>
+Comparison parameters that are at the highest level of output variables.
+</p><dl>
+
+<dt class="defitem"><a name="primary.a.*">primary.a.*</a></dt><dd><p>
+Significance multipliers for the highest level output variables. Nominally 1.0, these are used to adjust each outputs significance.
+</p><dl>
+
+<dt class="defitem"><a name="primary.a.bsysmood">primary.a.bsysmood <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type bsysmood. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.bsyssat">primary.a.bsyssat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type bsyssat. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.control">primary.a.control <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type control. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.gdp">primary.a.gdp <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type gdp. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.goodscap">primary.a.goodscap <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type goodscap. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.influence">primary.a.influence <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type influence. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.mood">primary.a.mood <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type mood. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.nbinfluence">primary.a.nbinfluence <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type nbinfluence. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.nbmood">primary.a.nbmood <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type nbmood. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.nbsat">primary.a.nbsat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type nbsat. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.nbsecurity">primary.a.nbsecurity <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type nbsecurity. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.nbunemp">primary.a.nbunemp <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type nbunemp. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.pbmood">primary.a.pbmood <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type pbmood. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.pbsat">primary.a.pbsat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type pbsat. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.sat">primary.a.sat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type sat. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.security">primary.a.security <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type security. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.support">primary.a.support <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type support. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.unemp">primary.a.unemp <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type unemp. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="primary.a.vrel">primary.a.vrel <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+Significance multiplier for output variables of type vrel. Setting it to 0.0 makes outputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="bsysmood.*">bsysmood.*</a></dt><dd><p>
+Comparison parameters for variables of type bsysmood.
+</p><dl>
+
+<dt class="defitem"><a name="bsysmood.active">bsysmood.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+<dt class="defitem"><a name="bsysmood.a.*">bsysmood.a.*</a></dt><dd><p>
+Significance multipliers for input variables to variables of type bsysmood. Nominally 1.0, these are used to adjust the significance of the various inputs to each output.
+</p><dl>
+
+<dt class="defitem"><a name="bsysmood.a.sat">bsysmood.a.sat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type sat to variables of type bsysmood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="bsysmood.a.population">bsysmood.a.population <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type population to variables of type bsysmood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="bsysmood.a.saliency">bsysmood.a.saliency <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type saliency to variables of type bsysmood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="bsyssat.*">bsyssat.*</a></dt><dd><p>
+Comparison parameters for variables of type bsyssat.
+</p><dl>
+
+<dt class="defitem"><a name="bsyssat.active">bsyssat.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+<dt class="defitem"><a name="bsyssat.a.*">bsyssat.a.*</a></dt><dd><p>
+Significance multipliers for input variables to variables of type bsyssat. Nominally 1.0, these are used to adjust the significance of the various inputs to each output.
+</p><dl>
+
+<dt class="defitem"><a name="bsyssat.a.sat">bsyssat.a.sat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type sat to variables of type bsyssat. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="bsyssat.a.population">bsyssat.a.population <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type population to variables of type bsyssat. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="bsyssat.a.saliency">bsyssat.a.saliency <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type saliency to variables of type bsyssat. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="control.*">control.*</a></dt><dd><p>
+Comparison parameters for variables of type control.
+</p><dl>
+
+<dt class="defitem"><a name="control.active">control.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="driversat.*">driversat.*</a></dt><dd><p>
+Comparison parameters for variables of type driversat.
+</p><dl>
+
+<dt class="defitem"><a name="driversat.active">driversat.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">no</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="drivervrel.*">drivervrel.*</a></dt><dd><p>
+Comparison parameters for variables of type drivervrel.
+</p><dl>
+
+<dt class="defitem"><a name="drivervrel.active">drivervrel.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">no</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="gdp.*">gdp.*</a></dt><dd><p>
+Comparison parameters for variables of type gdp.
+</p><dl>
+
+<dt class="defitem"><a name="gdp.active">gdp.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="goodscap.*">goodscap.*</a></dt><dd><p>
+Comparison parameters for variables of type goodscap.
+</p><dl>
+
+<dt class="defitem"><a name="goodscap.active">goodscap.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="influence.*">influence.*</a></dt><dd><p>
+Comparison parameters for variables of type influence.
+</p><dl>
+
+<dt class="defitem"><a name="influence.active">influence.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="mood.*">mood.*</a></dt><dd><p>
+Comparison parameters for variables of type mood.
+</p><dl>
+
+<dt class="defitem"><a name="mood.active">mood.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+<dt class="defitem"><a name="mood.a.*">mood.a.*</a></dt><dd><p>
+Significance multipliers for input variables to variables of type mood. Nominally 1.0, these are used to adjust the significance of the various inputs to each output.
+</p><dl>
+
+<dt class="defitem"><a name="mood.a.sat">mood.a.sat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type sat to variables of type mood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="mood.a.saliency">mood.a.saliency <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type saliency to variables of type mood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="mood.a.population">mood.a.population <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type population to variables of type mood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="nbinfluence.*">nbinfluence.*</a></dt><dd><p>
+Comparison parameters for variables of type nbinfluence.
+</p><dl>
+
+<dt class="defitem"><a name="nbinfluence.active">nbinfluence.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="nbmood.*">nbmood.*</a></dt><dd><p>
+Comparison parameters for variables of type nbmood.
+</p><dl>
+
+<dt class="defitem"><a name="nbmood.active">nbmood.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+<dt class="defitem"><a name="nbmood.a.*">nbmood.a.*</a></dt><dd><p>
+Significance multipliers for input variables to variables of type nbmood. Nominally 1.0, these are used to adjust the significance of the various inputs to each output.
+</p><dl>
+
+<dt class="defitem"><a name="nbmood.a.sat">nbmood.a.sat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type sat to variables of type nbmood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="nbmood.a.population">nbmood.a.population <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type population to variables of type nbmood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="nbmood.a.saliency">nbmood.a.saliency <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type saliency to variables of type nbmood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="nbsat.*">nbsat.*</a></dt><dd><p>
+Comparison parameters for variables of type nbsat.
+</p><dl>
+
+<dt class="defitem"><a name="nbsat.active">nbsat.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+<dt class="defitem"><a name="nbsat.a.*">nbsat.a.*</a></dt><dd><p>
+Significance multipliers for input variables to variables of type nbsat. Nominally 1.0, these are used to adjust the significance of the various inputs to each output.
+</p><dl>
+
+<dt class="defitem"><a name="nbsat.a.sat">nbsat.a.sat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type sat to variables of type nbsat. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="nbsat.a.population">nbsat.a.population <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type population to variables of type nbsat. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="nbsat.a.saliency">nbsat.a.saliency <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type saliency to variables of type nbsat. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="nbsecurity.*">nbsecurity.*</a></dt><dd><p>
+Comparison parameters for variables of type nbsecurity.
+</p><dl>
+
+<dt class="defitem"><a name="nbsecurity.active">nbsecurity.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+<dt class="defitem"><a name="nbsecurity.a.*">nbsecurity.a.*</a></dt><dd><p>
+Significance multipliers for input variables to variables of type nbsecurity. Nominally 1.0, these are used to adjust the significance of the various inputs to each output.
+</p><dl>
+
+<dt class="defitem"><a name="nbsecurity.a.population">nbsecurity.a.population <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type population to variables of type nbsecurity. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="nbsecurity.a.security">nbsecurity.a.security <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type security to variables of type nbsecurity. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="nbunemp.*">nbunemp.*</a></dt><dd><p>
+Comparison parameters for variables of type nbunemp.
+</p><dl>
+
+<dt class="defitem"><a name="nbunemp.active">nbunemp.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="pbmood.*">pbmood.*</a></dt><dd><p>
+Comparison parameters for variables of type pbmood.
+</p><dl>
+
+<dt class="defitem"><a name="pbmood.active">pbmood.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+<dt class="defitem"><a name="pbmood.a.*">pbmood.a.*</a></dt><dd><p>
+Significance multipliers for input variables to variables of type pbmood. Nominally 1.0, these are used to adjust the significance of the various inputs to each output.
+</p><dl>
+
+<dt class="defitem"><a name="pbmood.a.sat">pbmood.a.sat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type sat to variables of type pbmood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="pbmood.a.population">pbmood.a.population <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type population to variables of type pbmood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="pbmood.a.saliency">pbmood.a.saliency <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type saliency to variables of type pbmood. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="pbsat.*">pbsat.*</a></dt><dd><p>
+Comparison parameters for variables of type pbsat.
+</p><dl>
+
+<dt class="defitem"><a name="pbsat.active">pbsat.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+<dt class="defitem"><a name="pbsat.a.*">pbsat.a.*</a></dt><dd><p>
+Significance multipliers for input variables to variables of type pbsat. Nominally 1.0, these are used to adjust the significance of the various inputs to each output.
+</p><dl>
+
+<dt class="defitem"><a name="pbsat.a.sat">pbsat.a.sat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type sat to variables of type pbsat. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="pbsat.a.population">pbsat.a.population <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type population to variables of type pbsat. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="pbsat.a.saliency">pbsat.a.saliency <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type saliency to variables of type pbsat. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="personnel.*">personnel.*</a></dt><dd><p>
+Comparison parameters for variables of type personnel.
+</p><dl>
+
+<dt class="defitem"><a name="personnel.active">personnel.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="population.*">population.*</a></dt><dd><p>
+Comparison parameters for variables of type population.
+</p><dl>
+
+<dt class="defitem"><a name="population.active">population.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="saliency.*">saliency.*</a></dt><dd><p>
+Comparison parameters for variables of type saliency.
+</p><dl>
+
+<dt class="defitem"><a name="saliency.active">saliency.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="sat.*">sat.*</a></dt><dd><p>
+Comparison parameters for variables of type sat.
+</p><dl>
+
+<dt class="defitem"><a name="sat.active">sat.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+<dt class="defitem"><a name="sat.a.*">sat.a.*</a></dt><dd><p>
+Significance multipliers for input variables to variables of type sat. Nominally 1.0, these are used to adjust the significance of the various inputs to each output.
+</p><dl>
+
+<dt class="defitem"><a name="sat.a.driversat">sat.a.driversat <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type driversat to variables of type sat. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="security.*">security.*</a></dt><dd><p>
+Comparison parameters for variables of type security.
+</p><dl>
+
+<dt class="defitem"><a name="security.active">security.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="support.*">support.*</a></dt><dd><p>
+Comparison parameters for variables of type support.
+</p><dl>
+
+<dt class="defitem"><a name="support.active">support.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+<dt class="defitem"><a name="support.a.*">support.a.*</a></dt><dd><p>
+Significance multipliers for input variables to variables of type support. Nominally 1.0, these are used to adjust the significance of the various inputs to each output.
+</p><dl>
+
+<dt class="defitem"><a name="support.a.population">support.a.population <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type population to variables of type support. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="support.a.personnel">support.a.personnel <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type personnel to variables of type support. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="support.a.security">support.a.security <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type security to variables of type support. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+<dt class="defitem"><a name="support.a.vrel">support.a.vrel <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type vrel to variables of type support. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="unemp.*">unemp.*</a></dt><dd><p>
+Comparison parameters for variables of type unemp.
+</p><dl>
+
+<dt class="defitem"><a name="unemp.active">unemp.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="vrel.*">vrel.*</a></dt><dd><p>
+Comparison parameters for variables of type vrel.
+</p><dl>
+
+<dt class="defitem"><a name="vrel.active">vrel.active <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">yes</span></b>".
+If yes, we look for significant differences in variables of this type; and if not, not.
+</dd>
+<dt class="defitem"><a name="vrel.a.*">vrel.a.*</a></dt><dd><p>
+Significance multipliers for input variables to variables of type vrel. Nominally 1.0, these are used to adjust the significance of the various inputs to each output.
+</p><dl>
+
+<dt class="defitem"><a name="vrel.a.drivervrel">vrel.a.drivervrel <i>value</i></a></dt><dd>
+Defaults to "<b><span class="tt">1.0</span></b>".
+The significance multiplier for inputs of type drivervrel to variables of type vrel. Setting it to 0.0 makes inputs of this type completely insignificant.
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:45 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

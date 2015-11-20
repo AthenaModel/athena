@@ -1,0 +1,426 @@
+<html>
+<head>
+<title>athena 6.3.3: athena_iom(n) -- Athena Information Operations Message Component, submodule of athena(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>athena_iom(n)</b> -- Athena Information Operations Message Component, submodule of <a href="../mann/athena.html">athena(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    <ul>
+
+    <li><a href="#public_subcommands">Public Subcommands</a></li>
+
+    <li><a href="#private_subcommands">Private Subcommands</a></li>
+
+</ul>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require athena 6.3.3
+namespace import ::athena::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#check"><i>adb</i> iom check</a></li>
+<li><a class="iref" href="#exists"><i>adb</i> iom exists <i>iom_id</i></a></li>
+<li><a class="iref" href="#get"><i>adb</i> iom get <i>iom_id</i> ?<i>parm</i>?</a></li>
+<li><a class="iref" href="#normal"><i>adb</i> iom normal <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#normal_namedict"><i>adb</i> iom normal namedict</a></li>
+<li><a class="iref" href="#normal_names"><i>adb</i> iom normal names</a></li>
+<li><a class="iref" href="#normal_longnames"><i>adb</i> iom normal longnames</a></li>
+<li><a class="iref" href="#normal_validate"><i>adb</i> iom normal validate <i>iom_id</i></a></li>
+<li><a class="iref" href="#namedict"><i>adb</i> iom namedict</a></li>
+<li><a class="iref" href="#names"><i>adb</i> iom names</a></li>
+<li><a class="iref" href="#validate"><i>adb</i> iom validate <i>iom_id</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This man page describes a component of the <a href="../mann/athena.html">athena(n)</a> package
+that provides access to the scenario's information operation messages
+(IOMs).  An IOM represents a message tailored to affect the attitudes of
+a particular part of the population.  Its success depends on its 
+semantic hook (<a href="../mann/athena_hook.html">athena_hook(n)</a>), and its effects are based upon
+its payloads (<a href="../mann/athena_payload.html">athena_payload(n)</a>).</p>
+
+<p>The component is accessible as a subcommand of the <a href="../mann/athena.html">athena(n)</a> and
+<a href="../mann/athenadb.html">athenadb(n)</a> objects; <a href="#public_subcommands">Public Subcommands</a> are accessible
+from <a href="../mann/athena.html">athena(n)</a> and (usually) from <a href="../mann/athenadb.html">athenadb(n)</a>, and
+<a href="#private_subcommands">Private Subcommands</a> only from <a href="../mann/athenadb.html">athenadb(n)</a>.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<h2><a name="public_subcommands">Public Subcommands</a></h2>
+<p>The <span class="tt"><i>adb</i> iom</span> command takes the following subcommands,
+where <i>adb</i> is an instance of <a href="../mann/athena.html">athena(n)</a>.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="check"><i>adb</i> iom check</a></dt><dd>
+
+Computes a sanity check for the set of IOMs and returns a list of two 
+items, {<i>severity</i> <i>flist</i>}, where <i>severity</i> is either 
+<b>OK</b> or <b>WARNING</b> and <i>flist</i> is either the empty list or a list
+sanity check failure dictionaries.
+
+</dd>
+<dt class="defitem"><a name="exists"><i>adb</i> iom exists <i>iom_id</i></a></dt><dd>
+
+Returns 1 if there is an IOM called <i>iom_id</i>, and 0 otherwise.
+
+
+</dd>
+<dt class="defitem"><a name="get"><i>adb</i> iom get <i>iom_id</i> ?<i>parm</i>?</a></dt><dd>
+
+By default, returns a dictionary of information about IOM <i>iom_id</i>,
+as read from the <b>fmt_ioms</b>.  If <i>parm</i> is given, returns
+the value of the <i>parm</i>.
+
+</dd>
+<dt class="defitem"><a name="normal"><i>adb</i> iom normal <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+Returns information about the "normal" IOMs, i.e., those whose state
+is <b>normal</b> as opposed to <b>disabled</b> or <b>invalid</b>.
+
+</p><dl>
+<dt class="defitem"><a name="normal_namedict"><i>adb</i> iom normal namedict</a></dt><dd>
+Returns an ID/longname dictionary of the names of the "normal" 
+IOMs.
+
+</dd>
+<dt class="defitem"><a name="normal_names"><i>adb</i> iom normal names</a></dt><dd>
+Returns a list of the IDs of the "normal" IOMs.
+
+</dd>
+<dt class="defitem"><a name="normal_longnames"><i>adb</i> iom normal longnames</a></dt><dd>
+Returns a list of the "long names" of the "normal" IOMs.
+
+</dd>
+<dt class="defitem"><a name="normal_validate"><i>adb</i> iom normal validate <i>iom_id</i></a></dt><dd>
+Validates IOM <i>iom_id</i>, returning <i>iom_id</i> if <i>iom_id</i> is a "normal"
+IOM and throwing <b>INVALID</b> otherwise.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="namedict"><i>adb</i> iom namedict</a></dt><dd>
+Returns an ID/longname dictionary of the IOM names.
+
+</dd>
+<dt class="defitem"><a name="names"><i>adb</i> iom names</a></dt><dd>
+Returns a list of the IDs of the IOMs.
+
+</dd>
+<dt class="defitem"><a name="validate"><i>adb</i> iom validate <i>iom_id</i></a></dt><dd>
+Validates group ID <i>iom_id</i>, returning <i>iom_id</i> if valid and throwing
+<b>INVALID</b> otherwise.
+
+</dd>
+</dl>
+
+<h2><a name="private_subcommands">Private Subcommands</a></h2>
+<p>The <span class="tt"><i>adb</i> iom</span> command takes the following subcommands, where
+where <i>adb</i> is an instance of <a href="../mann/athenadb.html">athenadb(n)</a>.</p>
+
+<p>TBD: None yet documented.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette, Dave Hanks.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:56 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+

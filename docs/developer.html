@@ -1,0 +1,310 @@
+<html><head>
+<title>athena 6.3.3: Athena Documentation Tree</title>
+<style>
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 1%;
+            margin-right: 1%;
+        }
+    
+</style>
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+<h1>Athena Documentation Tree</h1>
+    
+
+<h2>Start Here</h2>
+
+<ul>
+  <li> <a href="build_notes.html">Build Notes</a>: Details of each
+       Athena build.
+  </li><li> <a href="cm.html">CM Plan</a>
+  </li><li> <a href="tps.html">Third-Party Software</a>
+  </li><li> <a href="arachne.html">Arachne</a>: Athena Web/Batch Back End
+       Interface Specification.
+</li></ul>
+
+<h2>Man Pages</h2>
+
+<ul>
+  <li> <a href="./man1/index.html">Section (1)</a>: Executables
+  </li><li> <a href="./man5/index.html">Section (5)</a>: File Formats
+  </li><li> <a href="./mann/index.html">Section (n)</a>: Tcl Commands
+  </li><li> <a href="./mani/index.html">Section (i)</a>: Tcl Interfaces
+</li></ul>
+
+<h2>Mars Documentation</h2>
+
+<ul>
+  <li> <a href="./../../mars/docs/index.html">Mars Documentation Tree</a>
+  </li><li> <a href="./../../mars/docs/man1/index.html">Section (1)</a>: Executables
+  </li><li> <a href="./../../mars/docs/man5/index.html">Section (5)</a>: File Formats
+  </li><li> <a href="./../../mars/docs/mann/index.html">Section (n)</a>: Tcl Commands
+  </li><li> <a href="./../../mars/docs/mani/index.html">Section (i)</a>: Tcl Interfaces
+</li></ul>
+
+<h2>Kite Man Pages</h2>
+
+<ul>
+  <li> <a href="./../../kite/docs/index.html">Kite Documentation Tree</a>
+  </li><li> <a href="./../../kite/docs/man5/index.html">Section (5)</a>: File Formats
+  </li><li> <a href="./../../kite/docs/mann/index.html">Section (n)</a>: Tcl Commands
+  </li><li> <a href="./../../kite/docs/mani/index.html">Section (i)</a>: Tcl Interfaces
+</li></ul>
+
+<h2>Modeling Documents</h2>
+
+<ul>
+  <li> Athena User Guide (<a href="aug.docx">MS Word docx</a>)
+  </li><li> Athena Analyst's Guide (<a href="aag.docx">MS Word docx</a>)
+  </li><li> Athena Rules Document (<a href="rules.pptx">PowerPoint pptx</a>)
+  </li><li> Mars Analyst's Guide (<a href="mag.docx">MS Word docx</a>)
+</li></ul>
+
+<h2>Copyright</h2>
+<p>Copyright 2008-2015,
+by the California Institute of Technology. ALL
+RIGHTS RESERVED. United States Government Sponsorship acknowledged. Any
+commercial use must be negotiated with the Office of Technology Transfer
+at the California Institute of Technology.</p>
+
+<p>This software is subject to U.S. export control laws and regulations and
+has been classified as EAR99.  By accepting this software, the
+user agrees to comply with all applicable U.S. export laws and
+regulations.  User has the responsibility to obtain export licenses, or
+other export authority as may be required before exporting such
+information to foreign countries or providing access to foreign persons.
+
+</p>
+
+<hr>
+<p><address><a href="mailto:William.H.Duquette@jpl.nasa.gov">William.H.Duquette@jpl.nasa.gov</a></address>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+<!-- List of Anchors
+
+-->

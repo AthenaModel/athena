@@ -1,0 +1,1570 @@
+<html>
+<head>
+<title>athena 6.3.3: htmlbuffer(n) -- HTML Generation Buffer, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>htmlbuffer(n)</b> -- HTML Generation Buffer, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#standard_conventions">Standard Conventions</a></li>
+
+    <li><a href="#the_buffer_stack">The Buffer Stack</a></li>
+
+    <li><a href="#records_and_fields">Records and Fields</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    <ul>
+
+    <li><a href="#buffer_management">Buffer Management</a></li>
+
+    <li><a href="#page_management">Page Management</a></li>
+
+    <li><a href="#miscellaneous_html_tags">Miscellaneous HTML Tags</a></li>
+
+    <li><a href="#links">Links</a></li>
+
+    <li><a href="#lists">Lists</a></li>
+
+    <li><a href="#tables">Tables</a></li>
+
+    <li><a href="#paging">Paging</a></li>
+
+    <li><a href="#records">Records</a></li>
+
+    <li><a href="#html_forms">HTML Forms</a></li>
+
+    <li><a href="#html_queries">HTML Queries</a></li>
+
+    <li><a href="#helper_commands">Helper Commands</a></li>
+
+</ul>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre class="example">
+package require projectlib 6.3.3
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#htmlbuffer_create">::projectlib::htmlbuffer create <i>obj</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlbuffer create-cssfile">-cssfile <i>name</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlbuffer create-domain">-domain <i>prefix</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlbuffer create-footercmd">-footercmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlbuffer create-headercmd">-headercmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlbuffer create-metacmd">-metacmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlbuffer create-mode">-mode <i>mode</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#htmlbuffer create-styles">-styles <i>css</i></a></li>
+<li><a class="iref" href="#htmlbuffer_new">::projectlib::htmlbuffer new ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#cget"><i>obj</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#clear"><i>obj</i> clear</a></li>
+<li><a class="iref" href="#configure"><i>obj</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#get"><i>obj</i> get</a></li>
+<li><a class="iref" href="#pop"><i>obj</i> pop</a></li>
+<li><a class="iref" href="#push"><i>obj</i> push</a></li>
+<li><a class="iref" href="#put"><i>obj</i> put <i>text</i> ?<i>text...</i>?</a></li>
+<li><a class="iref" href="#putif"><i>obj</i> putif <i>expr then</i> ?<i>else</i>?</a></li>
+<li><a class="iref" href="#putln"><i>obj</i> putln <i>text</i> ?<i>text...</i>?</a></li>
+<li><a class="iref" href="#tag"><i>obj</i> tag <i>tag</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#tagln"><i>obj</i> tagln <i>tag</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#wrap"><i>obj</i> wrap <i>tag</i> ?<i>options...</i>? <i>text</i></a></li>
+<li><a class="iref" href="#wrapln"><i>obj</i> wrapln <i>tag</i> ?<i>options...</i>? <i>text</i></a></li>
+<li><a class="iref" href="#page"><i>obj</i> page <i>title</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#page-refreshafter">-refreshafter <i>seconds</i></a></li>
+<li><a class="iref" href="#/page"><i>obj</i> /page</a></li>
+<li><a class="iref" href="#br"><i>obj</i> br</a></li>
+<li><a class="iref" href="#div"><i>obj</i> div ?<i>options...</i>? ?<i>body</i>?</a></li>
+<li><a class="iref" href="#/div"><i>obj</i> /div</a></li>
+<li><a class="iref" href="#h1"><i>obj</i> h1 ?<i>options</i>? <i>title</i></a></li>
+<li><a class="iref" href="#h2"><i>obj</i> h2 ?<i>options</i>? <i>title</i></a></li>
+<li><a class="iref" href="#h3"><i>obj</i> h3 ?<i>options</i>? <i>title</i></a></li>
+<li><a class="iref" href="#h4"><i>obj</i> h4 ?<i>options</i>? <i>title</i></a></li>
+<li><a class="iref" href="#h5"><i>obj</i> h5 ?<i>options</i>? <i>title</i></a></li>
+<li><a class="iref" href="#h6"><i>obj</i> h6 ?<i>options</i>? <i>title</i></a></li>
+<li><a class="iref" href="#hr"><i>obj</i> hr ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#para"><i>obj</i> para</a></li>
+<li><a class="iref" href="#pre"><i>obj</i> pre ?<i>options...</i>? ?<i>text</i>?</a></li>
+<li><a class="iref" href="#pre-with"><i>obj</i> pre ?<i>options...</i>? <i>body</i></a></li>
+<li><a class="iref" href="#/pre"><i>obj</i> /pre</a></li>
+<li><a class="iref" href="#span"><i>obj</i> span ?<i>options...</i>? ?<i>text</i>?</a></li>
+<li><a class="iref" href="#span-with"><i>obj</i> span-with ?<i>options...</i>? <i>body</i></a></li>
+<li><a class="iref" href="#/span"><i>obj</i> /span</a></li>
+<li><a class="iref" href="#iimg"><i>obj</i> ximg <i>suffix</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#iref"><i>obj</i> iref <i>suffix</i> ?<i>options...</i>? <i>label</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#iref-qparms">-qparms <i>dict</i></a></li>
+<li><a class="iref" href="#linkbar"><i>obj</i> linkbar <i>body</i></a></li>
+<li><a class="iref" href="#qref"><i>obj</i> qref <i>qparms</i> ?<i>options...</i>? <i>label</i></a></li>
+<li><a class="iref" href="#ximg"><i>obj</i> ximg <i>url</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#xref"><i>obj</i> xref <i>url</i> ?<i>options...</i>? <i>label</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#xref-qparms">-qparms <i>dict</i></a></li>
+<li><a class="iref" href="#dl"><i>obj</i> dl ?<i>options...</i>? ?<i>body</i>?</a></li>
+<li><a class="iref" href="#/dl"><i>obj</i> /dl</a></li>
+<li><a class="iref" href="#dt"><i>obj</i> dt ?<i>options...</i>? ?<i>text</i>?</a></li>
+<li><a class="iref" href="#/dt"><i>obj</i> /dt</a></li>
+<li><a class="iref" href="#dd"><i>obj</i> dd ?<i>options...</i>? ?<i>text</i>?</a></li>
+<li><a class="iref" href="#dd-with"><i>obj</i> dd-with ?<i>options...</i>? <i>body</i></a></li>
+<li><a class="iref" href="#/dd"><i>obj</i> /dd</a></li>
+<li><a class="iref" href="#ol"><i>obj</i> ol ?<i>options...</i>? ?<i>body</i>?</a></li>
+<li><a class="iref" href="#/ol"><i>obj</i> /ol</a></li>
+<li><a class="iref" href="#ul"><i>obj</i> ul ?<i>options...</i>? ?<i>body</i>?</a></li>
+<li><a class="iref" href="#/ul"><i>obj</i> /ul</a></li>
+<li><a class="iref" href="#li"><i>obj</i> li ?<i>options...</i>? ?<i>text</i>?</a></li>
+<li><a class="iref" href="#li-with"><i>obj</i> li-with ?<i>options...</i>? <i>body</i></a></li>
+<li><a class="iref" href="#/li"><i>obj</i> /li</a></li>
+<li><a class="iref" href="#table"><i>obj</i> table ?<i>options...</i>? ?<i>body</i>?</a></li>
+<li><a class="iref" href="#/table"><i>obj</i> /table</a></li>
+<li><a class="iref" href="#tr"><i>obj</i> tr ?<i>options...</i>? ?<i>body</i>?</a></li>
+<li><a class="iref" href="#/tr"><i>obj</i> /tr</a></li>
+<li><a class="iref" href="#td"><i>obj</i> td ?<i>options...</i>? ?<i>text</i>?</a></li>
+<li><a class="iref" href="#td-with"><i>obj</i> td-with ?<i>options...</i>? <i>body</i></a></li>
+<li><a class="iref" href="#/td"><i>obj</i> /td</a></li>
+<li><a class="iref" href="#rowcount"><i>obj</i> rowcount</a></li>
+<li><a class="iref" href="#pagestats"><i>obj</i> pagestats <i>numitems pagesize</i> ?<i>page</i>?</a></li>
+<li><a class="iref" href="#pager"><i>obj</i> pager <i>page pages qparms</i></a></li>
+<li><a class="iref" href="#record"><i>obj</i> record ?<i>options...</i>? ?<i>body</i>?</a></li>
+<li><a class="iref" href="#/record"><i>obj</i> /record</a></li>
+<li><a class="iref" href="#field"><i>obj</i> field <i>label</i> ?<i>text</i>?</a></li>
+<li><a class="iref" href="#field-with"><i>obj</i> field <i>label</i> <i>body</i></a></li>
+<li><a class="iref" href="#/field"><i>obj</i> /field</a></li>
+<li><a class="iref" href="#form"><i>obj</i> form ?<i>options...</i>? ?<i>body</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#form-action">-action <i>url</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#form-id">-id <i>form</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#form-method">-method <i>method</i></a></li>
+<li><a class="iref" href="#/form"><i>obj</i> /form</a></li>
+<li><a class="iref" href="#label"><i>obj</i> label <i>name</i> ?<i>options...</i>? ?<i>text</i>?</a></li>
+<li><a class="iref" href="#/label"><i>obj</i> /label</a></li>
+<li><a class="iref" href="#entry"><i>obj</i> entry <i>name</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#enum"><i>obj</i> enum <i>name</i> ?<i>options...</i>? <i>list</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#enum-autosubmit">-autosubmit <i>form</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#enum-selected">-selected <i>item</i></a></li>
+<li><a class="iref" href="#enumlong"><i>obj</i> enumlong <i>name</i> ?<i>options...</i>? <i>namedict</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#enumlong-autosubmit">-autosubmit <i>form</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#enumlong-selected">-selected <i>key</i></a></li>
+<li><a class="iref" href="#radio"><i>obj</i> radio <i>name</i> ?<i>options...</i>? <i>value</i></a></li>
+<li><a class="iref" href="#hidden"><i>obj</i> hidden <i>name value</i> ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#textarea"><i>obj</i> textarea <i>name</i> ?<i>options...</i>? ?text?</a></li>
+<li><a class="iref" href="#submit"><i>obj</i> submit ?<i>options...</i>? ?<i>label</i>?</a></li>
+<li><a class="iref" href="#query"><i>obj</i> query <i>sql</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#query-align">-align <i>string</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#query-default">-default <i>string</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#query-escape">-escape <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#query-labels">-labels <i>list</i></a></li>
+<li><a class="iref" href="#asquery"><i>obj</i> asquery <i>dict</i></a></li>
+<li><a class="iref" href="#escape"><i>obj</i> escape <i>text</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>An htmlbuffer(n) object provides a buffer for generation of HTML
+output that makes writing generation code simple and easy.
+The application creates an instance and then calls methods of the
+instance to add HTML markup and other text to the buffer.</p>
+
+<p>For example, given an htmlbuffer(n) buffer called <code>::hb</code>,
+you can format a simple page as follows:
+
+</p>
+
+<pre class="example">
+    hb page "My Page"
+    hb h1 "My Page"
+    hb putln "Some text for my page."
+    hb para
+    return [hb /page]
+</pre>
+<p>This will produce a page that looks like this:
+
+</p>
+
+<pre class="example">
+    <code>&lt;html&gt;</code><code>&lt;head&gt;</code>
+    <code>&lt;title&gt;</code>My Page<code>&lt;/title&gt;</code>
+    <code>&lt;/head&gt;</code>
+    <code>&lt;body&gt;</code>
+    <code>&lt;h1&gt;</code>My Page<code>&lt;/h1&gt;</code>
+    Some text for my page.<code>&lt;p&gt;</code>
+    <code>&lt;/body&gt;</code><code>&lt;/html&gt;</code>
+</pre>
+<p>The application will either <a class="iref" href="#clear">clear</a> the buffer or begin an
+explicit <a class="iref" href="#page">page</a>, then write content using <a class="iref" href="#put">put</a>,
+<a class="iref" href="#putln">putln</a>, and the various markup subcommands, then end the page
+with <a class="iref" href="#/page">/page</a>.  Once the content is complete, the
+<a class="iref" href="#get">get</a> command retrieves the generated HTML text.
+
+</p>
+
+<h2><a name="standard_conventions">Standard Conventions</a></h2>
+<p>htmlbuffer(n) subcommands are generally named after the HTML tag they 
+generate:
+
+</p>
+
+<pre class="example">
+hb span
+</pre>
+<p>yields
+
+</p>
+
+<pre class="example">
+<code>&lt;span&gt;</code>
+</pre>
+<p>When tags usually enclose a brief text string, it can be passed to
+the command and the tag will be closed automatically:
+
+</p>
+
+<pre class="example">
+hb span "My error message"
+</pre>
+<p>yields
+
+</p>
+
+<pre class="example">
+<code>&lt;span&gt;</code>My error message<code>&lt;/span&gt;</code>
+</pre>
+<p>Most htmlbuffer(n) subcommands that yield specific HTML tags allow any
+number of HTML attributes to specified using Tcl option syntax.  For 
+example,
+
+</p>
+
+<pre class="example">
+hb span -class error "My error message"
+</pre>
+<p>yields
+
+</p>
+
+<pre class="example">
+<code>&lt;span class="error"&gt;</code>My error message<code>&lt;/span&gt;</code>
+</pre>
+<p>Some tags naturally enclose longer, more complex content; the
+<code>&lt;ul&gt;</code> tag, for example, will enclose many other tags.  The 
+<a class="iref" href="#ul">ul</a> subcommand, consequently, takes an optional script:
+
+</p>
+
+<pre class="example">
+hb ul {
+   hb li "My first item"
+   hb li "My second item"
+}
+</pre>
+<p>yields
+
+</p>
+
+<pre class="example">
+<code>&lt;ul&gt;</code>
+<code>&lt;li&gt;</code>My first item<code>&lt;/li&gt;</code>
+<code>&lt;li&gt;</code>My second item<code>&lt;/li&gt;</code>
+<code>&lt;/ul&gt;</code>
+</pre>
+<p>Other tags most often enclose a single string, but sometimes enclose
+a longer, more complex block of text.  In this case, the tag is supported
+by two subcommands, one which takes a string as an argument, the 
+other of which takes a script.  The latter have names ending with 
+"<span class="tt">-with</span>":
+
+</p>
+
+<pre class="example">
+hb ul {
+   hb li "My first item"
+   hb li-with {
+      hb span -class error "An error item"
+   }
+}
+</pre>
+<p>yields
+
+</p>
+
+<pre class="example">
+<code>&lt;ul&gt;</code>
+<code>&lt;li&gt;</code>My first item<code>&lt;/li&gt;</code>
+<code>&lt;li class="error"&gt;</code>An error item<code>&lt;/li&gt;</code>
+<code>&lt;/ul&gt;</code>
+</pre>
+
+
+<h2><a name="the_buffer_stack">The Buffer Stack</a></h2>
+<p>Content for a list of items is often quite different if the list is
+empty; for example, if you have at least one item you generate an HTML
+table or list, but if you have no items you generate a statement that
+there are no items.  And in such cases, the efficient way to find out that 
+there are no items is often by trying to generate the body of the table or 
+list, e.g., by querying an SQLite database.</p>
+
+<p>This is an annoying case:
+
+</p>
+
+<ul>
+  <li> You'd like to generate HTML for the rows in the table as the
+       query executes.
+  </li><li> There's boilerplate (e.g., the "<code>&lt;table&gt;</code>"
+       tag) that has to precede the rows.
+  </li><li> But if you find that there are no rows, you don't want the
+       boilerplate.
+</li></ul>
+<p>htmlbuffer(n) supports this case by providing a "buffer stack".  Before
+executing the query, <a class="iref" href="#push">push</a> a new buffer on the stack.  Once
+the query is complete, use <a class="iref" href="#pop">pop</a> to return the buffered HTML
+and pop the buffer off of the stack.  Then, if query had any content,
+you can add the boilerplate, using <a class="iref" href="#put">put</a> to insert the queried
+content; and if not you can insert whatever alternative text you prefer.
+
+</p>
+
+<h2><a name="records_and_fields">Records and Fields</a></h2>
+<p>A "record" is a borderless table used to present a set of labeled values,
+where the label appears in the first column and the value in the second.
+Each row in the table is called a "field".  At its most general, a 
+record is created like this:
+
+</p>
+
+<pre class="example">
+  hb record             ;# Begin the record
+
+  hb field "My Label:"  ;# Start a field
+  hb put "My Value..."  ;# Arbitrary content
+  hb /field             ;# End the field
+    .
+    .
+    .
+  hb /record
+</pre>
+<p>The <a class="iref" href="#record">record</a> command takes an optional body script, and 
+<a class="iref" href="#field">field</a> takes an optional text string, so
+the above can also be written
+
+</p>
+
+<pre class="example">
+hb record {                 
+    hb field "My Label:" "My value..."
+    .
+    .
+    .
+}
+</pre>
+<p>For more generality, <a class="iref" href="#field-with">field-with</a> takes a body:
+
+</p>
+
+<pre class="example">
+hb record {
+    hb field-with "My Label:" {
+        hb span -class error "My error value"
+    }
+    .
+    .
+    .
+}
+</pre>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>htmlbuffer(n) provides the following commands for use by the application.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="htmlbuffer_create">::projectlib::htmlbuffer create <i>obj</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new htmlbuffer(n) instance named <i>obj</i>, and
+returns the fully qualified object name.  The object supports the following
+options:
+
+</p><dl>
+
+<dt class="defopt"><a name="htmlbuffer create-cssfile">-cssfile <i>name</i></a></dt><dd>
+
+If given, specifies the name of an external CSS file to be linked
+in page headers.  The appropriate <code>&lt;link&gt;</code> tag will be included 
+in the HTML header.
+
+</dd>
+<dt class="defopt"><a name="htmlbuffer create-domain">-domain <i>prefix</i></a></dt><dd>
+
+Specifies a domain <i>prefix</i>, e.g., "<span class="tt">/this/domain</span>", that will be 
+prepended to <a class="iref" href="#iref">iref</a> links.
+
+</dd>
+<dt class="defopt"><a name="htmlbuffer create-footercmd">-footercmd <i>command</i></a></dt><dd>
+
+Defines a command that is called by <a class="iref" href="#/page">/page</a> to generate a page
+footer.  It is called with one additional argument, the name of the
+htmlbuffer(n) itself.  The command may add any desired content to the 
+buffer using the various instance commands.  The command's return value 
+is ignored.
+
+</dd>
+<dt class="defopt"><a name="htmlbuffer create-headercmd">-headercmd <i>command</i></a></dt><dd>
+
+Defines a command that is called by <a class="iref" href="#page">page</a> to generate a standard
+header at the top of the page's <code>&lt;body&gt;</code>.
+It is called with two additional arguments, the name of the
+htmlbuffer(n) itself, and the title passed to <a class="iref" href="#page">page</a>.
+The command may add any desired content to the 
+buffer using the various instance commands.  The command's return value 
+is ignored.
+
+</dd>
+<dt class="defopt"><a name="htmlbuffer create-metacmd">-metacmd <i>command</i></a></dt><dd>
+
+Defines a command that is called by <a class="iref" href="#page">page</a> to add content
+to the page's <code>&lt;head&gt;</code> element.
+It is called with one additional argument, the name of the
+htmlbuffer(n) itself.
+The command may add any desired content to the 
+buffer using the various instance commands.  The command's return value 
+is ignored.
+
+</dd>
+<dt class="defopt"><a name="htmlbuffer create-mode">-mode <i>mode</i></a></dt><dd><p>
+The generation mode, <b>web</b> or <b>tk</b>.  The former is used when 
+generating HTML for display by a standard web browser, and the latter
+is used when generating HTML for display by <a href="../mann/mybrowser.html">mybrowser(n)</a>.</p>
+
+<p><b>NOTE</b>: At present, <span class="tt">-mode</span> is ignored; <a href="../man1/athenawb.html">athenawb(1)</a> is 
+still using <a href="../mann/htools.html">htools(n)</a>.
+
+</p>
+</dd>
+<dt class="defopt"><a name="htmlbuffer create-styles">-styles <i>css</i></a></dt><dd><p>
+Provides a CSS style-sheet for use instead of the default CSS styles.</p>
+
+<p><b>NOTE</b>: No default CSS styles are currently defined.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="htmlbuffer_new">::projectlib::htmlbuffer new ?<i>options...</i>?</a></dt><dd>
+Creates a new htmlbuffer(n) instance with an arbitrary name.  The
+options are as given above.
+
+</dd>
+</dl>
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+<p>htmlbuffer(n) provides many instance commands, many of which are related
+in families; consequently, they will be documented in families as well.
+
+
+</p>
+
+<h2><a name="buffer_management">Buffer Management</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>obj</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="clear"><i>obj</i> clear</a></dt><dd>
+
+Clears the object's contents, popping any extra buffers from the
+stack. Note that this is done automatically by the <a class="iref" href="#/page">/page</a> command.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>obj</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's
+options.
+
+</dd>
+<dt class="defitem"><a name="get"><i>obj</i> get</a></dt><dd>
+
+Returns the content from the buffer at the top of the stack.
+
+</dd>
+<dt class="defitem"><a name="pop"><i>obj</i> pop</a></dt><dd>
+
+Pops the buffer from the top of the stack, returning its content, or
+the empty string if none.  It's an error to call <a class="iref" href="#pop">pop</a> if no
+buffers have been <a class="iref" href="#push">push</a>ed.
+
+</dd>
+<dt class="defitem"><a name="push"><i>obj</i> push</a></dt><dd>
+
+Pushes a buffer onto the stack.  Content will go into this buffer
+until the next <a class="iref" href="#pop">pop</a>, <a class="iref" href="#clear">clear</a>, or <a class="iref" href="#/page">/page</a> command.
+
+</dd>
+<dt class="defitem"><a name="put"><i>obj</i> put <i>text</i> ?<i>text...</i>?</a></dt><dd>
+
+Adds the text strings to the buffer, separated by space characters.
+
+</dd>
+<dt class="defitem"><a name="putif"><i>obj</i> putif <i>expr then</i> ?<i>else</i>?</a></dt><dd>
+
+Evaluates the expression, <i>expr</i>; if it is true, <a class="iref" href="#put">put</a>s
+the <i>then</i> text, otherwise, puts the <i>else</i> text (if any).
+
+</dd>
+<dt class="defitem"><a name="putln"><i>obj</i> putln <i>text</i> ?<i>text...</i>?</a></dt><dd>
+
+Adds a newline to the buffer, followed by the text strings separated
+by space characters.
+
+</dd>
+<dt class="defitem"><a name="tag"><i>obj</i> tag <i>tag</i> ?<i>options...</i>?</a></dt><dd>
+
+Adds the named HTML <i>tag</i> to the buffer.  If <i>options</i> are given,
+they should have the usual Tcl syntax; they will be converted into
+tag attributes.
+
+</dd>
+<dt class="defitem"><a name="tagln"><i>obj</i> tagln <i>tag</i> ?<i>options...</i>?</a></dt><dd>
+
+Like <a class="iref" href="#tag">tag</a>, but begins on a new line.
+
+</dd>
+<dt class="defitem"><a name="wrap"><i>obj</i> wrap <i>tag</i> ?<i>options...</i>? <i>text</i></a></dt><dd>
+
+Adds the named HTML <i>tag</i>, followed by the <i>text</i>, followed by
+the appropriate closing tag.  If <i>options</i> are given,
+they should have the usual Tcl syntax; they will be converted into
+tag attributes on the opening tag..
+
+</dd>
+<dt class="defitem"><a name="wrapln"><i>obj</i> wrapln <i>tag</i> ?<i>options...</i>? <i>text</i></a></dt><dd>
+
+Like <a class="iref" href="#wrap">wrap</a>, but begins on a new line.
+
+</dd>
+</dl>
+
+<h2><a name="page_management">Page Management</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="page"><i>obj</i> page <i>title</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Clears the buffer and adds the standard HTML header boilerplate:
+
+</p><ul>
+<li> The <i>title</i> is included in the header using the <code>&lt;title&gt;</code> tag.
+</li><li> A <code>&lt;link&gt;</code> to the CSS file is included if the <span class="tt">-cssfile</span> option 
+     is set.
+</li><li> A <code>&lt;style&gt;</code>...<code>&lt;/style&gt;</code> block is included if the 
+     <span class="tt">-styles</span> option is set.
+</li><li> The <span class="tt">-headercmd</span> (if any) is called; it may include the
+     <i>title</i> at the top of the body of the page.
+</li></ul>
+<p>The command takes the following options; any options not included in this 
+list are automatically converted into attributes on the <code>&lt;body&gt;</code> tag.
+
+</p>
+
+<dl>
+<dt class="defopt"><a name="page-refreshafter">-refreshafter <i>seconds</i></a></dt><dd>
+
+If given, the page will automatically refresh itself after the specified
+number of seconds.
+
+</dd>
+</dl>
+
+
+</dd>
+<dt class="defitem"><a name="/page"><i>obj</i> /page</a></dt><dd>
+
+Terminates the page, calling the <code>-footercmd</code> (if any)
+to add any standard HTML footer boilerplate, and returning the 
+formatted HTML.
+
+</dd>
+</dl>
+
+<h2><a name="miscellaneous_html_tags">Miscellaneous HTML Tags</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="br"><i>obj</i> br</a></dt><dd>
+
+Adds a <code>&lt;br&gt;</code> tag to the buffer, followed by a newline.
+
+</dd>
+<dt class="defitem"><a name="div"><i>obj</i> div ?<i>options...</i>? ?<i>body</i>?</a></dt><dd>
+
+Begins a <code>&lt;div&gt;</code>.  If <i>options</i> are given, they are converted
+into tag attributes.  If the <i>body</i> is given, it is executed as a 
+script that will presumably add additional content, and the 
+<code>&lt;/div&gt;</code> tag is added automatically.
+
+</dd>
+<dt class="defitem"><a name="/div"><i>obj</i> /div</a></dt><dd>
+
+Terminates a <code>&lt;div&gt;</code>.
+
+</dd>
+<dt class="defitem"><a name="h1"><i>obj</i> h1 ?<i>options</i>? <i>title</i></a></dt>
+<dt class="defitem"><a name="h2"><i>obj</i> h2 ?<i>options</i>? <i>title</i></a></dt>
+<dt class="defitem"><a name="h3"><i>obj</i> h3 ?<i>options</i>? <i>title</i></a></dt>
+<dt class="defitem"><a name="h4"><i>obj</i> h4 ?<i>options</i>? <i>title</i></a></dt>
+<dt class="defitem"><a name="h5"><i>obj</i> h5 ?<i>options</i>? <i>title</i></a></dt>
+<dt class="defitem"><a name="h6"><i>obj</i> h6 ?<i>options</i>? <i>title</i></a></dt><dd>
+
+Adds an HTML header enclosing the given <i>title</i>; any <i>options</i> and
+their values are turned into element attributes.
+
+</dd>
+<dt class="defitem"><a name="hr"><i>obj</i> hr ?<i>options...</i>?</a></dt><dd>
+
+Adds an <code>&lt;hr&gt;</code> tag to the buffer.  Any options are turned into
+tag attributes.
+
+</dd>
+<dt class="defitem"><a name="para"><i>obj</i> para</a></dt><dd>
+
+Adds a <code>&lt;p&gt;</code> tag to the buffer, followed by a newline.
+
+</dd>
+<dt class="defitem"><a name="pre"><i>obj</i> pre ?<i>options...</i>? ?<i>text</i>?</a></dt><dd>
+
+Begins a <code>&lt;pre&gt;</code> block.  If <i>options</i> are given, they are converted
+into tag attributes.  If the <i>text</i> is given, it is added to the buffer
+and the block is terminated with <code>&lt;/pre&gt;</code>.
+
+</dd>
+<dt class="defitem"><a name="pre-with"><i>obj</i> pre ?<i>options...</i>? <i>body</i></a></dt><dd>
+
+Adds a complete <code>&lt;pre&gt;</code> block.  If <i>options</i> are given, they are converted
+into tag attributes.  The <i>body</i> is executed as a script that will 
+presumably add additional preformatted content.
+
+</dd>
+<dt class="defitem"><a name="/pre"><i>obj</i> /pre</a></dt><dd>
+
+Terminates a <code>&lt;pre&gt;</code> block.
+
+</dd>
+<dt class="defitem"><a name="span"><i>obj</i> span ?<i>options...</i>? ?<i>text</i>?</a></dt><dd>
+
+Begins a <code>&lt;span&gt;</code>.  If <i>options</i> are given, they are converted
+into tag attributes.  If the <i>text</i> is given, it is added to the buffer
+and the span is terminated with <code>&lt;/span&gt;</code>.
+
+</dd>
+<dt class="defitem"><a name="span-with"><i>obj</i> span-with ?<i>options...</i>? <i>body</i></a></dt><dd>
+
+Adds a complete <code>&lt;span&gt;</code> element.  If <i>options</i> are given, they are converted
+into tag attributes.  The <i>body</i> is executed as a script that will 
+presumably add additional content.
+
+</dd>
+<dt class="defitem"><a name="/span"><i>obj</i> /span</a></dt><dd>
+
+Terminates a <code>&lt;span&gt;</code>.
+
+</dd>
+</dl>
+
+<h2><a name="links">Links</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="iimg"><i>obj</i> ximg <i>suffix</i> ?<i>options...</i>?</a></dt><dd>
+
+Adds an <code>&lt;img&gt;</code> tag displaying the image at the server-local
+<i>url</i> formed by adding the <i>suffix</i> to the buffer's 
+<span class="tt">-domain</span>.  Any options are converted
+into element attributes.
+
+</dd>
+<dt class="defitem"><a name="iref"><i>obj</i> iref <i>suffix</i> ?<i>options...</i>? <i>label</i></a></dt><dd><p>
+
+Adds an <code>&lt;a&gt;</code> link to the server-local URL formed by adding the
+<i>suffix</i> to the buffer's <span class="tt">-domain</span>.  The
+<i>label</i> string is the link text.    The following option may be 
+used; any other options are converted
+into element attributes.
+
+</p><dl>
+
+<dt class="defopt"><a name="iref-qparms">-qparms <i>dict</i></a></dt><dd>
+Given a dictionary of query parameters, formats it as a valid URL query
+string and appends it to the URL.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="linkbar"><i>obj</i> linkbar <i>body</i></a></dt><dd>
+
+Adds a linkbar to the top of the page.  The <i>body</i> is a script to
+be executed in the caller's context; it will presumably add links
+to the bar.  If boilerplate text is desired, it should be wrapped
+in a <code>&lt;span&gt;</code> tag to pick up the "linkbar" CSS styles.
+
+</dd>
+<dt class="defitem"><a name="qref"><i>obj</i> qref <i>qparms</i> ?<i>options...</i>? <i>label</i></a></dt><dd>
+
+Adds an <code>&lt;a&gt;</code> link back to the same page, using the specified set
+of query parameters, which are formatted as a valid URL query.  Any 
+other options are converted into element attributes.
+
+</dd>
+<dt class="defitem"><a name="ximg"><i>obj</i> ximg <i>url</i> ?<i>options...</i>?</a></dt><dd>
+
+Adds an <code>&lt;img&gt;</code> tag displaying the image at the given external or 
+server-local <i>url</i>.  Any options are converted
+into element attributes.
+
+</dd>
+<dt class="defitem"><a name="xref"><i>obj</i> xref <i>url</i> ?<i>options...</i>? <i>label</i></a></dt><dd><p>
+
+Adds an <code>&lt;a&gt;</code> link to the given external or server-local <i>url</i>
+using the <i>label</i> string as the link text.  The following option may be 
+used; any other options are converted
+into element attributes.
+
+</p><dl>
+
+<dt class="defopt"><a name="xref-qparms">-qparms <i>dict</i></a></dt><dd>
+Given a dictionary of query parameters, formats it as a valid URL query
+string and appends it to the URL.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="lists">Lists</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="dl"><i>obj</i> dl ?<i>options...</i>? ?<i>body</i>?</a></dt><dd>
+
+Adds a <code>&lt;dl&gt;</code> tag.  Any <i>options</i> and their values are
+converted into tag attributes.  If present, <i>body</i> is executed as a 
+script that will presumably add list items, and the <code>&lt;/dl&gt;</code> tag is
+added automatically.
+
+</dd>
+<dt class="defitem"><a name="/dl"><i>obj</i> /dl</a></dt><dd>
+
+Terminates a <code>&lt;dl&gt;</code> list.
+
+</dd>
+<dt class="defitem"><a name="dt"><i>obj</i> dt ?<i>options...</i>? ?<i>text</i>?</a></dt><dd>
+
+Begins a <code>&lt;dt&gt;</code> item.  Any <i>options</i> and their values are converted
+into tag attributes.  If the <i>text</i> is given, it is added to the buffer
+and the list item is terminated with <code>&lt;/dt&gt;</code>.
+
+</dd>
+<dt class="defitem"><a name="/dt"><i>obj</i> /dt</a></dt><dd>
+
+Terminates a <code>&lt;dt&gt;</code> item.
+
+</dd>
+<dt class="defitem"><a name="dd"><i>obj</i> dd ?<i>options...</i>? ?<i>text</i>?</a></dt><dd>
+
+Begins a <code>&lt;dd&gt;</code> item.  Any <i>options</i> and their values are converted
+into tag attributes.  If the <i>text</i> is given, it is added to the buffer
+and the list item is terminated with <code>&lt;/dd&gt;</code>.
+
+</dd>
+<dt class="defitem"><a name="dd-with"><i>obj</i> dd-with ?<i>options...</i>? <i>body</i></a></dt><dd>
+
+Adds a complete <code>&lt;dd&gt;</code> item.  Any <i>options</i> and their values are converted
+into tag attributes.  The <i>body</i> is executed as a script that will 
+presumably add additional content.
+
+</dd>
+<dt class="defitem"><a name="/dd"><i>obj</i> /dd</a></dt><dd>
+
+Terminates a <code>&lt;dd&gt;</code> item.
+
+</dd>
+<dt class="defitem"><a name="ol"><i>obj</i> ol ?<i>options...</i>? ?<i>body</i>?</a></dt><dd>
+
+Adds a <code>&lt;ol&gt;</code> tag.  Any <i>options</i> and their values are
+converted into tag attributes.  If present, <i>body</i> is executed as a 
+script that will presumably add list items, and the <code>&lt;/ol&gt;</code> tag is
+added automatically.
+
+</dd>
+<dt class="defitem"><a name="/ol"><i>obj</i> /ol</a></dt><dd>
+
+Terminates an <code>&lt;ol&gt;</code> list.
+
+</dd>
+<dt class="defitem"><a name="ul"><i>obj</i> ul ?<i>options...</i>? ?<i>body</i>?</a></dt><dd>
+
+Adds a <code>&lt;ul&gt;</code> tag.  Any <i>options</i> and their values are
+converted into tag attributes.  If present, <i>body</i> is executed as a 
+script that will presumably add list items, and the <code>&lt;/ul&gt;</code> tag is
+added automatically.
+
+</dd>
+<dt class="defitem"><a name="/ul"><i>obj</i> /ul</a></dt><dd>
+
+Terminates an <code>&lt;ul&gt;</code> list.
+
+</dd>
+<dt class="defitem"><a name="li"><i>obj</i> li ?<i>options...</i>? ?<i>text</i>?</a></dt><dd>
+
+Begins a <code>&lt;li&gt;</code> item.  Any <i>options</i> and their values are converted
+into tag attributes.  If the <i>text</i> is given, it is added to the buffer
+and the list item is terminated with <code>&lt;/li&gt;</code>.
+
+</dd>
+<dt class="defitem"><a name="li-with"><i>obj</i> li-with ?<i>options...</i>? <i>body</i></a></dt><dd>
+
+Adds a complete <code>&lt;li&gt;</code> item.  Any <i>options</i> and their values are converted
+into tag attributes.  The <i>body</i> is executed as a script that will 
+presumably add additional content.
+
+</dd>
+<dt class="defitem"><a name="/li"><i>obj</i> /li</a></dt><dd>
+
+Terminates a <code>&lt;li&gt;</code> item.
+
+
+</dd>
+</dl>
+
+<h2><a name="tables">Tables</a></h2>
+<p>htmlbuffer's tables make use of a <code>&lt;table&gt;</code> CSS class called 
+<span class="tt">pretty</span> and <code>&lt;tr&gt;</code> CSS classes called <span class="tt">oddrow</span> and <span class="tt">evenrow</span>.
+The CSS classes are defined by the client, and allow the table to be
+displayed with stripes if that is desired.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="table"><i>obj</i> table ?<i>options...</i>? ?<i>body</i>?</a></dt><dd><p>
+
+Begins an HTML table.  By default there are no headers, the element
+<span class="tt">class</span> attribute will be "<span class="tt">pretty</span>" and the 
+<span class="tt">cellpadding</span> attribute will be "<span class="tt">5</span>".</p>
+
+<p>If the <span class="tt">-headers</span> option is given, its value should be a list of
+column headers; the header row is then added automatically.  Any remaining
+options and values are converted into element attributes on the 
+<code>&lt;table&gt;</code> element.</p>
+
+<p>If <i>body</i> is given, it will be executed as a Tcl script and the 
+<code>&lt;/table&gt;</code> tag will be added automatically.
+
+</p>
+</dd>
+<dt class="defitem"><a name="/table"><i>obj</i> /table</a></dt><dd>
+
+Terminates an HTML table by adding the <code>&lt;/table&gt;</code> tag.
+
+</dd>
+<dt class="defitem"><a name="tr"><i>obj</i> tr ?<i>options...</i>? ?<i>body</i>?</a></dt><dd><p>
+
+Begins a new table row, adding the <code>&lt;tr&gt;</code> tag.  By default, the
+tag will have its <span class="tt">class</span> attribute set to "<span class="tt">oddrow</span>" or
+"<span class="tt">evenrow</span>" and its <span class="tt">valign</span> attribute set to "<span class="tt">top</span>".
+Any options and their values are converted into additional element 
+attributes.</p>
+
+<p>Note that the first row in the table (not including the header) is always
+considered row 0 and hence an "<span class="tt">evenrow</span>".</p>
+
+<p>If <i>body</i> is given, it will be executed as a Tcl script and the
+<code>&lt;/tr&gt;</code> tag will be added automatically.
+
+</p>
+</dd>
+<dt class="defitem"><a name="/tr"><i>obj</i> /tr</a></dt><dd>
+
+Terminates an HTML table row by adding the <code>&lt;/tr&gt;</code> tag.
+
+</dd>
+<dt class="defitem"><a name="td"><i>obj</i> td ?<i>options...</i>? ?<i>text</i>?</a></dt><dd><p>
+
+Begins a new table data item, adding the <code>&lt;td&gt;</code> tag.  By default,
+the "<span class="tt">align</span>" attribute will be set to "<span class="tt">left</span>".  Any 
+options and their values are added as additional element attributes.</p>
+
+<p>If <i>text</i> is given, it will be added to the buffer and
+the <code>&lt;/td&gt;</code> tag will be added automatically.
+
+</p>
+</dd>
+<dt class="defitem"><a name="td-with"><i>obj</i> td-with ?<i>options...</i>? <i>body</i></a></dt><dd><p>
+
+Begins a new table data item, adding the <code>&lt;td&gt;</code> tag.  By default,
+the "<span class="tt">align</span>" attribute will be set to "<span class="tt">left</span>".  Any 
+options and their values are added as additional element attributes.</p>
+
+<p>The <i>body</i> is executed as a Tcl script, presumably adding content
+to the buffer, and then the <code>&lt;/td&gt;</code> tag is added automatically.
+
+</p>
+</dd>
+<dt class="defitem"><a name="/td"><i>obj</i> /td</a></dt><dd>
+
+Terminates an HTML table cell by adding the <code>&lt;/td&gt;</code> tag.
+
+</dd>
+<dt class="defitem"><a name="rowcount"><i>obj</i> rowcount</a></dt><dd>
+
+Returns the number of <a class="iref" href="#tr">tr</a> calls made for the most recent
+<a class="iref" href="#table">table</a>.  This can be used with <a class="iref" href="#push">push</a> and <a class="iref" href="#pop">pop</a>
+to avoid including a table if it has no rows of data.
+
+</dd>
+</dl>
+
+<h2><a name="paging">Paging</a></h2>
+<p>The following commands can be used to control the paging of long
+query results, especially tables.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="pagestats"><i>obj</i> pagestats <i>numitems pagesize</i> ?<i>page</i>?</a></dt><dd><p>
+
+Computes statistics required for paging a long query, where <i>numitems</i>
+is the total size of the result set, <i>pagesize</i> is the maximum number
+of items to display on one page, and <i>page</i> is the index of the desired
+page, from 1 to <i>n</i>.</p>
+
+<p>Returns a list "<span class="tt">{<i>page pages offset limitClause</i>}</span>", where
+<i>page</i> is the page number, clamped between 1 and the number of pages,
+<i>pages</i> is the number of pages, <i>offset</i> is the item index of the
+first item on <i>page</i>, and <i>limitClause</i> is an SQL "LIMIT/OFFSET" 
+clause.
+
+</p>
+</dd>
+<dt class="defitem"><a name="pager"><i>obj</i> pager <i>page pages qparms</i></a></dt><dd><p>
+
+Outputs a "pager" control, which will allow the user to select particular
+pages and to go to the next and previous pages. The <i>page</i> is the
+number of the currently displayed page, <i>pages</i> is the total number 
+of pages, and <i>qparms</i> is a dictionary of query parameters to be 
+included in the page links.</p>
+
+<p>If the number of pages is fewer than 2, then no control is output.
+
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="records">Records</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="record"><i>obj</i> record ?<i>options...</i>? ?<i>body</i>?</a></dt><dd><p>
+
+Begins a record structure, a borderless two-column table of labels
+and values; see <a href="#records_and_fields">Records and Fields</a>.  Any <i>options...</i> and
+their values are added as element attributes on the <code>&lt;table&gt;</code> tag.</p>
+
+<p>If the <i>body</i> is given, it should be a Tcl script creating content to 
+go in the record; the record will be terminated automatically.  
+If the <i>body</i> is omitted, then the <a class="iref" href="#/record">/record</a> command must 
+be used to terminate the table.</p>
+
+<p>Record structures contain one or more <a class="iref" href="#field">field</a> structures.
+
+</p>
+</dd>
+<dt class="defitem"><a name="/record"><i>obj</i> /record</a></dt><dd>
+
+Terminates a <a class="iref" href="#record">record</a> structure.
+
+
+</dd>
+<dt class="defitem"><a name="field"><i>obj</i> field <i>label</i> ?<i>text</i>?</a></dt><dd>
+
+Creates a field, a labeled value, within a <a class="iref" href="#record">record</a> structure; see 
+<a href="#records_and_fields">Records and Fields</a>.  The field will have the given <i>label</i>.
+If the <i>text</i> is given, it is used as the label's value and the
+and the field will be terminated automatically.
+
+</dd>
+<dt class="defitem"><a name="field-with"><i>obj</i> field <i>label</i> <i>body</i></a></dt><dd>
+
+Creates a field, a labeled value, within a <a class="iref" href="#record">record</a> structure; see 
+<a href="#records_and_fields">Records and Fields</a>.  The field will have the given <i>label</i>
+text.  The <i>body</i> is a Tcl script that will create
+the desired value content, and the field will be terminated 
+automatically.
+
+</dd>
+<dt class="defitem"><a name="/field"><i>obj</i> /field</a></dt><dd>
+
+Terminates a <a class="iref" href="#field">field</a> in a <a class="iref" href="#record">record</a>.
+
+</dd>
+</dl>
+
+<h2><a name="html_forms">HTML Forms</a></h2>
+<p>The following commands are used to build HTML forms.
+
+</p>
+
+<dl>
+
+
+<dt class="defitem"><a name="form"><i>obj</i> form ?<i>options...</i>? ?<i>body</i>?</a></dt><dd><p>
+
+Begins an HTML <code>&lt;form&gt;</code> element; any options and
+their values are converted into element attributes.  If the <i>body</i>
+is given, it will be executed as a Tcl script and the <code>&lt;/form&gt;</code> tag
+will be added automatically.</p>
+
+<p>By default, submitting the form will reload the same page with the form's 
+parameters as the query.  To load a different page, specify the URL explicitly
+using the <b>-action</b> option (i.e., the "action" attribute).</p>
+
+<p>The following options are of particular interest:
+
+</p><dl>
+<dt class="defopt"><a name="form-action">-action <i>url</i></a></dt><dd>
+The action URL can be absolute, relative to the current page, or "" to simply
+reload the current page.  Note that any query in the <i>url</i> will be 
+ignored.
+
+</dd>
+<dt class="defopt"><a name="form-id">-id <i>form</i></a></dt><dd>
+Names the form.
+
+</dd>
+<dt class="defopt"><a name="form-method">-method <i>method</i></a></dt><dd>
+By default, the form is sent using an HTTP "<span class="tt">get</span>" request.  This option
+can be used to request a different HTTP method, e.g., "<span class="tt">post</span>".
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="/form"><i>obj</i> /form</a></dt><dd>
+
+Terminates an HTML form by adding the <code>&lt;form&gt;</code> tag.
+
+</dd>
+<dt class="defitem"><a name="label"><i>obj</i> label <i>name</i> ?<i>options...</i>? ?<i>text</i>?</a></dt><dd><p>
+
+Begins a <code>&lt;label&gt;</code> element within a <a class="iref" href="#form">form</a>.  The element
+tags the label text associated with the form input whose name
+is <i>name</i>.</p>
+
+<p>Any options and their values are converted into element attributes.
+If <i>text</i> is given, it will be inserted as the label text, and
+the <code>&lt;/label&gt;</code> tag will be inserted automatically.
+
+</p>
+</dd>
+<dt class="defitem"><a name="/label"><i>obj</i> /label</a></dt><dd>
+
+Terminates a <a class="iref" href="#label">label</a> by adding the <code>&lt;/label&gt;</code> tag.
+
+</dd>
+<dt class="defitem"><a name="entry"><i>obj</i> entry <i>name</i> ?<i>options...</i>?</a></dt><dd>
+
+Adds a "text" <code>&lt;input&gt;</code> with the given <i>name</i> to the current 
+<a class="iref" href="#form">form</a>.  Any options and their values are converted to element 
+attributes; in particular, the <span class="tt">-size</span> option can be used to set
+the input's width in characters.
+
+</dd>
+<dt class="defitem"><a name="enum"><i>obj</i> enum <i>name</i> ?<i>options...</i>? <i>list</i></a></dt><dd><p>
+
+Creates a pulldown list of items by adding
+a <code>&lt;select&gt;</code> with the given <i>name</i> to the current 
+<a class="iref" href="#form">form</a>. The items in the <i>list</i> become both the labels and
+values for the <code>&lt;option&gt;</code> elements within the <code>&lt;select&gt;</code> element.</p>
+
+<p>Options and their values are converted to element 
+attributes, with these exceptions:
+
+</p><dl>
+<dt class="defopt"><a name="enum-autosubmit">-autosubmit <i>form</i></a></dt><dd>
+When a different item is selected, automatically submit the named
+form.
+
+</dd>
+<dt class="defopt"><a name="enum-selected">-selected <i>item</i></a></dt><dd>
+Indicates that the named <i>item</i> is to be initially selected.
+
+</dd>
+</dl>
+
+
+</dd>
+<dt class="defitem"><a name="enumlong"><i>obj</i> enumlong <i>name</i> ?<i>options...</i>? <i>namedict</i></a></dt><dd><p>
+
+Creates a pulldown list of items by adding
+a <code>&lt;select&gt;</code> with the given <i>name</i> to the current 
+<a class="iref" href="#form">form</a>. Any options and their values are converted to element 
+attributes.  The keys and values in the <i>namedict</i> become both the 
+values and labels for the <code>&lt;option&gt;</code> elements within the 
+<code>&lt;select&gt;</code> element.</p>
+
+<p>Options and their values are converted to element 
+attributes, with these exceptions:
+
+</p><dl>
+<dt class="defopt"><a name="enumlong-autosubmit">-autosubmit <i>form</i></a></dt><dd>
+When a different item is selected, automatically submit the named
+form.
+
+</dd>
+<dt class="defopt"><a name="enumlong-selected">-selected <i>key</i></a></dt><dd>
+Indicates that the named <i>key</i> is to be initially selected.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="radio"><i>obj</i> radio <i>name</i> ?<i>options...</i>? <i>value</i></a></dt><dd><p>
+
+Creates one of a set of radio buttons called <i>name</i>, with value
+<i>value</i>, i.e., an <code>&lt;input&gt;</code> element of type <span class="tt">radio</span>.  Any options 
+and their values are converted to element attributes.</p>
+
+<p>This command produces only the radio button itself; it is up to the caller
+to label it in some way.
+
+</p>
+</dd>
+<dt class="defitem"><a name="hidden"><i>obj</i> hidden <i>name value</i> ?<i>options...</i>?</a></dt><dd>
+
+Adds a "hidden" <code>&lt;input&gt;</code> with the given <i>name</i> and <i>value</i>
+to the current <a class="iref" href="#form">form</a>.  Any options and their values are converted 
+to element attributes.
+
+</dd>
+<dt class="defitem"><a name="textarea"><i>obj</i> textarea <i>name</i> ?<i>options...</i>? ?text?</a></dt><dd><p>
+
+Adds a <code>&lt;textarea&gt;</code>...<code>&lt;/textarea&gt;</code> element with the given <i>name</i> 
+to the current <a class="iref" href="#form">form</a>.  Any options and their values are converted to 
+element attributes; in particular, the <span class="tt">-rows</span> and <span class="tt">-cols</span> options
+can be used to set the text area's height and width in characters.</p>
+
+<p>If a <i>text</i> string is given, it will be the input's initial value;
+otherwise, the input will be empty.
+
+</p>
+</dd>
+<dt class="defitem"><a name="submit"><i>obj</i> submit ?<i>options...</i>? ?<i>label</i>?</a></dt><dd><p>
+
+Adds a "submit" <code>&lt;input&gt;</code> to the current <a class="iref" href="#form">form</a>.  When pressed,
+the form will add its <code>&lt;input&gt;</code> values to the its 
+<span class="tt">-action</span> URL using standard query syntax, and request the resulting
+URL.  Any options and their values are converted to element attributes.</p>
+
+<p>If <i>label</i> is given, it will be used as the label on the button;
+otherwise the button will say "Submit".
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="html_queries">HTML Queries</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="query"><i>obj</i> query <i>sql</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Queries the <code>-rdb</code>, and generates an HTML
+table with the results.  If the <i>sql</i> query returns no data,
+generates the text
+
+</p><pre class="example">
+    No data found.&lt;p&gt;
+</pre>
+<p>The following options may be used:
+
+</p>
+
+<dl>
+
+<dt class="defopt"><a name="query-align">-align <i>string</i></a></dt><dd><p>
+
+Specifies a string of column alignments, <b>L</b>, <b>C</b>, or
+<b>R</b> for "left", "center", and "right".  By default, columns have
+alignment <b>L</b>. If the string of column alignments is longer than
+the number of columns returned by the query, the excess characters in 
+the string are ignored. If it's shorter, the default is used for column
+alignment for those columns that have no spec.</p>
+
+<p>For example, an <code>-align</code> of <b>LRLR</b> indicates that the
+second and fourth column are right-aligned.
+
+</p>
+</dd>
+<dt class="defopt"><a name="query-default">-default <i>string</i></a></dt><dd>
+
+Defines the text to generate if the result set is empty.  Defaults to
+"<code>No data found.&lt;p&gt;</code>".
+
+</dd>
+<dt class="defopt"><a name="query-escape">-escape <i>flag</i></a></dt><dd>
+
+If the <i>flag</i> is <b>yes</b>, all output from the
+<code>-rdb</code> will be sanitized using <a class="iref" href="#escape">escape</a>;
+otherwise not.  The option defaults to <b>no</b>.  Use this when
+querying arbitrary data so that special characters in the result will
+not confuse the HTML formatting.
+
+</dd>
+<dt class="defopt"><a name="query-labels">-labels <i>list</i></a></dt><dd>
+
+Defines a list of strings to use as the column header labels.
+Alternatively, <a class="iref" href="#query">query</a> will use the column names in the result
+set.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="helper_commands">Helper Commands</a></h2>
+<p>The following helper commands are available.
+
+</p>
+
+<dl>
+<dt class="defitem"><a name="asquery"><i>obj</i> asquery <i>dict</i></a></dt><dd>
+
+Formats a dictionary of query parameters as a URL query string, 
+complete with initial "?".
+
+</dd>
+<dt class="defitem"><a name="escape"><i>obj</i> escape <i>text</i></a></dt><dd>
+
+Escapes any "&lt;", "&gt;", and "&amp;" characters in the input so that
+they display as such rather than appearing to be HTML markup.
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:57 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

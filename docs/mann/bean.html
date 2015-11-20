@@ -1,0 +1,1055 @@
+<html>
+<head>
+<title>athena 6.3.3: bean(n) -- Bean Base Class, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>bean(n)</b> -- Bean Base Class, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#defining_a_bean_class">Defining a Bean Class</a></li>
+
+    <li><a href="#creating_an_instance">Creating an Instance</a></li>
+
+    <li><a href="#beans_and_dictionaries">Beans and Dictionaries</a></li>
+
+    <li><a href="#bean_instance_variables">Bean Instance Variables</a></li>
+
+    <li><a href="#array_instance_variables">Array Instance Variables</a></li>
+
+    <li><a href="#transient_instance_variables">Transient Instance Variables</a></li>
+
+    <li><a href="#bean_views">Bean Views</a></li>
+
+    <li><a href="#detecting_changes">Detecting Changes</a></li>
+
+    <li><a href="#bean_ownership_and_bean_slots">Bean Ownership and Bean Slots</a></li>
+
+    <li><a href="#order_mutators">Order Mutators</a></li>
+
+    <li><a href="#notifier_events">Notifier Events</a></li>
+
+    <li><a href="#copy_and_paste">Copy and Paste</a></li>
+
+</ul>
+    
+
+    <li><a href="#class_commands">CLASS COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#bean_create">bean create <i>name</i></a></li>
+<li><a class="iref" href="#bean_getslots">bean getslots <i>cls</i></a></li>
+<li><a class="iref" href="#bean_new">bean new</a></li>
+<li><a class="iref" href="#addbean_"><i>bean</i> addbean_ <i>slot cls</i> ?<i>beanvar</i>?</a></li>
+<li><a class="iref" href="#cget"><i>bean</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>bean</i> configure ?<i>option value...</i>?</a></li>
+<li><a class="iref" href="#copydata"><i>bean</i> copydata</a></li>
+<li><a class="iref" href="#deletebean_"><i>bean</i> deletebean_ <i>slot id</i></a></li>
+<li><a class="iref" href="#destroyslots"><i>bean</i> destroyslots <i>slot...</i></a></li>
+<li><a class="iref" href="#get"><i>bean</i> get <i>var</i></a></li>
+<li><a class="iref" href="#getdict"><i>bean</i> getdict</a></li>
+<li><a class="iref" href="#getowned"><i>bean</i> getowned ?-shallow|-deep?</a></li>
+<li><a class="iref" href="#getslots"><i>bean</i> getslots</a></li>
+<li><a class="iref" href="#id"><i>bean</i> id</a></li>
+<li><a class="iref" href="#lappend"><i>bean</i> lappend <i>listvar value...</i></a></li>
+<li><a class="iref" href="#ldelete"><i>bean</i> ldelete <i>listvar value</i></a></li>
+<li><a class="iref" href="#movebean_"><i>bean</i> movebean_ <i>slot bean_id where</i></a></li>
+<li><a class="iref" href="#onAddBean_"><i>bean</i> onAddBean_ <i>slot bean_id</i></a></li>
+<li><a class="iref" href="#onDeleteBean_"><i>bean</i> onDeleteBean_ <i>slot bean_id</i></a></li>
+<li><a class="iref" href="#onMoveBean_"><i>bean</i> onMoveBean_ <i>slot bean_id</i></a></li>
+<li><a class="iref" href="#onUpdate_"><i>bean</i> onUpdate_</a></li>
+<li><a class="iref" href="#set"><i>bean</i> set <i>var value</i></a></li>
+<li><a class="iref" href="#setdict"><i>bean</i> setdict <i>dict</i></a></li>
+<li><a class="iref" href="#slot"><i>bean</i> <i>slot</i> ?<i>idx</i>?</a></li>
+<li><a class="iref" href="#subject"><i>bean</i> subject</a></li>
+<li><a class="iref" href="#update_"><i>bean</i> update_ <i>varlist userdict</i></a></li>
+<li><a class="iref" href="#view"><i>bean</i> view ?<i>view</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A "bean" is a TclOO object that can be automatically checkpointed and
+restored as part of the program's state, i.e., as part of an Athena
+scenario.  As such, it is used for scenario data that is store in memory,
+rather than in the  RDB.  Each bean is created by and contained with a
+<a href="../mann/beanpot.html">beanpot(n)</a> object; the beans in a pot are checkpointed and restored
+as a set.</p>
+
+<p>bean(n) is the base class for all bean classes; it provides the basic
+functionality for all beans.  This man page describes this functionality,
+along with the constraints on bean classes.
+
+</p>
+
+<h2><a name="defining_a_bean_class">Defining a Bean Class</a></h2>
+<p>Subclasses of bean(n) are defined in the usual way:
+
+</p>
+
+<pre>
+    ::oo::class create pet {
+        superclass ::projectlib::bean
+        # Variable and method definitions
+    }
+</pre>
+<p>If a bean can own other beans, it should define one or more "bean slot" 
+variables; the value of a bean slot should be a list of zero or more bean
+IDs.  Bean slot variables are defined in the class definition
+using the <code>beanslot</code> command.
+
+</p>
+
+<h2><a name="creating_an_instance">Creating an Instance</a></h2>
+<p>Use a <a href="../mann/beanpot.html">beanpot(n)</a> object's <span class="tt">new</span> method to create a bean within
+the pot:
+
+</p>
+
+<pre class="example">
+set fido [$pot new ::pet]
+</pre>
+<p>The new bean is automatically assigned a unique numeric ID and 
+placed in the pot.  Each bean knows its pot, and can be looked up 
+in the pot given its ID. The pot and ID are stored in 
+predefined instance variables called <span class="tt">pot</span> and <span class="tt">id</span>, 
+which cannot be changed.
+
+</p>
+
+<h2><a name="beans_and_dictionaries">Beans and Dictionaries</a></h2>
+<p>A bean can be converted to and from a Tcl dictionary using its
+<a class="iref" href="#getdict">getdict</a> and <a class="iref" href="#setdict">setdict</a> commands; this is important because
+beans are often edited by the user via orders.  The keys in a bean's 
+dictionary are simply its instance variable names.</p>
+
+<p><b>NOTE:</b> At present, the bean mechanism does not support array 
+instance variables.  Use dicts in scalar instance variables instead.
+
+</p>
+
+<h2><a name="bean_instance_variables">Bean Instance Variables</a></h2>
+<p>Bean instance variables are just normal scalar TclOO instance variables.  The
+usual way to define them is via the <code>variable</code> statement in the
+beanclass definition.</p>
+
+<p>The variables defined in this way by a particular bean(n) subclass can be
+accessed by name, without declaration, within that subclass's own code.
+For example:
+
+</p>
+
+<pre>
+    ::projectlib::beanclass create dog {
+        superclass pet
+
+        variable barksound
+
+        method bark {} { puts $barksound }
+    }
+</pre>
+<p>Instance variables declared by ancestor classes cannot be accessed in this way,
+unless the subclass explicitly declares them.  (This is normal TclOO behavior.)</p>
+
+<p>Because beans are intended to be edited by external mutators, however, 
+bean(n) defines the <a class="iref" href="#set">set</a>, <a class="iref" href="#get">get</a>, <a class="iref" href="#setdict">setdict</a>, and 
+<a class="iref" href="#getdict">getdict</a> methods, which may be used to set and query any bean
+variables defined in the subclass or its parent classes.
+(The <span class="tt">pot</span> and <span class="tt">id</span> variables are a special case; once set, they 
+shoud not be changed, and these methods can not do so.
+
+</p>
+
+<h2><a name="array_instance_variables">Array Instance Variables</a></h2>
+<p>Only scalar instance variables are included in a bean's checkpointable state.
+Array instance variables cannot be checkpointed, and cannot be queried or
+modified using <a class="iref" href="#getdict">getdict</a>, <a class="iref" href="#setdict">setdict</a>, and so on.  For structured
+bean data, use dictionaries rather than arrays.
+
+</p>
+
+<h2><a name="transient_instance_variables">Transient Instance Variables</a></h2>
+<p>It is sometimes convenient for a bean to have transient state, i.e., state data
+that is preserved for the duration of an operation that lasts across several
+method calls, but which should never be saved as part of a checkpoint.</p>
+
+<p>For example,
+a tactic's "obligate" method may compute the actual resources to expend given
+its parameters and the resources available; then, shortly thereafter, the
+tactic's "execute" method will expend the actual resources.  The values are
+transient; once strategy execution has completed for the given agent, they
+are irrelevant.</p>
+
+<p>Such transient data shouldn't be saved in the checkpoint, as it is meaningless.  
+This is easily ensured by storing the transient data in
+<a href="#array_instance_variables">Array Instance Variables</a>.
+
+</p>
+
+<h2><a name="bean_views">Bean Views</a></h2>
+<p>The <a class="iref" href="#getdict">getdict</a> method returns all of a bean's data, but not necessarily
+in the most convenient form.  A flag variable might be stored as 1 or 0 
+internally but be displayed as "Yes" or "No".  Numeric values might need to
+be formatted.  Other data might be computed from several of the bean's 
+variables on demand, or be retrieved from another bean related to this one
+(i.e., from an owning bean).</p>
+
+<p>Consequently, we define the notion of a "view" on the bean's data.  A bean
+class can support any number of alternate views.  Given a view name, the bean's
+<a class="iref" href="#view">view</a> method returns a view dictionary.</p>
+
+<p>Bean classes define views by overriding the <a class="iref" href="#view">view</a> method.  Every bean
+class has a default view, called ""; unless overridden, it simply returns the
+<a class="iref" href="#getdict">getdict</a>.  Subclasses are free to add additional keys to the default
+view, and to define any additional views that might be needed.</p>
+
+<p>The <a class="iref" href="#view">view</a> method is usually overridden like this:
+
+</p>
+
+<pre>
+    method view {{view ""}} {
+        set result [next $view]
+
+        # Add entries to the result dictionary given the $view name.
+
+        return $result
+    }
+</pre>
+<p>If a view method doesn't recognize the view name, it should simply return
+its default view.
+
+</p>
+
+<h2><a name="detecting_changes">Detecting Changes</a></h2>
+<p>The <a href="../mann/beanpot.html">beanpot(n)</a> type is a <a href="../mani/saveable.html">saveable(i)</a>, so that beans can be 
+checkpointed and restored with the Athena scenario.  However, that means
+that the bean's pot needs to be notified when the bean changes.  The
+bean's subclass methods can signal that changes have been made by calling
+the bean's pot's <a href="../mann/bean.html#markchanged">markchanged</a> method..  Further, the
+<a class="iref" href="#set">set</a> method always sets the changed flag.  Thus, it is often useful for
+a bean's methods to set instance variables using the <a class="iref" href="#set">set</a> method, 
+like this, even for instances variables defined in the subclass itself:
+
+</p>
+
+<pre>
+    my set <i>var</i> <i>value</i>
+</pre>
+<p>A method that makes many changes to the subclass's own variables can instead
+use the normal Tcl <code>set</code> command, and call
+the bean's pot's <a href="../mann/beanpot.html#markchanged">markchanged</a> method when done.</p>
+
+<p>Note that all of the bean(n) methods that update instance variables 
+(<a class="iref" href="#setdict">setdict</a>, <a class="iref" href="#lappend">lappend</a>, <a class="iref" href="#ldelete">ldelete</a>) use <a class="iref" href="#set">set</a> 
+internally.
+
+</p>
+
+<h2><a name="bean_ownership_and_bean_slots">Bean Ownership and Bean Slots</a></h2>
+<p>It is common for beans to own other beans, as a strategy block can own 
+conditions and tactics.  Note that this pattern should be used only when
+both the owner and the owned objects are user-editable, and the owned objects
+are added to the owner after it is created.   Objects that are created by the
+owner in its constructor ought not be beans.</p>
+
+<p>To put it another way, a bean may be made of non-beans by composition 
+(the has-a relationship), and may contain beans given to it from outside
+(the container/contained relationship).</p>
+
+<p>Owned beans are saved by their bean IDs, which are preserved
+across checkpoint/restore and delete/undelete.</p>
+
+<p>An instance variable that contains the IDs of owned beans is called a 
+<i>bean slot</i>, and should be declared as such in the class definition.
+For example, suppose that each instance of the dog class can own a 
+tail, also defined as a bean class.  The dog class would then have a 
+beanslot called "tail":
+
+</p>
+
+<pre>
+    ::projectlib::beanclass create dog {
+        superclass pet
+
+        # Variable and method definitions
+        beanslot tail
+    }
+</pre>
+<p>The tail, for its part, must retain a pointer to its parent:
+
+</p>
+
+<pre>
+    ::projectlib::beanclass create tail {
+        variable parent  ;# The dog to which the tail belongs.
+    }
+</pre>
+<p>The <a class="iref" href="#addbean_">addbean_</a> method updates both the bean slot and the added
+bean's <code>parent</code> variable.</p>
+
+<p>Beans named in bean slots will be destroyed automatically with the owning
+bean.</p>
+
+<p><b>Note:</b> Sometimes a bean will have a reference to a bean it 
+<i>doesn't</i> own.  For example, an owned bean will often have a reference
+to its owner.  Such references must be stored in a normal instance variable,
+not in a bean slot variable, as that would cause the owner to be destroyed
+with the bean (potentially with other problems as well).  Further, the 
+validity of such references across checkpoint/restore boundaries must be 
+ensured by the application.
+
+</p>
+
+<h2><a name="order_mutators">Order Mutators</a></h2>
+<p>The bean(n) class defines a number of mutators for use within
+<a href="../mann/order.html">order(n)</a> bodies.  Mutator method names end with a "_"; see, 
+for example, <a class="iref" href="#addbean_">addbean_</a>, <a class="iref" href="#deletebean_">deletebean_</a>, <a class="iref" href="#movebean_">movebean_</a> and 
+<a class="iref" href="#update_">update_</a>.</p>
+
+<p>Each mutator has a companion method that can be overridden.  For example,
+suppose certain instance variables need to be modified on every
+<a class="iref" href="#update_">update_</a>.  The class can override the <a class="iref" href="#onUpdate_">onUpdate_</a> method
+to make the relevant changes.
+
+</p>
+
+<h2><a name="notifier_events">Notifier Events</a></h2>
+<p>The bean(n) <a href="#order_mutators">Order Mutators</a> send out <a href="../mann/notifier.html">notifier(n)</a> events
+on mutate and on undo.  Every mutator sends out a 
+"<code>::projectlib::bean &lt;Monitor&gt;</code>" event, as does its undo 
+script.  In addition, if the class's <a class="iref" href="#subject">subject</a> is defined the 
+mutators will send out more specific events from that subject.
+
+
+</p>
+
+<h2><a name="copy_and_paste">Copy and Paste</a></h2>
+<p>The <a class="iref" href="#copydata">copydata</a> method returns a copy set for the bean and the 
+dependent beans in its bean slots, a collection of data suitable to be 
+placed on a clipboard.  The copy set is a dictionary of data with the
+following content:
+
+</p>
+
+<ul>
+    <li> The keys and values from the bean's default <a class="iref" href="#view">view</a>, which
+         contains data in the user formats required for order processing.
+    </li><li> The <b>id</b> field, and the <b>parent</b> field if present, are
+         removed, since they won't apply to the pasted data.
+    </li><li> A <b>class_</b> key is added, naming the bean's leaf class.
+    </li><li> The bean slots in the copy set will contain a list of copy sets like 
+         this, one for each owned bean, instead of the bean instance names.
+</li></ul>
+<p>Pasting must be handled by the application, because it needs to be done
+using orders.
+
+
+</p>
+
+<h2><a name="class_commands">CLASS COMMANDS</a></h2>
+<p>This module defines the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="bean_create">bean create <i>name</i></a></dt><dd>
+
+Creates a bean(n) instance called <i>name</i>; it will have neither a
+<span class="tt">pot</span> nor an <span class="tt">id</span>.  Application code will rarely use this command, 
+as a bare bean isn't much use.
+
+</dd>
+<dt class="defitem"><a name="bean_getslots">bean getslots <i>cls</i></a></dt><dd>
+
+Returns the names of all bean slot variables defined by <i>cls</i> and its
+superclasses.
+
+</dd>
+<dt class="defitem"><a name="bean_new">bean new</a></dt><dd>
+
+Creates a bean(n) instance with an arbitrary name; it will have neither a
+<span class="tt">pot</span> nor an <span class="tt">id</span>. Application code will rarely use this command, 
+as a bare bean isn't much use.
+
+</dd>
+</dl>
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+<p>Instances of bean(n), and instances of subclasses, have the following
+subcommands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="addbean_"><i>bean</i> addbean_ <i>slot cls</i> ?<i>beanvar</i>?</a></dt><dd><p>
+
+<b>Protected.</b>  This mutator creates a new bean of class <i>cls</i>,
+and appends its ID to the named <i>slot</i> variable, 
+returns a script that will undo the change.  If <i>beanvar</i> is given,
+it is the name of a variable in the caller's context; this variable
+will receive the newly added bean object's name.</p>
+
+<p>In addition, the mutator performs the following actions after modifying
+the slot variable:
+
+</p><ul>
+<li> Call <a class="iref" href="#onAddBean_">onAddBean_</a>, which by default does nothing.
+     Subclasses should override this method rather than <a class="iref" href="#addbean_">addbean_</a> 
+     itself.
+
+</li><li> Sends a detailed notifier event, if <a class="iref" href="#subject">subject</a> is defined:
+    <pre>$subject &lt;$slot&gt; add $id $bean_id</pre>
+
+</li><li> Send a generic notifier event:
+    <pre>::bean &lt;Monitor&gt;</pre>
+</li></ul>
+<p>The undo script will undo the change; it will also:
+
+</p>
+
+<ul>
+<li> Send a detailed notifier event, if <a class="iref" href="#subject">subject</a> is defined:
+    <pre>$subject &lt;$slot&gt; delete $id $bean_id</pre>
+
+</li><li> Send a generic notifier event:
+    <pre>::bean &lt;Monitor&gt;</pre>
+</li></ul>
+<p>Subclasses will usually wrap this in a mutator specific to the slot.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="cget"><i>bean</i> cget <i>option</i></a></dt><dd>
+
+This method is simply syntactic sugar around <a class="iref" href="#get">get</a>.  The
+<i>option</i> names are simply the object's instance variables in
+option form, i.e., "-varname" gets the variable named "varname".
+
+</dd>
+<dt class="defitem"><a name="configure"><i>bean</i> configure ?<i>option value...</i>?</a></dt><dd><p>
+
+This method is simply syntactic sugar around <a class="iref" href="#setdict">setdict</a>.  The
+<i>option</i> names are simply the object's instance variables in
+option form, i.e., "-varname" sets the variable named "varname".</p>
+
+<p>The <a class="iref" href="#set">set</a> method is used to save the <i>value</i>; if any
+validation is to be done, the child class should override 
+<a class="iref" href="#set">set</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="copydata"><i>bean</i> copydata</a></dt><dd>
+
+Returns a "copy set" value that can be used to duplicate the <i>bean</i>
+and its dependents.  See <a href="#copy_and_paste">Copy and Paste</a> for a description of
+how to implement copy and paste.
+
+</dd>
+<dt class="defitem"><a name="deletebean_"><i>bean</i> deletebean_ <i>slot id</i></a></dt><dd><p>
+
+<b>Protected.</b>  This mutator deletes the bean's <i>id</i> 
+from the named bean <i>slot</i> variable, destroys the bean, and 
+returns a script that will undo the change.</p>
+
+<p>In addition, the mutator performs the following actions after modifying
+the slot variable:
+
+</p><ul>
+<li> Call <a class="iref" href="#onDeleteBean_">onDeleteBean_</a>, which by default does nothing.
+     Subclasses should override this method rather than <a class="iref" href="#deletebean_">deletebean_</a> 
+     itself.
+
+</li><li> Send a detailed notifier event, if <a class="iref" href="#subject">subject</a> is defined:
+    <pre>$subject &lt;$slot&gt; delete $id $bean_id</pre>
+
+</li><li> Send a generic notifier event:
+    <pre>::bean &lt;Monitor&gt;</pre>
+</li></ul>
+<p>The undo script will undo the change; it will also:
+
+</p>
+
+<ul>
+<li> Send a detailed notifier event, if <a class="iref" href="#subject">subject</a> is defined:
+    <pre>$subject &lt;$slot&gt; add $id $bean_id</pre>
+
+</li><li> Send a generic notifier event:
+    <pre>::bean &lt;Monitor&gt;</pre>
+</li></ul>
+<p>This method is protected; subclasses will need to wrap it in a more 
+specific mutator.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="destroyslots"><i>bean</i> destroyslots <i>slot...</i></a></dt><dd><p>
+
+<b>Protected.</b>  This command destroys all beans whose IDs are listed in 
+the named bean <i>slot</i> variables.  It is primarily intended to be 
+called from the bean base class destructor, but it can also be used 
+when resetting the slot owner's state.</p>
+
+<p><a class="iref" href="#destroyslots">destroyslots</a> is useful because it avoids to common errors in
+implementing destructors for beans that own other beans.  First, if there
+is an error in calling the constructor then the bean's destructor is
+called; and if a slot variable hasn't yet been initialized and the
+destructor tries to clean it up in a naive way, it will throw an unknown
+variable error.  Second, the bean pot's <a href="../mann/beanpot.html#reset">reset</a> method can
+sometimes destroy beans out of order, so that a bean listed by a slot no
+longer exists.  <a class="iref" href="#destroyslots">destroyslots</a> handles both of these cases
+automatically, thus simplifying the destructor.</p>
+
+<p>When using <a class="iref" href="#destroyslots">destroyslots</a> to reset a bean owner's state, i.e., in a 
+"reset" method, be aware that <a class="iref" href="#destroyslots">destroyslots</a> does not change the value 
+of the slot variables.  The subclass must clear them explicitly.
+
+</p>
+</dd>
+<dt class="defitem"><a name="get"><i>bean</i> get <i>var</i></a></dt><dd>
+
+Returns the value of the instance variable named <i>var</i>.  It's an
+error if there is no such variable.
+
+</dd>
+<dt class="defitem"><a name="getdict"><i>bean</i> getdict</a></dt><dd>
+
+Returns the bean's state as a dictionary. The keys are the names of the bean's
+instance variables, and the values are (naturally) the values of the instance
+variables.
+
+</dd>
+<dt class="defitem"><a name="getowned"><i>bean</i> getowned ?-shallow|-deep?</a></dt><dd>
+
+Returns a list of the beans owned by <i>bean</i>, i.e., those named
+in bean slots.  With the 
+<code>-shallow</code> option, the list contains only those beans owned 
+directly by <i>bean</i> itself.  With the <code>-deep</code> option
+(the default), the list contains all beans in <i>bean</i>'s ownership
+tree, whether owned directly or indirectly.
+
+</dd>
+<dt class="defitem"><a name="getslots"><i>bean</i> getslots</a></dt><dd>
+
+Returns the names of the bean slot variables for this object.
+
+</dd>
+<dt class="defitem"><a name="id"><i>bean</i> id</a></dt><dd>
+
+Returns the bean's unique ID.  See <a href="#creating_an_instance">Creating an Instance</a>.
+
+</dd>
+<dt class="defitem"><a name="lappend"><i>bean</i> lappend <i>listvar value...</i></a></dt><dd>
+
+Appends the value(s) to the instance variable called <i>listvar</i>,
+and sets the bean pot's <a href="../mann/beanpot.html#changed">changed</a> flag.  (This is a convenience
+wrapper around <a class="iref" href="#set">set</a>.)
+
+</dd>
+<dt class="defitem"><a name="ldelete"><i>bean</i> ldelete <i>listvar value</i></a></dt><dd>
+
+Deletes the value from the instance variable called <i>listvar</i>,
+and sets the bean pot's <a href="../mann/beanpot.html#changed">changed</a> flag.  (This is a convenience
+wrapper around <a class="iref" href="#set">set</a>.)
+
+</dd>
+<dt class="defitem"><a name="movebean_"><i>bean</i> movebean_ <i>slot bean_id where</i></a></dt><dd><p>
+
+<b>Protected.</b>  This mutator moves the <i>bean_id</i>
+to a different place in the same <i>slot</i> given the <i>where</i>
+value, which is an <a href="../mann/projtypes.html#emoveitem(n)">emoveitem(n)</a> value, and returns 
+a script that will undo the change.</p>
+
+<p>In addition, the mutator performs the following actions after modifying
+the slot variable:
+
+</p><ul>
+<li> Call <a class="iref" href="#onMoveBean_">onMoveBean_</a>, which by default does nothing.
+     Subclasses should override this method rather than <a class="iref" href="#movebean_">movebean_</a> 
+     itself.
+
+</li><li> Sends a detailed notifier event, if <a class="iref" href="#subject">subject</a> is defined:
+    <pre>$subject &lt;$slot&gt; move $id $bean_id</pre>
+
+</li><li> Send a generic notifier event:
+    <pre>::bean &lt;Monitor&gt;</pre>
+</li></ul>
+<p>The undo script will undo the change; it will also:
+
+</p>
+
+<ul>
+<li> Send a detailed notifier event, if <a class="iref" href="#subject">subject</a> is defined:
+    <pre>$subject &lt;$slot&gt; move $id $bean_id</pre>
+
+</li><li> Send a generic notifier event:
+    <pre>::bean &lt;Monitor&gt;</pre>
+</li></ul>
+<p>Subclasses will usually wrap this in a mutator specific to the slot.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="onAddBean_"><i>bean</i> onAddBean_ <i>slot bean_id</i></a></dt><dd>
+
+<b>Protected.</b>  This method is called when a bean is added to
+the named <i>slot</i> by the <a class="iref" href="#addbean_">addbean_</a> method.  Subclasses 
+can override this to take some additional action when a bean is added; 
+this is preferable to overriding <a class="iref" href="#addbean_">addbean_</a>, as <a class="iref" href="#onAddBean_">onAddBean_</a> is 
+guaranteed to be called after the slot is modified but before any
+notifications are sent.
+
+</dd>
+<dt class="defitem"><a name="onDeleteBean_"><i>bean</i> onDeleteBean_ <i>slot bean_id</i></a></dt><dd>
+
+<b>Protected.</b>  This method is called when a bean is deleted from
+the named <i>slot</i> by the <a class="iref" href="#deletebean_">deletebean_</a> method.  Subclasses 
+can override this to take some additional action when a bean is deleted; 
+this is preferable to overriding <a class="iref" href="#deletebean_">deletebean_</a>, as 
+<a class="iref" href="#onDeleteBean_">onDeleteBean_</a> is guaranteed to be called after the slot is 
+modified but before any notifications are sent.
+
+</dd>
+<dt class="defitem"><a name="onMoveBean_"><i>bean</i> onMoveBean_ <i>slot bean_id</i></a></dt><dd>
+
+<b>Protected.</b>  This method is called when a bean is moved in a slot
+by the <a class="iref" href="#movebean_">movebean_</a> method.  Subclasses can override this to 
+take some additional action when a bean is moved; this is preferable
+to overriding <a class="iref" href="#movebean_">movebean_</a>, as <a class="iref" href="#onMoveBean_">onMoveBean_</a> is 
+guaranteed to be called after the slot is modified but before any
+notifications are sent.
+
+</dd>
+<dt class="defitem"><a name="onUpdate_"><i>bean</i> onUpdate_</a></dt><dd>
+
+<b>Protected.</b>  This method is called when a bean is updated
+by the <a class="iref" href="#update_">update_</a> method.  Subclasses 
+can override this to take some additional action when a bean is 
+updated; this is preferable to overriding <a class="iref" href="#update_">update_</a>, as
+<a class="iref" href="#onUpdate_">onUpdate_</a> is guaranteed to be called after the bean is 
+modified but before any notifications are sent.
+
+</dd>
+<dt class="defitem"><a name="set"><i>bean</i> set <i>var value</i></a></dt><dd><p>
+
+Sets the <i>value</i> of the instance variable named <i>var</i>, and sets
+the bean pot's <a href="../mann/beanpot.html#changed">changed</a> flag.  It is an
+error to set the value of an undefined variable.</p>
+
+<p>Because the changed flag is set, bean methods will usually want to use
+this method to set the value of instance variables, rather than the
+normal Tcl <code>set</code> command.
+
+</p>
+</dd>
+<dt class="defitem"><a name="setdict"><i>bean</i> setdict <i>dict</i></a></dt><dd><p>
+
+Updates the bean's variables given a dictionary of variable names and values,
+and sets the bean pot's <a href="../mann/beanpot.html#changed">changed</a> flag.</p>
+
+<p>Any or all of the bean's variables can be included; it is an error if the
+dictionary contains keys which are not the names of instance variables.</p>
+
+<p><b>Note:</b> it is not allowed to change the value of the bean's 
+<code>id</code> variable; however, it <i>is</i> allowed to set it to its
+existing value.  Thus, the following code is valid:
+
+</p><pre>
+    $bean setdict [$bean getdict]
+</pre>
+<p>This is often useful when undoing changes to a bean's state.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="slot"><i>bean</i> <i>slot</i> ?<i>idx</i>?</a></dt><dd>
+
+A method is automatically defined for each bean slot variable.  It has the
+same name as the slot, and returns the list of bean commands corresponding
+to the list of bean IDs in the slot.  If the <i>idx</i> is specified, it
+should be a <span class="tt">lindex</span> index; the method then returns the command for the
+indicated bean ID.
+
+</dd>
+<dt class="defitem"><a name="subject"><i>bean</i> subject</a></dt><dd>
+
+By default, this method returns the empty string.  Subclasses can override
+it to name the <a href="../mann/notifier.html">notifier(n)</a> subject used for detailed notifications;
+doing so enables these detailed notifications.
+
+</dd>
+<dt class="defitem"><a name="update_"><i>bean</i> update_ <i>varlist userdict</i></a></dt><dd><p>
+
+This command is intended for use as an "update" mutator in orders.
+It updates the bean's variables and returns an undo script that undoes
+the change.</p>
+
+<p>The <i>varlist</i> is a list of bean variables to update.  The
+<i>userdict</i> is a dictionary of variable names and values from the order.
+For each variable in <i>varlist</i>, the command updates the variable given 
+the matching value from <i>userdict</i>, if and only if:
+
+</p><ul>
+    <li>There is a matching value in <i>userdict</i>
+    </li><li>The value is not the empty string.
+</li></ul>
+<p>In addition, the <i>userdict</i> can contain any number of other keys; these
+are ignored.
+
+</p>
+
+<ul>
+<li> Call <a class="iref" href="#onUpdate_">onUpdate_</a>, which by default does nothing.
+     Subclasses should override this method rather than <a class="iref" href="#update_">update_</a> 
+     itself.
+
+</li><li> Send a detailed notifier event, if <a class="iref" href="#subject">subject</a> is defined:
+    <pre>$subject &lt;update&gt; $id</pre>
+
+</li><li> Send a generic notifier event:
+    <pre>::bean &lt;Monitor&gt;</pre>
+</li></ul>
+<p>The undo script will undo the change; it will also:
+
+</p>
+
+<ul>
+<li> Send a detailed notifier event, if <a class="iref" href="#subject">subject</a> is defined:
+    <pre>$subject &lt;update&gt; $id</pre>
+
+</li><li> Send a generic notifier event:
+    <pre>::bean &lt;Monitor&gt;</pre>
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="view"><i>bean</i> view ?<i>view</i>?</a></dt><dd>
+
+Returns the view dictionary for the requested <i>view</i> of the bean.
+Every bean supports the default view dictionary, "", which is returned
+if the view name is omitted.  See <a href="#bean_views">Bean Views</a> for more 
+information. 
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>This package requires Tcl 8.5 or later, plus the TclOO package.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>This is a simplified class, with all management of the full set of
+beans abstracted out and moved to <a href="../mann/beanpot.html">beanpot(n)</a>.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:56 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+

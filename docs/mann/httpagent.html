@@ -1,0 +1,562 @@
+<html>
+<head>
+<title>athena 6.3.3: httpagent(n) -- http(n) User Agent, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>httpagent(n)</b> -- http(n) User Agent, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#agent_states">Agent States</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::httpagent
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#httpagent">httpagent <i>name</i> ?<i>options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#httpagent-command">-command <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#httpagent-contenttypes">-contenttypes <i>list</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#httpagent-timeout">-timeout <i>msec</i></a></li>
+<li><a class="iref" href="#data"><i>object</i> data</a></li>
+<li><a class="iref" href="#error"><i>object</i> error</a></li>
+<li><a class="iref" href="#get"><i>object</i> get <i>url</i> ?<i>option value...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#get-command">-command <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#get-query">-query <i>dict</i></a></li>
+<li><a class="iref" href="#httpinfo"><i>object</i> httpinfo</a></li>
+<li><a class="iref" href="#meta"><i>object</i> meta ?<i>name</i>?</a></li>
+<li><a class="iref" href="#reset"><i>object</i> reset</a></li>
+<li><a class="iref" href="#state"><i>object</i> state</a></li>
+<li><a class="iref" href="#status"><i>object</i> status</a></li>
+<li><a class="iref" href="#token"><i>object</i> token</a></li>
+<li><a class="iref" href="#url"><i>object</i> url</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>In HTTP-parlance, a "user agent" is a program that accesses an HTTP
+server.  An instance of httpagent(n) is an object that clients can use
+to access data from web servers across the network using either the
+"http" or "https" protocols.  As such, httpagent(n) is a wrapper 
+around Tcl's built-in <a href="../../../tcl/docs/mann/http.html">http(n)</a> package; it provides the 
+following benefits:
+
+</p>
+
+<ul>
+    <li> All non-successful results are reported using a single 
+         mechanism.
+    </li><li> Redirection is handled automatically.
+    </li><li> Support for "https" is enabled automatically.
+    </li><li> An application can create multiple instances, each with its
+         own http(n) configuration.
+</li></ul>
+<p>At present, only "GET" requests are supported.
+
+</p>
+
+<h2><a name="agent_states">Agent States</a></h2>
+<p>At any time, the agent is in one of the following states, as indicated by
+the <a class="iref" href="#state">state</a> method:
+
+</p>
+
+<dl>
+<dt class="defopt"><a name="urlIDLE">IDLE</a></dt><dd>
+No requests have yet been sent, or the agent has been
+<a class="iref" href="#reset">reset</a>; there is no status data to retrieve.
+
+</dd>
+<dt class="defopt"><a name="urlWAITING">WAITING</a></dt><dd>
+A request is pending.
+
+</dd>
+<dt class="defopt"><a name="urlTIMEOUT">TIMEOUT</a></dt><dd>
+The most recent request timed out.
+
+</dd>
+<dt class="defopt"><a name="urlERROR">ERROR</a></dt><dd>
+The most recent request completed with an error.  See 
+<a class="iref" href="#status">status</a> for nature of the error, and <a class="iref" href="#error">error</a> for details.
+
+</dd>
+<dt class="defopt"><a name="urlOK">OK</a></dt><dd>
+The request completed successfully, and data was retrieved.  See 
+<a class="iref" href="#data">data</a> for the data and <a class="iref" href="#meta">meta</a> for the HTTP headers.
+
+</dd>
+</dl>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="httpagent">httpagent <i>name</i> ?<i>options...?</i></a></dt><dd><p>
+
+Creates a new httpagent(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#httpagent">httpagent</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>The httpagent(n) may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="httpagent-command">-command <i>cmd</i></a></dt><dd>
+
+All HTTP requests are handled asynchronously.  This command is called
+when the current request is complete.  It can be overridden by the
+<a class="iref" href="#get">get</a> method's <b>-command</b> option.
+
+</dd>
+<dt class="defopt"><a name="httpagent-contenttypes">-contenttypes <i>list</i></a></dt><dd>
+
+Specifies the list of content types acceptable to this client, e.g.,
+<b>text/html</b>.  This list is used to configure <a href="../../../tcl/docs/mann/http.html">http(n)</a>
+prior to each request.
+
+</dd>
+<dt class="defopt"><a name="httpagent-timeout">-timeout <i>msec</i></a></dt><dd>
+
+Specifies the length of the network timeout for all HTTP requests,
+in milliseconds. The default is 10,000 milliseconds.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of httpagent(n) has the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="data"><i>object</i> data</a></dt><dd>
+
+Returns the data associated with the most recent request, or "" if none.
+This is usually useful only if the <a class="iref" href="#state">state</a> is <b>OK</b>; however,
+it will also be populated for certain error conditions (e.g., 404
+errors).
+
+</dd>
+<dt class="defitem"><a name="error"><i>object</i> error</a></dt><dd>
+
+When the <a class="iref" href="#state">state</a> is <b>ERROR</b>, returns details about the 
+specific error.
+
+</dd>
+<dt class="defitem"><a name="get"><i>object</i> get <i>url</i> ?<i>option value...</i>?</a></dt><dd><p>
+
+Requests the <i>url</i>'s content.  The following options may be used:
+
+</p><dl>
+<dt class="defopt"><a name="get-command">-command <i>cmd</i></a></dt><dd>
+
+Specifies the command to call when the request is complete, overriding
+the object's <b>-command</b> option. This method will throw an error
+if neither option is set.
+
+</dd>
+<dt class="defopt"><a name="get-query">-query <i>dict</i></a></dt><dd>
+Specifies a dictionary of query keywords and values.  The query will
+be properly formatted and appended to the URL.
+
+</dd>
+</dl>
+<p>All requests are asynchronous; when the request is complete, the
+<b>-command</b> callback will be called, and can query the agent's
+<a class="iref" href="#state">state</a> for the result.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="httpinfo"><i>object</i> httpinfo</a></dt><dd>
+
+Returns a dictionary of low-level information about the most recent
+request; the keywords are <b>status</b>, <b>code</b>, <b>ncode</b>,
+and <b>error</b>, corresponding to the equivalent 
+<code>http::*</code> commands in <a href="../../../tcl/docs/mann/http.html">http(n)</a>.
+
+</dd>
+<dt class="defitem"><a name="meta"><i>object</i> meta ?<i>name</i>?</a></dt><dd><p>
+
+Called with no argument, returns the dictionary of HTTP headers 
+received for the most recent request, or the empty dictionary if
+the most recent request failed.</p>
+
+<p>If <i>name</i> is given, returns the value of the named header,
+or "" if the header was not present.
+
+</p>
+</dd>
+<dt class="defitem"><a name="reset"><i>object</i> reset</a></dt><dd>
+
+Cancels any pending request and cleans up the result of any previous
+request, returning the <a class="iref" href="#state">state</a> to <b>IDLE</b>.
+
+</dd>
+<dt class="defitem"><a name="state"><i>object</i> state</a></dt><dd>
+
+Returns the current state of the agent; see <a href="#agent_states">Agent States</a>.
+
+</dd>
+<dt class="defitem"><a name="status"><i>object</i> status</a></dt><dd>
+
+Returns the current status of the agent: a human-readable string that
+corresponds to the <a class="iref" href="#state">state</a>, but often with more information.
+
+</dd>
+<dt class="defitem"><a name="token"><i>object</i> token</a></dt><dd>
+
+Returns the <a href="../../../tcl/docs/mann/http.html">http(n)</a> "token" for the most recent request, or
+"" if none.  This call should be used only as an aid to debugging.
+
+</dd>
+<dt class="defitem"><a name="url"><i>object</i> url</a></dt><dd>
+
+Returns the URL used for the last request.  If the last request was 
+redirected, then it will be the URL to which it was redirected.
+
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mani/mydomain.html">mydomain(i)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:58 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

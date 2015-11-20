@@ -1,0 +1,477 @@
+<html>
+<head>
+<title>athena 6.3.3: rolemapfield(n) -- Role Map Field Widget, submodule of projectgui(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>rolemapfield(n)</b> -- Role Map Field Widget, submodule of <a href="../mann/projectgui.html">projectgui(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#implementation">Implementation</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectgui 6.3.3
+namespace import ::projectgui::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#rolemapfield">rolemapfield <i>pathName</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rolemapfield-changecmd">-changecmd <i>command</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rolemapfield-listheight">-listheight <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rolemapfield-liststripe">-liststripe <i>flag</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rolemapfield-listwidth">-listwidth <i>num</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rolemapfield-rolespec">-rolespec <i>spec</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rolemapfield-state">-state <i>state</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#rolemapfield-textwidth">-textwidth <i>num</i></a></li>
+<li><a class="iref" href="#cget"><i>pathName</i> cget <i>option</i></a></li>
+<li><a class="iref" href="#configure"><i>pathName</i> configure <i>option value...</i></a></li>
+<li><a class="iref" href="#get"><i>pathName</i> get</a></li>
+<li><a class="iref" href="#set"><i>pathName</i> set <i>value</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The rolemapfield(n) widget is used to associate lists of entities with
+user-defined roles in tactic dialogs, e.g., the CURSE tactic.  When
+the user defines a "curse" entity with attitude injects, the groups
+and actors affected by the injects are specified using "roles": essentially,
+named arguments.  When the CURSE tactic is set up to inject a given curse,
+the user needs to map those roles to actual lists of groups and actors.</p>
+
+<p>The number and name of these roles will vary from curse to curse.  However, the
+handling is identical for each role:
+
+</p>
+
+<ol>
+<li> There is a list of valid choices for each role, determined on-the-fly.
+</li><li> The user may select multiple items from that list.
+</li><li> The mapping is incomplete if any role's mapping is empty.
+</li></ol>
+<p>The rolemapfield(n) widget handles this use case.  It is a thin wrapper around
+the <a href="../../../mars/docs/mann/form.html">form(n)</a> widget that displays a configurable set of labels
+and edit fields given a <b>-rolespec</b>, which is a dictionary with this form:</p>
+
+<p><i>role-name</i> <i>valid-list</i> ...</p>
+
+<p>The value of the widget is a similar dictionary,</p>
+
+<p><i>role-name</i> <i>selected-list</i> ...
+
+</p>
+
+<h2><a name="implementation">Implementation</a></h2>
+<p>When configured with a <b>-rolespec</b>, the widget populates its 
+<a href="../../../mars/docs/mann/form.html">form(n)</a> widget with a label and a 
+<a href="../../../mars/docs/mann/textfield.html">textfield(n)</a> widget for each role.  Each text field is
+read-only with an "Edit" button; displays a whitespace-delimited list
+of the currently chosen entities for that role.  Pressing the "Edit" button
+pops up a <a href="../../../mars/docs/mann/messagebox.html">messagebox(n)</a> list selector.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="rolemapfield">rolemapfield <i>pathName</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new <a class="iref" href="#rolemapfield">rolemapfield</a> widget named <i>pathName</i>, and
+returns <i>pathName</i>.  The widget supports the following
+options, in addition to those provided by the underlying frame widget:
+
+</p><dl>
+
+<dt class="defopt"><a name="rolemapfield-changecmd">-changecmd <i>command</i></a></dt><dd>
+
+Specifies a <i>command</i> to be called
+whenever the selected entity changes, for any reason whatsoever
+(including explicit calls to <a class="iref" href="#set">set</a>.  The newly selected
+entity's name is appended to the <i>command</i> as an argument.
+
+</dd>
+<dt class="defopt"><a name="rolemapfield-listheight">-listheight <i>num</i></a></dt>
+<dt class="defopt"><a name="rolemapfield-liststripe">-liststripe <i>flag</i></a></dt>
+<dt class="defopt"><a name="rolemapfield-listwidth">-listwidth <i>num</i></a></dt><dd>
+
+These options are used to configure the <a href="../../../mars/docs/mann/messagebox.html">messagebox(n)</a>
+list selector when a role's mapping is being edited.
+
+</dd>
+<dt class="defopt"><a name="rolemapfield-rolespec">-rolespec <i>spec</i></a></dt><dd>
+
+Sets the dictionary of roles and valid lists, and reconfigures the
+widget.  See <a href="#description">DESCRIPTION</a>.
+
+</dd>
+<dt class="defopt"><a name="rolemapfield-state">-state <i>state</i></a></dt><dd>
+
+Sets the field's state to <b>normal</b> or <b>disabled</b>.
+
+</dd>
+<dt class="defopt"><a name="rolemapfield-textwidth">-textwidth <i>num</i></a></dt><dd>
+
+The width of the role text fields, in characters.
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>rolemapfield(n) widgets have the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="cget"><i>pathName</i> cget <i>option</i></a></dt><dd>
+
+Returns the value of the specified <i>option</i>.
+
+</dd>
+<dt class="defitem"><a name="configure"><i>pathName</i> configure <i>option value...</i></a></dt><dd>
+
+Sets the value of one or more of the object's options.
+
+</dd>
+<dt class="defitem"><a name="get"><i>pathName</i> get</a></dt><dd>
+
+Returns the current value of the field. 
+
+</dd>
+<dt class="defitem"><a name="set"><i>pathName</i> set <i>value</i></a></dt><dd>
+
+Sets the current value of the field.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>projectgui(n) requires Tcl 8.5 or later.</p>
+
+<p>To use projectgui(n) in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package
+directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:59 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

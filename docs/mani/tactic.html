@@ -1,0 +1,405 @@
+<html>
+<head>
+<title>athena 6.3.3: tactic(i) -- Tactic Interface</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>tactic(i)</b> -- Tactic Interface
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#subcommands">SUBCOMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#narrative">narrative <i>tdict</i></a></li>
+<li><a class="iref" href="#check">check <i>tdict</i></a></li>
+<li><a class="iref" href="#dollars">dollars <i>tdict</i></a></li>
+<li><a class="iref" href="#execute">execute <i>tdict</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A tactic is an action that can be taken by an Athena actor when certain
+conditions are met.  Each tactic type is defined by a Snit type
+ensemble within the ::tactic:: namespace that is created using the
+tactic(sim) "type define" subcommand.  For example, the DEFROE
+tactic is defined by code that looks like
+
+</p>
+
+<pre>
+tactic type define DEFROE {n g text1} actor {
+    # Definition script
+}
+</pre>
+<p>resulting in a type ensemble called <code>tactic::DEFROE</code>.  The
+definition script is simply a Snit type ensemble definition script.</p>
+
+<p>Every tactic ensemble must implement the subcommands defined
+in this interface; it may also define other commands as needed.
+Thus, a tactic is essentially a special kind of module.</p>
+
+<p>In addition, every tactic type must provide two orders,
+TACTIC:<i>type</i>:CREATE and TACTIC:<i>type</i>:UPDATE.
+
+</p>
+
+<h2><a name="subcommands">SUBCOMMANDS</a></h2>
+<p>Each <a href="../mani/tactic.html">tactic(i)</a> ensemble must implement at least the following
+subcommands.  Note that they all take the "tactic parameter
+dictionary", or <i>tdict</i>, as their first argument.  This is simply a
+row from the tactics table in the form of a dictionary.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="narrative">narrative <i>tdict</i></a></dt><dd>
+
+Returns a human-readable narrative description of the tactic.  The
+description should include all of the tactic's parameters, so that the
+narrative is a complete description of the tactic.
+
+</dd>
+<dt class="defitem"><a name="check">check <i>tdict</i></a></dt><dd><p>
+
+Sanity-checks the tactic's parameters.  Returns a human-readable
+string describing any errors that are found, and the empty string
+otherwise.  If a force group referenced by a tactic is deleted, for
+example, the error message might be "Force group no longer exists."</p>
+
+<p>Many tactic parameters can be valid when the tactic is created but
+become invalid later, especially during scenario preparation.  For
+example, a tactic might require a force group that is owned by the
+actor executing the tactic...and the force group might subsequently be
+assigned to some other actor.</p>
+
+<p>Checking for such errors as they occur is tedious and error-prone, and
+inconvenient for the user.  Instead, we simply sanity-check all
+tactics at appropriate times, such as when the scenario is locked.
+We make any problems known to the user, and allow them to fix them.
+
+</p>
+</dd>
+<dt class="defitem"><a name="dollars">dollars <i>tdict</i></a></dt><dd>
+
+Returns the estimated cost in dollars of executing the tactic
+once, for display in the GUI.  The
+<a href="../../../mars/docs/mann/marsmisc.html#moneyfmt">moneyfmt</a> command should be used to
+format numeric output.  If an estimated cost in dollars doesn't
+make sense for this tactic, return "n/a".
+    
+   
+</dd>
+<dt class="defitem"><a name="execute">execute <i>tdict</i></a></dt><dd>
+
+Determines whether or not the tactic is affordable, given 
+its parameters and the available assets.  If it is not, the command
+returns 0.  If it is, the assets are expended, the tactic is executed,
+and the command returns 1.
+
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original interface.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+

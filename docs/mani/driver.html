@@ -1,0 +1,484 @@
+<html>
+<head>
+<title>athena 6.3.3: driver(i) -- Driver Interface</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>driver(i)</b> -- Driver Interface
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#rule_sets">Rule Sets</a></li>
+
+    <li><a href="#firing_dictionaries">Firing Dictionaries</a></li>
+
+    <li><a href="#driver_ids_and_signatures">Driver IDs and Signatures</a></li>
+
+    <li><a href="#families_of_driver_types">Families of Driver Types</a></li>
+
+</ul>
+    
+
+    <li><a href="#subcommands">SUBCOMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<ul class="itemlist">
+<li><a class="iref" href="#assess">assess <i>args...</i></a></li>
+<li><a class="iref" href="#detail">detail <i>fdict ht</i></a></li>
+<li><a class="iref" href="#getid">getid <i>fdict</i></a></li>
+<li><a class="iref" href="#narrative">narrative <i>fdict</i></a></li>
+<li><a class="iref" href="#sigline">sigline <i>signature</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>A driver(i) object is a module of code that implements the effects of a
+particular type of attitude driver, e.g., an activity situation or
+civilian casualties.</p>
+
+<p>Each driver type is defined by a Snit type
+ensemble within the ::driver:: namespace that is created using the
+driver(sim) "type define" subcommand.  For example, the CIVCAS
+driver is defined by code that looks like
+
+</p>
+
+<pre>
+driver type define CIVCAS {f} {
+    # Definition script
+}
+</pre>
+<p>resulting in a type ensemble called <code>driver::CIVCAS</code>.  The
+definition script is simply a Snit type ensemble definition script.</p>
+
+<p>Every driver ensemble must implement the subcommands defined
+in this interface; it may also define other commands as needed.
+Thus, a driver is essentially a special kind of module.
+
+</p>
+
+<h2><a name="rule_sets">Rule Sets</a></h2>
+<p>The driver type ensemble must implement one or more rule sets for 
+the given driver type, along with an appropriate subcommand for triggering
+them.  This subcommand is usually called <a class="iref" href="#assess">assess</a>; its arguments will
+vary depending on the driver type.  The rule sets themselves will use the
+dam(sim) API.
+
+</p>
+
+<h2><a name="firing_dictionaries">Firing Dictionaries</a></h2>
+<p>The input to a rule set is called a <i>firing dictionary</i>, or 
+<i>fdict</i>.  When a rule fires, the <i>fdict</i> is saved in the
+<b>rule_firings</b> table for later use.  Part of the job of the driver
+type's ensemble is to translate that saved <i>fdict</i> into human-readable
+text.</p>
+
+<p>The firing dictionary should contain all inputs to the rule set; it should
+also contain the driver type name (e.g., "CIVCAS") under the key <b>dtype</b>.
+
+
+</p>
+
+<h2><a name="driver_ids_and_signatures">Driver IDs and Signatures</a></h2>
+<p>There can be many instances of a given driver type, and these are identified
+by numeric driver IDs.  For example, casualties to civilian group A are distinct
+from casualties to civilian group B, and each gets its own driver ID.  Driver
+IDs are assigned on the basis of <i>signatures</i>.  A driver type's signature
+is a subset of the parameters in its firing dictionary; this subset is
+identified in the <code>driver type define</code> call.  In the CIVCAS example
+shown above, the signature is <i>f</i>, that is, the name of the civilian group
+that took the casualties.</p>
+
+<p>Driver IDs are assigned automatically by <code>[dam rule]</code> the first 
+time a rule fires for the given driver type and signature.</p>
+
+<p>Note that the signature, properly speaking, is not a dictionary, but rather a list of zero or more parameter values drawn from the <i>fdict</i>.
+
+</p>
+
+<h2><a name="families_of_driver_types">Families of Driver Types</a></h2>
+<p>Some driver types, like CIVCAS, are unique, and will live in modules named
+after them, e.g., "<code>driver_civcas.tcl</code>"; others, like the various 
+activity situations, are part of a large family of very similar driver types.
+Because they share a common pattern and often common infrastructure code,
+it is convenient to put them into a single mdoule, e.g.,
+"<code>driver_actsit.tcl</code>".  This module will generally contain the 
+the following blocks of code:
+
+</p>
+
+<ul>
+    <li> An ensemble for the whole family, e.g., <code>driver::actsit</code>.
+        This ensemble will contain the <a class="iref" href="#assess">assess</a> method, and any shared
+        infrastructure.  Each situation type's <a class="iref" href="#narrative">narrative</a> method, for
+        example, will usually be delegated back to this ensemble.  Indeed, this
+        ensemble will probably provide a driver definition call that will 
+        add the relevant <code>delegate</code> statements to the situation's
+        definition script.
+
+    </li><li> An ensemble for each specific driver type, containing the rule sets
+        and other driver-type specific subcommands, possibly delegating them
+        back to the family ensemble.
+</li></ul>
+<p>See "<code>driver_actsit.tcl</code>" as an example.
+
+
+</p>
+
+<h2><a name="subcommands">SUBCOMMANDS</a></h2>
+<p>Each <a href="../mani/driver.html">driver(i)</a> ensemble must implement at least the following
+subcommands.  Most will taking a firing dictionary, or <i>fdict</i> as
+an argument.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="assess">assess <i>args...</i></a></dt><dd>
+
+Every driver type (or family of driver types) will have an <a class="iref" href="#assess">assess</a>
+subcommand of some kind that triggers the driver type's rule set(s).
+Sometimes the subcommand will have arguments that either comprise or will
+lead to an <i>fdict</i>; more commonly, the subcommand will do its own 
+sweep of the available data, identifying events and situations that need to
+be assessed.
+
+</dd>
+<dt class="defitem"><a name="detail">detail <i>fdict ht</i></a></dt><dd>
+
+Writes a detailed block of HTML text describing a particular 
+rule-firing into an <a href="../mann/htools.html">htools(n)</a> buffer <i>ht</i>.  The text 
+should include all of the data in the <i>fdict</i>.
+
+</dd>
+<dt class="defitem"><a name="getid">getid <i>fdict</i></a></dt><dd>
+
+Given an <i>fdict</i>, assigns or retrieves a driver ID based on the
+signature.  This subcommand is defined automatically when the driver type
+is defined.  It is generally called only by <code>[dam rule]</code>.
+
+</dd>
+<dt class="defitem"><a name="narrative">narrative <i>fdict</i></a></dt><dd><p>
+
+Returns a human-readable one-line narrative description of rule firing,
+for use in tables and lists.  The narrative can and should contain 
+links of the form
+
+</p><pre>
+    {<i>entity</i>:<i>id</i>}
+</pre>
+<p>which will be translated into plain text or into HTML links as required.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="sigline">sigline <i>signature</i></a></dt><dd>
+
+Given a specific driver's signature, as saved in the <b>drivers.signature</b>
+column by <code>[dam rule]</code>, return a one-line description of the 
+driver for use in tables and lists.
+
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original interface.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:54 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+

@@ -1,0 +1,4188 @@
+<html>
+<head>
+<title>athena 6.3.3: scenariodb(n) -- Scenario Database Object, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>scenariodb(n)</b> -- Scenario Database Object, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#sql_functions">SQL FUNCTIONS</a></li>
+    
+
+    <li><a href="#schema">SCHEMA</a></li>
+    <ul>
+
+    <li><a href="#from_undostackn">From undostack(n)</a></li>
+
+    <li><a href="#from_ucurven">From ucurve(n)</a></li>
+
+    <li><a href="#from_uramn">From uram(n)</a></li>
+
+    <li><a href="#from_scenariodbn">From scenariodb(n)</a></li>
+
+</ul>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::scenariodb
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#scenariodb">scenariodb <i>name</i> ?<i>options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scenariodb-clock">-clock <i>clock</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scenariodb-explaincmd">-explaincmd <i>command</i></a></li>
+<li><a class="iref" href="#scenariodb_checkschema">scenariodb checkschema <i>db</i></a></li>
+<li><a class="iref" href="#scenariodb_sqlsections">scenariodb sqlsections</a></li>
+<li><a class="iref" href="#scenariodb_sectiondict">scenariodb sectiondict</a></li>
+<li><a class="iref" href="#clear"><i>obj</i> clear</a></li>
+<li><a class="iref" href="#load"><i>obj</i> load <i>filename</i></a></li>
+<li><a class="iref" href="#marksaved"><i>obj</i> marksaved</a></li>
+<li><a class="iref" href="#open"><i>obj</i> open <i>filename</i></a></li>
+<li><a class="iref" href="#saveas"><i>obj</i> saveas <i>filename</i></a></li>
+<li><a class="iref" href="#unsaved"><i>obj</i> unsaved</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The scenariodb(n) type is responsible for Athena's scenario
+database format.  It is an SQLite3 format based on
+<a href="../../../mars/docs/mann/sqldocument.html">sqldocument(n)</a>; as such, it automatically includes all
+<a href="../../../mars/docs/mani/sqlsection.html">sqlsection(i)</a>s defined by the Mars infrastructure.  It
+also includes all tables, indices, and so forth defined explicitly for
+Mars.</p>
+
+<p><a href="../man1/athena.html">athena(1)</a> uses scenariodb(n) to define its
+run-time database (RDB), and to save and load scenario data to and
+from external files.  By convention, these "scenario files" have a
+"<code>.adb</code>" (Athena Scenario) extension.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="scenariodb">scenariodb <i>name</i> ?<i>options...?</i></a></dt><dd><p>
+
+Creates a new scenariodb(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#scenariodb">scenariodb</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>Before the new scenariodb(n) can be used, a database file must be
+<a class="iref" href="#open">open</a>ed, and possibly <a class="iref" href="#clear">clear</a>ed.</p>
+
+<p>The scenariodb(n) may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="scenariodb-clock">-clock <i>clock</i></a></dt><dd>
+
+Specifies a <a href="../../../mars/docs/mann/simclock.html">simclock(n)</a> object, or the equivalent.  This
+option is delegated to the underlying <a href="../../../mars/docs/mann/sqldocument.html">sqldocument(n)</a> object,
+which uses it to provide <a href="../../../mars/docs/mann/simclock.html">simclock(n)</a>-related SQL functions.
+
+</dd>
+<dt class="defopt"><a name="scenariodb-explaincmd">-explaincmd <i>command</i></a></dt><dd>
+
+This option is delegated to <a href="../../../mars/docs/mann/sqldocument.html">sqldocument(n)</a>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="scenariodb_checkschema">scenariodb checkschema <i>db</i></a></dt><dd><p>
+
+Given an SQLite3 database handle <i>db</i>, this command
+checks to see whether it is an Athena scenario file, and if so, 
+whether it is compatible with this version of scenariodb(n).  If not,
+the command throws an informative error suitable for display to the user.</p>
+
+<p>Note that <i>db</i> can be any SQLite3 database handle; it need not have
+been opened with scenariodb(n) or <a href="../../../mars/docs/mann/sqldocument.html">sqldocument(n)</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="scenariodb_sqlsections">scenariodb sqlsections</a></dt><dd>
+
+Returns a list of the <a href="../../../mars/docs/mani/sqlsection.html">sqlsection(i)</a> objects that 
+scenariodb(n) registers.
+
+</dd>
+<dt class="defitem"><a name="scenariodb_sectiondict">scenariodb sectiondict</a></dt><dd><p>
+
+Returns a dictionary of information about the <a href="../../../mars/docs/mani/sqlsection.html">sqlsection(i)</a>
+objects that scenariodb(n) registers.  The dictionary has this
+structure:
+
+</p><pre class="example">
+$section => An SQL section registered by scenariodb
+         -> title => The section's title
+         -> schema => The section's schema string
+         -> tempschema => The section's tempschema string
+         -> functions  => Dictionary of SQL functions by name
+                       -> $name => SQL function name
+                                -> function definition
+</pre>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of scenariodb(n) inherits all methods
+of the <a href="../../../mars/docs/mann/sqldocument.html">sqldocument(n)</a> object and the underlying SQLite3
+database handle.  In addition, it has the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="clear"><i>obj</i> clear</a></dt><dd>
+
+Clears the contents of the database, establishing a fresh, empty scenario.
+Also, clears the <a class="iref" href="#unsaved">unsaved</a> flag.
+
+
+</dd>
+<dt class="defitem"><a name="load"><i>obj</i> load <i>filename</i></a></dt><dd>
+
+Loads the scenario file called <i>filename</i> into the database, and
+clears the <a class="iref" href="#unsaved">unsaved</a> flag.
+
+</dd>
+<dt class="defitem"><a name="marksaved"><i>obj</i> marksaved</a></dt><dd>
+
+Marks the scenario saved.  This is generally useful if the application
+adds additional behavior on top of <a class="iref" href="#clear">clear</a>.
+
+</dd>
+<dt class="defitem"><a name="open"><i>obj</i> open <i>filename</i></a></dt><dd>
+
+Opens an existing scenario file, and clears the <a class="iref" href="#unsaved">unsaved</a>
+flag.  <a href="../man1/athena.html">athena(1)</a> will usually use this to open a working
+RDB, into which the user's scenario file will be <a class="iref" href="#load">load</a>ed.
+If <i>filename</i> is "<code>:memory:</code>", the database will be
+opened in memory rather than on the disk.
+
+</dd>
+<dt class="defitem"><a name="saveas"><i>obj</i> saveas <i>filename</i></a></dt><dd>
+
+Saves the current contents of the database to the file with name
+<i>filename</i>, which conventionally should have a
+"<code>.ath</code>" extension.  Clears the <a class="iref" href="#unsaved">unsaved</a> flag.
+
+</dd>
+<dt class="defitem"><a name="unsaved"><i>obj</i> unsaved</a></dt><dd>
+
+Returns 1 if changes have been made to the database since the last
+<a class="iref" href="#clear">clear</a>, <a class="iref" href="#load">load</a>, <a class="iref" href="#open">open</a>, or <a class="iref" href="#saveas">saveas</a>, and
+0 otherwise.  Applications can use this flag to determine whether
+there are unsaved changes, e.g., before shutting down.
+
+</dd>
+</dl>
+
+<h2><a name="sql_functions">SQL FUNCTIONS</a></h2>
+<p>Every <a href="../mann/scenariodb.html">scenariodb(n)</a> database will support at least the
+following SQL functions, in addition to those defined by SQLite3
+and those defined by <a href="../../../mars/docs/mani/sqlsection.html">sqlsection(i)</a> modules explicitly
+loaded by the application.
+
+</p>
+
+<ul>
+<li> From <a href="../../../mars/docs/mann/ucurve.html">ucurve(n)</a>:</li>
+<ul>
+<li>ucurve_clamp() =&gt; ::simlib::ucurve::ClampCurve</li>
+</ul>
+<li> From <a href="../mann/scenariodb.html">scenariodb(n)</a>:</li>
+<ul>
+<li>commafmt() =&gt; ::marsutil::commafmt</li>
+<li>qaffinity() =&gt; ::simlib::qaffinity</li>
+<li>qcoop() =&gt; ::simlib::qcooperation</li>
+<li>qemphasis() =&gt; ::simlib::qemphasis</li>
+<li>qfancyfmt() =&gt; ::projectlib::scenariodb::QFancyFmt</li>
+<li>qmag() =&gt; ::simlib::qmag</li>
+<li>qposition() =&gt; ::simlib::qposition</li>
+<li>qsat() =&gt; ::simlib::qsat</li>
+<li>qsaliency() =&gt; ::simlib::qsaliency</li>
+<li>qsecurity() =&gt; ::projectlib::qsecurity</li>
+<li>link() =&gt; ::projectlib::scenariodb::Link</li>
+<li>pair() =&gt; ::projectlib::scenariodb::Pair</li>
+</ul>
+</ul>
+
+
+<h2><a name="schema">SCHEMA</a></h2>
+<p>scenariodb(n) adds the following definitions to the database
+schema:</p>
+
+<p>Every <a href="../mann/scenariodb.html">scenariodb(n)</a> database will contain at least the
+following schema definitions, in addition to those from any other
+<a href="../../../mars/docs/mani/sqlsection.html">sqlsection(i)</a>'s loaded explicitly by the application.
+
+</p>
+
+<h2><a name="from_undostackn">From undostack(n)</a></h2>
+<p>The following schema definitions are from <a href="../../../mars/docs/mann/undostack.html">undostack(n)</a>.
+
+</p>
+
+<pre>
+------------------------------------------------------------------------
+-- FILE: undostack.sql
+--
+-- SQL Schema for the undostack(n) module.
+--
+-- PACKAGE:
+--    marsutil(n) -- Utility Package
+--
+-- PROJECT:
+--    Mars Simulation Infrastructure Library
+--
+-- AUTHOR:
+--    Will Duquette
+--
+------------------------------------------------------------------------
+
+CREATE TABLE undostack_stack (
+    -- undostack(n) undo stack table.  Operations are undone in 
+    -- reverse order, back to the previous mark.  The script is
+    -- a Tcl script that undoes the operation.  For explicitly
+    -- inserted marks, the script will be NULL.
+
+    id     INTEGER PRIMARY KEY,  -- Unique undo script ID
+    tag    TEXT,                 -- Tag for undostack instance
+
+    mark   INTEGER DEFAULT 0,    -- Added by "edit mark" or -automarks
+    script TEXT,                 -- Undo script, or NULL
+
+    UNIQUE (tag, id)
+);
+</pre>
+
+<h2><a name="from_ucurven">From ucurve(n)</a></h2>
+<p>The following schema definitions are from <a href="../../../mars/docs/mann/ucurve.html">ucurve(n)</a>.
+
+</p>
+
+<pre>
+------------------------------------------------------------------------
+-- TITLE: 
+--   ucurve.sql
+--
+-- PACKAGE:
+--   simlib(n) -- Simulation Infrastructure Package
+--
+-- PROJECT:
+--   Mars Simulation Infrastructure Library
+--
+-- AUTHOR:
+--   Will Duquette
+--
+-- DESCRIPTION:
+--   SQL Schema for the ucurve(n) module.
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- Curve Types
+
+-- ucurve(n) curve types table.  Stores the attributes of each 
+-- curve type.
+CREATE TABLE ucurve_ctypes_t (
+    --------------------------------------------------------------------
+    -- Keys and Pointers
+
+    -- Curve Type ID
+    ct_id        INTEGER PRIMARY KEY,
+
+    --------------------------------------------------------------------
+    -- Data
+
+    -- Short name for this specific curve type
+    name          TEXT UNIQUE NOT NULL,
+
+    min           DOUBLE NOT NULL
+        CHECK (min = CAST (min AS real)),
+
+    -- Maximum and minimum bounds for curves of this type.
+    max           DOUBLE NOT NULL
+        CHECK (max = CAST (max AS real)),
+
+    -- Alpha and Gamma smoothing parameters (Beta is computed)
+    alpha         DOUBLE DEFAULT 0.0
+        CHECK (alpha = CAST (alpha AS real))
+        CHECK (0.0 <= alpha AND alpha <= 1.0),
+
+    gamma         DOUBLE DEFAULT 0.0
+        CHECK (gamma = CAST (gamma AS real))
+        CHECK (0.0 <= gamma AND gamma <= 1.0),
+
+    -- Global constraints
+    CHECK (min < max),
+    CHECK (alpha + gamma <= 1.0)
+);
+
+-- ucurve(n) types view that provides computed values
+
+CREATE VIEW ucurve_ctypes AS
+SELECT *,
+       1.0 - (alpha + gamma) AS beta
+FROM ucurve_ctypes_t;
+
+------------------------------------------------------------------------
+-- Curves
+
+-- ucurve(n) curves table.
+
+CREATE TABLE ucurve_curves_t (
+    --------------------------------------------------------------------
+    -- Keys and Pointers
+
+    -- Curve ID
+    curve_id     INTEGER PRIMARY KEY,
+
+    -- Curve Type ID
+    ct_id        INTEGER REFERENCES ucurve_ctypes_t(ct_id)
+                 ON DELETE CASCADE
+                 DEFERRABLE INITIALLY DEFERRED,
+
+    --------------------------------------------------------------------
+    -- Data
+
+    --  Are we tracking changes to this curve?
+    tracked      INTEGER DEFAULT 1
+        CHECK (tracked IN (0,1)),
+
+    -- The current A.t, B.t, C.t, and DeltaA.t values
+
+    a            DOUBLE
+        CHECK (a = CAST (a AS real)),
+
+    b            DOUBLE
+        CHECK (b = CAST (b AS real)),
+
+    c            DOUBLE
+        CHECK (c = CAST (c AS real)),
+
+    delta        DOUBLE DEFAULT 0.0,
+
+    -- The current scale factors
+    posfactor    DOUBLE DEFAULT 0.0,
+    negfactor    DOUBLE DEFAULT 0.0,
+
+    -- The Initial values for A.t, B.t, and C.t
+    -- TBD: We might decide not to use these.
+    a0            DOUBLE
+        CHECK (a0 = CAST (a0 AS real)),
+
+    b0            DOUBLE
+        CHECK (b0 = CAST (b0 AS real)),
+
+    c0            DOUBLE
+        CHECK (c0 = CAST (c0 AS real))
+);
+
+------------------------------------------------------------------------
+-- Curve Effects
+
+
+-- ucurve(n) effects table.
+
+CREATE TABLE ucurve_effects_t (
+    --------------------------------------------------------------------
+    -- Keys and Pointers
+
+    -- Effect ID
+    e_id         INTEGER PRIMARY KEY,
+
+    -- Curve ID: ID of the curve receiving the effect.
+    curve_id     INTEGER REFERENCES ucurve_curves_t(curve_id)
+                 ON DELETE CASCADE
+                 DEFERRABLE INITIALLY DEFERRED,
+
+    -- Driver ID, an integer assigned by the client.
+    driver_id    INTEGER NOT NULL,
+
+    -- Cause ID, an integer assigned by the client.
+    cause_id     INTEGER NOT NULL,
+
+    --------------------------------------------------------------------
+    -- Data
+
+    -- Persistence flag.  If 1, persistent, if 0, transient.
+    pflag        INTEGER DEFAULT 0,
+
+    -- Nominal (unscaled) magnitude of the effect.
+    mag          DOUBLE DEFAULT 0.0
+        CHECK (mag = CAST (mag AS real)),
+
+    -- Actual (unscaled) magnitude of the effect, when causes are
+    -- taken into account.
+    actual       DOUBLE DEFAULT 0.0
+);
+
+CREATE INDEX ucurve_effects_cc_index ON ucurve_effects_t(curve_id,cause_id);
+
+------------------------------------------------------------------------
+-- Baseline Adjustments
+
+
+-- ucurve(n) adjustments table.
+
+CREATE TABLE ucurve_adjustments_t (
+    --------------------------------------------------------------------
+    -- Keys and Pointers
+
+    -- Effect ID
+    a_id         INTEGER PRIMARY KEY,
+
+    -- Curve ID: ID of the curve receiving the effect.
+    curve_id     INTEGER REFERENCES ucurve_curves_t(curve_id)
+                 ON DELETE CASCADE
+                 DEFERRABLE INITIALLY DEFERRED,
+
+    -- Driver ID, an integer assigned by the client.
+    driver_id    INTEGER NOT NULL,
+
+    --------------------------------------------------------------------
+    -- Data
+
+    -- Delta to the curve
+    delta          DOUBLE DEFAULT 0.0
+        CHECK (delta = CAST (delta AS real))
+);
+
+------------------------------------------------------------------------
+-- Contribution History
+
+-- ucurve(n) contribs table
+--
+-- NOTE: We have no FK constraint on the curve_id, so that Athena can
+-- exclude the contribs table (which can get quite large) from snapshots
+-- without causing problems on snapshot import.
+
+CREATE TABLE ucurve_contribs_t (
+    --------------------------------------------------------------------
+    -- Keys and Pointers
+
+    -- Curve ID: ID of the curve receiving the effect.
+    curve_id     INTEGER,
+
+    -- Driver ID, an integer assigned by the client.
+    driver_id    INTEGER NOT NULL,
+
+    -- Timestamp
+    t            INTEGER NOT NULL,
+
+    --------------------------------------------------------------------
+    -- Data
+
+    -- Contribution to curve_id by driver_id at time t
+    contrib      DOUBLE NOT NULL DEFAULT 0.0,    
+    
+
+    PRIMARY KEY (curve_id, driver_id, t)
+);
+
+</pre>
+
+<h2><a name="from_uramn">From uram(n)</a></h2>
+<p>The following schema definitions are from <a href="../../../mars/docs/mann/uram.html">uram(n)</a>.
+
+</p>
+
+<pre>
+------------------------------------------------------------------------
+-- TITLE: 
+--   uram.sql
+--
+-- PACKAGE:
+--   simlib(n) -- Simulation Infrastructure Package
+--
+-- PROJECT:
+--   Mars Simulation Infrastructure Library
+--
+-- AUTHOR:
+--   Will Duquette
+--
+-- DESCRIPTION:
+--   SQL Schema for the uram(n) module.
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- Conventions
+--
+-- Clients refer to entities using a unique name; URAM uses a unique
+-- integer for speed.  The name column uses the index variable name
+-- used in mathematical models, i.e., actor variables use the "a" 
+-- subscript.  The unique ID is the index variable name plus "_id", e.g.,
+-- "a_id".  The index variable name usually appears in the table name
+-- as well.
+--
+-- Tables keyed on multiple entities have a unique record ID, plus 
+-- foreign key links to the entity tables.  For example, the uram_mn table
+-- contains pairwise neighborhood data.  It has a unique record ID as its
+-- key, called "mn_id"; it also has "m_id" and "n_id" columns that link to
+-- the uram_n table.
+--
+-- Tables which relate to curves managed by URAM have a unique record ID
+-- plus entity links, as just described; they also have a curve_id field
+-- that relates to a ucurve(n) curves.
+--
+-- Tables that link to data from a number of other tables will often have
+-- views associated with them; in this case the table and the view will
+-- have the same name, with the table name have a "_t" suffix, e.g.,
+-- "uram_sat" and "uram_sat_t".
+
+
+------------------------------------------------------------------------
+-- Entity data
+--
+-- Tables in this section define the entities (actors, nbhoods, groups)
+-- known to URAM, including pairwise data EXCEPT for curves managed by
+-- ucurve(n).
+
+CREATE TABLE uram_cause (
+    -- Cause names known to URAM
+    cause_id INTEGER PRIMARY KEY,   -- URAM unique cause ID
+    cause    TEXT UNIQUE            -- Application name
+);
+
+CREATE TABLE uram_a (
+    -- Actors known to URAM
+    a_id    INTEGER PRIMARY KEY,   -- URAM unique actor ID
+    a       TEXT UNIQUE            -- Application name
+);
+
+CREATE TABLE uram_n (
+    -- Neighborhoods known to URAM
+    n_id         INTEGER PRIMARY KEY, -- URAM unique nbhood ID
+    n            TEXT UNIQUE,         -- Application name
+
+    -- Outputs
+    pop          INTEGER DEFAULT 0.0, -- Neighborhood population
+    nbmood_denom DOUBLE DEFAULT 0.0,  -- Denominator for nbmood
+    nbmood       DOUBLE DEFAULT 0.0,  -- Current neighborhood mood
+    nbmood0      DOUBLE DEFAULT 0.0   -- Initial neighborhood mood
+);
+
+CREATE TABLE uram_mn (
+    -- Pairwise neighborhood data
+
+    mn_id     INTEGER PRIMARY KEY,      -- URAM Unique record ID
+    m_id      INTEGER                   -- URAM unique nbhood ID
+              REFERENCES uram_n(n_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    n_id      INTEGER                   -- URAM unique nbhood ID
+              REFERENCES uram_n(n_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    -- Proximity of nbhood m to nbhood n from the point of view of 
+    -- residents of m.
+    --  0 if m is "here"
+    --  1 if m is "near" n
+    --  2 if m is "far" from n
+    --  3 if m is "remote" from n
+    proximity INTEGER,
+
+    UNIQUE (m_id, n_id)    -- Provides constraint and fast index
+);
+
+CREATE TABLE uram_g (
+    -- All groups known to URAM, by group type
+    g_id    INTEGER PRIMARY KEY,   -- URAM unique group ID
+    g       TEXT UNIQUE,           -- Application name
+    gtype   TEXT                   -- Group type: CIV, FRC, ORG
+);
+
+
+CREATE TABLE uram_civ_g (
+    -- Data specific to civilian groups
+    g_id       INTEGER PRIMARY KEY              -- URAM unique group ID
+               REFERENCES uram_g(g_id)
+               ON DELETE CASCADE
+               DEFERRABLE INITIALLY DEFERRED,
+
+    -- Neighborhood in which g resides
+    n_id       INTEGER REFERENCES uram_n(n_id)  -- URAM unique nbhood ID
+               ON DELETE CASCADE
+               DEFERRABLE INITIALLY DEFERRED,
+
+    pop        INTEGER,                         -- g's population
+
+    -- Outputs
+    mood_denom DOUBLE DEFAULT 0.0,              -- Mood denominator
+    mood       DOUBLE DEFAULT 0.0,              -- Current group mood
+    mood0      DOUBLE DEFAULT 0.0               -- Initial group mood
+);
+
+-- View for retrieving group mood
+CREATE VIEW uram_mood AS
+SELECT g_id, g, mood_denom, mood, mood0
+FROM uram_g JOIN uram_civ_g USING (g_id);
+
+CREATE TABLE uram_c (
+    -- Concerns used by URAM.  (Populated automatically by URAM)
+    c_id   INTEGER PRIMARY KEY,  -- URAM unique concern ID
+    c      TEXT UNIQUE           -- AUT, CUL, QOL, SFT
+);
+
+CREATE TABLE uram_civrel_t (
+    -- Civilian group relationship table: for groups f and g, contains
+    -- the proximity of f to g and a link to the HREL of f with g.
+    -- Proximity is computed from neighborhood proximities.
+    -- Used when computing COOP spread.
+
+    fg_id     INTEGER PRIMARY KEY,            -- URAM unique FG record ID
+    f_id      INTEGER,                        -- URAM unique group ID
+    g_id      INTEGER,                        -- URAM unique group ID
+    hrel_id   INTEGER UNIQUE,                 -- HREL curve_id
+
+    proximity INTEGER,                        -- As in uram_mn, with -1 if
+                                              -- f=g.
+
+    UNIQUE (f_id, g_id)                       -- Constraint, fast index
+);
+
+-- View linking uram_civrel_t with ucurve_curves_t
+CREATE VIEW uram_civrel AS
+SELECT R.fg_id             AS fg_id,
+       R.f_id              AS f_id,
+       R.g_id              AS g_id,
+       R.proximity         AS proximity,
+       C.a                 AS hrel,
+       C.tracked           AS tracked
+FROM uram_civrel_t AS R
+JOIN ucurve_curves_t AS C ON (C.curve_id = R.hrel_id);
+
+CREATE TABLE uram_frcrel_t (
+    -- Force group relationship table: for groups f and g, contains
+    -- a link to the HREL of f with g. Proximity is computed from 
+    -- neighborhood proximities.
+    -- Used when computing COOP spread.
+
+    fg_id     INTEGER PRIMARY KEY,            -- URAM unique FG record ID
+    f_id      INTEGER,                        -- URAM unique group ID
+    g_id      INTEGER,                        -- URAM unique group ID
+
+    hrel_id   INTEGER UNIQUE,                 -- HREL curve_id
+
+    UNIQUE (f_id, g_id)                       -- Constraint, fast index
+);
+
+CREATE VIEW uram_frcrel AS
+SELECT R.fg_id             AS fg_id,
+       R.f_id              AS f_id,
+       R.g_id              AS g_id,
+       C.a                 AS hrel
+FROM uram_frcrel_t AS R
+JOIN ucurve_curves_t AS C ON (C.curve_id = R.hrel_id);
+
+------------------------------------------------------------------------
+-- Horizontal Relationship Curves
+
+CREATE TABLE uram_hrel_t (
+    -- HREL table: Horizontal relationship curves between all pairs
+    -- of groups f,g.  Relationships between groups need not be 
+    -- symmetric; values in the table are from group f's point of view.
+
+    fg_id     INTEGER PRIMARY KEY,            -- URAM unique FG record ID
+    f_id      INTEGER                         -- URAM unique group ID
+              REFERENCES uram_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+    g_id      INTEGER                         -- URAM unique group ID
+              REFERENCES uram_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    curve_id  INTEGER UNIQUE,                 -- ucurve(n) curve ID
+
+    UNIQUE (f_id, g_id)                       -- Constraint, fast index
+);
+
+-- uram_hrel view; links uram_hrel_t with other tables.
+CREATE VIEW uram_hrel AS
+SELECT HREL.fg_id      AS fg_id,
+       HREL.f_id       AS f_id,
+       HREL.g_id       AS g_id,
+       F.g             AS f,
+       G.g             AS g,
+       HREL.curve_id   AS curve_id,
+       CRV.a0          AS hrel0,
+       CRV.a           AS hrel,
+       CRV.a           AS avalue,
+       CRV.b           AS bvalue,
+       CRV.c           AS cvalue,
+       CRV.a0          AS avalue0,
+       CRV.b0          AS bvalue0,
+       CRV.c0          AS cvalue0,
+       CRV.tracked     AS tracked
+FROM uram_hrel_t       AS HREL 
+JOIN ucurve_curves_t   AS CRV  USING (curve_id)
+JOIN uram_g            AS F    ON    (HREL.f_id = F.g_id)
+JOIN uram_g            AS G    ON    (HREL.g_id = G.g_id);
+
+-- uram_hrel_effects; links uram_hrel_t with the ucurve effects
+CREATE VIEW uram_hrel_effects AS
+SELECT ATT.fg_id                           AS fg_id,
+       ATT.f_id                            AS f_id,
+       ATT.g_id                            AS g_id,
+       ATT.f                               AS f,
+       ATT.g                               AS g,
+       ATT.curve_id                        AS curve_id,
+       ATT.avalue0                         AS hrel0,
+       ATT.avalue                          AS hrel,
+       EFF.e_id                            AS e_id,
+       EFF.driver_id                       AS driver_id,
+       EFF.cause_id                        AS cause_id,
+       coalesce(CAUSE.cause, EFF.cause_id) AS cause,
+       EFF.pflag                           AS pflag,
+       EFF.mag                             AS mag
+FROM uram_hrel             AS ATT
+JOIN ucurve_effects_t      AS EFF USING (curve_id)
+LEFT OUTER JOIN uram_cause AS CAUSE ON (CAUSE.cause_id == EFF.cause_id);
+
+-- uram_hrel_adjustments; links uram_hrel_t with the ucurve adjustments
+CREATE VIEW uram_hrel_adjustments AS
+SELECT ATT.fg_id           AS fg_id,
+       ATT.f_id            AS f_id,
+       ATT.g_id            AS g_id,
+       ATT.f               AS f,
+       ATT.g               AS g,
+       ATT.curve_id        AS curve_id,
+       ATT.avalue0         AS hrel0,
+       ATT.avalue          AS hrel,
+       ADJ.a_id            AS adj_id,
+       ADJ.driver_id       AS driver_id,
+       ADJ.delta           AS delta
+FROM uram_hrel             AS ATT
+JOIN ucurve_adjustments_t  AS ADJ USING (curve_id);
+
+
+------------------------------------------------------------------------
+-- Vertical Relationship Curves
+
+CREATE TABLE uram_vrel_t (
+    -- VREL table: Vertical relationship curves between all  
+    -- groups g and actors a.
+
+    ga_id     INTEGER PRIMARY KEY,            -- URAM unique record ID
+    g_id      INTEGER                         -- URAM unique group ID
+              REFERENCES uram_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+    a_id      INTEGER                         -- URAM unique actor ID
+              REFERENCES uram_a(a_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    curve_id  INTEGER UNIQUE,                 -- ucurve(n) curve ID
+
+    UNIQUE (g_id, a_id)                       -- Constraint, fast index
+);
+
+-- uram_vrel view; links uram_vrel_t with other tables.
+CREATE VIEW uram_vrel AS
+SELECT VREL.ga_id      AS ga_id,
+       VREL.g_id       AS g_id,
+       VREL.a_id       AS a_id,
+       G.g             AS g,
+       A.a             AS a,
+       VREL.curve_id   AS curve_id,
+       CRV.a0          AS vrel0,
+       CRV.a           AS vrel,
+       CRV.a           AS avalue,
+       CRV.b           AS bvalue,
+       CRV.c           AS cvalue,
+       CRV.a0          AS avalue0,
+       CRV.b0          AS bvalue0,
+       CRV.c0          AS cvalue0,
+       CRV.tracked     AS tracked
+FROM uram_vrel_t       AS VREL 
+JOIN ucurve_curves_t   AS CRV  USING (curve_id)
+JOIN uram_g            AS G    ON    (VREL.g_id = G.g_id)
+JOIN uram_a            AS A    ON    (VREL.a_id = A.a_id);
+
+-- uram_vrel_effects; links uram_vrel_t with the ucurve effects
+CREATE VIEW uram_vrel_effects AS
+SELECT ATT.ga_id                           AS ga_id,
+       ATT.g_id                            AS g_id,
+       ATT.a_id                            AS a_id,
+       ATT.g                               AS g,
+       ATT.a                               AS a,
+       ATT.curve_id                        AS curve_id,
+       ATT.avalue0                         AS vrel0,
+       ATT.avalue                          AS vrel,
+       EFF.e_id                            AS e_id,
+       EFF.driver_id                       AS driver_id,
+       EFF.cause_id                        AS cause_id,
+       coalesce(CAUSE.cause, EFF.cause_id) AS cause,
+       EFF.pflag                           AS pflag,
+       EFF.mag                             AS mag
+FROM uram_vrel             AS ATT
+JOIN ucurve_effects_t      AS EFF USING (curve_id)
+LEFT OUTER JOIN uram_cause AS CAUSE ON (CAUSE.cause_id == EFF.cause_id);
+
+-- uram_vrel_adjustments; links uram_vrel_t with the ucurve adjustments
+CREATE VIEW uram_vrel_adjustments AS
+SELECT ATT.ga_id           AS ga_id,
+       ATT.g_id            AS g_id,
+       ATT.a_id            AS a_id,
+       ATT.g               AS g,
+       ATT.a               AS a,
+       ATT.curve_id        AS curve_id,
+       ATT.avalue0         AS vrel0,
+       ATT.avalue          AS vrel,
+       ADJ.a_id            AS adj_id,
+       ADJ.driver_id       AS driver_id,
+       ADJ.delta           AS delta
+FROM uram_vrel             AS ATT
+JOIN ucurve_adjustments_t  AS ADJ USING (curve_id);
+
+--------------------------------------------------------------------------------
+-- Satisfaction Curves
+
+CREATE TABLE uram_sat_t (
+    -- AUT/CUL/QOL/SFT table: Satisfaction of civilian group g with
+    -- concern c.
+
+    gc_id     INTEGER PRIMARY KEY,               -- URAM unique record ID
+    g_id      INTEGER                            -- URAM unique group ID
+              REFERENCES uram_civ_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+    c_id      INTEGER                            -- URAM unique concern ID
+              REFERENCES uram_c(c_id)  
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    curve_id  INTEGER UNIQUE,                    -- ucurve(n) curve ID
+
+    saliency  DOUBLE DEFAULT 1.0,       -- Saliency, 0.0 to 1.0, of c to g.
+
+    UNIQUE (g_id, c_id)                          -- Constraint, fast index
+);
+
+-- uram_sat view; links uram_sat_t with other tables.
+CREATE VIEW uram_sat AS
+SELECT SAT.gc_id       AS gc_id,
+       SAT.g_id        AS g_id,
+       SAT.c_id        AS c_id,
+       G.g             AS g,
+       CG.n_id         AS n_id,
+       CG.pop          AS pop,
+       C.c             AS c,
+       SAT.saliency    AS saliency,
+       SAT.curve_id    AS curve_id,
+       CRV.a0          AS sat0,
+       CRV.a           AS sat,
+       CRV.a           AS avalue,
+       CRV.b           AS bvalue,
+       CRV.c           AS cvalue,
+       CRV.a0          AS avalue0,
+       CRV.b0          AS bvalue0,
+       CRV.c0          AS cvalue0,
+       CRV.tracked     AS tracked
+FROM uram_sat_t        AS SAT
+JOIN ucurve_curves_t   AS CRV USING (curve_id)
+JOIN uram_g            AS G   ON    (SAT.g_id = G.g_id)
+JOIN uram_c            AS C   ON    (SAT.c_id = C.c_id)
+JOIN uram_civ_g        AS CG  ON    (SAT.g_id = CG.g_id);
+
+-- uram_sat_effects; links uram_sat_t with the ucurve effects
+CREATE VIEW uram_sat_effects AS
+SELECT ATT.gc_id                           AS gc_id,
+       ATT.g_id                            AS g_id,
+       ATT.c_id                            AS c_id,
+       ATT.g                               AS g,
+       ATT.c                               AS c,
+       ATT.curve_id                        AS curve_id,
+       ATT.avalue0                         AS sat0,
+       ATT.avalue                          AS sat,
+       EFF.e_id                            AS e_id,
+       EFF.driver_id                       AS driver_id,
+       EFF.cause_id                        AS cause_id,
+       coalesce(CAUSE.cause, EFF.cause_id) AS cause,
+       EFF.pflag                           AS pflag,
+       EFF.mag                             AS mag
+FROM uram_sat              AS ATT
+JOIN ucurve_effects_t      AS EFF USING (curve_id)
+LEFT OUTER JOIN uram_cause AS CAUSE ON (CAUSE.cause_id == EFF.cause_id);
+
+-- uram_sat_adjustments; links uram_sat_t with the ucurve adjustments
+CREATE VIEW uram_sat_adjustments AS
+SELECT ATT.gc_id           AS gc_id,
+       ATT.g_id            AS g_id,
+       ATT.c_id            AS c_id,
+       ATT.g               AS g,
+       ATT.c               AS c,
+       ATT.curve_id        AS curve_id,
+       ATT.avalue0         AS sat0,
+       ATT.avalue          AS sat,
+       ADJ.a_id            AS adj_id,
+       ADJ.driver_id       AS driver_id,
+       ADJ.delta           AS delta
+FROM uram_sat              AS ATT
+JOIN ucurve_adjustments_t  AS ADJ USING (curve_id);
+
+------------------------------------------------------------------------
+-- Cooperation Curves
+
+CREATE TABLE uram_coop_t (
+    -- COOP table: Cooperation curves between all civilian groups f
+    -- and force groups g.
+
+    fg_id     INTEGER PRIMARY KEY,            -- URAM unique FG record ID
+    f_id      INTEGER                         -- URAM unique group ID
+              REFERENCES uram_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+    g_id      INTEGER                         -- URAM unique group ID
+              REFERENCES uram_g(g_id)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    curve_id  INTEGER UNIQUE,                 -- ucurve(n) curve ID
+
+    UNIQUE (f_id, g_id)                       -- Constraint, fast index
+);
+
+-- uram_coop view; links uram_coop_t with other tables.
+
+CREATE VIEW uram_coop AS
+SELECT COOP.fg_id      AS fg_id,
+       COOP.f_id       AS f_id,
+       COOP.g_id       AS g_id,
+       F.g             AS f,
+       CF.n_id         AS n_id,
+       CF.pop          AS pop,
+       G.g             AS g,
+       COOP.curve_id   AS curve_id,
+       CRV.a0          AS coop0,
+       CRV.a           AS coop,
+       CRV.a           AS avalue,
+       CRV.b           AS bvalue,
+       CRV.c           AS cvalue,
+       CRV.a0          AS avalue0,
+       CRV.b0          AS bvalue0,
+       CRV.c0          AS cvalue0,
+       CRV.tracked     AS tracked
+FROM uram_coop_t       AS COOP 
+JOIN ucurve_curves_t   AS CRV  USING (curve_id)
+JOIN uram_g            AS F    ON    (COOP.f_id = F.g_id)
+JOIN uram_civ_g        AS CF   ON    (COOP.f_id = CF.g_id)
+JOIN uram_g            AS G    ON    (COOP.g_id = G.g_id);
+
+-- uram_coop_effects; links uram_coop_t with the ucurve effects
+CREATE VIEW uram_coop_effects AS
+SELECT ATT.fg_id                           AS fg_id,
+       ATT.f_id                            AS f_id,
+       ATT.g_id                            AS g_id,
+       ATT.f                               AS f,
+       ATT.g                               AS g,
+       ATT.curve_id                        AS curve_id,
+       ATT.avalue0                         AS coop0,
+       ATT.avalue                          AS coop,
+       EFF.e_id                            AS e_id,
+       EFF.driver_id                       AS driver_id,
+       EFF.cause_id                        AS cause_id,
+       coalesce(CAUSE.cause, EFF.cause_id) AS cause,
+       EFF.pflag                           AS pflag,
+       EFF.mag                             AS mag
+FROM uram_coop             AS ATT
+JOIN ucurve_effects_t      AS EFF USING (curve_id)
+LEFT OUTER JOIN uram_cause AS CAUSE ON (CAUSE.cause_id == EFF.cause_id);
+
+-- uram_coop_adjustments; links uram_coop_t with the ucurve adjustments
+CREATE VIEW uram_coop_adjustments AS
+SELECT ATT.fg_id           AS fg_id,
+       ATT.f_id            AS f_id,
+       ATT.g_id            AS g_id,
+       ATT.f               AS f,
+       ATT.g               AS g,
+       ATT.curve_id        AS curve_id,
+       ATT.avalue0         AS coop0,
+       ATT.avalue          AS coop,
+       ADJ.a_id            AS adj_id,
+       ADJ.driver_id       AS driver_id,
+       ADJ.delta           AS delta
+FROM uram_coop             AS ATT
+JOIN ucurve_adjustments_t  AS ADJ USING (curve_id);
+
+-- uram_coop_spread
+--
+-- This view yields the values needed to compute cooperation spread.
+-- Given an a civilian group df and force group dg, this view puts
+-- together all pairs of civilian groups if and force groups ig, providing
+-- the proximity and relationship between if and df and the relationship
+-- between ig and dg, along with the COOP curve between if and ig.
+
+CREATE VIEW uram_coop_spread AS
+SELECT CREL.g_id      AS df_id,       -- Direct f
+       CREL.f_id      AS if_id,       -- Indirect f
+       CREL.proximity AS proximity,
+       CREL.hrel      AS civrel,
+       CREL.tracked   AS tracked,
+       FREL.g_id      AS dg_id,       -- Direct g
+       FREL.f_id      AS ig_id,       -- Indirect g
+       FREL.hrel      AS factor,
+       COOP.fg_id     AS ifg_id,
+       COOP.curve_id  AS curve_id
+FROM uram_civrel AS CREL
+JOIN uram_frcrel AS FREL
+JOIN uram_coop_t AS COOP ON (COOP.f_id = if_id AND COOP.g_id = ig_id);
+
+
+------------------------------------------------------------------------
+-- Output Tables
+--
+-- Some outputs appear in the tables above; tables devoted entirely to
+-- storing outputs are defined here.
+
+CREATE TABLE uram_nbcoop_t (
+    -- Neighborhood cooperation
+    ng_id        INTEGER PRIMARY KEY,            -- URAM Unique record ID
+    n_id         INTEGER                         -- URAM unique nbhood ID
+                 REFERENCES uram_n(n_id)
+                 ON DELETE CASCADE
+                 DEFERRABLE INITIALLY DEFERRED,
+    g_id         INTEGER                         -- URAM unique group ID
+                 REFERENCES uram_g(g_id)
+                 ON DELETE CASCADE
+                 DEFERRABLE INITIALLY DEFERRED,
+
+    -- Outputs
+    nbcoop       DOUBLE DEFAULT 0.0,  -- Current cooperation of n with g
+    nbcoop0      DOUBLE DEFAULT 0.0,  -- Initial cooperation of n with g
+
+    UNIQUE (n_id, g_id)               -- Constraint, fast index
+);
+
+CREATE VIEW uram_nbcoop  AS
+SELECT COOP.ng_id        AS ng_id,
+       COOP.n_id         AS n_id,
+       COOP.g_id         AS g_id,
+       N.n               AS n,
+       G.g               AS g,
+       COOP.nbcoop       AS nbcoop,
+       COOP.nbcoop0      AS nbcoop0
+FROM uram_nbcoop_t       AS COOP 
+JOIN uram_n              AS N ON (COOP.n_id = N.n_id)
+JOIN uram_g              AS G ON (COOP.g_id = G.g_id);
+
+------------------------------------------------------------------------
+-- History tables, required for rolling up historical contributions to
+-- nbmood and nbcoop.
+
+CREATE TABLE uram_civhist_t (
+    -- Civilian history of civilian population figures over
+    -- time, by group.
+
+    t    INTEGER,   -- The timestamp, in ticks
+    g_id INTEGER,   -- The group ID
+    n_id INTEGER,   -- The group's neighborhood ID
+    pop  INTEGER,   -- The number of people in the group at that time.
+
+    PRIMARY KEY (t, g_id)
+);
+
+CREATE TABLE uram_nbhist_t (
+    -- Civilian history of neighborhood civilian population figures over
+    -- time, by neighborhood.
+
+    t     INTEGER,       -- The timestamp, in ticks
+    n_id  INTEGER,       -- The neighborhood ID
+    pop   INTEGER,       -- The neighborhood's civilian population at 
+                         -- the given time.
+    nbmood_denom DOUBLE, -- The nbmood denominator for the neighborhood
+                         -- at the given time.
+    PRIMARY KEY (t, n_id)
+);
+
+
+
+
+
+------------------------------------------------------------------------
+-- TITLE: 
+--   uram_temp.sql
+--
+-- PACKAGE:
+--   simlib(n) -- Simulation Infrastructure Package
+--
+-- PROJECT:
+--   Mars Simulation Infrastructure Library
+--
+-- AUTHOR:
+--   Will Duquette
+--
+-- DESCRIPTION:
+--   SQL Schema for the uram(n) module: Temporary tables
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- TITLE:
+--    uram_temp.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema, Temporary Tables, for URAM
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- Contribution Analysis
+
+CREATE TEMPORARY TABLE uram_contribs (
+    -- Contributions table.  This table is populated by the
+    -- [contribs *] subcommands.
+
+    driver    INTEGER PRIMARY KEY,     -- Driver ID
+    contrib   DOUBLE DEFAULT 0.0       -- Net contribution
+);
+
+
+</pre>
+
+<h2><a name="from_scenariodbn">From scenariodb(n)</a></h2>
+<p>The following schema definitions are from <a href="../mann/scenariodb.html">scenariodb(n)</a>.
+
+</p>
+
+<pre>
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_meta.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Scenario metadata.
+--
+--
+------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------
+-- META-DATA 
+
+-- Scenario Table: Scenario meta-data
+--
+-- The notion is that it can contain arbitrary meta-data.  
+-- In schema 3 and prior the table was always empty, but served
+-- as a flag that this is a scenario file.  In schema 4 and following,
+-- it should the following parms:
+--
+--   version     - The x.y.z version number of the software that
+--                 created the file.
+--   build       - The build number of the software that created the
+--                 file.
+--   versionfull - $version-$build.
+
+CREATE TABLE scenario (
+    parm  TEXT PRIMARY KEY,
+    value TEXT DEFAULT ''
+);
+
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_entities.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Primary Entities
+--
+-- SECTIONS:
+--    Meta-Data
+--    Actors
+--    Neighborhoods
+--    Groups
+--
+------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------
+-- ACTORS
+
+-- Actor Data
+CREATE TABLE actors (
+    -- Symbolic actor name
+    a             TEXT PRIMARY KEY,
+
+    -- Full actor name
+    longname      TEXT,
+
+    -- Belief system ID
+    bsid          TEXT DEFAULT '1',
+
+    -- Supports actor (actor name or NULL)
+    supports      TEXT REFERENCES actors(a)
+                  ON DELETE SET NULL
+                  DEFERRABLE INITIALLY DEFERRED,
+
+    -- Actor type, INCOME or BUDGET
+    atype         TEXT DEFAULT 'INCOME',
+
+    -- Automatic infrastructure maintenance flag
+    -- Set to 1, maintenance is cost free and automatic
+    auto_maintain INTEGER DEFAULT 0,
+
+    -- Money saved for later, in $.  Usually only INCOME actors
+    -- will use this.
+    cash_reserve  DOUBLE DEFAULT 0,
+
+    -- Money available to be spent, in $.
+    -- For INCOME actors, unspent cash accumulates from tock to tock.
+    cash_on_hand  DOUBLE DEFAULT 0,
+
+    -- Income by income class, in $/week, for INCOME actors.
+    -- Ultimately, these should go in a separate table.
+    income_goods     DOUBLE  DEFAULT 0,
+    shares_black_nr  INTEGER DEFAULT 0,
+    income_black_tax DOUBLE  DEFAULT 0,
+    income_pop       DOUBLE  DEFAULT 0,
+    income_graft     DOUBLE  DEFAULT 0,
+    income_world     DOUBLE  DEFAULT 0,
+
+    -- Budget in $/week, for BUDGET actors.
+    budget           DOUBLE  DEFAULT 0
+);
+
+CREATE TABLE income_a (
+    -- Actor a's current income, as computed by the Econ model.
+    -- If the Econ model is disabled, this table should be empty.
+    -- 
+    -- NOTE: This table is defined here, rather than in the Econ
+    -- area, so that it can be used in the actors_view.
+    --
+    -- NOTE: Only INCOME actors have income.
+    
+    a         TEXT PRIMARY KEY,   -- Symbolic actor name
+    income    DOUBLE,             -- Actor's current income
+
+    -- Tax like rates
+    t_goods        DOUBLE DEFAULT 0,  -- From goods sector
+    t_black        DOUBLE DEFAULT 0,  -- From black sector
+    t_pop          DOUBLE DEFAULT 0,  -- From pop sector
+    t_world        DOUBLE DEFAULT 0,  -- From world sector
+
+    -- Other income, treated as tax like rates
+    graft_region   DOUBLE DEFAULT 0,  -- rate skimmed from region
+    cut_black      DOUBLE DEFAULT 0,  -- rate from black market profits
+
+    -- The current actual income sector by sector, these added together
+    -- make the income column above
+    inc_goods      DOUBLE DEFAULT 0,
+    inc_black_t    DOUBLE DEFAULT 0, -- Income from tax-like rate
+    inc_black_nr   DOUBLE DEFAULT 0, -- Income from black market profits
+    inc_pop        DOUBLE DEFAULT 0,
+    inc_world      DOUBLE DEFAULT 0,
+    inc_region     DOUBLE DEFAULT 0
+);
+
+-- actors_view: Actor data, including computations
+
+CREATE VIEW actors_view AS
+SELECT a, 
+       longname,
+       supports,
+       bsid,
+       atype,
+       auto_maintain,
+       cash_reserve,
+       cash_on_hand,
+       income_goods,
+       shares_black_nr,
+       income_black_tax,
+       income_pop,
+       income_graft,
+       income_world,
+       budget,
+       -- For INCOME actors, get the income from the income_a table,
+       -- if it exists, otherwise the sum of the income_* columns.
+       -- For BUDGET actors, get the actor's budget.
+       CASE WHEN atype == 'INCOME' THEN
+           coalesce(income, income_goods + income_black_tax +
+                        income_pop + income_graft + income_world)
+           ELSE budget END  AS income
+FROM actors
+LEFT OUTER JOIN income_a USING (a);
+
+
+------------------------------------------------------------------------
+-- NEIGHBORHOODS
+
+-- Neighborhood definitions
+CREATE TABLE nbhoods (
+    -- Symbolic neighborhood name     
+    n              TEXT PRIMARY KEY,
+
+    -- Full neighborhood name
+    longname       TEXT,
+
+    -- 1 if Local (e.g., part of the region of interest), 0 o.w.
+    local          INTEGER DEFAULT 1,
+
+    -- Stacking order: 1 is low, N is high
+    stacking_order INTEGER,
+
+    -- Urbanization: eurbanization
+    urbanization   TEXT,
+
+    -- Actor controlling the neighborhood at time 0.
+    controller     TEXT REFERENCES actors(a)
+                   ON DELETE SET NULL
+                   DEFERRABLE INITIALLY DEFERRED, 
+
+    -- Production capacity factor
+    pcf            REAL DEFAULT 1.0,
+
+    -- Neighborhood reference point: map coordinates {mx my}
+    refpoint       TEXT,
+
+    -- Neighborhood polygon: list of map coordinates {mx my ...}
+    polygon        TEXT,
+
+    -- If refpoint is obscured by another neighborhood, the name
+    -- of the neighborhood; otherwise ''.
+    obscured_by    TEXT DEFAULT ''
+);
+
+CREATE VIEW local_nbhoods AS
+SELECT * FROM nbhoods WHERE local=1;
+
+-- Neighborhood relationships from m's point of view
+CREATE TABLE nbrel_mn (
+    -- Symbolic nbhood name
+    m             TEXT REFERENCES nbhoods(n)
+                  ON DELETE CASCADE
+                  DEFERRABLE INITIALLY DEFERRED,
+
+    -- Symbolic nbhood name
+    n             TEXT REFERENCES nbhoods(n)
+                  ON DELETE CASCADE
+                  DEFERRABLE INITIALLY DEFERRED,
+
+    -- Proximity of m to n from m's point of view: eproximity value
+    -- By default, a direct effect in n has no indirect effects in m,
+    -- unless m == n (this is set automatically).
+    proximity     TEXT DEFAULT 'REMOTE',
+
+    PRIMARY KEY (m, n)
+);
+
+
+
+------------------------------------------------------------------------
+-- GROUPS 
+
+-- Generic Group Data
+CREATE TABLE groups (
+    -- Symbolic group name
+    g           TEXT PRIMARY KEY,
+
+    -- Full group name
+    longname    TEXT,
+
+    -- Group Color, as #RRGGBB
+    color       TEXT DEFAULT '#00FFFF',
+
+    -- Group demeanor: edemeanor
+    demeanor    TEXT DEFAULT 'AVERAGE',
+
+    -- Maintenance Cost, in $/person/week (FRC/ORG groups only)
+    cost        DOUBLE DEFAULT 0,
+
+    -- Group type, CIV, FRC, ORG
+    gtype       TEXT,
+
+    -- Owning Actor (FRC and ORG groups only, NULL otherwise)
+    a           TEXT REFERENCES actors(a)
+                ON DELETE SET NULL
+                DEFERRABLE INITIALLY DEFERRED, 
+
+    -- Belief system ID, or (for FRC and ORG groups only) NULL
+    bsid        TEXT
+);
+
+-- groups BSID View: pulls in owner's bsid where needed.
+CREATE VIEW groups_bsid_view AS
+SELECT G.g                           AS g,
+       G.gtype                       AS gtype,
+       G.a                           AS a,
+       coalesce(G.bsid, A.bsid, 1)   AS bsid
+FROM groups AS G
+LEFT OUTER JOIN actors AS A USING (a);
+
+
+-- Civ Groups
+CREATE TABLE civgroups (
+    -- Symbolic group name
+    g         TEXT PRIMARY KEY,
+
+    -- Symbolic neighborhood name for neighborhood of residence.
+    n         TEXT,
+
+    -- Base Population/Personnel for this group
+    basepop   INTEGER DEFAULT 0,
+
+    -- Population Change Rate for this group in percent per year.
+    -- This could be a negative number
+    pop_cr    DOUBLE DEFAULT 0.0,
+
+    -- Subsistence Agriculture Flag: if 1, the group does 
+    -- subsistence agriculture and does not participate in the
+    -- cash economy.  If 0, they do.
+    sa_flag   INTEGER DEFAULT 0,
+    
+    -- Labor Force percentages: the fraction of the consumers
+    -- in the labor force.
+    lfp       INTEGER DEFAULT 60,
+    
+    -- Housing: is the group AT_HOME, DISPLACED (but mingling
+    -- with the population) or IN_CAMP?
+    housing   TEXT DEFAULT 'AT_HOME',
+
+        -- Historical data flag: if 0, no historical data.
+    hist_flag INTEGER DEFAULT 0,
+
+    -- Initial Unemployment Per Capita% (UPC), only if hist_flag = 1
+    upc       DOUBLE DEFAULT 0.0
+
+);
+
+-- Civ Groups View: joins groups with civgroups.
+CREATE VIEW civgroups_view AS
+SELECT g, 
+       longname,
+       bsid,
+       color,
+       demeanor,
+       basepop,
+       pop_cr,
+       gtype,
+       n,
+       sa_flag,
+       lfp,
+       housing,
+       hist_flag,
+       CASE WHEN hist_flag
+            THEN upc ELSE 0.0 END AS upc
+FROM groups JOIN civgroups USING (g);
+
+-- Local Civ Groups View: data needed by modules that only affect
+-- residents of "local" neighborhoods.
+CREATE VIEW local_civgroups AS
+SELECT G.g               AS g,
+       G.longname        AS longname,
+       G.basepop         AS basepop,
+       G.n               AS n,
+       N.urbanization    AS urbanization
+FROM civgroups_view AS G
+JOIN nbhoods AS N ON (N.n == G.n)
+WHERE N.local;
+
+-- Force Groups
+CREATE TABLE frcgroups (
+    -- Symbolic group name
+    g              TEXT PRIMARY KEY,
+
+    -- Force Type
+    forcetype      TEXT,
+
+    -- Training Level
+    training       TEXT,
+
+    -- Equipment Level
+    equip_level    TEXT,
+
+    -- The base number personnel 
+    base_personnel INTEGER DEFAULT 0,
+
+    -- Local or foreign: 1 if local, 0 if foreign
+    local          INTEGER
+);
+
+-- Force Group View: joins groups with frcgroups.
+CREATE VIEW frcgroups_view AS
+SELECT * FROM groups JOIN frcgroups USING (g);
+
+-- Org Groups
+CREATE TABLE orggroups (
+    -- Symbolic group name
+    g                TEXT PRIMARY KEY,
+
+    -- Organization type: eorgtype
+    orgtype          TEXT DEFAULT 'NGO',
+
+    -- The base number of personnel
+    base_personnel   INTEGER DEFAULT 0
+);
+
+-- Org Group View: joins groups with orggroups.
+CREATE VIEW orggroups_view AS
+SELECT * FROM groups JOIN orggroups USING (g);
+
+-- AGroups View: Groups that can be owned by actors
+CREATE VIEW agroups AS
+SELECT g, gtype, longname, a, cost, forcetype AS subtype, base_personnel
+FROM frcgroups JOIN groups USING (g)
+UNION
+SELECT g, gtype, longname, a, cost, orgtype   AS subtype, base_personnel
+FROM orggroups JOIN groups USING (g);
+
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_attitude.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Attitudes and Attitude Drivers
+--
+-- SECTIONS:
+--    Cooperation
+--    Horizontal Relationships
+--    Satisfaction
+--    Vertical Relationships
+--    Attitude Drivers
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- COOPERATION: INITIAL DATA
+
+CREATE TABLE coop_fg (
+    -- At present, cooperation is defined only between all
+    -- civgroups f and all force groups g.  This table contains the
+    -- initial baseline cooperation levels.
+
+    -- Symbolic civ group name: group f
+    f           TEXT REFERENCES civgroups(g)
+                ON DELETE CASCADE
+                DEFERRABLE INITIALLY DEFERRED,
+
+    -- Symbolic frc group name: group g
+    g           TEXT REFERENCES frcgroups(g)
+                ON DELETE CASCADE
+                DEFERRABLE INITIALLY DEFERRED,
+
+    -- initial baseline cooperation of f with g at time 0.
+    base        DOUBLE DEFAULT 50.0,
+
+    -- if "BASELINE", regress to initial baseline; if "NATURAL",
+    -- regress to explicit natural level.
+    regress_to  STRING DEFAULT 'BASELINE',
+
+    --  Natural level, if regress_to is "NATURAL".
+    natural     DOUBLE DEFAULT 50.0,
+
+    PRIMARY KEY (f, g)
+);
+
+
+
+------------------------------------------------------------------------
+-- HORIZONTAL RELATIONSHIPS: INITIAL DATA
+
+-- hrel_fg: Normally, an initial baseline horizontal relationship is 
+-- the affinity between the two groups; however, this can be overridden.  
+-- This table contains the overrides.  See hrel_view for the full set of 
+-- data, and uram_hrel for the current relationships.
+--
+-- Thus base is group f's initial baseline relationship with group g,
+-- from f's point of view.
+
+CREATE TABLE hrel_fg (
+    -- Symbolic group name: group f
+    f    TEXT REFERENCES groups(g)
+         ON DELETE CASCADE
+         DEFERRABLE INITIALLY DEFERRED,
+
+    -- Symbolic group name: group g
+    g    TEXT REFERENCES groups(g)
+         ON DELETE CASCADE
+         DEFERRABLE INITIALLY DEFERRED,
+
+    -- Initial baseline horizontal relationship, from f's point of view.
+    base DOUBLE DEFAULT 0.0,
+
+    -- Historical data flag: if 0, no historical attitude data.
+    hist_flag   INTEGER DEFAULT 0,
+
+    -- Initial current level, only if hist_flag = 1
+    current     DOUBLE DEFAULT 0.0,
+
+    PRIMARY KEY (f, g)
+);
+
+
+-- This view determines the data that drives the initial baseline
+-- horizontal relationship for each pair of groups.  In particular,
+-- it determines the bsid for each group, and the base H.fg when it
+-- is known (i.e., when f=g or the base H.fg has been explicitly
+-- overridden by the user).  Note that the R.* columns will be 
+-- NULL unless the HREL is overridden.
+
+CREATE VIEW hrel_base_view AS
+SELECT F.g                                     AS f,
+       F.gtype                                 AS ftype,
+       F.bsid                                  AS fbsid,
+       G.g                                     AS g,
+       G.gtype                                 AS gtype,
+       G.bsid                                  AS gbsid,
+       CASE WHEN F.g = G.g
+            THEN 1.0
+            ELSE NULL END                      AS nat,
+       CASE WHEN F.g = G.g
+            THEN 1.0
+            ELSE R.base END                    AS base,
+       CASE WHEN F.g = G.g
+            THEN 0
+            ELSE coalesce(R.hist_flag, 0) END  AS hist_flag,
+       CASE WHEN F.g = G.g 
+            THEN 1.0
+            WHEN coalesce(R.hist_flag, 0)
+            THEN R.current
+            ELSE R.base END                    AS current,
+       CASE WHEN R.base IS NOT NULL 
+            THEN 1
+            ELSE 0 END                         AS override
+FROM groups_bsid_view AS F 
+JOIN groups_bsid_view AS G
+LEFT OUTER JOIN hrel_fg AS R ON (R.f = F.g AND R.g = G.g);
+
+
+
+
+------------------------------------------------------------------------
+-- SATISFACTION: INITIAL DATA
+
+-- Group/concern pairs (g,c) for civilian groups
+-- This table contains the data used to initialize URAM sat curves.
+
+CREATE TABLE sat_gc (
+    -- Symbolic groups name
+    g          TEXT REFERENCES civgroups(g) 
+               ON DELETE CASCADE
+               DEFERRABLE INITIALLY DEFERRED,
+
+    -- Symbolic concerns name
+    c          TEXT,
+
+    -- Initial baseline satisfaction value
+    base       DOUBLE DEFAULT 0.0,
+
+    -- Saliency of concern c to group g in nbhood n
+    saliency   DOUBLE DEFAULT 1.0,
+
+    -- Historical data flag: if 0, no historical attitude data.
+    hist_flag   INTEGER DEFAULT 0,
+
+    -- Initial current satisfaction level, only if hist_flag = 1
+    current     DOUBLE DEFAULT 0.0,
+
+    PRIMARY KEY (g, c)
+);
+
+
+------------------------------------------------------------------------
+-- VERTICAL RELATIONSHIPS: INITIAL DATA 
+
+-- vrel_ga: Normally, an initial baseline vertical relationship is 
+-- the affinity between the group and the actor (unless the actor owns
+-- the group); however, this can be overridden.  This table contains the
+-- overrides.  See vrel_view for the full set of data,  
+-- and uram_vrel for the current relationships.
+--
+-- Thus base is group g's initial baseline relationship with actor a.
+
+CREATE TABLE vrel_ga (
+    -- Symbolic group name: group g
+    g    TEXT REFERENCES groups(g)
+         ON DELETE CASCADE
+         DEFERRABLE INITIALLY DEFERRED,
+
+    -- Symbolic group name: actor a
+    a    TEXT REFERENCES actors(a)
+         ON DELETE CASCADE
+         DEFERRABLE INITIALLY DEFERRED,
+
+    -- Initial vertical relationship
+    base DOUBLE DEFAULT 0.0,
+
+    -- Historical data flag: if 0, no historical attitude data.
+    hist_flag   INTEGER DEFAULT 0,
+
+    -- Initial current level, only if hist_flag = 1
+    current     DOUBLE DEFAULT 0.0,
+
+    PRIMARY KEY (g, a)
+);
+
+-- This view determines the data that drives the initial baseline 
+-- vertical relationships for each group and actor: the belief system
+-- IDs (bsids) and any overrides from vrel_ga.  Note that the 
+-- relationship of a group with its owning actor defaults to 1.0.
+-- The final word is in the temporary view fmt_vrel_base_view,
+-- because a function is required to compute the affinities.
+--
+-- Note that base and current will be NULL if they are not overridden.
+
+CREATE VIEW vrel_base_view AS
+SELECT G.g                                          AS g,
+       G.gtype                                      AS gtype,
+       G.bsid                                       AS gbsid,
+       G.a                                          AS owner,
+       A.a                                          AS a,
+       A.bsid                                       AS absid,
+       CASE WHEN G.a = A.a
+            THEN 1.0
+            ELSE NULL END                           AS nat,
+       CASE WHEN G.a = A.a
+            THEN coalesce(V.base, 1.0)
+            ELSE V.base END                         AS base,
+       coalesce(V.hist_flag, 0)                     AS hist_flag,
+       CASE WHEN coalesce(V.hist_flag,0)
+            THEN V.current
+            WHEN G.a = A.a 
+            THEN coalesce(V.base, 1.0)
+            ELSE V.base END                         AS current,
+       CASE WHEN V.base IS NOT NULL 
+            THEN 1
+            ELSE 0 END                              AS override
+FROM groups_bsid_view AS G
+JOIN actors AS A
+LEFT OUTER JOIN vrel_ga AS V ON (V.g = G.g AND V.a = A.a);
+
+
+------------------------------------------------------------------------
+-- ATTITUDE DRIVERS
+
+CREATE TABLE drivers (
+    -- All attitude inputs to URAM are associated with an attitude 
+    -- driver: an event, situation, or magic driver.  Drivers are
+    -- identified by a unique integer ID.
+    --
+    -- For most driver types, the driver is associated with a signature
+    -- that is unique for that driver type.  This allows the rule set to
+    -- retrieve the driver ID given the driver type and signature.
+
+    driver_id INTEGER PRIMARY KEY,  -- Integer ID
+    dtype     TEXT,                 -- Driver type (usually a rule set name)
+    signature TEXT                  -- Signature, by driver type.
+);
+
+CREATE INDEX drivers_signature_index ON drivers(dtype,signature);
+
+CREATE TABLE curses (
+    -- The curses table holds data associated with every CURSE
+    -- defined by the user. The curse_injects table then references
+    -- the CURSE each inject is associated with.
+
+    -- CURSE ID
+    curse_id     TEXT PRIMARY KEY,
+
+    -- Description of the CURSE
+    longname     TEXT DEFAULT '',
+
+    -- ecause(n) value, or NULL
+    cause        TEXT DEFAULT '',
+
+    -- Here Factor (s), a real fraction (0.0 to 1.0)
+    s            DOUBLE DEFAULT 1.0,
+ 
+    -- Near Factor (p), a real fraction (0.0 to 1.0)
+    p            DOUBLE DEFAULT 0.0,
+ 
+    -- Near Factor (q), a real fraction (0.0 to 1.0)
+    q            DOUBLE DEFAULT 0.0,
+
+    -- State: normal, disabled, invalid (ecurse_state)
+    state        TEXT DEFAULT 'normal'
+);
+
+CREATE TABLE curse_injects (
+    -- CURSE ID
+    curse_id     TEXT REFERENCES curses(curse_id)
+                 ON DELETE CASCADE
+                 DEFERRABLE INITIALLY DEFERRED,
+
+    -- Unique inject number
+    inject_num   INTEGER,
+
+    -- Inject type: SAT, COOP, HREL, or VREL
+    inject_type  TEXT,   -- ecinjectpart(n) value
+
+    -- Mode: Persistent (P) or Transient (T)
+    mode         TEXT,
+
+    -- Narrative built by the inject object based on the inject
+    -- type
+    narrative    TEXT DEFAULT 'TBD',
+
+    -- normal, disabled or invalid
+    state        TEXT DEFAULT 'normal',
+
+    -- CURSE Type parameters.  The use of these varies by type;
+    -- all are NULL if unused.  There are no foreign key constraints;
+    -- errors are checked by the curse input type's "check" method.
+    a        TEXT,  -- Actor roles for VREL
+    c        TEXT,  -- A concern, for SAT
+    f        TEXT,  -- SAT -> n/a, HREL -> groups, 
+                    -- VREL -> n/a, COOP -> civgroups
+    g        TEXT,  -- SAT -> civgroups, HREL -> groups, 
+                    -- VREL -> groups, COOP -> frcgroups
+    mag      REAL,  -- Numeric qmag(n) value
+
+    PRIMARY KEY (curse_id, inject_num)
+);
+
+------------------------------------------------------------------------
+-- RULE FIRING HISTORY
+
+CREATE TABLE rule_firings (
+    -- Historical data about rule firings, used for later display.
+
+    firing_id INTEGER PRIMARY KEY,  -- Integer ID
+    t         INTEGER,              -- Sim time of rule firing, in ticks.
+    driver_id INTEGER,              -- Driver ID
+    ruleset   TEXT,                 -- Rule Set name (same as drivers.dtype)
+    rule      TEXT,                 -- Rule name
+    fdict     TEXT                  -- Dictionary of ruleset-specific data.
+);
+
+CREATE TABLE rule_inputs (
+    -- Historical data about rule inputs, used for later display
+    -- Theoretically, the sim time t column is not needed, but it makes
+    -- purging the data easier.
+    --
+    -- This table includes the attitude curve indices for all four kinds
+    -- of curve:
+    --
+    --     coop: (f,g) where f is a civilian group and g is a force group
+    --     hrel: (f,g) where f and g are groups
+    --     sat:  (g,c) where g is a civilian group and c is a concern
+    --     vrel: (g,a) where g is a group and a is an actor
+    --
+    -- Index columns which do not apply to a particular attitude type will
+    -- be NULL.
+    --
+    -- The s, p, and q columns apply only to coop and sat inputs, and will
+    -- be NULL for hrel and vrel inputs.
+    --
+    -- The "note" column is used by rule sets where a single rule is
+    -- implemented as a look-up table, and the specific case is not
+    -- obvious from the rule_firings.fdict.  The "note" will identify
+    -- which case applied.
+
+    firing_id INTEGER,  -- The input's rule firing
+    input_id  INTEGER,  -- Input no. for this rule firing
+    t         INTEGER,  -- Sim time of rule firing.
+    atype     TEXT,     -- Attitude type, coop, hrel, sat, vrel
+    mode      TEXT,     -- P, T (persistent, transient)
+    f         TEXT,     -- Group f (coop, vrel)
+    g         TEXT,     -- Group g (coop, hrel, sat)
+    c         TEXT,     -- Concern c (sat)
+    a         TEXT,     -- Actor a (vrel)
+    gain      DOUBLE,   -- Gain on magnitude
+    mag       DOUBLE,   -- Numeric magnitude
+    cause     TEXT,     -- Cause name
+    s         DOUBLE,   -- Here effects multiplier
+    p         DOUBLE,   -- Near effects multiplier
+    q         DOUBLE,   -- Far effects multiplier
+    note      TEXT,     -- Note on this input
+
+    PRIMARY KEY (firing_id, input_id)
+);
+
+
+
+
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_ground.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Ground Area
+--
+-- SECTIONS:
+--    Personnel and Related Statistics
+--    Situations
+--    Attrition
+--    Services
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- PERSONNEL AND RELATED STATISTICS 
+
+-- FRC and ORG personnel in playbox.
+CREATE TABLE personnel_g (
+    -- Symbolic group name
+    g          TEXT PRIMARY KEY
+               REFERENCES groups(g)
+               ON DELETE CASCADE
+               DEFERRABLE INITIALLY DEFERRED,
+
+    -- Personnel in playbox
+    personnel  INTEGER DEFAULT 0
+);
+
+-- Deployment Table: FRC and ORG personnel deployed into neighborhoods.
+CREATE TABLE deploy_ng (
+    -- Symbolic neighborhood name
+    n              TEXT REFERENCES nbhoods(n)
+                   ON DELETE CASCADE
+                   DEFERRABLE INITIALLY DEFERRED,
+
+    -- Symbolic group name
+    g              TEXT REFERENCES groups(g)
+                   DEFERRABLE INITIALLY DEFERRED,
+
+    -- Personnel
+    personnel     INTEGER DEFAULT 0,
+
+    -- Unassigned personnel.
+    unassigned    INTEGER DEFAULT 0,
+    
+    PRIMARY KEY (n,g)
+);
+
+-- Deployment Table: FRC and ORG personnel deployed into neighborhoods,
+-- by deploying tactic.  This table is used to implement non-reinforcing
+-- deployments.
+CREATE TABLE deploy_tng (
+    tactic_id  INTEGER,               -- DEPLOY tactic
+    n          TEXT,                  -- Neighborhood
+    g          TEXT,                  -- FRC/ORG group
+    personnel  INTEGER DEFAULT 0,     -- Personnel currently deployed
+
+    -- A single tactic can deploy one group to one or more neighborhoods.
+    PRIMARY KEY (tactic_id, n)
+);
+
+-- Index so that attrition is efficient.
+CREATE INDEX deploy_tng_index ON deploy_tng(n,g);
+
+---------------------------------------------------------------------
+-- Attrition Model Tables
+
+-- Battle table for AAM: tracks designated personnel,
+-- postures and casualties
+
+CREATE TABLE aam_battle (
+    -- Nbhood ID
+    n          TEXT,
+
+    -- Force group IDs of combatants
+    f          TEXT,
+    g          TEXT,
+
+    -- The number of hours of combat remaining in the current week
+    -- between f and g
+    hours_left   DOUBLE DEFAULT 0.0,
+
+    -- ROE of f to g and g to f
+    roe_f      TEXT,
+    roe_g      TEXT,
+
+    -- Posture f takes wrt to g and g takes wrt f
+    posture_f  TEXT,
+    posture_g  TEXT,
+
+    -- Total personnel and those designated in fight 
+    pers_f     INTEGER DEFAULT 0,
+    pers_g     INTEGER DEFAULT 0,
+    dpers_f    INTEGER DEFAULT 0,
+    dpers_g    INTEGER DEFAULT 0,
+
+    -- Casualties suffered by f and g
+    cas_f      INTEGER DEFAULT 0,
+    cas_g      INTEGER DEFAULT 0,
+
+    PRIMARY KEY (n, f, g)
+);
+
+
+-- General unit data
+CREATE TABLE units (
+    -- Symbolic unit name
+    u                TEXT PRIMARY KEY,
+
+    -- Tactic ID, or NULL if this is a base unit.
+    -- NOTE: There is no FK reference because the unit can outlive the
+    -- tactic that created it.  A unit is associated with at most one
+    -- tactic.
+    tactic_id        INTEGER UNIQUE,
+
+    -- Active flag: 1 if active, 0 otherwise.  A unit is active if it
+    -- is currently scheduled.
+    active           INTEGER,
+
+    -- Neighborhood to which unit is deployed
+    n                TEXT,
+
+    -- Group to which the unit belongs
+    g                TEXT,
+
+    -- Group type
+    gtype            TEXT,
+
+    -- Unit activity: eactivity(n) value, or NONE if this is a base unit
+    a                TEXT,
+
+    -- Total Personnel
+    personnel        INTEGER DEFAULT 0,
+
+    -- Location, in map coordinates, within n
+    location         TEXT,
+
+    -- Attrition Flag: 1 if the unit is about to be attrited.
+    attrit_flag      INTEGER DEFAULT 0
+);
+
+CREATE INDEX units_ngap_index ON
+units(n,g,a,personnel);
+
+-- Units view, for display
+CREATE VIEW units_view AS
+SELECT U.u               AS u,
+       U.active          AS active,
+       U.g               AS g,
+       u.gtype           AS gtype,
+       U.personnel       AS personnel,
+       U.a               AS a,
+       U.location        AS location,
+       G.color           AS color
+FROM units AS U JOIN groups AS G USING (g);
+
+------------------------------------------------------------------------
+-- STANCE
+
+CREATE TABLE stance_fg (
+    -- Contains the stance (designated relationship) of force group f
+    -- toward group g, as specified by a STANCE tactic.  Rows exist only
+    -- when stance has been explicitly set.
+
+    f      TEXT,    -- Force group f
+    g      TEXT,    -- Other group g
+
+    stance DOUBLE,  -- stance.fg
+
+    PRIMARY KEY (f,g)
+);
+
+CREATE TABLE stance_nfg (
+    -- Contains neighborhood-specific overrides to stance.fg.  This table
+    -- was used to override stance when group f was directed attack 
+    -- group g in a neighborhood; at present, there are no overrides.
+    -- However, since the mechanism is known to work it seemed better
+    -- to retain it for now.
+
+    n      TEXT,    -- Neighborhood n
+    f      TEXT,    -- Force group f
+    g      TEXT,    -- Other group g
+
+    stance DOUBLE,  -- stance.nfg
+
+    PRIMARY KEY (n,f,g)
+);
+
+-- stance_nfg_view:  Group f's stance toward g in n.  Defaults to 
+-- hrel.fg.  The default can be overridden by an explicit stance, as
+-- contained in stance_fg, and that can be overridden by neighborhood,
+-- as contained in stance_nfg.
+CREATE VIEW stance_nfg_view AS
+SELECT N.n                                           AS n,
+       F.g                                           AS f,
+       G.g                                           AS g,
+       coalesce(SN.stance,S.stance,UH.hrel)          AS stance,
+       CASE WHEN SN.stance IS NOT NULL THEN 'OVERRIDE'
+            WHEN S.stance  IS NOT NULL THEN 'ACTOR'
+            ELSE 'DEFAULT' END                       AS source
+FROM nbhoods   AS N
+JOIN frcgroups AS F
+JOIN groups    AS G
+LEFT OUTER JOIN stance_nfg AS SN ON (SN.n=N.n AND SN.f=F.g AND SN.g=G.g)
+LEFT OUTER JOIN stance_fg  AS S  ON (S.f=F.g AND S.g=G.g)
+LEFT OUTER JOIN uram_hrel  AS UH ON (UH.f=F.g AND UH.g=G.g);
+
+------------------------------------------------------------------------
+-- FORCE AND SECURITY STATISTICS
+
+-- nbstat Table: Total Force and Volatility in neighborhoods
+CREATE TABLE force_n (
+    -- Symbolic nbhood name
+    n                   TEXT    PRIMARY KEY,
+
+    -- Criminal suppression in neighborhood. This is the fraction of 
+    -- civilian criminal activity that is suppressed by law enforcement
+    -- activities.
+    suppression         DOUBLE DEFAULT 0.0,
+
+    -- Total force in nbhood, including nearby.
+    total_force         INTEGER DEFAULT 0,
+
+    -- Gain on volatility, a multiplier >= 0.0
+    volatility_gain     DOUBLE  DEFAULT 1.0,
+
+    -- Nominal Volatility, excluding gain, 0 to 100
+    nominal_volatility  INTEGER DEFAULT 0,
+
+    -- Effective Volatility, including gain, 0 to 100
+    volatility          INTEGER DEFAULT 0,
+
+    -- Average Civilian Security
+    security            INTEGER DEFAULT 0
+);
+
+-- nbstat Table: Group force in neighborhoods
+CREATE TABLE force_ng (
+    n             TEXT,              -- Symbolic nbhood name
+    g             TEXT,              -- Symbolic group name
+
+    personnel     INTEGER DEFAULT 0, -- Group's personnel
+    own_force     INTEGER DEFAULT 0, -- Group's own force (Q.ng)
+    crim_force    INTEGER DEFAULT 0, -- Civ group's criminal force.
+                                     -- 0.0 for non-civ groups.
+    noncrim_force INTEGER DEFAULT 0, -- Group's own force, less criminals
+    local_force   INTEGER DEFAULT 0, -- own_force + friends in n
+    local_enemy   INTEGER DEFAULT 0, -- enemies in n
+    force         INTEGER DEFAULT 0, -- own_force + friends nearby
+    pct_force     INTEGER DEFAULT 0, -- 100*force/total_force
+    enemy         INTEGER DEFAULT 0, -- enemies nearby
+    pct_enemy     INTEGER DEFAULT 0, -- 100*enemy/total_force
+    security      INTEGER DEFAULT 0, -- Group's security in n
+
+    PRIMARY KEY (n, g)
+);
+
+-- nbstat Table: Civilian group statistics
+CREATE TABLE force_civg (
+    g          TEXT PRIMARY KEY,   -- Symbolic civ group name
+    nominal_cf DOUBLE DEFAULT 0.0, -- Nominal Criminal Fraction
+    actual_cf  DOUBLE DEFAULT 0.0  -- Actual Criminal Fraction
+);
+
+
+-- Note that "a" is constrained to match g's gtype, as indicated
+-- in the temporary activity_gtype table.
+CREATE TABLE activity_nga (
+    n                   TEXT,     -- Symbolic nbhoods name
+    g                   TEXT,     -- Symbolic groups name
+    a                   TEXT,     -- Symbolic activity name
+         
+    -- 1 if there's enough security to conduct the activity,
+    -- and 0 otherwise.
+    security_flag       INTEGER  DEFAULT 0,
+
+    -- 1 if the group can do the activity in the neighborhood,
+    -- and 0 otherwise.
+    can_do              INTEGER  DEFAULT 0,
+
+    -- Number of personnel in nbhood n belonging to 
+    -- group g which are assigned activity a.
+    nominal             INTEGER  DEFAULT 0,
+
+    -- Number of the nominal personnel that are effectively performing
+    -- the activity.  This will be 0 if security_flag is 0.
+    effective           INTEGER  DEFAULT 0,
+
+    -- Coverage fraction, 0.0 to 1.0, for this activity.
+    coverage            DOUBLE   DEFAULT 0.0,
+
+    PRIMARY KEY (n,g,a)
+);
+
+
+------------------------------------------------------------------------
+-- ABSTRACT SITUATIONS
+
+CREATE TABLE absits (
+    -- Abstract Situations
+
+    -- Situation ID
+    s         INTEGER PRIMARY KEY,
+ 
+    -- Situation type (this is also the driver type)
+    stype     TEXT,
+
+    -- Neighborhood in which the situation exists
+    n         TEXT REFERENCES nbhoods(n)
+                   ON DELETE CASCADE
+                   DEFERRABLE INITIALLY DEFERRED,
+
+    -- Coverage: fraction of neighborhood affected.
+    coverage  DOUBLE DEFAULT 1.0,
+
+    -- Inception Flag: 1 if this is a new situation, and inception 
+    -- effects should be assessed, and 0 otherwise.  (This will be set 
+    -- to 0 for situations that are on-going at time 0.)
+    inception INTEGER,
+
+    -- Resolving group: name of the group that resolved/will resolve
+    -- the situation, or 'NONE'
+    resolver  TEXT DEFAULT 'NONE',
+
+    -- Auto-resolution duration: 0 if the situation will not auto-resolve,
+    -- and a duration in ticks otherwise.
+    rduration INTEGER DEFAULT 0,
+
+    -- State: esitstate
+    state     TEXT DEFAULT 'INITIAL',
+
+    -- Start Time, in ticks
+    ts        INTEGER,
+
+    -- Resolution time, in ticks; null if unresolved and not auto-resolving.
+    tr        INTEGER,
+
+    -- Location, in map coordinates -- for visualization only.
+    location  TEXT
+);
+
+------------------------------------------------------------------------
+-- SERVICES
+
+-- NOTE: At present, there is only one kind of service,
+-- Essential Non-Infrastructure (ENI).  When we add other services,
+-- these tables may change considerably.
+
+-- Service Group/Actor table: provision of service to a civilian
+-- group by an actor.
+
+CREATE TABLE service_ga (
+    -- Civilian Group ID
+    g            TEXT REFERENCES civgroups(g) 
+                      ON DELETE CASCADE
+                      DEFERRABLE INITIALLY DEFERRED,
+
+    -- Actor ID
+    a            TEXT REFERENCES actors(a)
+                      ON DELETE CASCADE
+                      DEFERRABLE INITIALLY DEFERRED,
+
+    -- Funding, $/week (symbol: F.ga)
+    funding      REAL DEFAULT 0.0,
+
+    -- Credit, 0.0 to 1.0.  The fraction of unsaturated service
+    -- provided by this actor.
+    credit       REAL DEFAULT 0.0,
+
+    PRIMARY KEY (g,a)
+);
+
+-- Service Table: level of services s experienced by civilian groups g
+
+CREATE TABLE service_sg (
+    -- Service ID; eg. ENI, ENERGY...
+    s                   TEXT,
+
+    -- Civilian Group ID
+    g                   TEXT REFERENCES civgroups(g) 
+                             ON DELETE CASCADE
+                             DEFERRABLE INITIALLY DEFERRED,
+
+    -- Saturation funding, $/week
+    saturation_funding  REAL DEFAULT 0.0,
+
+    -- Required level of service, fraction of saturation
+    -- (from parmdb)
+    required            REAL DEFAULT 0.0,
+
+    -- Funding, $/week
+    funding             REAL DEFAULT 0.0,
+
+    -- Actual level of service, fraction of saturation
+    actual              REAL DEFAULT 0.0,
+
+    -- New actual level of service, for abstract services
+    new_actual          REAL DEFAULT 0.0,
+
+    -- Expected level of service, fraction of saturation
+    expected            REAL DEFAULT 0.0,
+
+    -- Expectations Factor: measures degree to which expected exceeds
+    -- actual (or vice versa) for use in ENI rule set.
+    expectf             REAL DEFAULT 0.0,
+
+    -- Needs Factor: measures degree to which actual exceeds required
+    -- (or vice versa) for use in ENI rule set.
+    needs               REAL DEFAULT 0.0,
+
+    PRIMARY KEY (s,g)
+);
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_demog.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Demographics Area
+--
+------------------------------------------------------------------------
+
+-- Demographics of the region of interest (i.e., of nbhoods for
+-- which local=1)
+
+CREATE TABLE demog_local (
+    -- Total population in local neighborhoods at the current time.
+    population   INTEGER DEFAULT 0,
+
+    -- Total consumers in local neighborhoods at the current time.
+    consumers    INTEGER DEFAULT 0,
+
+    -- Total labor force in local neighborhoods at the current time
+    labor_force  INTEGER DEFAULT 0
+);
+
+-- Demographics of the neighborhood as a whole
+
+CREATE TABLE demog_n (
+    -- Symbolic neighborhood name
+    n               TEXT PRIMARY KEY,
+
+    -- Total population in the neighborhood at the current time
+    population      INTEGER DEFAULT 0,
+
+    -- Total subsistence population in the neighborhood at the current time
+    subsistence     INTEGER DEFAULT 0,
+
+    -- Total consumers in the neighborhood at the current time
+    consumers       INTEGER DEFAULT 0,
+
+    -- Total labor force in the neighborhood at the current time
+    labor_force     INTEGER DEFAULT 0,
+
+    -- Unemployed workers in the neighborhood.
+    unemployed      INTEGER DEFAULT 0,
+
+    -- Unemployment rate (percentage)
+    ur              DOUBLE DEFAULT 0.0,
+
+    -- Unemployed per capita (percentage)
+    upc             DOUBLE DEFAULT 0.0,
+
+    -- Unemployment Attitude Factor
+    uaf             DOUBLE DEFAULT 0.0
+);
+
+-- Demographics of particular civgroups
+
+CREATE TABLE demog_g (
+    -- Symbolic civgroup name
+    g              TEXT PRIMARY KEY,
+
+    -- Total residents of this group in its home neighborhood at the
+    -- current time.  This is always the integer part of real_pop.
+    population     INTEGER DEFAULT 0,
+    
+    -- Total residents including fractional part (due to rate-based
+    -- change).  This column should be ignored by other modules.
+    real_pop       DOUBLE DEFAULT 0.0,
+
+    -- Subsistence population: population doing subsistence agriculture
+    -- and outside the regional economy.
+    subsistence    INTEGER DEFAULT 0,
+
+    -- Consumer population: population within the regional economy
+    consumers      INTEGER DEFAULT 0,
+
+    -- Labor Force: workers available to the regional economy
+    labor_force    INTEGER DEFAULT 0,
+
+    -- Employed workers
+    employed       INTEGER DEFAULT 0,
+    
+    -- Unemployed workers
+    unemployed     INTEGER DEFAULT 0,
+
+    -- Unemployment rate (percentage)
+    ur             DOUBLE DEFAULT 0.0,
+
+    -- Unemployed per capita (percentage)
+    upc            DOUBLE DEFAULT 0.0,
+
+    -- Unemployment Attitude Factor
+    uaf            DOUBLE DEFAULT 0.0,
+    
+    -- Total consumption of goods baskets this week
+    tc             DOUBLE DEFAULT 0.0,
+    
+    -- Actual Level of Consumption of goods baskets per capita
+    aloc           DOUBLE DEFAULT 0.0,
+    
+    -- Required Level of Consumption of goods baskets per capita
+    -- (this defines the poverty line)
+    rloc           DOUBLE DEFAULT 0.0,
+    
+    -- Expected Level of Consumption of goods baskets per capita
+    eloc           DOUBLE DEFAULT 0.0,
+    
+    -- Fraction of the group that is living in poverty
+    povfrac        DOUBLE DEFAULT 0.0,
+
+    -- Attrition to this group (total killed to date).
+    -- This is an output only; it is no longer used to
+    -- compute population week to week.
+    attrition      INTEGER DEFAULT 0
+);
+
+
+-- Demographic Situation Context View
+--
+-- This view identifies the neighborhood groups that can have
+-- demographic situations, and pulls in required context from
+-- other tables.
+CREATE VIEW demog_context AS
+SELECT CG.n              AS n,
+       DG.g              AS g,
+       DG.population     AS population,
+       DG.uaf            AS guaf,
+       DG.upc            AS gupc,
+       DN.uaf            AS nuaf,
+       DN.upc            AS nupc
+FROM demog_g   AS DG
+JOIN civgroups AS CG USING (g)
+JOIN demog_n   AS DN USING (n);
+
+-- Neighborhoods Population View
+--
+-- This view figures out the population of each neighborhood
+-- based on which tables are present and have data.  This view
+-- is necessary because it provides population statistics 
+-- whether Athena is in PREP or is LOCKED.  This view is 
+-- defined here because it references demog_n, defined above.
+CREATE VIEW pop_n AS
+SELECT N.n                                         AS n,
+       COALESCE(D.population,total(CG.basepop),0)  AS pop
+FROM nbhoods              AS N
+LEFT OUTER JOIN demog_n   AS D USING(n)
+LEFT OUTER JOIN civgroups AS CG USING(n)
+GROUP BY n;
+
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_infrastructure.sql
+--
+-- AUTHOR:
+--    Dave Hanks
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Infrastructure Tables
+--
+-- SECTIONS:
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- INFRASTRUCTURE
+
+-- Plants Table: plants owned and operated by actors.  Each plant has
+-- a capacity to produce goods.  Taken together, the output of all plants
+-- is the total capacity of goods produced in the modeled economy.
+
+CREATE TABLE plants_na (
+    -- Neighborhood ID
+    n                TEXT,
+
+    -- Agent ID, can be actor ID or 'SYSTEM'
+    a                TEXT,
+
+    -- Number of plants in operation by agent a in in nbhood n
+    num              INTEGER DEFAULT 0,
+
+    -- Average repair level of all plants in operation by agent a in nbhood n
+    rho              REAL DEFAULT 1.0,
+
+    PRIMARY KEY (n, a)
+);
+
+-- Plants Shares: during prep the analyst specifies which actors get some
+-- number of shares of the total infrastructure along with the initial
+-- repair levels.
+
+CREATE TABLE plants_shares (
+    -- Neighborhood ID
+    n               TEXT REFERENCES nbhoods(n)
+                    ON DELETE CASCADE
+                    DEFERRABLE INITIALLY DEFERRED,
+
+    -- Agent ID, can be actor ID or 'SYSTEM'
+    a               TEXT,
+
+    -- The number of shares of plants in the nbhood that the
+    -- agent owns
+    num             INTEGER DEFAULT 1,
+
+    -- Average repair level of all plants in operation by agent a in
+    -- nbhood n. The defaul level is fully repaired.
+    rho             REAL DEFAULT 1.0,
+
+    PRIMARY KEY (n, a)
+);
+
+-- Plants under construction: during strategy execution an agent may 
+-- use the BUILD tactic to build new infrastructure, this table tracks
+-- the progress of that construction
+
+CREATE TABLE plants_build (
+    -- Neighborhood ID
+    n              TEXT,
+
+    -- Agent ID
+    a              TEXT,
+
+    -- List of build levels of plants under construction, numbers
+    -- between 0.0 and 1.0
+    levels         TEXT,
+
+    -- Number of plants currently under construction by nbhood and actor
+    num            INTEGER DEFAULT 0,
+
+    PRIMARY KEY (n,a)
+);
+
+-- Plants neighborhood view. Used during prep and initialization to 
+-- determine how infrastructure plants are distributed among the 
+-- neighborhoods as a function of total neighborhood population and
+-- production capacity.
+
+CREATE VIEW plants_n_view AS
+SELECT N.n                                     AS n,
+       N.pcf                                   AS pcf,
+       total(
+        CASE C.sa_flag WHEN 0
+            THEN coalesce(D.consumers,C.basepop)
+            ELSE 0.0 END
+       )                                       AS nbpop
+FROM civgroups          AS C
+JOIN local_nbhoods      AS N USING (n)
+LEFT OUTER JOIN demog_n AS D USING (n)
+GROUP BY n;
+
+-- Plants allocation view. Used during prep by appserver pages to give
+-- an estimate of the breakdown of goods production plants in 
+-- neighborhoods by neighborhood and agent.
+
+CREATE VIEW plants_alloc_view AS
+SELECT N.n                     AS n,
+       N.pcf                   AS pcf,
+       coalesce(PS.a,'SYSTEM') AS a,
+       coalesce(PS.num,1)      AS shares,
+       coalesce(PS.rho,1.0)    AS rho
+FROM local_nbhoods AS N
+LEFT OUTER JOIN plants_shares AS PS USING (n);
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_econ.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Economics Area
+--
+------------------------------------------------------------------------
+
+-- Neighborhood inputs and outputs.  
+--
+-- NOTE: All production capacities and related factors concern the 
+-- "goods" sector; when we add additional kinds of production, we'll
+-- probably need to elaborate this scheme considerably.
+
+CREATE TABLE econ_n (
+    -- Symbolic neighborhood name
+    n          TEXT PRIMARY KEY REFERENCES nbhoods(n)
+               ON DELETE CASCADE
+               DEFERRABLE INITIALLY DEFERRED,
+
+    -- The following columns can be ignored if nbhoods.local == 0.    
+
+    -- Output, Production Capacity at time 0
+    cap0       DOUBLE DEFAULT 0,
+
+    -- Output, Production Capacity at time t
+    cap        DOUBLE DEFAULT 0,
+
+    -- Jobs at time 0 given production capacity t time 0
+    jobs0      DOUBLE DEFAULT 0,
+
+    -- Jobs in neighborhood given production capacity
+    jobs       DOUBLE DEFAULT 0
+);
+
+-- A view of only those econ_n records that correspond to local
+-- neighborhoods.
+CREATE VIEW econ_n_view AS
+SELECT * FROM nbhoods JOIN econ_n USING (n) WHERE nbhoods.local = 1;
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_info.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Information Area
+--
+-- SECTIONS:
+--    Communications Asset Packages (CAPs)
+--    Semantic Hooks
+--    Info Ops Messages (IOMs)
+--    IOM Payloads
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- COMMUNICATIONS ASSET PACKAGES (CAPS)
+
+CREATE TABLE caps (
+    -- A CAP is collection of people and infrastructure that supports
+    -- civilian communication (e.g., a newspaper, the phone system).
+
+    k           TEXT PRIMARY KEY,               -- CAP ID
+    longname    TEXT,                           -- Human-readable name
+    owner       TEXT REFERENCES actors(a)       -- Owning Actor
+                ON DELETE SET NULL
+                DEFERRABLE INITIALLY DEFERRED, 
+    capacity    DOUBLE DEFAULT 1.0,             -- Capacity, 0.0 to 1.0
+    cost        DOUBLE DEFAULT 0.0              -- $ per message per week
+);
+
+CREATE TABLE cap_kn (
+    -- CAP/Nbhood table.  By default, a CAP's coverage of a neighborhood
+    -- is 0.0, as indicated by the caps_kn_view.  This table is used to
+    -- override the default.
+
+    k           TEXT REFERENCES caps(k)         -- CAP ID
+                ON DELETE CASCADE
+                DEFERRABLE INITIALLY DEFERRED, 
+    n           TEXT REFERENCES nbhoods(n)      -- Nbhood ID
+                ON DELETE CASCADE
+                DEFERRABLE INITIALLY DEFERRED, 
+    nbcov       DOUBLE DEFAULT 1.0,              -- Coverage of nbhood
+
+    PRIMARY KEY (k,n)
+);
+
+-- This view gives the complete picture of nbhood coverage by CAP:
+-- 0.0 for all neighborhoods, unless overridden by cap_kn.
+CREATE VIEW cap_kn_view AS
+SELECT K.k                     AS k,
+       K.owner                 AS owner,
+       N.n                     AS n,
+       coalesce(KN.nbcov, 0.0) AS nbcov
+FROM caps               AS K
+JOIN nbhoods            AS N
+LEFT OUTER JOIN cap_kn  AS KN USING (k,n);
+
+
+CREATE TABLE cap_kg (
+    -- CAP/CivGroup table.  By default, a CAP's penetration of a
+    -- neighborhood is 0.0, as indicated by the caps_kg_view.  This
+    -- table is used to override the default.
+
+    k    TEXT REFERENCES caps(k)         -- CAP ID
+         ON DELETE CASCADE
+         DEFERRABLE INITIALLY DEFERRED, 
+    g    TEXT REFERENCES civgroups(g)    -- Group ID
+         ON DELETE CASCADE
+         DEFERRABLE INITIALLY DEFERRED, 
+    pen  DOUBLE DEFAULT 1.0,             -- Group penetration, 0.0 to 1.0
+
+    PRIMARY KEY (k,g)
+);
+
+-- This view gives the complete picture of group penetration by CAP:
+-- 0.0 for all groups, unless overridden by cap_kg.
+CREATE VIEW cap_kg_view AS
+SELECT K.k                     AS k,
+       K.owner                 AS owner,
+       G.g                     AS g,
+       G.n                     AS n,
+       coalesce(KG.pen, 0.0)   AS pen
+FROM caps               AS K
+JOIN civgroups          AS G
+LEFT OUTER JOIN cap_kg  AS KG USING (k,g);
+
+
+-- View giving CAP coverage by group, given capacity, nbhood coverage,
+-- and group penetration.
+
+CREATE VIEW capcov AS
+SELECT KG.k                        AS k,
+       KG.g                        AS g,
+       KG.n                        AS n,
+       K.owner                     AS owner,
+       K.capacity                  AS capacity,
+       KN.nbcov                    AS nbcov,
+       KG.pen                      AS pen,
+       K.capacity*KN.nbcov*KG.pen  AS capcov
+FROM cap_kg_view AS KG
+JOIN cap_kn_view AS KN USING (k,n)
+JOIN caps        AS K  USING (k);
+
+
+CREATE TABLE cap_access (
+    -- Table showing which actors have access to each CAP.
+    k    TEXT REFERENCES caps(k)         -- CAP ID
+         ON DELETE CASCADE
+         DEFERRABLE INITIALLY DEFERRED, 
+    a    TEXT REFERENCES actors(a)       -- Actor ID
+         ON DELETE CASCADE
+         DEFERRABLE INITIALLY DEFERRED, 
+
+    PRIMARY KEY (k,a)
+);
+
+------------------------------------------------------------------------
+-- SEMANTIC HOOKS
+
+CREATE TABLE hooks (
+-- Semantic hooks table.  A semantic hook is used in information 
+-- operations to determine the topics and on which position a
+-- message takes with respect to those topics.
+
+    hook_id    TEXT PRIMARY KEY, -- ID of a semantic hook
+
+    longname   TEXT              -- Longname of the semantic hook
+);
+
+CREATE TABLE hook_topics (
+-- Semantic hook topics table.  A semantic hook must have topics
+-- and positions on those topics associated with it. This table 
+-- stores that information.
+    hook_id    TEXT              -- The semantic hook for this topic
+               REFERENCES hooks(hook_id)
+               ON DELETE CASCADE ON UPDATE CASCADE
+               DEFERRABLE INITIALLY DEFERRED,
+
+    topic_id   INTEGER,                -- A topic of the semantic hook, 
+                                       -- this topic ID exists in 
+                                       -- [bsys topic ids].
+
+    state      TEXT DEFAULT "normal",  -- Normal, disabled or invalid
+                                       -- (an etopic_state)
+
+    position   REAL DEFAULT 0.0,       -- The position on the topic.
+
+    PRIMARY KEY (hook_id, topic_id)
+);
+
+-- View combining hook ID and topic ID into a single unique ID for
+-- the topics table
+CREATE VIEW hook_topics_view AS
+SELECT hook_id || ' ' || topic_id AS id,
+       hook_id                    AS hook_id,
+       topic_id                   AS topic_id,
+       state                      AS state,
+       position                   AS position
+FROM hook_topics;
+
+------------------------------------------------------------------------
+-- INFO OPS MESSAGES (IOMS)
+
+CREATE TABLE ioms (
+    -- Messages sent by actors via CAPs.  Each IOM has a hook and
+    -- any number of payloads.  The hook must be set before the scenario
+    -- is locked, or there will be a sanity check failure.
+
+    iom_id     TEXT PRIMARY KEY,                -- Entity ID
+    longname   TEXT,                            -- Human-readable name
+    hook_id    TEXT REFERENCES hooks(hook_id)   -- Semantic hook
+               ON DELETE SET NULL
+               DEFERRABLE INITIALLY DEFERRED, 
+
+    -- State: normal, disabled, invalid (eiom_state)
+    state          TEXT DEFAULT 'normal'
+);
+
+------------------------------------------------------------------------
+-- IOM PAYLOADS 
+
+CREATE TABLE payloads (
+    -- Payloads for Info Ops messages.  A payload effects some attitude
+    -- or set of attitudes in some particular way.  Each payload has
+    -- a payload type; the kind of effect it has, and the other data
+    -- required, depends on the payload type.
+    --
+    -- Every payload is associated with some message.
+    
+    iom_id         TEXT REFERENCES ioms(iom_id)
+                   ON DELETE CASCADE
+                   DEFERRABLE INITIALLY DEFERRED, 
+    payload_num    INTEGER,
+    payload_type   TEXT,   -- epayloadpart(n) value
+    
+    -- Narrative: different payloads use different sets of parameters, 
+    -- so a conventional browser of all of the columns is 
+    -- user-unfriendly.  Instead, we compute a narrative string.
+    narrative      TEXT,
+
+    -- State: normal, disabled, invalid (epayload_state)
+    state          TEXT DEFAULT 'normal',
+    
+    -- Payload Type parameters.  The use of these varies by type;
+    -- all are NULL if unused.  There are no foreign key constraints;
+    -- errors are checked by the payload type's "check" method.
+    a              TEXT,   -- Actor ID
+    c              TEXT,   -- Concern ID
+    g              TEXT,   -- Group ID
+    mag            REAL,   -- Numeric qmag(n) value
+
+    PRIMARY KEY (iom_id, payload_num)
+);
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_politics.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Politics Area
+--
+-- SECTIONS:
+--    Support, Influence, and Control
+--    Goals, Tactics, and Conditions
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- SUPPORT, INFLUENCE, AND CONTROL
+
+-- supports_na table: Actor supported by Actor a in n.
+
+CREATE TABLE supports_na (
+    -- Symbolic group name
+    n         TEXT REFERENCES nbhoods(n)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    -- Symbolic actor name
+    a         TEXT REFERENCES actors(a)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    -- Supported actor name, or NULL
+    supports  TEXT REFERENCES actors(a)
+              ON DELETE CASCADE
+              DEFERRABLE INITIALLY DEFERRED,
+
+    PRIMARY KEY (n, a)
+);
+
+
+-- support_nga table: Support for actor a by group g in nbhood n
+
+CREATE TABLE support_nga (
+    -- Symbolic group name
+    n                TEXT REFERENCES nbhoods(n)
+                     ON DELETE CASCADE
+                     DEFERRABLE INITIALLY DEFERRED,
+
+    -- Symbolic group name
+    g                TEXT REFERENCES groups(g)
+                     ON DELETE CASCADE
+                     DEFERRABLE INITIALLY DEFERRED,
+
+    -- Symbolic actor name
+    a                TEXT REFERENCES actors(a)
+                     ON DELETE CASCADE
+                     DEFERRABLE INITIALLY DEFERRED,
+
+    -- Vertical Relationship of g with a
+    vrel             REAL DEFAULT 0.0,
+
+    -- g's personnel in n
+    personnel        INTEGER DEFAULT 0,
+
+    -- g's security in n
+    security         INTEGER DEFAULT 0,
+
+    -- Direct Contribution of g to a's support in n
+    direct_support   REAL DEFAULT 0.0,
+
+    -- Actual Contribution of g to a's support in n,
+    -- given a's support of other actors, and other actor's support
+    -- of a.
+    support          REAL DEFAULT 0.0,
+
+    -- Contribution of g to a's influence in n.
+    -- (support divided total support in n)
+    influence        REAL DEFAULT 0.0,
+
+    PRIMARY KEY (n, g, a)
+);
+
+
+-- influence_na table: Actor's influence in neighborhood.
+--
+-- Note: We don't cascade deletions, as this table is populated only
+-- during simulation, when the referenced entities aren't being deleted.
+
+CREATE TABLE influence_na (
+    -- Symbolic group name
+    n                TEXT REFERENCES nbhoods(n)
+                     ON DELETE CASCADE
+                     DEFERRABLE INITIALLY DEFERRED,
+
+    -- Symbolic actor name
+    a                TEXT REFERENCES actors(a)
+                     ON DELETE CASCADE
+                     DEFERRABLE INITIALLY DEFERRED,
+
+    -- Direct Support for a in n
+    direct_support   REAL DEFAULT 0.0,
+
+    -- Actual Support for a in n, including direct support and support
+    -- from other actors's followers.
+    support          REAL DEFAULT 0.0,
+
+    -- Influence of a in n
+    influence        REAL DEFAULT 0.0,
+
+    PRIMARY KEY (n, a)
+);
+
+-- control_n table: Control of neighborhood n
+
+CREATE TABLE control_n (
+    -- Symbolic group name
+    n          TEXT PRIMARY KEY
+               REFERENCES nbhoods(n)
+               ON DELETE CASCADE
+               DEFERRABLE INITIALLY DEFERRED,
+
+    -- Actor controlling n, or NULL.
+    controller TEXT REFERENCES actors(a)
+               ON DELETE CASCADE
+               DEFERRABLE INITIALLY DEFERRED,
+
+    -- Time at which controller took control
+    since      INTEGER DEFAULT 0
+);
+
+
+------------------------------------------------------------------------
+-- AGENTS
+
+-- An agent is an entity that can own a strategy.  In theory, any
+-- kind of entity can be an agent.  At present there are two kinds, actors
+-- and the SYSTEM.
+
+CREATE VIEW agents AS
+SELECT 'SYSTEM' AS agent_id, 'system' AS agent_type
+UNION
+SELECT a        AS agent_id, 'actor'  AS agent_type  FROM actors;
+
+
+
+------------------------------------------------------------------------
+-- ACTOR EXPENDITURES
+
+CREATE TABLE expenditures (
+    -- The actor
+    a   TEXT PRIMARY KEY,
+
+    -- The expenditures at the current time step
+    goods  REAL default 0.0,
+    black  REAL default 0.0,
+    pop    REAL default 0.0,
+    actor  REAL default 0.0,
+    region REAL default 0.0,
+    world  REAL default 0.0,
+
+    -- The total expenditures up to the current time step
+    tot_goods  REAL default 0.0,
+    tot_black  REAL default 0.0,
+    tot_pop    REAL default 0.0,
+    tot_actor  REAL default 0.0,
+    tot_region REAL default 0.0,
+    tot_world  REAL default 0.0
+);
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_history.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Simulation History
+--
+-- These tables are used by both scenariodb(n) and experimentdb(n).  In
+-- scenariodb(n), the case_id column is always 0.  In experimentdb(n),
+-- the results of multiple cases are saved by setting case_id to the
+-- case index, which runs from 1 to N.
+--
+------------------------------------------------------------------------
+
+-- The following tables contain simulation history data for
+-- "after-action analysis".  The tables are grouped by index; e.g.,
+-- the hist_civg table contains civilian group outputs over time.
+
+CREATE TABLE hist_nbhood (
+    -- History: Neighborhood outputs
+    t          INTEGER,
+    n          TEXT,       -- Neighborhood name
+
+    a          TEXT,       -- Name of actor controlling n, or NULL if none 
+    nbmood     DOUBLE,     -- Neighborhood mood
+    volatility INTEGER,    -- Volatility of neighborhood
+    nbpop      INTEGER,    -- Civilian population of neighborhood
+    nbsecurity INTEGER,    -- Average civilian security in neighborhood
+    ur         DOUBLE,     -- Unemployment rate (%) in a neighborhood
+
+    PRIMARY KEY (t,n)
+);
+
+CREATE VIEW hist_control AS 
+SELECT t, n, a          
+FROM hist_nbhood;
+
+CREATE VIEW hist_nbmood AS 
+SELECT t, n, nbmood
+FROM hist_nbhood;
+
+CREATE VIEW hist_volatility AS 
+SELECT t, n, volatility 
+FROM hist_nbhood;
+
+CREATE VIEW hist_npop AS 
+SELECT t, n, nbpop AS population 
+FROM hist_nbhood;
+
+CREATE VIEW hist_nbur AS
+SELECT t, n, ur 
+FROM hist_nbhood;
+
+CREATE TABLE hist_nbgroup (
+    -- History: Neighborhood group outputs
+    t          INTEGER,
+    n          TEXT,      -- Neighborhood name
+    g          TEXT,      -- CIV/FRC/ORG group name
+
+    security   INTEGER,   -- g's security in n
+    personnel  INTEGER,   -- The population or personnel of g in n
+    unassigned INTEGER,   -- For ORG/FRC groups number of unassigned personnel
+
+    PRIMARY KEY (t,n,g)
+);
+
+CREATE VIEW hist_security AS
+SELECT t, n, g, security
+FROM hist_nbgroup;
+
+CREATE VIEW hist_deploy_ng AS
+SELECT t, n, g, personnel, unassigned
+FROM hist_nbgroup
+JOIN groups USING (g) WHERE gtype != 'CIV';
+
+CREATE TABLE hist_civg (
+    -- History: civilian group outputs
+    t          INTEGER,
+    g          TEXT,
+    mood       DOUBLE,
+    population INTEGER,
+
+    PRIMARY KEY (t,g)
+);
+
+CREATE VIEW hist_mood AS
+SELECT t, g, mood
+FROM hist_civg;
+
+CREATE VIEW hist_pop AS
+SELECT t, g, population
+FROM hist_civg;
+
+CREATE TABLE hist_sat_raw (
+    -- History: sat.g.c
+    t        INTEGER,
+    g        TEXT,
+    c        TEXT,
+    sat      DOUBLE, -- Current level of satisfaction
+    base     DOUBLE, -- Baseline level of satisfaction
+    nat      DOUBLE, -- Natural level of satisfaction
+
+    PRIMARY KEY (t,g,c)
+);
+
+-- hist_sat view: includes saliency and population to allow for 
+-- easy computation of rollups
+
+CREATE VIEW hist_sat AS
+SELECT HS.t          AS t,
+       HS.g          AS g,
+       HS.c          AS c,
+       HS.sat        AS sat,
+       HS.base       AS base,
+       HS.nat        AS nat,
+       U.saliency    AS saliency,
+       HC.population AS population
+FROM hist_sat_raw AS HS
+JOIN uram_sat  AS U  USING (g,c)
+JOIN hist_civg AS HC USING (t,g);
+
+CREATE TABLE hist_coop (
+    -- History: coop.f.g
+    t        INTEGER,
+    f        TEXT,
+    g        TEXT,
+    coop     DOUBLE, -- Current level of cooperation
+    base     DOUBLE, -- Baseline level of cooperation
+    nat      DOUBLE, -- Natural level of cooperation
+
+    PRIMARY KEY (t,f,g)
+);
+
+CREATE TABLE hist_hrel (
+    -- History: hrel.f.g
+    t        INTEGER,
+    f        TEXT,    -- First group
+    g        TEXT,    -- Second group
+    hrel     REAL,    -- Horizontal relationship of f with g.
+    base     REAL,    -- Base Horizontal relationship of f with g.
+    nat      REAL,    -- Natural Horizontal relationship of f with g.
+
+    PRIMARY KEY (t,f,g)
+);
+
+CREATE TABLE hist_vrel (
+    -- History: vrel.g.a
+    t        INTEGER,
+    g        TEXT,    -- Civilian group
+    a        TEXT,    -- Actor
+    vrel     REAL,    -- Vertical relationship of g with a.
+    base     REAL,    -- Base Vertical relationship of g with a.
+    nat      REAL,    -- Natural Vertical relationship of g with a.
+
+    PRIMARY KEY (t,g,a)
+);
+
+CREATE TABLE hist_nbcoop (
+    -- History: nbcoop.n.g
+    t        INTEGER,
+    n        TEXT,
+    g        TEXT,
+    nbcoop   DOUBLE,
+
+    PRIMARY KEY (t,n,g)
+);
+
+-- aam_battle
+
+-- This table is sparse in that it only contains data for groups that
+-- are actively engaged in combat at time t.  To get data from a single
+-- force groups point of view see hist_amm_battle_fview below. This
+-- data is saved by the AAM module
+
+CREATE TABLE hist_aam_battle (
+    t           INTEGER,
+    n           TEXT,
+    f           TEXT,
+    g           TEXT,
+    roe_f       TEXT,
+    roe_g       TEXT,
+    dpers_f     INTEGER,
+    dpers_g     INTEGER,
+    startp_f    TEXT,
+    startp_g    TEXT,
+    endp_f      TEXT,
+    endp_g      TEXT,
+    cas_f       INTEGER,
+    cas_g       INTEGER,
+    civc_f      TEXT,
+    civc_g      TEXT,
+    civcas_f    INTEGER,
+    civcas_g    INTEGER,
+
+    PRIMARY KEY(t,n,f,g)
+);
+
+-- hist_aam_battle_fview
+
+-- This view is useful when wanting to get data for a force group
+-- of interest into the same column reliably.  This view can be used 
+-- with a WHERE clause on f to get just the battles some group is 
+-- involved in, but always have that group appear in the column for f
+-- AND all the data for where f is really in g be switched
+-- appropriately
+
+CREATE VIEW hist_aam_battle_fview AS
+SELECT F.t         AS t,
+       F.n         AS n,
+       F.f         AS f,
+       F.g         AS g,
+       F.roe_f     AS roe_f,
+       F.roe_g     AS roe_g,
+       F.dpers_f   AS dpers_f,
+       F.dpers_g   AS dpers_g,
+       F.startp_f  AS startp_f,
+       F.startp_g  AS startp_g,
+       F.endp_f    AS endp_f,
+       F.endp_g    AS endp_g,
+       F.cas_f     AS cas_f,
+       F.cas_g     AS cas_g,
+       F.civcas_f  AS civcas_f,
+       F.civcas_g  AS civcas_g,
+       F.civc_f    AS civc_f,
+       F.civc_g    AS civc_g
+FROM hist_aam_battle AS F
+UNION
+SELECT G.t         AS t,
+       G.n         AS n,
+       G.g         AS f,
+       G.f         AS g,
+       G.roe_g     AS roe_f,
+       G.roe_f     AS roe_g,
+       G.dpers_g   AS dpers_f,
+       G.dpers_f   AS dpers_g,
+       G.startp_g  AS startp_f,
+       G.startp_f  AS startp_g,
+       G.endp_g    AS endp_f,
+       G.endp_f    AS endp_g,
+       G.cas_g     AS cas_f,
+       G.cas_f     AS cas_g,
+       G.civcas_g  AS civcas_f,
+       G.civcas_f  AS civcas_g,
+       G.civc_g    AS civc_f,
+       G.civc_f    AS civc_g
+FROM hist_aam_battle AS G;
+
+-- econ
+CREATE TABLE hist_econ (
+    t           INTEGER,
+    consumers   INTEGER,
+    subsisters  INTEGER,
+    labor       INTEGER,
+    lsf         DOUBLE,
+    csf         DOUBLE,
+    rem         DOUBLE,
+    cpi         DOUBLE,
+    dgdp        DOUBLE,
+    agdp        DOUBLE,
+    ur          DOUBLE,
+
+    PRIMARY KEY (t)
+);
+
+-- econ.i
+CREATE TABLE hist_econ_i (
+    t           INTEGER,
+    i           TEXT,
+    p           DOUBLE,
+    qs          DOUBLE,
+    rev         DOUBLE,
+
+    PRIMARY KEY (t,i)
+);
+
+-- econ.i.j
+CREATE TABLE hist_econ_ij (
+    t           INTEGER,
+    i           TEXT,
+    j           TEXT,
+    x           DOUBLE,
+    qd          DOUBLE,
+
+    PRIMARY KEY (t,i,j)        
+);
+
+CREATE TABLE hist_plant_na (
+    t           INTEGER,
+    n           TEXT,
+    a           TEXT,
+    num         INTEGER,
+    cap         DOUBLE,
+
+    PRIMARY KEY (t,n,a)
+);
+
+CREATE VIEW hist_plant_n AS
+SELECT t, n, sum(num) AS num, total(cap) AS cap
+FROM hist_plant_na GROUP BY t,n;
+
+CREATE VIEW hist_plant_a AS
+SELECT t, a, sum(num) AS num, total(cap) AS cap
+FROM hist_plant_na GROUP BY t,a;
+
+-- support.n.a
+CREATE TABLE hist_support (
+    t              INTEGER,
+    n              TEXT,    -- Neighborhood
+    a              TEXT,    -- Actor
+    direct_support REAL,    -- a's direct support in n
+    support        REAL,    -- a's total support (direct + derived) in n
+    influence      REAL,    -- a's influence in n
+
+    PRIMARY KEY (t,n,a)
+);
+
+CREATE TABLE hist_flow (
+    -- History: flow.f.g (population flow from f to g)
+    -- This table is sparse; only positive flows are included.
+    -- Unlike the other tables, it is not saved by [hist], but
+    -- by [demog].
+    t       INTEGER,
+    f       TEXT,
+    g       TEXT,
+    flow    INTEGER DEFAULT 0,
+    
+    PRIMARY KEY (t,f,g)
+);
+
+CREATE TABLE hist_service_sg (
+    -- History: service.sg (amount of service s to group g)
+
+    t INTEGER,
+    s TEXT,
+    g TEXT,
+    saturation_funding REAL,
+    required           REAL,
+    funding            REAL,
+    actual             REAL,
+    expected           REAL,
+    expectf            REAL,
+    needs              REAL,
+
+    PRIMARY KEY (t,s,g)
+);
+
+CREATE TABLE hist_activity_nga (
+    -- History: activity.nga (activity by nbhood and group)
+
+    t        INTEGER,
+    n        TEXT,
+    g        TEXT,
+    a        TEXT,
+    security_flag INTEGER,
+    can_do        INTEGER,
+    nominal       INTEGER,
+    effective     INTEGER,
+    coverage      DOUBLE,
+    
+    PRIMARY KEY (t,n,g,a)
+);
+
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_rebase.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Simulation Rebase Support
+--
+------------------------------------------------------------------------
+
+-- The following tables are used to save data in support of Athena's
+-- "simulation rebase" capability.
+
+CREATE TABLE rebase_sat (
+    -- Satisfaction levels from time t-1.
+    g       TEXT,
+    c       TEXT,
+    current DOUBLE, -- Current level of satisfaction
+
+    PRIMARY KEY (g,c)
+);
+
+CREATE TABLE rebase_hrel (
+    -- Horizontal relationships from time t-1.
+    f       TEXT,    -- First group
+    g       TEXT,    -- Second group
+    current REAL,    -- Horizontal relationship of f with g.
+
+    PRIMARY KEY (f,g)
+);
+
+CREATE TABLE rebase_vrel (
+    -- Vertical relationships from time t-1.
+    g       TEXT,    -- Civilian group
+    a       TEXT,    -- Actor
+    current REAL,    -- Vertical relationship of g with a.
+
+    PRIMARY KEY (g,a)
+);
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_application.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Schema for scenariodb(n): Application Tables
+--
+-- SECTIONS:
+--    Scenario Management
+--    Orders
+--    Significant Events
+--    Maps
+--
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+-- SCENARIO MANAGEMENT
+
+CREATE TABLE saveables (
+    -- Saveables Table: saves saveable(i) data.  I.e., this table contains
+    -- checkpoints of in-memory data for specific objects.
+
+    saveable   TEXT PRIMARY KEY,
+    checkpoint TEXT
+);
+
+CREATE TABLE beans (
+    -- Beans Table: Saves all bean(n) objects, by beanpot.
+    --
+    -- Note that a beanpot is a saveable; the bean data is saved to this
+    -- table as part of [$pot checkpoint] and restored as part of 
+    -- [$pot restore].  DO NOT QUERY THIS TABLE AT RUN-TIME, AS THE
+    -- DATA MAY BE OBSOLETE.  IT IS ONLY GUARANTEED TO BE RIGHT IN THE
+    -- .adb!
+
+    dbid        TEXT,     -- The bean pot's ID in the app.
+    id          INTEGER,  -- The bean's unique ID
+    bean_class  TEXT,     -- The bean's beanclass, e.g., ::tactic
+    bean_dict   TEXT      -- Dictionary of the bean's instance vars
+);
+
+CREATE TABLE snapshots (
+    -- Snapshots Table: saves scenario snapshots.  In Athena 5 and
+    -- prior, this table held a snapshot for each time at which
+    -- the simulation entered the RUNNING state, as well as an
+    -- on-lock snapshot.  As of Athena 6, it holds only the
+    -- on-lock snapshot.
+
+    -- Time tick at which the snapshot was saved; -1 is the
+    -- on-lock checkpoint.
+    tick     INTEGER PRIMARY KEY,
+
+    -- TCL-serialized text of the snapshot.
+    snapshot TEXT
+);
+
+
+------------------------------------------------------------------------
+-- ORDERS
+
+
+CREATE TABLE cif (
+    -- Critical Input Table: Saves the history of user orders.
+
+    -- Unique ID; used for ordering
+    id        INTEGER PRIMARY KEY,
+
+    -- Simulation time at which the order was entered.
+    time      INTEGER DEFAULT 0,
+
+    -- Order name
+    name      TEXT default '',
+
+    -- Order narrative
+    narrative TEXT default '',
+
+    -- Parameter Dictionary
+    parmdict  TEXT default ''
+);
+
+CREATE INDEX cif_index ON cif(time,id);
+
+
+
+------------------------------------------------------------------------
+-- SIGNIFICANT EVENTS LOG
+
+CREATE TABLE sigevents (
+    -- These two tables store significant simulation events, and allow
+    -- events to be tagged with zero or more entities.
+
+    -- Used for sorting
+    event_id   INTEGER PRIMARY KEY,
+    t          INTEGER,               -- Time stamp, in ticks
+    level      INTEGER DEFAULT 1,     -- level of importance, -1 to N
+    component  TEXT,                  -- component/model logging the event
+    narrative  TEXT                   -- Event narrative.
+);
+
+CREATE TABLE sigevent_tags (
+    -- Tags table.  Individual events can be tagged with 0 or more tags;
+    -- this information can later be used to display tailored logs, e.g.,
+    -- events involving a particular neighborhood or actor.
+
+    event_id INTEGER REFERENCES sigevents(event_id)
+                     ON DELETE CASCADE
+                     DEFERRABLE INITIALLY DEFERRED,
+
+    tag      TEXT,
+
+    PRIMARY KEY (event_id, tag)
+);
+
+CREATE VIEW sigevents_view AS
+SELECT *
+FROM sigevents JOIN sigevent_tags USING (event_id);
+
+
+------------------------------------------------------------------------
+-- MAPS
+
+CREATE TABLE maps (
+    -- Maps Table: Stores data for map images.
+    --
+    -- At this time, there's never more than one map image in the table.
+    -- The map with id=1 is the map to use.
+
+    -- ID
+    id        INTEGER PRIMARY KEY,
+
+    -- Original file name of this map
+    filename  TEXT,
+
+    -- projection type eprojtype enumx(n)
+    projtype  INTEGER DEFAULT 'RECT',
+    
+    -- Width and Height, in pixels
+    width     INTEGER,
+    height    INTEGER,
+
+    -- Projection information, corners of image
+    -- Upper right corner
+    ulat    DOUBLE, 
+    ulon    DOUBLE,
+
+    -- Lower left corner
+    llat    DOUBLE,
+    llon    DOUBLE,
+
+    -- Map data: a BLOB of data in "jpeg" format.
+    data      BLOB
+);
+
+------------------------------------------------------------------------
+-- EXECUTIVE SCRIPTS
+
+CREATE TABLE scripts (
+    -- Scripts Table: Executive scripts, maintained as part of the
+    -- scenario.  Scripts are identified by name.  Scripts with
+    -- the auto flag set (auto=1) are executed automatically on
+    -- executive reset, in order of their sequence numbers.  Other
+    -- scripts can be executed on demand.
+    
+    name     TEXT PRIMARY KEY,
+    seq      INTEGER,
+    auto     INTEGER DEFAULT 0,
+    body     TEXT DEFAULT ''
+);
+
+
+------------------------------------------------------------------------
+-- End of File
+------------------------------------------------------------------------
+
+
+
+
+------------------------------------------------------------------------
+-- TITLE:
+--    scenariodb_temp.sql
+--
+-- AUTHOR:
+--    Will Duquette
+--
+-- DESCRIPTION:
+--    SQL Temporary Entity Schema for scenariodb(n).
+--
+------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------
+-- Concerns and concern views
+
+-- Concern definitions
+CREATE TEMPORARY TABLE concerns (
+    -- Symbolic concern name
+    c         TEXT PRIMARY KEY,
+
+    -- Full concern name
+    longname  TEXT,
+
+    -- Concern type: egrouptype
+    gtype     TEXT
+);
+
+CREATE TEMPORARY VIEW civ_concerns AS
+SELECT * FROM concerns WHERE gtype='CIV';
+
+CREATE TEMPORARY VIEW org_concerns AS
+SELECT * FROM concerns WHERE gtype='ORG';
+
+
+--------------------------------------------------------------------
+-- Activity Definition Tables
+
+-- Main activity table.  Lists all activity names and long names
+CREATE TEMPORARY TABLE activity (
+    -- Symbolic activity name
+    a         TEXT PRIMARY KEY,
+
+    -- Human-readable name
+    longname  TEXT
+);
+
+-- Activity/group type table.
+CREATE TEMPORARY TABLE activity_gtype (
+    -- Symbolic activity name
+    a            TEXT,
+
+    -- Symbolic group type: FRC or ORG
+    gtype        TEXT,
+
+    -- Assignable: 1 or 0
+    assignable   INTEGER DEFAULT 0,
+
+    PRIMARY KEY (a, gtype)
+);
+
+--------------------------------------------------------------------
+-- Abstract Infrastructure Services
+
+CREATE TEMPORARY TABLE abservice (
+    -- Symbolic abstract service name
+    s        TEXT PRIMARY KEY,
+
+    -- Human readable name
+    longname TEXT
+);
+
+--------------------------------------------------------------------
+-- Saturation/Required Service funding levels
+
+CREATE TEMPORARY TABLE sr_service (
+    g            TEXT,              -- Group name
+    req_funding  REAL DEFAULT 0.0,  -- Required Funding Level $/week
+    sat_funding  REAL DEFAULT 0.0,  -- Saturation Funding Level $/week
+
+    PRIMARY KEY (g)
+);
+
+--------------------------------------------------------------------
+-- Strategy Tock Working Tables
+
+-- Actor's Working Cash
+CREATE TEMPORARY TABLE working_cash (
+    -- Symbolic actor name
+    a           TEXT PRIMARY KEY,
+
+    -- Money saved for later, in $.
+    cash_reserve DOUBLE,
+
+    -- Income/strategy tock, in $.
+    income      DOUBLE,
+
+    -- Money available to be spent, in $.
+    -- Unspent cash accumulates from tock to tock.
+    cash_on_hand DOUBLE,
+
+    -- gifts from other actors, in $.  Gifts are unavailable
+    -- to be spent until the next strategy execution.
+    gifts        DOUBLE DEFAULT 0
+);
+
+-- FRC and ORG personnel in playbox and available for deployment.
+CREATE TEMPORARY TABLE working_personnel (
+    -- Symbolic group name
+    g          TEXT PRIMARY KEY,
+
+    -- Personnel in playbox
+    personnel  INTEGER,
+
+    -- Personnel available for deployment
+    available  INTEGER
+);
+
+-- working_supports table: Actor supported by Actor a in n.
+
+CREATE TEMPORARY TABLE working_supports (
+    -- Symbolic group name
+    n         TEXT,
+
+    -- Symbolic actor name
+    a         TEXT,
+
+    -- Supported actor name, or NULL
+    supports  TEXT,
+
+    PRIMARY KEY (n, a)
+);
+
+
+-- Deployment Table: FRC and ORG personnel deployed into neighborhoods.
+CREATE TEMPORARY TABLE working_deployment (
+    -- Symbolic neighborhood name
+    n          TEXT,
+
+    -- Symbolic group name
+    g          TEXT,
+
+    -- Personnel
+    personnel  INTEGER DEFAULT 0,
+
+    -- Unassigned personnel.
+    unassigned INTEGER DEFAULT 0,
+    
+    PRIMARY KEY (n,g)
+);
+
+-- Working Service Group/Actor table: funding for service to the group
+-- by the actor.
+
+CREATE TEMPORARY TABLE working_service_ga (
+    -- Civilian Group ID
+    g            TEXT,
+
+    -- Actor ID
+    a            TEXT,
+
+    -- Funding, $/week (symbol: F.ga)
+    funding      REAL DEFAULT 0.0,
+
+    PRIMARY KEY (g,a)
+);
+
+
+--------------------------------------------------------------------
+-- Temporary Infrastructure Tables
+
+-- Working Construction table for Infrastructure: tracks the progress
+-- of construction as BUILD tactics execute by nbhood and actor
+
+CREATE TEMPORARY TABLE working_build (
+    -- Nbhood ID
+    n         TEXT,
+    
+    -- Actor ID
+    a         TEXT,
+
+    -- List of pairs (current, delta)
+    -- Each pair tracks construction level of one infrastructure plant
+    progress  TEXT,
+
+    PRIMARY KEY (n, a)
+);
+
+</pre>
+
+
+
+
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../../../mars/docs/mann/sqldocument.html">sqldocument(n)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:49:00 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

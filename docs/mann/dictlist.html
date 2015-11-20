@@ -1,0 +1,451 @@
+<html>
+<head>
+<title>athena 6.3.3: dictlist(n) -- dictlist(i) Dictionary List Buffer, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>dictlist(n)</b> -- dictlist(i) Dictionary List Buffer, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#dictlist_create">dictlist create <i>name</i> <i>spec</i></a></li>
+<li><a class="iref" href="#dictlist_new">dictlist new ?<i>spec</i>?</a></li>
+<li><a class="iref" href="#add"><i>obj</i> add <i>value....</i></a></li>
+<li><a class="iref" href="#addwith"><i>obj</i> addwith ?<i>key value...</i>?</a></li>
+<li><a class="iref" href="#append"><i>obj</i> append <i>dict</i></a></li>
+<li><a class="iref" href="#clear"><i>obj</i> clear</a></li>
+<li><a class="iref" href="#dicts"><i>obj</i> dicts</a></li>
+<li><a class="iref" href="#find"><i>obj</i> find <i>key value</i> ?<i>key value...</i>?</a></li>
+<li><a class="iref" href="#format"><i>obj</i> format ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#keys"><i>obj</i> keys</a></li>
+<li><a class="iref" href="#set"><i>obj</i> set <i>list</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>dictlist(n) is a tool for building up lists of dictionaries, and for
+converting them to various forms (i.e., JSON).
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<p><span class="tt">::projectlib::dictlist</span> is an <span class="tt">oo::class</span>.  It provides the 
+following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="dictlist_create">dictlist create <i>name</i> <i>spec</i></a></dt><dd><p>
+
+Creates a new instance of dictlist(n) with the given command <i>name</i>.
+The instance is for building a list of dictionaries, each of which
+matches the <i>spec</i>.</p>
+
+<p>Each entry in the spec is a list of two items, the key name and the 
+default value of the key.  If the default value is omitted, the key's
+default value is the empty string.  The following code creates a dictlist
+whose entries will have three keys: <span class="tt">this</span> and <span class="tt">theother</span>, which default to the empty string, and <span class="tt">that</span>, which defaults to the number "5".
+
+</p><pre class="example">
+set dl [dictlist create mylist {
+    this
+    {that 5}
+    theother
+}]
+
+</pre>
+
+</dd>
+<dt class="defitem"><a name="dictlist_new">dictlist new ?<i>spec</i>?</a></dt><dd>
+
+Like <a class="iref" href="#dictlist_create">dictlist create</a>, but creates an instance with
+an arbitrary name, returning the name.
+
+</dd>
+</dl>
+
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+<p>Instances of dictlist(n) provide the following subcommands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="add"><i>obj</i> add <i>value....</i></a></dt><dd>
+
+Creates a new dictionary, matching the values on the command line to the
+keys one-for-one.  If there are fewer values than keys, the remaining keys
+are assigned the value "".  It's an error if there are fewer keys than 
+values.  The dictionary is appended to the list.
+
+</dd>
+<dt class="defitem"><a name="addwith"><i>obj</i> addwith ?<i>key value...</i>?</a></dt><dd>
+
+Creates a new dictionary with empty values, and then applies the given
+keys and values.  The keys may be specified with a leading "-"; it will
+be stripped automatically.  It's an error to pass an invalid key.  The
+resulting dictionary is appended to the list.
+
+</dd>
+<dt class="defitem"><a name="append"><i>obj</i> append <i>dict</i></a></dt><dd>
+
+Appends the <i>dict</i> to the list.  The <i>dict</i> is assume to match
+the object's <i>spec</i>.
+
+</dd>
+<dt class="defitem"><a name="clear"><i>obj</i> clear</a></dt><dd>
+
+Resets the object's content to the empty list.
+
+</dd>
+<dt class="defitem"><a name="dicts"><i>obj</i> dicts</a></dt><dd>
+
+Returns the list of dictionaries.
+
+</dd>
+<dt class="defitem"><a name="find"><i>obj</i> find <i>key value</i> ?<i>key value...</i>?</a></dt><dd><p>
+
+Returns a list of the items in the dict list that exactly match the
+given keys and values.</p>
+
+<p><b>TBD:</b> One could easily define a family of these: "glob" and "regexp" for
+glob and regexp matches, and "findone", "globone", and "regexpone" for
+finding the first item in the list, a la SQLite's "onecolumn" command.
+
+</p>
+</dd>
+<dt class="defitem"><a name="format"><i>obj</i> format ?<i>options...</i>?</a></dt><dd>
+
+Uses <a href="../../../kite/docs/mann/dictab.html">dictab(n)</a> to format the list.  The options are as for
+the <a href="../../../kite/docs/mann/dictab.html">dictab(n)</a> subcommand of the same name.
+
+</dd>
+<dt class="defitem"><a name="keys"><i>obj</i> keys</a></dt><dd>
+
+Returns the list of keys.
+
+</dd>
+<dt class="defitem"><a name="set"><i>obj</i> set <i>list</i></a></dt><dd>
+
+Sets the list of dictionaries.
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package, based on <a href="../../../mars/docs/mann/order.html">order(n)</a>'s validation commands.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:57 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

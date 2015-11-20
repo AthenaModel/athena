@@ -1,0 +1,539 @@
+<html>
+<head>
+<title>athena 6.3.3: parmdict(n) -- parmdict(i) Parameter Dictionary Manager, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>parmdict(n)</b> -- parmdict(i) Parameter Dictionary Manager, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#parmdict_create">parmdict create <i>name</i> ?<i>dict</i></a></li>
+<li><a class="iref" href="#parmdict_new">parmdict new ?<i>dict</i>?</a></li>
+<li><a class="iref" href="#assign"><i>obj</i> assign <i>parm</i> ?<i>parm</i>...?</a></li>
+<li><a class="iref" href="#badparm"><i>obj</i> badparm <i>parm</i></a></li>
+<li><a class="iref" href="#checkon"><i>obj</i> checkon <i>parm script</i></a></li>
+<li><a class="iref" href="#errors"><i>obj</i> errors</a></li>
+<li><a class="iref" href="#get"><i>obj</i> get <i>parm</i></a></li>
+<li><a class="iref" href="#ok"><i>obj</i> ok</a></li>
+<li><a class="iref" href="#parms"><i>obj</i> parms</a></li>
+<li><a class="iref" href="#prepare"><i>obj</i> prepare <i>parm</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-default">-default <i>defvalue</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-ident">-ident</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-notin">-notin <i>list</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-remove">-remove</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-required">-required</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-toupper">-toupper</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-tolower">-tolower</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-type">-type <i>vtype</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#prepare-with">-with <i>cmd</i></a></li>
+<li><a class="iref" href="#prune"><i>obj</i> prune</a></li>
+<li><a class="iref" href="#reject"><i>obj</i> reject <i>parm message</i></a></li>
+<li><a class="iref" href="#remove"><i>obj</i> remove <i>parm</i></a></li>
+<li><a class="iref" href="#setdict"><i>obj</i> setdict <i>dict</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>parmdict(n) is a tool for managing and validating parameter dictionaries,
+e.g., the query dictionary in an HTTP request.  A handler can "prepare"
+each of the parameter values, possibly transforming or validating them
+along the way.  If there are errors, the errors can be reported back.</p>
+
+<p>In general, parmdict(n) provides an <a href="../../../mars/docs/mann/order.html">order(n)</a>-like validation
+system for use in general procedures.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<p><span class="tt">::projectlib::parmdict</span> is an <span class="tt">oo::class</span>.  It provides the 
+following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="parmdict_create">parmdict create <i>name</i> ?<i>dict</i></a></dt><dd>
+
+Creates a new instance of parmdict(n) with the given command <i>name</i>
+for the given initial parameter <i>dict</i>.
+
+</dd>
+<dt class="defitem"><a name="parmdict_new">parmdict new ?<i>dict</i>?</a></dt><dd>
+
+Creates a new instance of parmdict(n) for the given initial
+parameter <i>dict</i> and returns the instance's name.
+
+</dd>
+</dl>
+
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+<p>Instances of parmdict(n) provide the following subcommands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="assign"><i>obj</i> assign <i>parm</i> ?<i>parm</i>...?</a></dt><dd>
+
+Assigns each listed <i>parm</i>'s value to a variable of the same name
+in the caller's context.  It's an error if <i>parm</i> isn't defined in
+the parmdict, so be sure to <a class="iref" href="#prepare">prepare</a>.
+
+</dd>
+<dt class="defitem"><a name="badparm"><i>obj</i> badparm <i>parm</i></a></dt><dd>
+
+Returns 1 if it's known that the <i>parm</i> requires no further validation:
+either there is already a known error, or the parameter is optional and
+its value is the empty string.
+
+</dd>
+<dt class="defitem"><a name="checkon"><i>obj</i> checkon <i>parm script</i></a></dt><dd>
+
+This command is used when <a class="iref" href="#prepare">prepare</a>'s options aren't enough to
+do the job of validation, e.g., when two parameters must be validated
+together.  If the <i>parm</i> isn't already known to be "bad" (in the sense
+of <a class="iref" href="#badparm">badparm</a>), the <i>script</i> will be executed in the caller's 
+context.  If the script throws INVALID, the error will be caught and
+<i>parm</i> will be rejected.  Naturally, <a class="iref" href="#reject">reject</a> and other commands
+can also be used explicitly.
+
+</dd>
+<dt class="defitem"><a name="errors"><i>obj</i> errors</a></dt><dd><p>
+
+If parameter errors have been discovered, returns a dictionary of
+parameter names and error messages.  In some cases, the error dictionary
+might have one key, "*", and a message encompassing the whole set of
+parameters.</p>
+
+<p>If no errors have been discovered, this command returns an empty 
+dictionary.
+
+</p>
+</dd>
+<dt class="defitem"><a name="get"><i>obj</i> get <i>parm</i></a></dt><dd>
+
+Returns the value of <i>parm</i> if <i>parm</i> is defined, and "" otherwise.
+
+</dd>
+<dt class="defitem"><a name="ok"><i>obj</i> ok</a></dt><dd>
+
+Returns 1 if no parameter errors have been discovered, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="parms"><i>obj</i> parms</a></dt><dd>
+
+Returns the current parameter dictionary.
+
+</dd>
+<dt class="defitem"><a name="prepare"><i>obj</i> prepare <i>parm</i> ?<i>options...</i>?</a></dt><dd><p>
+
+This one command does most of the work.  First it ensures that the <i>parm</i>
+is present in the dictionary, adding it with an empty value if necessary.
+Next it executes each of the options in order from left to right; 
+each option can transform or validate the parameter's value in some way.  
+The command returns the final value of the parameter.</p>
+
+<p>The options are as follows:
+
+</p><dl>
+
+<dt class="defopt"><a name="prepare-default">-default <i>defvalue</i></a></dt><dd>
+
+If the parameter's value is the empty string, assigns <i>defvalue</i>.
+
+</dd>
+<dt class="defopt"><a name="prepare-ident">-ident</a></dt><dd>
+
+Requires that the parameter's value be a valid identifier, as determined
+by the <span class="tt">identifier</span> type in <a href="../../../mars/docs/mann/marsmisc.html">marsmisc(n)</a>.
+
+</dd>
+<dt class="defopt"><a name="prepare-notin">-notin <i>list</i></a></dt><dd>
+
+Requires that the parameter's value not be in the given list; if it is,
+it will be rejected with the message "Duplicate <i>parm</i>".
+
+</dd>
+<dt class="defopt"><a name="prepare-remove">-remove</a></dt><dd>
+
+Removes the parameter from the dictionary.  When this option is used,
+the caller will usually capture the command's return value.
+
+</dd>
+<dt class="defopt"><a name="prepare-required">-required</a></dt><dd>
+
+The <i>parm</i> is required; it is rejected if its value is the empty
+string.
+
+</dd>
+<dt class="defopt"><a name="prepare-toupper">-toupper</a></dt><dd>
+
+Converts the parameter's value to upper case.
+
+</dd>
+<dt class="defopt"><a name="prepare-tolower">-tolower</a></dt><dd>
+
+Converts the parameter's value to lower case.
+
+</dd>
+<dt class="defopt"><a name="prepare-type">-type <i>vtype</i></a></dt><dd>
+
+Validates the parameter's value using the named validation type, saving
+the return value.  If the command throws INVALID, the parameter
+will be rejected.  Note that "<span class="tt">-type <i>mytype</i></span>" is equivalent
+to "<span class="tt">-with {<i>mytype</i> validate}</span>.
+
+</dd>
+<dt class="defopt"><a name="prepare-with">-with <i>cmd</i></a></dt><dd>
+
+Passes the parameter's value to the <i>cmd</i> as an additional argument,
+saving the return value.  If the command throws INVALID, the parameter
+will be rejected.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="prune"><i>obj</i> prune</a></dt><dd>
+
+Removes any parameters for which <i>prepare</i> has not been called.
+
+</dd>
+<dt class="defitem"><a name="reject"><i>obj</i> reject <i>parm message</i></a></dt><dd>
+
+A client calls this to explicitly reject a particular <i>parm</i>'s value.
+The <i>message</i> is added to the <a class="iref" href="#errors">errors</a> dictionary.
+
+</dd>
+<dt class="defitem"><a name="remove"><i>obj</i> remove <i>parm</i></a></dt><dd>
+
+Removes the parameter from the parmdict, returning its value.  If the
+parameter is undefined, returns "".
+
+</dd>
+<dt class="defitem"><a name="setdict"><i>obj</i> setdict <i>dict</i></a></dt><dd>
+
+Re-initializes the object with the new parameter <i>dict</i>.
+
+
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package, based on <a href="../../../mars/docs/mann/order.html">order(n)</a>'s validation commands.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:58 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

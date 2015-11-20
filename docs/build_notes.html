@@ -1,0 +1,1551 @@
+<html><head>
+<title>athena 6.3.3: Athena Build Notes</title>
+<style>
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 1%;
+            margin-right: 1%;
+        }
+    
+</style>
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+<h1>Athena Build Notes</h1>
+    
+
+<h2>Build Notes</h2>
+
+<h3>Build 6.3.3, 19 October 2015</h3>
+<p>This is the release build for Athena 6.3.3. It is identical to 6.3.3a1 
+except for the version number and these build notes.
+
+</p>
+
+<h3>Build 6.3.3a1, 12 October 2015</h3>
+<p>This build is the 6.3.3 release candidate and contains one bug fix and an
+update to the copyright notice in anticipation of Athena's open sourcing.
+
+</p>
+
+<ul>
+<li> Issue #320: long latlong strings cause Athena to crash
+</li></ul>
+
+<h3>Build 6.3.1, 28 September 2015</h3>
+<p>This build is the 6.3.1 release candidate and contains the completed
+documentation set and one minor change to the MOOD ruleset as requested by
+TRADOC G-27.
+
+</p>
+
+<ul>
+<li> Issue #314: Remove some VREL effects from MOOD ruleset 
+</li><li> Issue #310: Remove unnecessary step from CM plan 
+</li><li> Issue #309: Help order scrub 
+</li><li> Issue #308: broken links in help 
+</li><li> Issue #260: athena(1): Man page update needed 
+</li></ul>
+
+<h3>Build 6.3.1a4, 17 September 2015</h3>
+<p>This build contains a few bug fixes and some new vardiffs for causality 
+chaining.  The Athena Help has had some restructuring done to it.  There's
+also documentation updates.
+
+</p>
+
+<ul>
+<li> Issue #307: New vardiff: influence.n.a
+</li><li> Issue #306: NOT_CONTROLLED_BY gofer does not return correct list of nbhoods
+</li><li> Issue #305: chainbrowser: baseline vs excursion analysis 
+</li><li> Issue #304: Make security.n.g a primary vardiff
+</li><li> Issue #303: New vardiff: saliency.g.c enhancement
+</li><li> Issue #302: WMS client sends incorrect order parm 
+</li><li> Issue #301: export error: invalid command name "parm"
+</li><li> Issue #299: Athena Help Restructuring
+</li><li> Issue #298: compdb active parameters do not disable the variable
+</li><li> Issue #297: Arachne needs -compdb comand line parameter 
+</li><li> Issue #286: MAG Nbmood equation 
+</li><li> Issue #169: athena(n) background threads need mods too
+</li></ul>
+
+<h3>Build 6.3.1a3, 26 August 2015</h3>
+<p>This build introduces the Analysis Tab in the Athena Workbench and History
+request pages in the Athena Test Web App.  Comparison parameter database
+(compdb(5)) files are now managed by the workbench.  The help pages have 
+been updated to show what the parameters are and how you can change and 
+export them.  The Web App still needs to have a way to read in a comparison
+parameter database so, for now, it will still use the defaults.  A couple 
+of old bugs that did not get assigned milestones are included here even 
+though they were fixed in a previous build; they may still need to be tested.
+
+</p>
+
+<ul>
+<li> Issue #296: bgerror: compdb parameters not loaded properly 
+</li><li> Issue #295: Introduced compdb commands in workbench
+</li><li> Issue #294: Analysis Tab
+</li><li> Issue #293: Add significance coefficents to compdb(5) 
+</li><li> Issue #292: Angular hist
+</li><li> Issue #278: remove huddle requirements from Athena
+</li><li> Issue #277: Web App: case tabs are unresponsive
+</li></ul>
+
+<h3>Build 6.3.1a2, 27 July 2015</h3>
+<p>This build contains some updates to Arachne and the Web App.  There is a
+page for each case that can be used to display and filter model 
+parameters and to change model parameter values.  There is also a comparison 
+page that can be used to compare the same scenario at different times or 
+two different scenarios.
+
+</p>
+
+<ul>
+<li> Issue #285: New vardiff scoring
+</li><li> Issue #284: Uniform Vardiff Scoring 
+</li><li> Issue #283: Web App: Comparisons, Part II Arachne enhancement 
+</li><li> Issue #282: Webapp comparison two
+</li><li> Issue #281: Web App: Comparisons, Part I Arachne enhancement 
+</li><li> Issue #280: Webapp comparisons, Part I
+</li><li> Issue #279: Arachne parms
+</li><li> Issue #276: Web App: Arachne service extensions 
+</li></ul>
+
+<h3>Build 6.3.1a1, 7 July 2015</h3>
+<p>This build introduces a new Arachne web app based upon AngularJS, a third 
+party Javascript library that allows for quick construction and easier software
+management of web-based applications. One of the biggest benefits of using
+AngularJS is that the web app uses the same JSON interface that any other
+web app would use (ie. the Federal CGI contractor). This means that the
+JSON interface can be verified directly.
+
+</p>
+
+<ul>
+<li> Issue #274: Web App: case object management
+</li><li> Issue #273: Web App: case lock, unlock, advance
+</li><li> Issue #271: arachne.css: definition list display
+</li><li> Issue #269: Arachne: URL Schema display in web app
+</li><li> Issue #268: Arachne Comparisons 
+</li><li> Issue #266: vardiffs drilldown: support 
+</li><li> Issue #265: vardiffs drilldown: vrel 
+</li><li> Issue #264: vardiff drilldowns: pbmood, pbsat, nbmood, nbsat, bsysmood, bsyssat
+</li><li> Issue #262: Need groups by belief system in stats(n) module 
+</li><li> Issue #272: Arachne log page
+</li><li> Issue #270: Arachne URL Schemas in new Debug Interface
+</li><li> Issue #267: Arachne comparison
+</li><li> Issue #261: Angular athena
+</li></ul>
+
+<h3>Build 6.3.0, 17 June 2015</h3>
+<p>This build is the release candidate for Athena 6.3 and contains only two
+small bug fixes.
+
+</p>
+
+<ul>
+<li> Issue #258: Arachne /debug/log/{case}.bg/index.html page displays error
+</li><li> Issue #257: Neighborhood Mood Contributions page displays error
+</li></ul>
+
+<h3>Build 6.3.0a13, 15 June 2015</h3>
+<p>This build contains a single bug fix (#256) reported from version 6.3.0.a12 
+and a few older ones that were not associated with milestone builds and, thus,
+were not listed in the builds in which they were actually fixed.
+
+</p>
+
+<ul>
+<li> Issue #256: athena(n): `econ reset` doesn't reset in-memory data 
+</li><li> Issue #255: Contributions tables are broken
+</li><li> Issue #243: athena(n): Remove UNIT:MOVE and ABSIT:MOVE orders 
+</li><li> Issue #235: arachne: JSON return protocol 
+</li><li> Issue #229: nbsat should not be listed as a history variable 
+</li></ul>
+
+<h3>Build 6.3.0a12, 10 June 2015</h3>
+<p>This build contains a few more bug fixes and some documentation updates to the 
+AAG, AUG and Rules Doc.
+
+</p>
+
+<ul>
+<li> Issue #253: Athena Help Update for June Delivery 
+</li><li> Issue #252: Old version number on Arachne home page
+</li><li> Issue #251: uram.factors.* help pages have visible html tags
+</li><li> Issue #250: ted(n) needs better JSON matching
+</li><li> Issue #249: Volatility equation needs to be changed
+</li><li> Issue #248: parmdb(5): aam.civcas.* needs an aam.civcas.urbanization.* subset.
+</li></ul>
+
+<h3>Build 6.3.0a11, 8 June 2015</h3>
+<p>This build contains a whole host of bug fixes mainly to Arachne.  This build
+also contains the "athena.exe" executable for running Athena in batch mode.
+
+</p>
+
+<ul>
+<li> Issue #245: ted(n) should block on advance 
+</li><li> Issue #242: Arachne inconsistent header sizes 
+</li><li> Issue #241: arachne: refactor tempdomain into app.tcl 
+</li><li> Issue #238: arachne: Improved JSON Results display 
+</li><li> Issue #236: Arachne Remove Scenario is confusing 
+</li><li> Issue #233: Search Results title appears behind Athena logo 
+</li><li> Issue #232: help message written to arachne.exe command line 
+</li><li> Issue #231: athena(n): Many orders are available while PAUSED. 
+</li><li> Issue #230: bgerror: AAM has uninitialized variable 
+</li><li> Issue #228: Deleting a neighborhood in paused state causes error message 
+</li><li> Issue #227: athena(n): Dynaform for Attrit Tactic is confusing 
+</li><li> Issue #226: scenario history should use /temp domain 
+</li><li> Issue #225: aam.* model parameters need to be added to Detail browser sidebar 
+</li><li> Issue #224: Arachne scenario / scripts page displays an error Arachne 
+</li><li> Issue #223: Arachne scenario / org groups page layout issue Arachne 
+</li><li> Issue #222: Strategy Overview subtab displays an unexpected error 
+</li><li> Issue #217: arachne: /temp domain Arachne 
+</li><li> Issue #214: Magic Attrit dialog bgerror 
+</li><li> Issue #196: displayed filename not updating on save 
+</li><li> Issue #192: Econ Model failing to solve causes bgerror 
+</li><li> Issue #190: Bogus map data causes bgerror 
+</li><li> Issue #180: Civconcern force multipliers set to 0 cause bgerror 
+</li><li> Issue #179: Non-geo referenced map can cause bgerror 
+</li><li> Issue #172: Belief system change position or emphasis bgerror 
+</li><li> Issue #144: `autogen scenario` leaves neighborhoods off of the map 
+</li><li> Issue #139: New scenario undo bgerror 
+</li><li> Issue #125: select all in a filter ignores the filter 
+</li><li> Issue #77: Copyright date on installer needs to be updated 
+</li><li> Issue #76: Incompatible scenario message needs to be updated 
+</li><li> Issue #54: Consumption rules should not apply to non-local groups 
+</li><li> Issue #51: debugger should recognize TclOO 
+</li><li> Issue #39: Remove "bookmarks" from Athena 
+</li><li> Issue #34: model parameter help pages 
+</li><li> Issue #6: Physical/Map tab help page needs to be updated. 
+</li></ul>
+
+
+<h3>Build 6.3.0a10, 1 June 2015</h3>
+<p>This build contains the latest addition to the family of applications that 
+use the athena(n) library: Arachne.  Arachne is a webserver that provides
+access to web pages to create, update, query and run an instance of athena
+by way of a standard web browser (ie. Chrome, Firefox, etc...).  There is
+also a number of bug fixes.
+
+</p>
+
+<ul>
+<li> Issue #221: Arachne: HTML interface improvements, including paging of large queries Arachne 
+</li><li> Issue #219: vardiff(n): honor the $vartype.active compdb(5) parameter
+</li><li> Issue #218: htmbuffer(n): form blocks
+</li><li> Issue #216: Arachne hist
+</li><li> Issue #215: Difference drill-down architecture, part 
+</li><li> Issue #213: athena(n): Difference drill down architecture
+</li><li> Issue #211: athena(n): "is" predicates
+</li><li> Issue #210: athena(n): Component man pages 
+</li><li> Issue #209: athena(n): Standard error codes Arachne 
+</li><li> Issue #208: Test suite failures related to 'qid'
+</li><li> Issue #207: app_arachne: /scenario/{case}/script.json Arachne 
+</li><li> Issue #206: Arachne: check/lock/advance/unlock Arachne 
+</li><li> Issue #204: Arachne actors
+</li><li> Issue #203: arachne: Debugging Log Display Arachne
+</li><li> Issue #202: arachne: populate order form Arachne 
+</li><li> Issue #201: arachne: on-lock sanity checking Arachne
+</li><li> Issue #200: Thread Error Handling 
+</li><li> Issue #199: Bgslave error handling
+</li><li> Issue #198: bgerror: setting actor budget to "" 
+</li><li> Issue #197: On tick sanity check is ignored when advancing time in the background 
+</li><li> Issue #195: Structured Sanity Check Data enhancement 
+</li><li> Issue #194: Workbench log shows stack traces on one line
+</li><li> Issue #189: arachne: /scenario/{case}/order.html, don't send order to check parms
+</li><li> Issue #188: Arachne Test Interface Arachne
+</li><li> Issue #186: New sql views
+</li><li> Issue #185: helpdomain(n): home link, search box 
+</li><li> Issue #184: helpdomain(n): smartdomain for serving helpdb pages.
+</li><li> Issue #183: htools(n): Tk images are not being found 
+</li><li> Issue #182: helperserver(n): Help URLs should include file extension
+</li><li> Issue #177: smartdomain(n): Simply smartdomain(n) API
+</li><li> Issue #176: arachne(1): Athena web spinner Arachne 
+</li><li> Issue #174: athenawb(1): CLI history still vanishes 
+</li><li> Issue #173: Items disappearing after Athena runs in background 
+</li><li> Issue #171: Added bsysmood.b and mood.g vardiffs
+</li><li> Issue #168: projectlib(n): mod loader 
+</li><li> Issue #146: athena(1) no longer needs a batch mode. 
+</li><li> Issue #137: Athena Help: misformatted page headers
+</li></ul>
+
+
+<h3>Build 6.3.0a9, 28 April 2015</h3>
+<p>This build contains a fix to a significant bug and a minor refactor to how
+history is stored.  Athena should now run in the background without issue.
+
+</p>
+
+<ul>
+<li> Issue #170: History refactoring
+</li><li> Issue #167: bgerror: Athena won't run in background thread
+</li></ul>
+
+<h3>Build 6.3.0a8, 23 April 2015</h3>
+<p>This build contains updated CIVCAS rules for HREL and VREL effects.  There 
+is now a progress bar at the top of the Athena Workbench that appears after the
+run button is pressed to show runtime progress and disappears when the run
+is complete.  Since the Athena backend library has come into being and is
+completely separate from the frontend GUI , the library can now be run in its
+own thread.  For now, the target for running Athena in a background thread is 
+the Arachne case, but the workbench will at some point be updated to use this
+capability.
+
+</p>
+
+<ul>
+<li> Issue #166: athenawb(1): mod loader error reporting is broken
+</li><li> Issue #165: concern for civilian casualties not changing
+</li><li> Issue #164: New CIVCAS rules
+</li><li> Issue #163: athena(n): Background Processing
+</li><li> Issue #161: AAM needs some parmdb defaults
+</li><li> Issue #154: athenawb(1): Add progress bar enhancement
+</li></ul>
+
+<h3>Build 6.3.0a7, 15 April 2015</h3>
+<p>This build changes the name of the Athena front end GUI to "Athena Workbench".
+The name of the executable is now athenawb.exe on Windows and athenawb
+on Linux. From a Windows user's standpoint, nothing has changed; the same 
+Athena icon is what is double clicked to launch the Athena GUI.  The build
+also contains the implementation of AAM as laid out in the model memo. There
+is two new tactics: ROE and HIDE.  Athena Workbench has new detail browser
+pages for tracking combat within AAM.  A one-year moving average for GDP 
+within the economics model is now computed by Athena and displayed on the
+Economics/Overview tab.  There are a few bug fixes as well.
+
+</p>
+
+<ul>
+<li> Issue #159: Moving Average GDP Calculation
+</li><li> Issue #158: athenawb(1): Log tab, -autowidth
+</li><li> Issue #157: bgerror on time advance after loading a paused scenario
+</li><li> Issue #156: combat appserver page bgerror
+</li><li> Issue #155: Appserver combat
+</li><li> Issue #153: Hide tactic and visibility factors
+</li><li> Issue #152: New aam
+</li><li> Issue #150: Add deployment history table
+</li><li> Issue #149: Athena tool
+</li><li> Issue #148: Athena workbench
+</li><li> Issue #143: Popup cancel bgerror 
+</li><li> Issue #142: Beanbrowsers need to have an option for the beanpot 
+</li><li> Issue #140: Autogen scenario does not clear old neighborhood polygons 
+</li><li> Issue #138: athena(n): cannot create two instances 
+</li></ul>
+
+<h3>Build 6.3.0a6, 9 March 2015</h3>
+<p>This build contains more changes related to the re-architecture of Athena. As
+of this build, the re-architecture can be considered feature complete unless
+some unforeseen problem arises.  There are a few bug fixes and enhancements
+included with this build.  However, most of the testing of this build should be 
+centered on regresssion testing.
+
+</p>
+
+<ul>
+<li> Issue #135: Econ Failure notifications
+</li><li> Issue #134: Handle on-tick sanity failures in app
+</li><li> Issue #133: Move deletion confirmations to GUI
+</li><li> Issue #132: Remove parmdb(5) app dependencies. 
+</li><li> Issue #131: Athena(n) test suite
+</li><li> Issue #130: MAP:* orders call `app puts` 
+</li><li> Issue #129: Make global simclock an athenadb(n) component 
+</li><li> Issue #128: Revise athena(n) API r
+</li><li> Issue #127: Remove global component names
+</li><li> Issue #126: Move contents of parmdb.tcl from projectlib to athena(n) parm module 
+</li><li> Issue #124: Neighborhood Ingestion Wizard default map bgerror 
+</li><li> Issue #123: mapviewer(n) has an outdated reference to the map module
+</li><li> Issue #122: Update esectors enumeration remove duplicate proc from view.tcl
+</li><li> Issue #121: Move helpers.tcl to athena(n) 
+</li><li> Issue #120: Move "apptypes" to athena(n) 
+</li><li> Issue #119: Move rebase.tcl to athena(n)
+</li><li> Issue #118: Move hist.tcl to athena(n) 
+</li><li> Issue #117: Fix saveable semantics 
+</li><li> Issue #116: Save/restore appwin prefs on start, exit 
+</li><li> Issue #115: Add -map option to the exporter. 
+</li><li> Issue #114: Fix saveable registry in athena(n) 
+</li><li> Issue #113: Move link.tcl to athena(n) 
+</li><li> Issue #112: Move ptype to athena(n) 
+</li><li> Issue #111: Move sanity.tcl to athena(n) 
+</li><li> Issue #110: Move sim.tcl into athena(n)
+</li><li> Issue #109: Update MAP:IMPORT:DATA and MAP:GEOREF helps 
+</li><li> Issue #107: Move map.tcl to athena(n). 
+</li><li> Issue #106: Move "autogen" to athena(n) 
+</li><li> Issue #105: Remove field_types.tcl from Athena 
+</li><li> Issue #104: athena(n) should support "new", "open" operations 
+</li><li> Issue #103: Move security_model.tcl to athena(n)
+</li><li> Issue #102: Move coverage_model.tcl into athena(n).
+</li><li> Issue #101: Move "executive" to athena(n) 
+</li><li> Issue #100: Create FLOW tactic button causes bgerror
+</li><li> Issue #99: Condition orders cannot be entered in the command line
+</li><li> Issue #98: Move control_model.tcl to athena(n). 
+</li><li> Issue #97: Reorganize athena(n)'s directory tree 
+</li><li> Issue #96: peMove rolemapfield widget to athena(n) 
+</li><li> Issue #95: Remove axdb capability 
+</li><li> Issue #94: Move exporter into athena(n). 
+</li><li> Issue #93: Move "parm" into athena(n) 
+</li><li> Issue #92: Gofers in athena(n)
+</li><li> Issue #91: Move plant.tcl to athena(n) 
+</li><li> Issue #90: License Agreement text in Windows Installer
+</li><li> Issue #89: Move aam.tcl to athena(n) 
+</li><li> Issue #72: force.proximity should be 0.0 
+</li></ul>
+
+<h3>Build 6.3.0a5, 19 February 2015</h3>
+<p>This build contains a whole host of architectural changes to many modules
+in Athena (Issue #64 below).  This continues our effort to have many instances
+of Athena running as a library.  These changes require a significant amount of 
+regression testing be done to ensure that the architectural changes are 
+transparent to the user. There are also a number of bug fixes.
+
+</p>
+
+<ul>
+<li> Issue #87: New map(n) order to assign geo-locations to arbitrary image
+</li><li> Issue #79: Default map in Athena's map module should use geo-references
+</li><li> Issue #78: bsys creates instance of mam(n).
+</li><li> Issue #75: image "" doesn't exist bgerror
+</li><li> Issue #71: New parmdb(5) parameters for AAM.
+</li><li> Issue #70: Remove Intel Ingestion Wizard
+</li><li> Issue #69: Update Absit order dialog does not accept current absit type
+</li><li> Issue #68: bgerror: invalid command name "::map::maprect1"
+</li><li> Issue #67: export script.tcl command returns error
+</li><li> Issue #66: Deleting a neighborhood causes a bgerror
+</li><li> Issue #65: User is unable to draw neighborhood maps 
+</li><li> Issue #64: Scenario object 
+</li></ul>
+
+<h3>Build 6.3.0a4, 28 January 2015</h3>
+<p>This build contains a very significant number of changes related to the
+re-architecture of Athena for use as a web application running in the cloud
+to support Corps level COA analysis.  Specifically, Athena had to be changed
+to allow for multiple instances of scenarios. Which means each instance needs 
+it's own order processing and own set of scenario objects including instances
+of strategies for each actor in each scenario.  These changes will make it
+possible (along with others yet to be done) for the Athena application to 
+run as a library with, for example, a browser-based front end controlling it.  
+Another change of note is the addition of user defined block, tactic and
+condition names that can be used in orders instead of numeric IDs, which is
+cumbersome for the user.  There is quite a few bug fixes as well.
+
+</p>
+
+<ul>
+<li> Issue #63: Mars Order Processor integration
+</li><li> Issue #62: New Order Infrastructure, plus updated orders 
+</li><li> Issue #61: Paste of blocks, tactics and conditions not undoable
+</li><li> Issue #60: Add history tables 
+</li><li> Issue #57: Strategy names can now be used in orders
+</li><li> Issue #56: New order infrastructure 
+</li><li> Issue #55: Strategy IDs composed of actor, block, condition and tactic names
+</li><li> Issue #52: TRAFFIC simevent refactor 
+</li><li> Issue #50: DEPLOY tactic bgerror: attempt to deploy 0 personnel
+</li><li> Issue #49: SERVICE tactic refactor 
+</li><li> Issue #47: Remove PRESENCE activity and NOWATER, POWEROUT and TRAFFIC absits.
+</li><li> Issue #46: Neighborhood Wizard test data button broken
+</li><li> Issue #45: Update intel wizard to use bean pot
+</li><li> Issue #43: Beanpot class 
+</li><li> Issue #42: Removal of the transient attrition tables from AAM 
+</li><li> Issue #41: -block parm in SIM:RUN should always be YES in non-GUI mode
+</li><li> Issue #40: Storing transient attrition data 
+</li><li> Issue #37: Strategy object names are transient
+</li><li> Issue #36: Bean IDs are persistent
+</li><li> Issue #35: Default mapimage 
+</li><li> Issue #33: Remove default map image 
+</li><li> Issue #32: -batch option should not be valid
+</li><li> Issue #14: min security not updated after simulation initialization
+</li><li> Issue #1: message box bgerror
+</li></ul>
+
+<h3>Build 6.3.0a3, 19 November 2014</h3>
+<p>This build contains updated rule sets for the Abstract Infrastructure services
+and a few bug fixes.  The most notable change to the rule sets is the added
+effect to vertical relationship with the controlling actor (if there is one).
+
+</p>
+
+<ul>
+<li> Issue #31: Neighborhood Abstract Infrastructure Services table is redundant
+</li><li> Issue #30: Update project file to exclude unnecessary packages 
+</li><li> Issue #29: Updated abstract infrastructure rule sets
+</li><li> Issue #28: ALOS needs to be capped
+</li><li> Issue #27: FUNDENI tactics should set ALOS on lock
+</li><li> Issue #23: app_athena test failure: 020-NBHOOD, CREATE_RAW-1.12 
+</li></ul>
+
+<h3>Build 6.3.0a2, 5 November 2014</h3>
+<p>This build contains more abstract services: WATER and TRANSPORT. The rules 
+still need to be scrubbed, for now the magnitudes of the effects are identical
+to the ENERGY abstract infrastructure.  The detail browser for neighborhoods
+and groups should show the new abstract services.  There's also some 
+documentation updates and some transparent changes to how Athena applications
+are loaded at startup.
+
+</p>
+
+<ul>
+<li> Issue #25: FUNDENI tactics should be able to have uncapped spending
+</li><li> Issue #22: Add TRANSPORT abstract infrastructure service 
+</li><li> Issue #20: athena(1) and cellide(1) should use standard loader scripts 
+</li><li> Issue #19: Add WATER abstract infrastructure service
+</li><li> Issue #18: Add appserver pages for abstract services
+</li><li> Issue #18: Installer file should reference the full name of the executable.
+</li><li> Issue #16: CM plan should no longer mention manual build of athena.helpdb
+</li></ul>
+
+<h3>Build 6.3.0a1, 21 October 2014</h3>
+<p>This build is the first build to use the new 'kite' project system. From a
+users point of view the only change is the way version numbers are represented.
+However, the GIT repository is where testers should now go to view 'issues'
+instead of bugs to see details about the things that have gone into a build.
+This build contains the first of a handful of what we are calling Abstract
+Infrastructure Services (AIS). The first one being the ENERGY service.  A user
+can use the new SERVICE tactic (SYSTEM agent only) to change the actual level
+of ENERGY service received by a neighborhood(s).  All the civilian groups 
+resident in the neighborhood(s) are then affected.  NOTE: the rule set in
+this build should be considered a place holder until the actual magnitudes
+are determined.
+
+</p>
+
+<ul>
+<li> Issue 15: Add ENERGY abstract infrastrucure service
+</li><li> Issue 12: Move docs/help to src/help
+</li><li> Issue 11: Add distribution sets to project.kite 
+</li><li> Issue 10: app_athena should not include packages that projectlib does
+</li><li> Issue 9: Separate the ENI specific functionality from the service module
+</li></ul>
+
+<h3>Build 6.2.2-B23, 7 October 2014</h3>
+<p>This build is the release candidate for Athena 6.2.2.  It contains
+documentation updates to the AAG, AUG and online help.  It also restores the
+accidentally removed "Help" menu in main window menu bar.
+
+</p>
+
+<ul>
+<li> Bug 4612: Add online help page for Wizards
+</li><li> Bug 4599: AAG section 9.8.3 typo
+</li><li> Bug 4613: Final help changes for 6.2 release 
+</li></ul>
+
+<h3>Build 6.2.2-B22, 2 October 2014</h3>
+<p>This build has mainly documentation updates but also contains a couple of bug fixes.
+
+</p>
+
+<ul>
+<li> Bug 4603: broken links on scenariodb(n) man page
+</li><li> Bug 4607: Athena Map Scrollbars should not scroll
+</li><li> Bug 4609: Make neighborhood ingestion wizard header more compact
+</li><li> Bug 4610: Add section on neighborhood ingestion wizard to AUG
+</li><li> Bug 4611: AUG updates 
+</li></ul>
+
+<h3>Build 6.2.2-B21, 18 September 2014</h3>
+<p>This build contains one fix to the Neighborhood Ingestion wizard.  It is also
+the build that will be used to demonstrate that capability at I2WD if there are
+no severe problems discovered.
+
+</p>
+
+<ul>
+<li> Bug 4604: Athena ingests neighborhoods outside of playbox
+</li></ul>
+
+<h3>Build 6.2.2-B20, 16 September 2014</h3>
+<p>This build contains an enhancement to the Neighborhood Ingestion wizard that
+allows the user to configure neighborhoods via a home-brewed text file.  The
+idea is that, in the absence of the World Database, this would serve as a
+proxy to describe things like neighborhood heirarchy.  There are also some
+bug fixes to that wizard and some other bug fixes to Athena proper.
+
+</p>
+
+<ul>
+<li> Bug 4598: Neighborhood Ingestion Wizard not consistent with Athena Playbox
+</li><li> Bug 4600: Nbhood Ingestion Wizard: Use a metadata input file to describe polygon relationship
+</li><li> Bug 4601: Include TIGR messages and Neighborhood polygon data in Athena installers
+</li><li> Bug 4602: Parent neighborhood should turn white when last child is selected
+</li><li> Bug 4538: Broken link in man pages
+</li><li> Bug 4548: "make" starts slowly
+</li><li> Bug 4559: athena(1): Rule firing pages don't show rule title
+</li><li> Bug 4564: Model Parameters tree in Detail browser out of order
+</li><li> Bug 4565: ABSIT tactic duration
+</li><li> Bug 4597: Undo and Redo in Wizard State 
+</li></ul>
+
+<h3>Build 6.2.2-B19, 3 September 2014</h3>
+<p>This build contains a number of fixes to the Neighborhood Ingestion wizard
+and a better way of handling popup windows.
+
+</p>
+
+<ul>
+<li> Bug 4590: Neighborhood Ingestion bgerror
+</li><li> Bug 4591: Parent neighborhoods not disabled when all children are selected
+</li><li> Bug 4592: Neighborhood Ingestion Reference Point bgerror
+</li><li> Bug 4588: Edit Event dialog does not appear
+</li><li> Bug 4589: Ingested neighborhood have same ID numbers
+</li><li> Bug 4594: athena(1): bgerror handling
+</li><li> Bug 4595: athena(1) Detail Browser windows aren't Topwins 
+</li></ul>
+
+<h3>Build 6.2.2-B18, 29 August 2014</h3>
+<p>This build introduces the Neighborhood Ingestion wizard.  It also contains
+a few bug fixes to the Intel Ingestion wizard.
+
+</p>
+
+<ul>
+<li> Bug 4584: athena(1): need neighborhood order handler that can deal with raw lat/long data
+</li><li> Bug 4585: Neighborhood Ingestion Wizard
+</li><li> Bug 4586: athena(1): Neighborhood Wizard not handling 3rd level polygon children properly
+</li><li> Bug 4587: athena(1): more neighborhood ingestion wizard improvements
+</li><li> Bug 4581: Intel Ingest 0% Coverage bgerror
+</li><li> Bug 4582: Ingested events can have the same number
+</li><li> Bug 4583: Demonstration event ingested as multiple tactics 
+</li></ul>
+
+<h3>Build 6.2.2-B17, 15 August 2014</h3>
+<p>This build fixes a number of issues relating to the new Intel
+Ingestion wizard.
+
+</p>
+
+<ul>
+<li> Bug 4567: Wizard State unlock bgerror
+</li><li> Bug 4566: EXPLOSION event should be persistent
+</li><li> Bug 4570: Ingest Test Data button is broken
+</li><li> Bug 4571: Tabs displayed in Wizard state should match Scenario Prep
+</li><li> Bug 4572: Remove athena_ingest(1) from CM plan
+</li><li> Bug 4574: Detail Browser problems in Wizard State
+</li><li> Bug 4575: bean(n): setnextid
+</li><li> Bug 4577: athena(1): Intel Ingestion undo problem
+</li><li> Bug 4578: athena(1): add module to parse KML polygons
+</li><li> Bug 4579: athena(1): Extraneous markers in undo stack.
+</li></ul>
+
+<h3>Build 6.2.2-B16, 11 August 2014</h3>
+<p>This build adds the first version of the integrated Intel Ingestion Wizard,
+which replaces the standalone athena_ingest(1) tool.
+
+</p>
+
+<ul>
+<li> Bug 4568: athena(1): Added intel ingestion wizard
+</li></ul>
+
+<h3>Build 6.2.2-B15, 5 August 2014</h3>
+<p>This build integrates some of the sim events that were created for DCGS-A as 
+proper rule sets with associated ABSITs.  It also introduces "abstract events"
+or ABEVENT for short.  An ABEVENT is meant to be used to model a phenomenon that
+is abstract but does not have ongoing effects in the simulation.  An example 
+of an ABEVENT would be an ACCIDENT.  ABSITs can now be executed as
+part of an actor's strategy now using the ABSIT tactic.  There is no mechanism,
+yet, to execute an ABEVENT, only rule sets.  The complete list of packages:
+
+</p>
+
+<ul>
+<li> Bug 4558: athena(1): ABSIT tactic
+</li><li> Bug 4560: athena(1): DROUGHT and TRAFFIC rule sets
+</li><li> Bug 4561: athena(1): abstract event rule sets
+</li><li> Bug 4562: athena(1): Abtract Event Tactics
+</li><li> Bug 4563: athena(1): Wizard state 
+</li></ul>
+
+<h3>Build 6.2.1-B14, 24 June 2014</h3>
+<p>Three more bug fixes related to athena_ingest(1) testing are in this build. 
+
+</p>
+
+<ul>
+<li> Bug 4556: CURSE tactics with empty gofers in all injects should execute trivially
+</li><li> Bug 4554: Ingestion script fails for DEMO events with multiple groups
+</li><li> Bug 4555: DEMO curse skips demonstrating group 
+</li></ul>
+
+<h3>Build 6.2.1-B13, 24 June 2014</h3>
+<p>A few bugs were found during testing of the previous build that requires a
+new build be made. Here are the fixes:
+
+</p>
+
+<ul>
+<li> Bug 4433: activity.*.coverage help pages mention "active personnel"
+</li><li> Bug 4438: CMO needs to be removed from documentation
+</li><li> Bug 4446: Gini coefficient typos
+</li><li> Bug 4531: nbcoop.&lt;g&gt; map fill bgerror
+</li><li> Bug 4553: User is unable to edit the list of groups in Demonstration event 
+</li></ul>
+
+<h3>Build 6.2.1-B12, 23 June 2014</h3>
+<p>This build contains mainly some bug fixes and represents a potential candidate
+for use at the I2WD demonstration in July.  There is one new event type for
+athena_ingest(1) called "DEMO" and is meant to simulate a non-violent 
+demonstration occurring in Athena.
+
+</p>
+
+<ul>
+  <li> Bug 4447: athena(1): no tests for autogen executive commands
+  </li><li> Bug 4530: athena(1): CURSE help pages don't match code
+  </li><li> Bug 4550: autogen bsystem is invalid
+  </li><li> Bug 4552: autogen assign returns error
+  </li><li> Bug 4484: Physical/EnSits tab should be renamed
+  </li><li> Bug 4485: Executive commands list is out of order
+  </li><li> Bug 4531: nbcoop.&lt;g&gt; map fill bgerror
+  </li><li> Bug 4541: NON_SA_IN CIVGROUPS gofer help page is inconsistent
+  </li><li> Bug 4551: athena_ingest(1): DEMO sim event 
+</li></ul>
+
+<h3>Build 6.2.1-B11, 18 June 2014</h3>
+<p>This build adds a new gofer(n) rule for CIVGROUPS called "megafilter".
+It essentially rolls up all other rules into a single rule that allows the user
+to pick and choose which filtering to apply to a list of civilian groups.  It 
+may, in the future, be a rule applied to all of Athena's entities and could, in
+principle, replace all other gofer(n) rules.  There is also a few bug fixes
+to athena_ingest(1) and athena(1).
+
+</p>
+
+<ul>
+<li> Bug 4505: athena(1): CURSE tactic execution results in too many rule firings.
+</li><li> Bug 4526: athena(1): add hist_service_g table to history.
+</li><li> Bug 4540: Role names can be assigned to conflicting role types
+</li><li> Bug 4487: HRel tab bgerror
+</li><li> Bug 4544: Explosion and Riot events cannot be disabled
+</li><li> Bug 4545: Drought Curse needs to be updated
+</li><li> Bug 4546: athena(1): bgerror when opening Nangahar scenario
+</li><li> Bug 4547: VRel tab bgerror
+</li><li> Bug 4549: athena(1): gofer::CIVGROUPS "megafilter" 
+</li></ul>
+
+<h3>Build 6.2.1-B10, 9 June 2014</h3>
+<p>This build contains a bug fix for the TRAFFIC ingestion event, and
+some preliminary infrastructure to support the upcoming DEMO
+ingestion event.
+
+</p>
+
+<ul>
+<li> Bug 4542: projectlib(n): Add "listbutton" dynaform field type
+</li><li> Bug 4543: athena_ingest(1): Fails to start, simevent_traffic.tcl no...
+</li></ul>
+
+<h3>Build 6.2.1-B9, 9 June 2014</h3>
+<p>This build contains a number of bug fixes, and also some enhancements
+to athena_ingest(1).
+
+</p>
+
+<ul>
+<li> Bug 4486: Belief System New Scenario bgerror
+</li><li> Bug 4528: Belief System and Topic bgerror
+</li><li> Bug 4529: athena_ingest(1): ACCIDENT event type
+</li><li> Bug 4532: athena_ingest(1): CIVCAS simevent
+</li><li> Bug 4533: athena_ingest(1): EXPLOSION sim event
+</li><li> Bug 4534: athena_ingest(1): RIOT sim event
+</li><li> Bug 4535: athena_ingest(1): Clean up, full neighborhood names
+</li><li> Bug 4536: athena_ingest(1): TRAFFIC sim event.
+</li><li> Bug 4539: listbuttonfield(n): Compact List Selection Field Widget
+</li></ul>
+
+<h3>Build 6.2.1-B8, 3 June 2014</h3>
+<p>This build contains a number of bug fixes to 6.2.0-B7's ingestion
+tool.
+
+</p>
+
+<ul>
+<li> Bug 4516: Help page refers to Athena 7
+</li><li> Bug 4520: Athena Ingest sorting messages right click
+</li><li> Bug 4521: Athena Ingest html page typo
+</li><li> Bug 4522: Athena Ingest save script does not add .tcl extension
+</li><li> Bug 4523: athena_projinfo(1): Man page says "-save", not "-commit".
+</li><li> Bug 4524: Athena Ingest UNIQUE constraint failed error
+</li><li> Bug 4525: Athena Ingest save script problem
+</li><li> Bug 4527: athena_ingest(1): enabled/disabled state is ignored.
+</li></ul>
+
+<h3>Build 6.2.0-B7, 28 May 2014</h3>
+<p>A serious bug was found in the athena_ingest(1) application that requires a
+new build.  This build has a fix for that and a couple of other bugs:
+
+</p>
+
+<ul>
+<li> Bug 4492: pcf map fill bgerror
+</li><li> Bug 4517: CURSE Injects do not require unique role names
+</li><li> Bug 4519: athena_ingest(1): bgerror, cannot find ingest_support.tcl 
+</li></ul>
+
+<h3>Build 6.2.0-B6, 27 May 2014</h3>
+<p>This build contains a number of key fixes to the athena_ingest(1) tool. There's
+also a few bug fixes. The list of packages:
+
+</p>
+
+<ul>
+<li> Bug 4513: Econ / Groups tab does not output Consumption data
+</li><li> Bug 4463: Clicking the X in the "Are you Sure?" dialog does not cancel
+</li><li> Bug 4472: Mouse scroll wheel does not scroll on Detail browser pages
+</li><li> Bug 4491: Neighborhood context menu still refers to EnSits
+</li><li> Bug 4514: athena_ingest(1): TIGR Retrieval page improvements
+</li><li> Bug 4515: athena_ingest(1): Enhancements 
+</li></ul>
+
+<h3>Build 6.2.0-B5, 22 May 2014</h3>
+<p>This build is the first to contain new enhancements specific to the DCGS-A
+data ingestion effort.  Specifically, a new Athena application called 
+athena_ingest(1) can be used to import DCGS-A TIGR messages.  The messages can
+then be allocated to certain types of predetermined events.  Finally the 
+events can be converted to an order script containing certain kinds of tactics
+that simulate the effects of the events on the entities in the scenario.  For
+this build, the focus is on Afghanistan. As such, there is an Afghanistan
+scenario and a set of Afghanistan based TIGR messages available for use in 
+testing, ask a developer.  There is also some changes to how the economic 
+model is enabled and disabled.  A new tab under the Economics tab allows the
+user to easily switch the model on and off.  TRISA requested that the CONSUMP
+and UNEMP rulesets fire when Econ is disabled.  There's some other enhancements
+as well.
+
+</p>
+
+<ul>
+  <li> Bug 4482: athena(1): have CONSUMP ruleset fire when econ is disabled.
+  </li><li> Bug 4483: athena(1): have UNEMP rulest fire when econ is disabled
+  </li><li> Bug 4490: athena(1): add control tab to economics that allows user to easily enable and disable the model
+  </li><li> Bug 4496: WMS Map Client needs Send & Close button
+  </li><li> Bug 4497: athena(1): a TIGR message parser is needed in support of the Athena ingestion tool
+  </li><li> Bug 4498: athena(1): implement domparser(n) tDOM wrapper
+  </li><li> Bug 4499: athena(1): update wfscap(n) to use domparser(n)
+  </li><li> Bug 4500: athena(1): WMS window needs to be more robust
+  </li><li> Bug 4502: athena(1): add WMS URL preferences parameter
+  </li><li> Bug 4509: athena(1): update week(n) to allow conversion to and from Unix timestamps
+  </li><li> Bug 4510: athena(1): exporter does not export map
+  </li><li> Bug 4511: athena_ingest(1): Add TIGR message ingestion
+  </li><li> Bug 4501: athena_ingest(1): Prototype TIGR Ingestion Tool
+  </li><li> Bug 4503: athena_ingest(1): Save ingestion outputs to disk
+  </li><li> Bug 4504: athena(1): New civgroups gofers for subsistence/non-subsistence agriculture.
+  </li><li> Bug 4506: athena_ingest(1): Include "ingestion support" script in ingestion script
+  </li><li> Bug 4507: athena_ingest(1): "Random Violence" event
+  </li><li> Bug 4508: athena_ingest(1): Can edit ingested events 
+</li></ul>
+
+<h3>Build 6.2.0-B4, 29 April 2014</h3>
+<p>At the request of TRISA, this build represents the first in a new build
+numbering scheme.  This will allow future releases of Athena to be deployed
+in the field quicker. Essentially, the build number is appended to the future 
+version of Athena.  So this is build 4 of version 6.2.0 of Athena to be 
+released at a future date.  This build contains a number of changes to simplify
+the map UI.  There are also some minor transparent changes to the wmsclient(n)
+API that do not change the functionality but make the interface more robust.   
+There is also a few bug fixes.
+
+</p>
+
+<ul>
+<li> Bug 4474: athena(1): WMS client should not require base URL in calls to get a map
+</li><li> Bug 4475: athena(1): WMS client should store map as data, not as image
+</li><li> Bug 4476: wmsclient(n): implement automated tests
+</li><li> Bug 4477: wmsclient(n): query parameters should be optional on a map request
+</li><li> Bug 4478: Man pages: need man page entries for wmsclient(n), wmscap(n) and wmsexcept(n)
+</li><li> Bug 4468: athena(1): mapviewer clean up
+</li><li> Bug 4469: Belief System bgerror
+</li><li> Bug 4470: athena(1): Ensits become Absits
+</li><li> Bug 4471: athena(1): mapviewer UI tweak
+</li><li> Bug 4473: Belief System pages on Detail browser contain all actors and groups
+</li><li> Bug 4480: athena(1): absits are specified by neighborhood, not map location
+</li><li> Bug 4481: athena(1): Project Info 
+</li></ul>
+
+<h3>Build 7.0.3, 17 April 2014</h3>
+<p>This build contains a Web Map Service (WMS) client that acts like an order
+dialog that allows the user to pick and choose a geo-referenced map from an
+Open GIS compliant WMS server.  This is a general capability but should be 
+useful in the DCGS-A environment as well.  There is also some more GUI 
+simplification and added helps for the new belief system.
+
+</p>
+
+<ul>
+<li> Bug 4455: Add basekits for Linux 32 and 64 bit builds to tools directory
+</li><li> Bug 4456: make_tar utility should automatically tag 64 bit installer .tgz with 64 bit designation in file name
+</li><li> Bug 4465: athena(1): Implement Web Map Service capability
+</li><li> Bug 4454: athena(1): Belief System detail browser pages
+</li><li> Bug 4459: athena(1): Actor and civ group detail browser pages should reference belief systems
+</li><li> Bug 4461: athena(1): Removing "Until Paused" from Duration pulldown
+</li><li> Bug 4462: athena(1): econ.disable = yes by default
+</li><li> Bug 4464: athena(1): Simplified unit icons 
+</li></ul>
+
+<h3>Build 7.0.2, 14 April 2014</h3>
+<p>This build contains a complete reimplementation of belief systems to be
+pure Tcl/Tk based rather than rely on SQLite. Particular attention should be
+paid to this part of the build when testing.  There is also an upgrade to
+Tcl/Tk 8.6 in this build along with a few bug fixes.
+
+</p>
+
+<ul>
+<li> Bug 4434: Installers should include the correct list of maps
+</li><li> Bug 4435: MGRS coordinate bgerror
+</li><li> Bug 4441: Upgrade to Tcl/Tk 8.6
+</li><li> Bug 4442: httpagent(n): http(n) swallows errors
+</li><li> Bug 4449: athena(1): Belief System Reimplementation
+</li><li> Bug 4451: athena(1): autogen failure
+</li><li> Bug 4452: athena(1): Removing semantic hook sanity checks.
+</li><li> Bug 4453: athena(1): Compute semantic hook narratives on demand 
+</li></ul>
+
+<h3>Build 7.0.1, 13 March 2014</h3>
+<p>This build consists mainly of bug fixes found on the Athena 6 branch that
+need to be folded into the trunk.  There is also the introduction of a new
+map projection that converts pixel location to lat/long and MGRS. A sample 
+map is included with this build to test this functionality.
+
+</p>
+
+<ul>
+<li> Bug 4409: Repair level of zero plants decreases
+</li><li> Bug 4416: athena(1): geo-referenced maps
+</li><li> Bug 4401: plants(a,n) always returns 0
+</li><li> Bug 4410: unemployment rate executive functions take simple averages
+</li><li> Bug 4411: SYSTEM should be a valid entry for some executive functions
+</li><li> Bug 4423: athena(1): Need to implement gofer::NUMBER 'EXPR' rule
+</li><li> Bug 4425: athena(1): Need to implement gofer::NUMBER 'INCOME*' rules & executive functions
+</li><li> Bug 4162: Sometimes copying text on the Detail browser causes error
+</li><li> Bug 4406: View dropdown menu contains Detail twice
+</li><li> Bug 4407: PMESII-PT glossary help page
+</li><li> Bug 4408: athena(1): Remove Athena Attrition Model
+</li><li> Bug 4413: User License Agreement on Installer needs to be updated
+</li><li> Bug 4418: helpserver(n): Load helpdb with -readonly yes
+</li><li> Bug 4426: athena(1): Failure creating prefsdir
+</li><li> Bug 4427: athena(1): Remove activity shifts
+</li><li> Bug 4429: athena(1): Rename group activities/rule sets 
+</li></ul>
+
+<h3>Build 6.0.12, 24 February 2014</h3>
+<p>This build contains mainly a whole slew of new gofer(n) number types for
+use by analysts in the new Mark II Strategy scheme.  There are also a few
+bug fixes and documentation updates.
+
+</p>
+
+<ul>
+<li> Bug 4253: athena(1): ENI saturation cost parms have type ::projectlib::money, code does not convert
+</li><li> Bug 4360: Infrastructure table needs zero entries for neighborhoods with only subsisters
+</li><li> Bug 4361: Infrastructure subpages not created when actor builds first plants
+</li><li> Bug 4382: Make utilities: update for 64-bit builds on Linux
+</li><li> Bug 4330: affinity(x,y) executive function help page needs to be modified
+</li><li> Bug 4332: coverage executive function has no valid org group activities
+</li><li> Bug 4333: NUMBER gofer support(a,g) help page lists the wrong function
+</li><li> Bug 4368: athena(1): Need to implement gofer::NUMBER 'GROUP_CONSUMERS' rule & executive function
+</li><li> Bug 4369: athena(1): Need to implement gofer::NUMBER 'NBCONSUMERS' rule & executive function
+</li><li> Bug 4370: athena(1): Need to implement gofer::NUMBER 'LOCAL_CONSUMERS' rule & executive function
+</li><li> Bug 4371: athena(1): Need to implement gofer::NUMBER 'PLAYBOX_CONSUMERS' rule & executive function
+</li><li> Bug 4372: athena(1): Need to implement gofer::NUMBER 'DEPLOYED' rule & executive function
+</li><li> Bug 4373: athena(1): Need to implement gofer::NUMBER 'MOBILIZED' rule & executive function
+</li><li> Bug 4374: athena(1): Need to implement gofer::NUMBER 'GROUP_POPULATION' rule & executive function
+</li><li> Bug 4375: athena(1): Need to implement gofer::NUMBER 'NBPOPULATION' rule & executive function
+</li><li> Bug 4376: athena(1): Need to implement gofer::NUMBER 'LOCAL_POPULATION' rule & executive function
+</li><li> Bug 4377: athena(1): Need to implement gofer::NUMBER 'PLAYBOX_POPULATION' rule & executive function
+</li><li> Bug 4378: athena(1): Need to implement gofer::NUMBER 'GROUP_WORKERS' rule & executive function
+</li><li> Bug 4379: athena(1): Need to implement gofer::NUMBER 'NBWORKERS' rule & executive function
+</li><li> Bug 4380: athena(1): Need to implement gofer::NUMBER 'LOCAL_WORKERS' rule & executive function
+</li><li> Bug 4381: athena(1): Need to implement gofer::NUMBER 'PLAYBOX_WORKERS' rule & executive function
+</li><li> Bug 4383: athena(1): Need to implement gofer::NUMBER 'GROUP_UNEMPLOYMENT_RATE' rule & executive function
+</li><li> Bug 4384: athena(1): Need to implement gofer::NUMBER 'NB_UNEMPLOYMENT_RATE' rule & executive function
+</li><li> Bug 4385: athena(1): Need to implement gofer::NUMBER 'LOCAL_UNEMPLOYMENT_RATE' rule & executive function.
+</li><li> Bug 4386: athena(1): Need to implement gofer::NUMBER 'PLAYBOX_UNEMPLOYMENT_RATE' rule & executive function.
+</li><li> Bug 4387: athena(1): Need to implement gofer::NUMBER 'PLANTS' rule & executive function
+</li><li> Bug 4388: athena(1): Need to implement gofer::NUMBER 'NB_PLANTS' rule & executive function
+</li><li> Bug 4389: athena(1): Need to implement gofer::NUMBER 'ACTOR_PLANTS' rule & executive function
+</li><li> Bug 4390: athena(1): Need to implement gofer::NUMBER 'PLAYBOX_PLANTS' rule & executive function
+</li><li> Bug 4391: athena(1): Need to implement gofer::NUMBER 'REPAIR' rule & executive function
+</li><li> Bug 4392: athena(1): Need to implement gofer::NUMBER 'GOODS_CAP' rule & executive function
+</li><li> Bug 4393: athena(1): Need to implement gofer::NUMBER 'NB_GOODS_CAP' rule & executive function
+</li><li> Bug 4394: athena(1): Need to implement gofer::NUMBER 'PLAYBOX_GOODS_CAP' rule & executive function
+</li><li> Bug 4395: athena(1): Need to implement gofer::NUMBER 'GOODS_IDLE' rule & executive function
+</li><li> Bug 4396: athena(1): Need to implement gofer::NUMBER 'CASH_RESERVE' rule & executive function
+</li><li> Bug 4397: athena(1): Need to implement gofer::NUMBER 'CASH_ON_HAND' rule & executive function
+</li><li> Bug 4365: athena(1): Update "Release Notes" in on-line help.
+</li><li> Bug 4366: athena(1): CONTROL parameter name error in help
+</li><li> Bug 4367: Help guide refers to Political tab as Politics tab 
+</li></ul>
+
+<h3>Build 6.0.11, 13 February 2014</h3>
+<p>This build is entirely bug fixes and documentation changes, there is no
+new functionality. The list of packages:
+
+</p>
+
+<ul>
+<li> Bug 4229: autogen scenario with a strategy block causes bgerror
+</li><li> Bug 4266: econ.bktsPerYear.goods set to zero causes bgerror
+</li><li> Bug 4345: repair levels on Infrastructure / GOODS Plants tab not updating
+</li><li> Bug 4347: zero shares of production plants causes bgerror
+</li><li> Bug 4348: neighborhood with no consumers should not reduce total number of plants
+</li><li> Bug 4351: GeoUnemployment bgerror
+</li><li> Bug 4353: Unable to create non-local neighborhoods with NBHOOD:CREATE dialog
+</li><li> Bug 4354: DAMAGE tactic does not recognize all plants
+</li><li> Bug 4355: actors can have shares of plants in non-local neighborhoods
+</li><li> Bug 4356: athena(1): implement "number" API to plant module
+</li><li> Bug 4357: Add agent column to Infrastructure page when in prep
+</li><li> Bug 4358: Infrastructure on actor page of Detail browser
+</li><li> Bug 4359: "manufacturing infrastructure/plants" still exists in help pages
+</li><li> Bug 4176: athena(1): MAD:* help pages refer to "driver_id", not "mad_id".
+</li><li> Bug 4211: BLOCK:TACTIC:ADD order missing from help
+</li><li> Bug 4263: STRATEGY:BLOCK:MOVE help page is misleading
+</li><li> Bug 4267: athena(1): Some of the BSYSTEM:* orders are missing from the help
+</li><li> Bug 4311: athena(1): CONTROL Condition
+</li><li> Bug 4326: Help pages mention volatility gain
+</li><li> Bug 4337: my://app/agents page displays incorrect number of tactics and conditions
+</li><li> Bug 4339: We need a list of tactics that do and do not execute on lock
+</li><li> Bug 4346: PMESII-PT tab help page updates
+</li><li> Bug 4349: VRel tab displays satisfaction
+</li><li> Bug 4352: Broken links on Overview page of Detail browser 
+</li></ul>
+
+<h3>Build 6.0.10, 6 February 2014</h3>
+<p>This build contains a complete retooling of the layout of Athena's tabs to
+be in line with the PMESII-PT acronym.  Thus you will see tabs titled:
+"Political", "Military", "Economics", "Social", "Infrastructure", and 
+"Information" to correspond to the first part of this acronym.  There are
+also tabs for "Physical" and "Time" that correspond to the last part.  The
+"Detail" tab and "Strategy" tab are on their own since they cross-cut so much
+of all areas.  There is one significant new feature in this build: 
+unemployment is now disaggregated to neighborhoods according to the amount
+of production infrastructure present.  Part of this algorithm includes
+computing those in the labor force that are geographically unemployed since 
+they are unwilling to go a parameter controlled distance to get to work.  
+This number is fed back into the CGE on the next tock and further impacts 
+the economy.  There are a host of bug fixes in the build as well.
+
+</p>
+
+<ul>
+<li> Bug 4312: athena(1): "Manufacturing Infrastructure" should be "GOODS Production Infrastructure"
+</li><li> Bug 4314: athena(1): SQL view for plantbrowser(n) not returning data
+</li><li> Bug 4315: athena(1): Implement Mark II DAMAGE tactic
+</li><li> Bug 4321: athena(1): nbhoods object should have methods for local neighborhoods
+</li><li> Bug 4324: athena(1): PCF/Infrastructure in non-local neighborhoods
+</li><li> Bug 4325: Copy and Paste MAINTAIN tactic to SYSTEM agent causes bgerror
+</li><li> Bug 4327: athena(1): do not allow BUILD/MAINTAIN/DAMAGE tactics in non-local neighborhoods
+</li><li> Bug 4338: BUILD tactic plant at 100.0% is not completed
+</li><li> Bug 4342: athena(1): implement disaggregation of unemployment
+</li><li> Bug 4343: athena(1): the SYSTEM should not put infrastructure in neighborhoods with no consumers
+</li><li> Bug 4344: athena(1): Economics > Group tab should show unemployment rate
+</li><li> Bug 4310: athena(1): Cash Queries
+</li><li> Bug 4313: athena(1): PMESII Tabs
+</li><li> Bug 4316: athena(1): Combine satbrowser and satbrowser_sim
+</li><li> Bug 4317: athena(1): Combine coopbrowser and coopbrowser_sim
+</li><li> Bug 4319: athena(1): Combine vrelbrowser and vrelbrowser_sim
+</li><li> Bug 4320: athena(1): Combine hrelbrowser and hrelbrowser_sim.
+</li><li> Bug 4322: athena(1): [show] executive command rejects gui: URLs
+</li><li> Bug 4323: athena(1): Detail Browser address bar rejects gui: URLs
+</li><li> Bug 4331: athena(1): Remove View/Scenario and View/Simulation menu items.
+</li><li> Bug 4334: athena(1): Add Time/Significant Events tab
+</li><li> Bug 4335: athena(1): Replace myhtmlpane(n) with mybrowser(n)
+</li><li> Bug 4336: athena(1): View toggles bring relevant tab to front
+</li><li> Bug 4340: ATTRIT tactic with no responsible groups 
+</li></ul>
+
+
+<h3>Build 6.0.9, 22 January 2014</h3>
+<p>This build contains fixes to existing Mark II tactics and implementation of
+some new ones: ATTRIT and BUILD.  There are also some new gofer(n) NUMBER 
+types and some cleanup of the GUI.  Many bug fixes in other areas, too.
+
+</p>
+
+<ul>
+<li> Bug 4270: repair level of zero causes bgerror
+</li><li> Bug 4283: athena(1): move manufacturing infrastructure detail browser pages into their own category
+</li><li> Bug 4284: athena(1): Actors should optionally have maintenance free infrastructure.
+</li><li> Bug 4287: TACTIC:MAINTAIN help page inconsistencies
+</li><li> Bug 4288: Manufacturing Infrastructure table on my://app/nbhood/&lt;nbhood&gt;
+</li><li> Bug 4289: Infrastructure should add up to QD.goods on calibrated view
+</li><li> Bug 4295: athena(1): implement ATTRIT tactic to replace ATTRIT:NBHOOD and ATTRIT:GROUP
+</li><li> Bug 4305: athena(1): Implement Mark II BUILD tactic
+</li><li> Bug 4286: athena(1): gofer::NUMBER ASSIGNED rule needs modified.
+</li><li> Bug 4292: athena(1): gofer::NUMBER COVERAGE rule needs modified.
+</li><li> Bug 4293: athena(1): Need to implement gofer::NUMBER 'HREL' rule & executive function.
+</li><li> Bug 4298: athena(1): Need to implement gofer::NUMBER 'VREL' rule & executive function.
+</li><li> Bug 4299: athena(1): Need to fix the help page description for various exec. functions and gofer::NUMBER rules.
+</li><li> Bug 4300: security g executive function returns 0
+</li><li> Bug 4301: athena(1): Need to implement gofer::NUMBER 'gdp' rule & modify executive function.
+</li><li> Bug 4308: athena(1): Need to modify gofer::NUMBER 'GDP' description.
+</li><li> Bug 4107: athena(1): Remove volatility gain
+</li><li> Bug 4123: athena(1): ENI in non-local neighborhoods
+</li><li> Bug 4159: athena(1): Scrolling log disappears on bgerror
+</li><li> Bug 4161: Strategy block causes error in detail browser
+</li><li> Bug 4210: athena(1): Trace in strategy browser "new tab" menu
+</li><li> Bug 4228: Update Strategy does not get undone
+</li><li> Bug 4246: tactics can be added
+</li><li> Bug 4254: GRANT tactic executes but actor cannot BROADCAST
+</li><li> Bug 4255: FUND tactic narrative strings
+</li><li> Bug 4257: athena(1): Scrub block overview HTML
+</li><li> Bug 4264: Copy and Paste from actor to system agent
+</li><li> Bug 4265: Strategy Overview subtab displays information when no tactic is selected
+</li><li> Bug 4275: athena(1): File/Export Scenario As... item doesn't add ".tcl" extension to file name
+</li><li> Bug 4281: athena(1): New parmdb(5) parameters not included in the detail browser's treectrl.
+</li><li> Bug 4285: athena(1): Detail Browser pages for Strategies
+</li><li> Bug 4290: athena(1): MAINTAIN tactic should appear disabled in drop down menu in some cases
+</li><li> Bug 4291: athena(1): Strategies should not be modifiable after lock.
+</li><li> Bug 4294: Previous snapshot in opened scenario causes bgerror
+</li><li> Bug 4302: bean(n): beans are saved in beans table
+</li><li> Bug 4303: athena(1): Remove Plots tab
+</li><li> Bug 4304: athena(1): Add sanity check button to Strategy browser
+</li><li> Bug 4306: athena(1): Remove "snapshot" buttons and related infrastructure 
+</li></ul>
+
+<h3>Build 6.0.8, 12 December 2013</h3>
+<p>This build contains some significant changes to how the MAINTAIN tactic
+operates.  The analyst specifies repair modes instead of spending modes and 
+then Athena spends according to best efforts to maintain the infrastructure
+as instructed.  There's also a few bug fixes to the infrastrucuture model.
+There are some new NUMBER gofer(n) rules and a new export capability that
+exports the state of Athena rather than the history.  This should make it
+easier for the end user when moving from one version of Athena to another and
+when declassifying scenarios.
+
+</p>
+
+<ul>
+<li> Bug 4262: athena(1): ECON:* order help pages
+</li><li> Bug 4269: Small values for bktsPerYear yields negative number of plants
+</li><li> Bug 4270: repair level of zero causes bgerror
+</li><li> Bug 4258: athena(1): Need to implement gofer::NUMBER 'support' rules.
+</li><li> Bug 4276: athena(1): Need to implement gofer::NUMBER 'assigned' rule & executive function.
+</li><li> Bug 4277: athena(1): Implement needed gopher::NUMBER rule "security" and update it's executive function.
+</li><li> Bug 4278: athena(1): Need to implement gofer::NUMBER 'coverage' rule & executive function.
+</li><li> Bug 4271: athena(1): Strategy executive commands
+</li><li> Bug 4272: help(5): optionlist, option macros
+</li><li> Bug 4273: athena(1): Minimal Scenario export script
+</li><li> Bug 4282: htools(n): "pretty" tables
+</li><li> Bug 4280: athena(1): Use pretty tables in help(5) 
+</li></ul>
+
+<h3>Build 6.0.7, 6 December 2013</h3>
+<p>This build has some quite notable new functionality.  The second part of
+the manufacturing infrastructure has been implemented.  This means that
+the infrastructure now degrades with time if the new MAINTAIN tactic is not
+used by an actor to keep it from going into disrepair.  Note that you can
+disable the degradation of infrastructure (and thus the need to MAINTAIN it)
+by not allocating any of it to actors and let the SYSTEM agent own it all.
+The economic model will be impacted if the infrastructure is allowed to degrade
+too far.  Cut/Copy/Paste is implemented for Blocks, Conditions and Tactics!
+This means that you can cut and copy any part (or all) of one actors strategy
+and paste it.  Once pasted, editing can then take place to
+make possibly invalid blocks valid.
+
+</p>
+
+<ul>
+<li> Bug 4248: athena(1): remove econ.idleFrac from application
+</li><li> Bug 4250: athena(1): remove econcapbrowser(n) from application
+</li><li> Bug 4260: athena(1): Manufacturing Plant Infrastructure, part II
+</li><li> Bug 4247: athena(1): Implement needed gopher::NUMBER rule "security" and update it's executive function.
+</li><li> Bug 4244: athena(1): Tactic Cut/Copy/Paste
+</li><li> Bug 4249: athena(1): Condition Cut/Copy/Paste
+</li><li> Bug 4251: athena(1): Block cut/copy/paste
+</li><li> Bug 4252: athena(1): Modify existing gofer::NUMBER rules to use neat formatting
+</li><li> Bug 4259: athena(1): Mark II Strategy help pages
+</li><li> Bug 4261: athena(1): STRATEGY:* help pages
+</li></ul>
+
+<h3>Build 6.0.6, 2 December 2013</h3>
+<p>This build contains the first part of the manufacturing infrastructure model.
+Manufacturing plants can be allocated to actors and neighborhoods.  The econ
+model uses the capacity computed by the infrastructure model as the capacity
+of the goods sector.  There's a few bug fixes and some code cleanup in a 
+couple of the Mark II tactics.  The built in script editor now has better
+syntax checking.
+
+</p>
+
+<ul>
+<li> Bug 4243: athena(1): Manufacturing Plant Infrastructure, part I
+</li><li> Bug 4220: Actors and System Agent share tactic lists
+</li><li> Bug 4221: athena(1): gofer::NBHOODS not returning nbhoods properly
+</li><li> Bug 4234: athena(1): Require tablelist 5.10
+</li><li> Bug 4235: athena(1): Cleanup BROADCAST tactic
+</li><li> Bug 4238: athena(1): initial tclchecker(n) integration
+</li><li> Bug 4241: athena(1): Add syntax checking to Scripts Editor
+</li><li> Bug 4245: bean(n): clean up paste/newcopy code
+</li><li> Bug 4236: 	athena(1): Cleanup FUND tactic tests 
+</li></ul>
+
+<h3>Build 6.0.5, 18 November 2013</h3>
+<p>This build contains the last tactic to be converted to the Mark II Strategy
+Engine: ASSIGN.  It also contains some new deployment modes for the DEPLOY 
+tactic, some bug fixes to the new strategy engine and a few minor 
+enhancements.
+
+</p>
+
+<ul>
+<li> Bug 4208: SPEND tactic displays $amt instead of numerical value
+</li><li> Bug 4209: FUND tactic help page is missing actor
+</li><li> Bug 4219: Hook ID does not require unique value
+</li><li> Bug 4222: athena(1): have export command write the version of Athena used for export
+</li><li> Bug 4225: athena(1): expose the pfactor attribute in the nbhood object
+</li><li> Bug 4213: athena(1): Mark II ASSIGN Tactic
+</li><li> Bug 4215: Tactic undo redo bgerror
+</li><li> Bug 4218: athena(1): Mark II DEPLOY Tactic, Part II
+</li><li> Bug 4226: athena(1): Display tactic failure details
+</li><li> Bug 4230: athena(1): Support links in tactic and condition narrative strings.
+</li><li> Bug 4231: athena(1): Make tactic sanity check failures consistent 
+</li></ul>
+
+<h3>Build 6.0.4, 7 November 2013</h3>
+<p>This build contains what is likely that last major update to the Mark II 
+Strategy Engine.  Most of the work is complete, but there's a few loose ends
+that will be tied up in later builds.  There is now a new neighborhoods 
+gofer and some bug fixes as well.
+
+</p>
+
+<ul>
+<li> Bug 4154: athena(1): update autogen to create new-style strategies.
+</li><li> Bug 4205: athena(1): Mark II BROADCAST Tactic
+</li><li> Bug 4212: athena(1): Mark II STANCE Tactic
+</li><li> Bug 4191: athena(1): Mark II FLOW Tactic
+</li><li> Bug 4206: athena(1): gofer::NBHOODS
+</li><li> Bug 4207: athena(1): Mark II SUPPORT Tactic
+</li><li> Bug 4214: athena(1): Remove obsolete strategy code, Part 1
+</li><li> Bug 4216: undo causes error when referencing deleted objects
+</li><li> Bug 4217: athena(1): Mark II DEPLOY Tactic
+</li></ul>
+
+<h3>Build 6.0.3, 28 October 2013</h3>
+<p>This build contains wholesale changes to the Mark II Strategy Engine that 
+includes the addition of many more tactics and some changes to how some of 
+the tactics are specified.  There are more robust ways of specifying how an
+actor spends his money on certain tactics.  Some of the tactics have been
+updated to user gofer(n) objects to retrieve list of entities from Athena
+upon tactic execution.</p>
+
+<p>Spend as much time as is necessary to vet each of the revamped tactics. The
+on-line help for all the implemented tactics should be available to aid in
+testing.
+
+</p>
+
+<ul>
+<li> Bug 4164: athena(1): DEPOSIT Tactic Scrub
+</li><li> Bug 4165: athena(1): WITHDRAW tactic scrub
+</li><li> Bug 4187: athena(1): Mark II CURSE Tactic
+</li><li> Bug 4188: athena(1): Mark II SPEND Tactic
+</li><li> Bug 4192: athena(1): Mark II FUND tactic
+</li><li> Bug 4193: athena(1): Mark II FUNDENI Tactic
+</li><li> Bug 4203: athena(1): fundeni method should apportion according to population and urbanization
+</li><li> Bug 4157: Two blocks with a deploy tactic causes bgerror
+</li><li> Bug 4158: Not enough personnel for activity bgerror
+</li><li> Bug 4163: athena(1): bean copy/paste changes
+</li><li> Bug 4166: athena(1): DEMOB Tactic Scrub
+</li><li> Bug 4167: athena(1): MOBILIZE Tactic Scrub
+</li><li> Bug 4170: athena(1): TACTIC:*:UPDATE, CONDITION:*:UPDATE orders lose ":UPDATE"
+</li><li> Bug 4171: athena_test(1): Custom -match algorithms
+</li><li> Bug 4174: athena(1): undo/redo executive commands
+</li><li> Bug 4177: athena(1): SIGEVENT Tactic Documentation
+</li><li> Bug 4178: athena(1): Mark II Executive Tactic Scrub
+</li><li> Bug 4179: athena(1): Support for undo/redo blocks
+</li><li> Bug 4180: athena(1): gofer::NUMBER, part 1
+</li><li> Bug 4181: athena(1): Mark II ATTROE Tactic
+</li><li> Bug 4182: athena(1): Mark II DEFROE Tactic
+</li><li> Bug 4183: athena(1): COMPARE Condition
+</li><li> Bug 4184: athena(1): gofer::NUMBER, part 2
+</li><li> Bug 4185: athena(1): Mark II EXPR Condition
+</li><li> Bug 4189: athena(1): Mark II COMPARE Condition, revised
+</li><li> Bug 4190: mybrowser(n)/myhtmlpane(n): PageError not escaped
+</li><li> Bug 4194: athena(1): Mark II GRANT Tactic
+</li><li> Bug 4196: athena(1): gofer::NUMBER, part 3
+</li><li> Bug 4197: beanclass(n) validate method
+</li><li> Bug 4202: athena(1): Expression Validation
+</li><li> Bug 4204: athena(1): Add Condition/Add Tactic menus
+</li></ul>
+
+<h3>Build 6.0.2, 3 October 2013</h3>
+<p>This build contains the preliminary version of the Mark II Strategy Engine.
+Only two conditions and a subset of the tactics have been converted to the
+new engine; the remainder are unavailable in this version.</p>
+
+<p>The focus in this version should be on testing strategy editing, and execution
+of the tactics that currently exist.  There are new Detail Browser pages, and
+similar content in the Strategy/Editor tab that needs to be examined for
+anomalies.  Anything that's unclear or peculiar looking should be reported.</p>
+
+<p>The on-line help has not yet been updated.
+
+</p>
+
+<ul>
+<li> Bug 4147: athena(1): change the units of production in the black sector to blackBKT
+</li><li> Bug 4148: Mark II Strategy Engine Preliminaries
+</li><li> Bug 4153: Mark II Strategy Engine Installed
+</li><li> Bug 4156: athena(1): Multiple item delete in Strategy/Editor
+</li></ul>
+
+<h3>Build 6.0.1, 25 September 2013</h3>
+<p>This build contains some enhancements to the SAM and CGE in the econ model.
+Specifically, the SAM now takes remittances as a direct input and balances
+the goods and pop sectors on lock by assuming any difference in total 
+expenditures and total revenue in those sectors is aggregate savings (which
+could be negative). The CGE now takes total geographic unemployment (GU) into
+consideration when computing an equilibrium. The CGE also now has inputs
+for price and wage indices for use by a future inflation model. There's also
+an enhancement to how Athena produces a bgerror.
+
+</p>
+
+<ul>
+<li> Bug 4135: athena(1): implement geographic unemployment
+</li><li> Bug 4136: athena(1): introduce aggregate savings to balance goods and pop sectors in SAM
+</li><li> Bug 4137: athena(1): CGE 'M' page should take into account geographic unemployment
+</li><li> Bug 4140: athena(1): add price/wage index to CGE and econ tab
+</li><li> Bug 4142: Update helps with new econ stuff
+</li><li> Bug 4143: athena_test(1): test failures due to GU in the CGE
+</li><li> Bug 4144: athena_test(1): test failures due to cell name change in CGE
+</li><li> Bug 4145: athena(1): TACTIC:FUND:UPDATE order has wrong title
+</li><li> Bug 4146: athena(1): provide a context stack trace on bgerror 
+</li></ul>
+
+<h3>Build 6.0.0, 9 September 2013</h3>
+<p>This is the initial 6.0.x baseline; it is based on the same code as
+Athena 5.1.0.
+
+</p>
+
+<hr>
+<p><address><a href="mailto:William.H.Duquette@jpl.nasa.gov">William.H.Duquette@jpl.nasa.gov</a></address>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+<!-- List of Anchors
+
+-->

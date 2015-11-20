@@ -1,0 +1,1797 @@
+<html><head>
+<title>athena 6.3.3: Configuration Management Plan</title>
+<style>
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 1%;
+            margin-right: 1%;
+        }
+    
+</style>
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+<h1>Configuration Management Plan</h1>
+    
+
+
+
+
+<h2>Configuration Management Plan</h2>
+
+<hr class="hrule">
+
+<h2>Table of Contents</h2>
+
+<p><b><a href="#changelog" name="toc.changelog">Change Log</a></b></p>
+
+
+<p><b><a href="#overview" name="toc.overview">1. Overview</a></b></p>
+
+<ul>
+
+    <li><a href="#overview.github" name="toc.overview.github">1.1 Athena at GitHub</a></li>
+
+    
+
+    <li><a href="#overview.kite" name="toc.overview.kite">1.2 Kite Project Automation Tool</a></li>
+
+    
+
+    <li><a href="#overview.mars" name="toc.overview.mars">1.3 Mars Simulation Infrastructure Library</a></li>
+
+    
+
+    <li><a href="#overview.boxkite" name="toc.overview.boxkite">1.4 Boxkite Server Client</a></li>
+
+    
+
+    <li><a href="#overview.numbering" name="toc.overview.numbering">1.5 Athena Version Numbering</a></li>
+
+    
+
+    <li><a href="#overview.docs" name="toc.overview.docs">1.6 Development Documentation</a></li>
+
+    
+
+    <li><a href="#overview.bindocs" name="toc.overview.bindocs">1.7 Binary Documents</a></li>
+
+    
+
+    <li><a href="#overview.references" name="toc.overview.references">1.8 References</a></li>
+
+    
+
+</ul>
+    
+<p><b><a href="#env" name="toc.env">2. Development Environment</a></b></p>
+
+<ul>
+
+    <li><a href="#env.siblings" name="toc.env.siblings">2.1 Related Projects</a></li>
+
+    
+
+    <li><a href="#env.tree" name="toc.env.tree">2.2 Project Tree</a></li>
+
+    
+
+</ul>
+    
+<p><b><a href="#vc" name="toc.vc">3. Version Control</a></b></p>
+
+<ul>
+
+    <li><a href="#vc.repository" name="toc.vc.repository">3.1 Git Repositories</a></li>
+
+    
+
+    <li><a href="#vc.tags" name="toc.vc.tags">3.2 Repository Tags</a></li>
+
+    
+
+    <li><a href="#vc.branches" name="toc.vc.branches">3.3 Git Branches</a></li>
+
+    
+
+</ul>
+    
+<p><b><a href="#issue" name="toc.issue">4. Issue Tracking</a></b></p>
+
+<ul>
+
+    <li><a href="#issue.milestones" name="toc.issue.milestones">4.1 Milestones</a></li>
+
+    
+
+    <li><a href="#issue.attributes" name="toc.issue.attributes">4.2 Issue Attributes</a></li>
+
+    
+
+    <li><a href="#issue.lifecycle" name="toc.issue.lifecycle">4.3 Life Cycle</a></li>
+
+    
+
+</ul>
+    
+<p><b><a href="#proc" name="toc.proc">5. Procedures</a></b></p>
+
+<ul>
+
+    <li><a href="#proc.winsetup" name="toc.proc.winsetup">5.1 Setting Up the Development Environment for Windows</a></li>
+
+    
+
+    <li><a href="#proc.linuxsetup" name="toc.proc.linuxsetup">5.2 Setting Up the Development Environment for Linux</a></li>
+
+    
+
+    <li><a href="#proc.newissue" name="toc.proc.newissue">5.3 Creating an Issue</a></li>
+
+    
+
+    <li><a href="#proc.fixissue" name="toc.proc.fixissue">5.4 Fixing an Issue</a></li>
+
+    
+
+    <li><a href="#proc.build" name="toc.proc.build">5.5 Performing a Development Build</a></li>
+
+    
+
+    <li><a href="#proc.branch" name="toc.proc.branch">5.6 Creating a Branch</a></li>
+
+    
+
+    <li><a href="#proc.cmbuild" name="toc.proc.cmbuild">5.7 Performing an Official Build</a></li>
+
+    
+
+    <li><a href="#proc.cmbuild2" name="toc.proc.cmbuild2">5.8 Rebuilding an Official Build</a></li>
+
+    
+
+    <li><a href="#proc.relbranch" name="toc.proc.relbranch">5.9 Creating a Release Branch</a></li>
+
+    
+
+    <li><a href="#proc.baseline" name="toc.proc.baseline">5.10 Establishing a New Development Baseline</a></li>
+
+    
+
+    <li><a href="#proc.release" name="toc.proc.release">5.11 Releasing the Software</a></li>
+
+    
+
+</ul>
+    
+
+
+<h2>List of Tables</h2>
+<ul>
+
+    <li><a href="#tab.siblings" name="toc.tab.siblings">Table 2-1: Sibling Project Layout</a></li>
+
+    <li><a href="#tab.tree" name="toc.tab.tree">Table 2-2: Project Directory Tree</a></li>
+
+</ul>
+    
+
+    
+
+<hr class="hrule">
+
+
+<h2><a name="changelog" href="#toc.changelog">Change Log</a></h2>
+    
+
+<table class="table table-wide">
+<tr>
+<th>Status</th>
+<th>Nature of Change</th>
+<th>Date</th>
+<th>Initiator</th>
+</tr>
+        
+
+<tr class="tr-even">
+<td>Update</td>
+<td>
+More GitHub4Enterprise changes.
+</td>
+<td>10/23/2014</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td>Update</td>
+<td>
+GitHub4Enterprise Changes.
+</td>
+<td>10/15/2014</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td>Update</td>
+<td>
+Removed test step for athena_ingest(1).
+</td>
+<td>8/11/2014</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td>Updated</td>
+<td>
+Added test step for athena_ingest(1).
+</td>
+<td>6/9/2014</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td>Updated</td>
+<td>
+Version numbers and build numbers are now distinct.
+</td>
+<td>4/25/2014</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td>Updated</td>
+<td>
+Athena now builds against Mars 2.x; updated document accordingly.
+</td>
+<td>6/25/2012</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td>Updated</td>
+<td>
+Updated the procedures for creating and checking out release
+branches.  Updated the example version numbers.
+</td>
+<td>2/29/2012</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td>Updated</td>
+<td>
+<ul>
+  <li> Changed the naming convention for experimental branches; they
+       are now named "yyyymm_name" rather than "yyyymmdd_name".
+
+  </li><li> Updated the official build procedure; Athena and Mars version
+       strings are now handled differently.
+</li></ul>
+</td>
+<td>10/7/2011</td>
+<td>will</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td>Updated</td>
+<td>
+Initial Draft
+</td>
+<td>1/9/2009</td>
+<td>will</td>
+</tr>
+        
+
+</table>
+
+<hr class="hrule">
+
+
+<h2><a name="overview" href="#toc.overview">1. Overview</a></h2>
+<p>Athena uses uses <a href="http://git-scm.com/">Git</a> for version control, 
+hosted at <a href="https://github.jpl.nasa.gov/">https://github.jpl.nasa.gov/</a>, and 
+GitHub's Issue Tracker for issue tracking.  This document describes how 
+this works out in practice.
+
+
+</p>
+
+<h3><a name="overview.github" href="#toc.overview.github">1.1 Athena at GitHub</a></h3>
+<p>Athena and related projects are hosted at JPL's
+<a href="https://github.jpl.nasa.gov">GitHub4Enterprise</a> server.  They are
+owned by the 
+<a href="https://github.jpl.nasa.gov/Athena">Athena organization</a>.  The
+specific repositories are as follows:
+
+</p>
+
+<table class="table topiclist">
+<tr>
+<th>Topic</th> 
+<th>Description</th>
+</tr>
+        
+
+<tr class="tr-even">
+<td><a href="https://github.jpl.nasa.gov/Athena/athena">athena @ GitHub</a></td>
+<td>
+        
+The Athena Simulation and related tools.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><a href="https://github.jpl.nasa.gov/Athena/mars">mars @ GitHub</a></td>
+<td>
+        
+The Mars Simulation Infrastructure Library, Athena's infrastructure
+layer.
+</td>
+</tr>
+        
+
+<tr class="tr-even">
+<td><a href="https://github.jpl.nasa.gov/Athena/kite">kite @ GitHub</a></td>
+<td>
+        
+The Kite project automatation tool and related libraries.
+</td>
+</tr>
+        
+
+<tr class="tr-odd">
+<td><a href="https://github.jpl.nasa.gov/Athena/boxkite">boxkite @ GitHub</a></td>
+<td>
+        
+The Boxkite server client, used to save and retrieve documents and
+software releases.
+</td>
+</tr>
+        
+
+</table>
+        
+
+
+<h3><a name="overview.kite" href="#toc.overview.kite">1.2 Kite Project Automation Tool</a></h3>
+<p>Kite is a project automation tool for TCL/TK projects.  Kite is used
+to automate Athena builds (among other things), and it provides 
+infrastructure libraries used by Athena as Kite external dependencies.
+
+
+</p>
+
+<h3><a name="overview.mars" href="#toc.overview.mars">1.3 Mars Simulation Infrastructure Library</a></h3>
+<p>Athena relies on a number of Tcl packages and extensions which are
+contained in the Mars Simulation Infrastructure Library.  Athena 
+accesses them as Kite external dependencies.
+
+
+</p>
+
+<h3><a name="overview.boxkite" href="#toc.overview.boxkite">1.4 Boxkite Server Client</a></h3>
+<p>The Athena project maintains a barebones "Boxkite" server at
+<a href="https://pepper.jpl.nasa.gov/kite">https://pepper.jpl.nasa.gov/kite</a>.  This server is a place where
+we put project documents in binary formats, as well as official builds of
+Kite projects such as Kite, Mars, and Boxkite.  The <span class="tt">boxkite</span> tool
+is used to push files to the server, to query the server, and to pull files
+from the server.
+
+
+</p>
+
+<h3><a name="overview.numbering" href="#toc.overview.numbering">1.5 Athena Version Numbering</a></h3>
+<p>At any given time, the Athena development team is working towards a 
+particular version <i>x.y.z</i>, e.g., "6.3.1", where <i>x</i>
+is the major release number, <i>y</i> is the minor release number, and
+<i>z</i> is the patch level.  The value of <i>x.y</i> is incremented at
+the beginning of each development cycle.  The value of <i>z</i> is 
+initially 1, and is incremented on each formal release.</p>
+
+<p>During development, the version number is augmented with an "a" number for 
+each build.  The first build is "6.3.1a0", the next is "6.3.1a1", and so
+forth.  Release candidates can simply continue this numbering, or move on
+to the "b" numbers: "6.3.1b0", "6.3.1b2", and so on.</p>
+
+<p>When the release candidate checks out, a new build is done in which the
+only change is to drop the "a" or "b" component from the version number, 
+i.e., from "6.3.1b2" to "6.3.1".  And then, immediately after the release,
+the version number is bumped to "6.3.2a0".</p>
+
+<p>The version number is set in the <span class="tt">project.kite</span> file.
+
+
+
+</p>
+
+<h3><a name="overview.docs" href="#toc.overview.docs">1.6 Development Documentation</a></h3>
+<p>Athena development documentation consists of:
+
+</p>
+
+<ul>
+  <li> Software manual pages (man pages)
+  </li><li> Memos
+  </li><li> Other documents: this CM Plan, etc.
+</li></ul>
+<p>Software manual pages are stored in the repository project tree, as
+described in <a href="#env.tree">Section 2.2</a>, and are written in
+<a href="./../../kite/docs/man5/manpage.html">manpage(5)</a> format.</p>
+
+<p>Memos will be saved by the authors.</p>
+
+<p>Other documents, such as this CM plan, may be written in 
+<a href="./../../kite/docs/man5/kitedoc.html">kitedoc(5)</a> format and saved in <span class="tt">docs/</span> or some appropriate
+subdirectory, or in some MS Office format.  However,
+binary document formats may not be saved to GitHub (see below).
+
+
+</p>
+
+<h3><a name="overview.bindocs" href="#toc.overview.bindocs">1.7 Binary Documents</a></h3>
+<p>Documents in binary (i.e., MS Office) formats should not be committed to
+the git repository.  Instead, they should be pushed to the Boxkite server
+relative to the project and "x.y" version number:
+
+</p>
+
+<pre class="example">
+$ boxkite docput aag.docx -project athena -version 6.3
+</pre>
+<p>Successive versions of the document are date-stamped on the server.
+
+
+</p>
+
+<h3><a name="overview.references" href="#toc.overview.references">1.8 References</a></h3>
+    
+
+<dl>
+<dt class="def"><a href="http://git-scm.com/book"><i>Pro Git</i>, by Scott Chacon</a></dt><dd>
+The standard text on Git.
+
+</dd>
+<dt class="def"><a href="../../../kite/docs/kdg.html"><i>Kite Developer's Guide</i></a></dt><dd>
+The guide for developers using the Kite automation tool.
+
+</dd>
+<dt class="def"><a href="../../../mars/docs/cm.html"><i>Mars Configuration Management Plan</i></a></dt><dd>
+The related CM plan for the Mars infrastructure library.
+
+</dd>
+<dt class="def"><a href="tps.html"><i>Third-Party Software List</i></a></dt><dd>
+Third-party software used as part of the Athena project.
+</dd>
+</dl>
+
+
+<h2><a name="env" href="#toc.env">2. Development Environment</a></h2>
+    
+
+
+<h3><a name="env.siblings" href="#toc.env.siblings">2.1 Related Projects</a></h3>
+<p>The Athena developer will usually need access to the 
+<a href="https://github.jpl.nasa.gov/Athena/mars">mars @ GitHub</a> project tree, and also the 
+<a href="https://github.jpl.nasa.gov/Athena/kite">kite @ GitHub</a> project tree, if only to access project documentation.
+These projects should be checked out into sibling directories, usually
+under the <span class="tt">~/github</span> directory:
+
+</p>
+
+<center><table class="table">
+<caption><b><a name="tab.siblings" href="#toc.tab.siblings">Table 2-1: Sibling Project Layout</a><b></b></b></caption>
+    
+<tr><td>Path</td> <td>Description</td></tr>
+<tr class="tr-even"><td><b><tt>~/github/</tt></b></td>
+<td>
+      Location for project trees</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;athena/</tt></b></td>
+<td>
+      Athena project tree</td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;mars/</tt></b></td>
+<td>
+      Mars project tree</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;kite/</tt></b></td>
+<td>
+      Kite project tree</td>
+</tr>
+    
+</table></center>
+<p>This structure allows one project to reference documentation in the other
+projects.  <b>NOTE:</b> This is a stopgap, as there is no way to insure that
+the version of Athena in the <span class="tt">athena/</span> directory is consistent with the
+version of Mars in the <span class="tt">mars/</span> directory.  We are looking into defining
+a broader notion of "Kite parcel" that includes libraries and 
+documentation; then the Athena tree might actually include the documentation
+for (some of) its external dependencies.
+
+
+</p>
+
+<h3><a name="env.tree" href="#toc.env.tree">2.2 Project Tree</a></h3>
+<p>The project directory tree is as follows:
+
+</p>
+
+<center><table class="table">
+<caption><b><a name="tab.tree" href="#toc.tab.tree">Table 2-2: Project Directory Tree</a><b></b></b></caption>
+    
+<tr><td>Path</td> <td>Description</td></tr>
+<tr class="tr-even"><td><b><tt>athena/</tt></b></td>
+<td>
+      Root of project tree</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;project.kite</tt></b></td>
+<td>
+      Kite project file</td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;README.md</tt></b></td>
+<td>
+      Project README file</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;LICENSE</tt></b></td>
+<td>
+      Project license file</td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;bin/</tt></b></td>
+<td>
+      Executables (both binaries and scripts)</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>app</i>.tcl</tt></b></td>
+<td>
+      Application launcher script</td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>app</i>.kit</tt></b></td>
+<td>
+      Application starkit</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>app</i>-<i>version</i>-<i>platform</i>{.exe}</tt></b></td>
+<td>
+     Application binary</td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;data/</tt></b></td>
+<td>
+      Test data directory, for delivered test data
+</td></tr><tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;docs/</tt></b></td>
+<td>
+      Project documentation</td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;man1/</tt></b></td>
+<td>
+      Man page section (1): Executables</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;man5/</tt></b></td>
+<td>
+      Man page section (5): File Formats</td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mann/</tt></b></td>
+<td>
+      Man page section (n): Tcl Commands</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mani/</tt></b></td>
+<td>
+      Man page section (i): Tcl Interfaces</td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;installer/</tt></b></td>
+<td>
+      Athena Windows Installer source</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;lib/</tt></b></td>
+<td>
+      Tcl Library Source </td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>name</i>/</tt></b></td>
+<td>
+      Tcl source for library package <i>name</i></td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app_<i>name</i>/</tt></b></td>
+<td>
+      Tcl source code for application <i>name</i></td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;mods/</tt></b></td>
+<td>
+      A holding place for mod files.</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;scenarios/</tt></b></td>
+<td>
+      Scenarios directory</td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>name</i>.tcl</tt></b></td>
+<td>
+      Order script for scenario <i>name</i>.</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;test/</tt></b></td>
+<td>
+      Top-level test directory</td>
+</tr>
+    
+<tr class="tr-even"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>name</i>/</tt></b></td>
+<td>
+      Test code for library package <i>name</i>.</td>
+</tr>
+    
+<tr class="tr-odd"><td><b><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app_<i>name</i>/</tt></b></td>
+<td>
+      Test code for application <i>name</i>.</td>
+</tr>
+    
+</table></center>
+    
+
+<p><b>Notes:</b>
+
+</p>
+
+<ul>
+  <li> The structure of Tcl package directories is described in the
+      <a href="../../../kite/docs/kdg.html"><i>Kite Developer's Guide</i></a>.
+</li></ul>
+
+
+
+<h2><a name="vc" href="#toc.vc">3. Version Control</a></h2>
+<p>Athena uses Git in a straightforward way.  
+
+</p>
+
+<ul>
+<li> Most development takes place on the <b>master</b> branch.
+
+</li><li> When an official build is done, the <b>master</b> or release branch is 
+     tagged with the project version, e.g., "<span class="tt">v6.3.1a5</span>".  Note the
+     initial "v"; this is a GitHub convention for tag names.
+
+</li><li> Individual developers may create branches for specific efforts, and 
+     merge them with the master branch when the work is complete; afterwards, 
+     the branch should be deleted.
+
+</li><li> When creating a formal release, a release branch will be created,
+     and all bug fixes for that release will take place on that release
+     branch.
+</li></ul>
+<p>On Windows and OS X, the GitHub for Windows and GitHub for OSX applications
+should be used.  On Linux, the <span class="tt">git</span> command line client may be used
+directly.</p>
+
+<p>See <a href="http://git-scm.com/book"><i>Pro Git</i>, by Scott Chacon</a> for details about using Git.
+
+
+</p>
+
+<h3><a name="vc.repository" href="#toc.vc.repository">3.1 Git Repositories</a></h3>
+<p>Unlike Subversion or CVS, each individual project gets its own 
+Git repository on <a href="https://github.jpl.nasa.gov">GitHub</a>.  The repository structure is 
+simply the project tree description in <a href="#tab.tree">Table 2-2</a>.</p>
+
+<p>Each repository has its own URL, which is used when cloning the repository
+using the Git command line tool or GUI; the URL to use is available on the
+project's <a href="https://github.jpl.nasa.gov">GitHub</a> web page.
+
+
+</p>
+
+<h3><a name="vc.tags" href="#toc.vc.tags">3.2 Repository Tags</a></h3>
+<p>Each official build of Athena will be tagged with the version number,
+prefixed with a "v".  This is done through the <a href="https://github.jpl.nasa.gov">GitHub</a> web page,
+as part of creating a GitHub "release".  See <a href="#proc.cmbuild">Section 5.7</a>.
+
+
+</p>
+
+<h3><a name="vc.branches" href="#toc.vc.branches">3.3 Git Branches</a></h3>
+<p>Git branches are much simpler and more flexible than Subversion branches.
+See the relevant procedures for details on how we use them.
+
+
+</p>
+
+<h2><a name="issue" href="#toc.issue">4. Issue Tracking</a></h2>
+<p>Bugs, enhancements, and other software-related issues will be tracked using
+<a href="https://github.jpl.nasa.gov">GitHub</a>'s issue tracker.  Every <a href="https://github.jpl.nasa.gov">GitHub</a> project has its own
+issue tracker; Athena's resides at <a href="https://github.jpl.nasa.gov/Athena/athena">athena @ GitHub</a>.
+
+
+</p>
+
+<h3><a name="issue.milestones" href="#toc.issue.milestones">4.1 Milestones</a></h3>
+<p>In <a href="https://github.jpl.nasa.gov">GitHub</a> terms, a milestone is a particular future version of 
+the project to which open issues can be attached for planning purposes.
+The developers will create a new milestone for each forthcoming build,
+and associate all issues contained in the build with the build's milestone.</p>
+
+<p>Similarly, when writing a bug the tester should reference the version 
+number of the build in which it was found.</p>
+
+<p>Milestone names shall be the same as build tag names.</p>
+
+<p>Milestones are "open" on creation; the tester should "close" the milestone
+when all of the issues associated with the milestone have been tested.
+
+
+</p>
+
+<h3><a name="issue.attributes" href="#toc.issue.attributes">4.2 Issue Attributes</a></h3>
+<p>Each issue has the following attributes:
+
+</p>
+
+<dl>
+<dt class="def">The Issue Number</dt><dd>
+This uniquely identifies the issue.
+
+</dd>
+<dt class="def">State</dt><dd>
+
+An issue may be "Open" or "Closed".  Issues are "Open" when first created,
+and are "Closed" when the developer is done working on them.  
+See <a href="#issue.lifecycle">Section 4.3</a>.
+
+</dd>
+<dt class="def">Title</dt><dd>
+A brief statement of the issue.
+
+</dd>
+<dt class="def">Comments</dt><dd>
+Any number of comments about the issue; the first is created with the 
+issue, and describes it thorougly.  It the issue is a bug found in a
+particular build of Athena, this comment must link to the build's
+milestone.
+
+</dd>
+<dt class="def">Milestone</dt><dd>
+The milestone of the build in which the issue was or will be fixed.
+
+</dd>
+<dt class="def">Assignee</dt><dd>
+For open issue, the developer assigned to address the issue; for 
+closed issues, the developer who actually did address the issue.
+
+</dd>
+<dt class="def">Labels</dt><dd>
+
+An issue can be associated with any number of labels; these are used to
+indicate the nature of the issue, as well as its disposition.  
+See <a href="#issue.lifecycle">Section 4.3</a>.
+
+</dd>
+</dl>
+
+
+<h3><a name="issue.lifecycle" href="#toc.issue.lifecycle">4.3 Life Cycle</a></h3>
+<p>A typical issue goes through the following life-cycle.</p>
+
+<p><b>Creation:</b> First, it is created by a developer or tester.  It should 
+be labeled as a "bug" or an "enhancement", and assigned to one of the
+developers.  For bugs, the initial report should reference the version
+number of of the build in which it was found, and provide enough information 
+to reproduce the bug.  See <a href="#proc.newissue">Section 5.3</a>.</p>
+
+<p><b>Resolution:</b> The assigned developer resolves the issue, usually by
+modifying the project's code or documentation.  He may alter the 
+creator's assessment of whether it is a <b>bug</b> or <b>enhancement</b>,
+and of course may reassign the bug to another developer.</p>
+
+<p>If the issue is a duplicate, an invalid report, or something that won't
+be fixed, it should be labeled with <b>duplicate</b>, <b>invalid</b>, or
+<b>wontfix</b>.</p>
+
+<p>When the issue is resolved, the developer assigns the issue to the next 
+build's milestone and closes it.  The final comment should contain 
+detailed instructions to the tester on how to verify that the fix or
+change is working correctly.</p>
+
+<p><b>Testing:</b> For each official build, the tester will test all closed
+issues associated with the build's milestone.  If problems are found,
+the tester should write a new issue for each, linking to the new issue
+in a comment.  When the tester is done working with the issue, he should
+label it <b>complete</b>; and when the tester is done working with the build's
+issues, he should close the milestone.
+
+
+</p>
+
+<h2><a name="proc" href="#toc.proc">5. Procedures</a></h2>
+<p>This section documents the steps involved in the following CM procedures:
+
+</p>
+
+<ul>
+
+    <li><a href="#proc.winsetup" name="toc.proc.winsetup">5.1 Setting Up the Development Environment for Windows</a></li>
+
+    
+
+    <li><a href="#proc.linuxsetup" name="toc.proc.linuxsetup">5.2 Setting Up the Development Environment for Linux</a></li>
+
+    
+
+    <li><a href="#proc.newissue" name="toc.proc.newissue">5.3 Creating an Issue</a></li>
+
+    
+
+    <li><a href="#proc.fixissue" name="toc.proc.fixissue">5.4 Fixing an Issue</a></li>
+
+    
+
+    <li><a href="#proc.build" name="toc.proc.build">5.5 Performing a Development Build</a></li>
+
+    
+
+    <li><a href="#proc.branch" name="toc.proc.branch">5.6 Creating a Branch</a></li>
+
+    
+
+    <li><a href="#proc.cmbuild" name="toc.proc.cmbuild">5.7 Performing an Official Build</a></li>
+
+    
+
+    <li><a href="#proc.cmbuild2" name="toc.proc.cmbuild2">5.8 Rebuilding an Official Build</a></li>
+
+    
+
+    <li><a href="#proc.relbranch" name="toc.proc.relbranch">5.9 Creating a Release Branch</a></li>
+
+    
+
+    <li><a href="#proc.baseline" name="toc.proc.baseline">5.10 Establishing a New Development Baseline</a></li>
+
+    
+
+    <li><a href="#proc.release" name="toc.proc.release">5.11 Releasing the Software</a></li>
+
+    
+
+</ul>
+    
+
+
+<h3><a name="proc.winsetup" href="#toc.proc.winsetup">5.1 Setting Up the Development Environment for Windows</a></h3>
+<p>The description below assumes the reader has already installed MinGW and
+is preparing to set up a Athena development environment for main-line development.</p>
+
+<p>The following steps should be done using a MinGW Msys terminal window.
+
+</p>
+
+<table class="procedure">
+        
+
+<tr>
+<td class="procedure-index">1.</td>
+<td><p>
+        
+Install ActiveTcl Community Edition on your workstation as
+
+</p><pre>  C:\Tcl\AT<i>x.y.z</i></pre>
+<p>where <i>x.y.z</i> is the particular version of ActiveTcl obtained from 
+the ActiveState website.
+</p>
+
+</td><td>
+n/a
+</td></tr>
+
+<tr>
+<td class="procedure-index">2.</td>
+<td>
+        
+Using the GitHub for Windows GUI, clone the Athena, Mars, and Kite
+projects from <a href="https://github.jpl.nasa.gov/Athena/athena">athena @ GitHub</a> into the <span class="tt">~/github</span> directory,
+as indicated in <a href="#env.siblings">Section 2.1</a>.
+</td><td>
+n/a
+</td></tr>
+
+<tr>
+<td class="procedure-index">3.</td>
+<td>
+        
+Install Kite onto your system, either by building Kite locally, or
+by downloading it from the Boxkite server.
+</td><td>
+<pre>
+$ boxkite get kite
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">4.</td>
+<td>
+        
+Do a development build of Athena.
+</td><td>
+See <a href="#proc.build">Section 5.5</a>
+</td></tr>
+
+</table>
+
+
+<h3><a name="proc.linuxsetup" href="#toc.proc.linuxsetup">5.2 Setting Up the Development Environment for Linux</a></h3>
+<p>The description below assumes the reader is preparing to set up a Athena
+development environment for main-line development.
+
+</p>
+
+<table class="procedure">
+        
+
+<tr>
+<td class="procedure-index">1.</td>
+<td><p>
+        
+Install ActiveTcl Community Edition on your workstation as
+
+</p><pre>  /usr/local/AT<i>x.y.z</i></pre>
+<p>where <i>x.y.z</i> is the particular version of ActiveTcl.  The software
+is available from the ActiveState website.
+</p>
+
+</td><td>
+n/a
+</td></tr>
+
+<tr>
+<td class="procedure-index">2.</td>
+<td>
+        
+Edit your <code>.bash_profile</code>:
+</td><td>
+<pre>
+# Athena Settings
+export PATH=/usr/local/AT<i>x.y.z</i>:...
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">3.</td>
+<td>
+        
+Resource your <code>.bash_profile</code>, making these definitions available.
+</td><td>
+<pre>
+$ cd ~
+$ source .bash_profile
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">4.</td>
+<td>
+        
+Clone the master branch of Athena, Mars, and Kite to <span class="tt">~/github</span>, using
+the cloning URLs from the repository pages under <a href="https://github.jpl.nasa.gov/Athena">Athena Organization @ GitHub</a>.
+</td><td>
+<pre>
+$ cd ~/github
+$ git clone https://github.jpl.nasa.gov/Athena/athena.git
+$ git clone https://github.jpl.nasa.gov/Athena/mars.git
+$ git clone https://github.jpl.nasa.gov/Athena/kite.git
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">5.</td>
+<td>
+        
+Do a development build of Athena.
+</td><td>
+See <a href="#proc.build">Section 5.5</a>
+</td></tr>
+
+</table>
+
+
+<h3><a name="proc.newissue" href="#toc.proc.newissue">5.3 Creating an Issue</a></h3>
+<p>Create the issue in the <a href="https://github.jpl.nasa.gov/Athena/athena">athena @ GitHub</a> issue tracker, and label it
+as a <b>bug</b> or an <b>enhancement</b>.  If it is a bug, it is presumably being
+written against a particular version of the software; include the 
+version number in the initial comment, e.g., 
+
+</p>
+
+<pre class="example">
+Version: 6.3.1a5
+</pre>
+
+
+<h3><a name="proc.fixissue" href="#toc.proc.fixissue">5.4 Fixing an Issue</a></h3>
+<p>An issue may span multiple commits; and ideally, each of these commits
+should be visible in the issue's comment stream.</p>
+
+<p><b>When fixing an issue with one commit:</b> Reference the issue number in
+the commit message as "Fixes #<i>num</i>".  This will automatically close
+the issue.</p>
+
+<p><b>When fixing an issue with multiple commits:</b> Include a link to each 
+commit in a comment in the issue's comment stream (they don't need to
+all be in one comment):
+
+</p>
+
+<pre class="example">
+Commit: [<i>link to commit page</i>]
+</pre>
+<p>This approach is also useful if a fix is committed without the 
+"Fixes #<i>num</i>" text.</p>
+
+<p>Finally, associate the issue with the milestone of the next build, if this
+hasn't already been done.
+
+
+</p>
+
+<h3><a name="proc.build" href="#toc.proc.build">5.5 Performing a Development Build</a></h3>
+<p>A development build is simply a build performed during the course of
+development.  Before building Athena, even in development, both Kite and 
+Mars must be either built locally or installed using Boxkite.</p>
+
+<p>Most build activities are handled by Kite.</p>
+
+<p>A full development build:
+
+</p>
+
+<ul>
+  <li> Runs all tests.
+  </li><li> Builds the documentation tree.
+  </li><li> Builds the on-line help.
+</li></ul>
+
+<table class="procedure">
+        
+
+<tr>
+<td class="procedure-index">1.</td>
+<td>
+        
+Go to the Athena directory.
+</td><td>
+<pre>
+$ cd ~/github/athena
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">2.</td>
+<td>
+        
+Run all tests, if desired.
+</td><td>
+<pre>
+$ kite test
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">3.</td>
+<td>
+        
+Format the documentation, if desired.
+</td><td>
+<pre>
+$ kite format
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">4.</td>
+<td>
+        
+Format the on-line help, if desired.
+</td><td>
+<pre>
+$ cd docs/help
+$ ../../bin/helptool.tcl athena.help
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">5.</td>
+<td>
+        
+Build the Athena executables, if desired.
+</td><td>
+<pre>
+$ cd ~/github/athena
+$ kite build
+</pre>
+</td></tr>
+
+</table>
+
+
+<h3><a name="proc.branch" href="#toc.proc.branch">5.6 Creating a Branch</a></h3>
+<p>In Git, experimental branches are cheap and simple to make.  Preface the
+branch name with your username, and possibly with the date if it is likely
+to be long-lived.</p>
+
+<p>When creating a branch to work on a particular issue, name it after the
+issue, e.g., "issue22".
+
+
+
+</p>
+
+<h3><a name="proc.cmbuild" href="#toc.proc.cmbuild">5.7 Performing an Official Build</a></h3>
+<p>An official, or "CM", build is one that will be packaged for delivery
+to Integration and Test (I&amp;T).  It is rather more complicated than a
+development build, particularly as it involves not only tagging the
+development branch.</p>
+
+<p>In addition, some steps are different on Windows than on Linux.</p>
+
+<p>Throughout the following, the GitHub GUI may be used in preference
+to the command line tool.
+
+</p>
+
+<table class="procedure">
+        
+
+<tr>
+<td class="procedure-index">1.</td>
+<td>
+        
+Make sure that all developers have committed all required code changes.
+</td><td>
+n/a
+</td></tr>
+
+<tr>
+<td class="procedure-index">2.</td>
+<td><p>
+        
+Build and install Kite and Mars if necessary.</p>
+
+<p>Our current convention is that official builds of Kite and Mars are done
+whenever they are needed, rather than waiting until the next Athena build.
+Thus, the required versions of Kite and Mars should already be present.
+If, however, either project contains changes required by the current build
+Athena, then build them according to their CM plans and install them
+locally.
+</p>
+</td><td><p>
+If building these locally, use <span class="tt">kite install</span> to install them for use.
+Otherwise,
+
+</p><pre>
+$ boxkite get kite 0.4.3
+$ boxkite get mars 3.0.10
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">3.</td>
+<td>
+        
+Sync <span class="tt">~/github/athena</span> with the server using the GUI or as below.
+</td><td>
+<pre>
+$ cd ~/github/athena
+$ git pull
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">4.</td>
+<td>
+        
+Inspect the <span class="tt">xfile</span> statements in the <span class="tt">project.kite</span> file, and 
+update them if necessary to pull in the correct versions of the 
+<i>Athena Analyst's Guide</i> and other documents.
+</td><td>
+<pre>
+$ vim project.kite
+$ kite info
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">5.</td>
+<td>
+        
+If needed, update <span class="tt">project.kite</span> to reflect new Kite or Mars versions for
+each of the relevant libraries.
+</td><td>
+<pre>
+$ vim project.kite
+$ kite info
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">6.</td>
+<td>
+        
+Determine the version number to build by examining 
+<span class="tt">project.kite</span> or running <span class="tt">kite info</span>.  We will assume the
+version is "6.3.1a5"
+</td><td>
+<pre>
+$ kite info
+</pre>
+</td></tr>
+
+
+<tr>
+<td class="procedure-index">7.</td>
+<td>
+        
+Update the build notes file with a description of the changes, and
+check it into the repository.  Note that this will also commit any
+metadata changes resulting from editing <span class="tt">project.kite</span>, above.
+</td><td>
+<pre>
+$ vim docs/build_notes.ehtml
+$ git commit -m "Updated for Build 6.3.1a5"
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">8.</td>
+<td>
+        
+Do a complete build, fixing and committing any test failures,
+until it builds cleanly.  Note that this creates the distribution
+.zip files.
+</td><td>
+<pre>
+$ kite build
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">9.</td>
+<td>
+        
+<b>Windows Only.</b>  On Windows, Athena is installed using an
+installer rather than a tarball.  Build the installer.
+</td><td>
+<pre>
+$ cd ~/github/athena/installer
+$ start athena.iss
+</pre>
+<p>In the resulting InnoSetup window:
+
+</p>
+
+<ul>
+  <li> Set "MyAppVersion" to 6.3.1a5
+</li></ul>
+<p>If this is the first build on a release branch:
+
+</p>
+
+<ul>
+  <li> Set "DefaultDirName" and "DefaultGroupName" to "Athena
+  <i>x.y</i>", e.g., "Athena 6.3".
+  </li><li> Update the AppId using the Tools/Generate GUID menu item.
+</li></ul>
+<p>Then, select Build/Compile from the menu bar.  This builds the following file:
+
+</p>
+
+<pre>
+    installer/Output/Athena6.3.1a5_Installer.exe
+</pre>
+
+</td></tr>
+
+<tr>
+<td class="procedure-index">10.</td>
+<td>
+        
+<b>Windows Only.</b>  Commit the changes to the InnoSetup definition file.
+</td><td>
+<pre>
+$ cd ~/github/athena
+$ git commit -m "Set version number in installer file"
+</pre></td></tr>
+
+<tr>
+<td class="procedure-index">11.</td>
+<td>
+        
+At this point we have a clean build with no errors, and all changes
+have been committed and synced to <a href="https://github.jpl.nasa.gov/Athena/athena">athena @ GitHub</a>.  Go to
+<a href="https://github.jpl.nasa.gov/Athena/athena">athena @ GitHub</a> and create a new "release" with tag
+"v6.3.1a5".  Note the leading "v"; this is a GitHub convention for
+tag names.
+</td><td>
+<ol>
+<li> Verify that all changes have truly been synced.
+</li><li> Click on "Releases".
+</li><li> Select the branch, either <b>master</b> or the release branch.
+</li><li> Enter "v6.3.1a5" as the tag.
+</li><li> Enter "Athena v6.3.1a5" as the release name.
+</li><li> Create the release.  The repository now has a tag for the build.
+</li></ol>
+</td></tr>
+
+<tr>
+<td class="procedure-index">12.</td>
+<td>
+        
+If desired, copy the installation set to the boxkite server.
+</td><td>
+<pre>
+$ boxkite put
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">13.</td>
+<td>
+        
+Install the build's installation files and documentation onto
+<a href="https://pepper/athena">the Athena Home Page</a>.
+</td><td>
+<pre>
+$ cd ~/github/athena
+$ ./bin/topepper
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">14.</td>
+<td>
+        
+Add the new build's documentation tree to the main index on the 
+<a href="https://pepper/athena">the Athena Home Page</a>.
+</td><td>
+<pre>
+$ ssh pepper
+$ vim /home/www/athena/index.html
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">15.</td>
+<td>
+        
+Update the version information for subsequent development.  The version
+following 6.3.1a5 would usually be 6.3.1a6, but might be
+6.3.1b0 or 6.3.1.
+</td><td>
+<pre>
+$ cd ~/github/athena
+$ vim project.kite
+$ kite info
+$ git commit -m "Updated working version"
+</pre>
+</td></tr>
+</table>
+
+
+<h3><a name="proc.cmbuild2" href="#toc.proc.cmbuild2">5.8 Rebuilding an Official Build</a></h3>
+<p>Sometimes it is necessary to rebuild an official build, e.g., we built
+Athena on Windows and now we need to build the same version on Linux.
+This procedure explains how to do such a duplicate build.</p>
+
+<p>Throughout the following, the GitHub GUI may be used in preference
+to the command line tool.
+
+</p>
+
+<table class="procedure">
+        
+
+<tr>
+<td class="procedure-index">1.</td>
+<td>
+        
+Checkout the tagged build into your work area.  We will assume we
+are rebuilding Athena 6.3.1a5.
+</td><td>
+<pre>
+$ git checkout v6.3.1a5
+</pre>
+<p>It might complain about <span class="tt">lib/kiteinfo/kiteinfo.tcl</span>.  In that case,
+
+</p>
+
+<pre>
+$ git checkout --force lib/kiteinfo/kiteinfo.tcl
+$ git checkout v6.3.1a5
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">2.</td>
+<td>
+        
+Examine <span class="tt">project.kite</span> and determine the versions of Kite and Mars
+that are required.  If they are not present on the current system, 
+they will need to be built and installed as described in the previous 
+procedure.
+</td><td>
+See the relevant CM documents.
+</td></tr>
+
+<tr>
+<td class="procedure-index">3.</td>
+<td><p>
+        
+Do a complete build.</p>
+
+<p>There should be no test failures.  If there are, you are probably
+in the position of needing to do a new build with a new version
+number.
+</p>
+</td><td>
+<pre>
+$ kite build all
+</pre>
+</td></tr>
+
+
+<tr>
+<td class="procedure-index">4.</td>
+<td>
+        
+<b>Windows Only.</b>  When rebuilding on Windows, build the installer
+using the existing <span class="tt">athena.iss</span> file.
+</td><td>
+<pre>
+$ cd ~/github/athena/installer
+$ start athena.iss
+</pre>
+<p>In the resulting InnoSetup window select Build/Compile from the menu bar.  
+This builds the following file:
+
+</p>
+
+<pre>
+    installer/Output/Athena6.3.1a5_Installer.exe
+</pre>
+
+</td></tr>
+
+<tr>
+<td class="procedure-index">5.</td>
+<td>
+        
+If desired, copy the installation set to the boxkite server.
+</td><td>
+<pre>
+$ boxkite put
+</pre>
+</td></tr>
+
+<tr>
+<td class="procedure-index">6.</td>
+<td>
+        
+Return to normal development.
+</td><td>
+<pre>
+$ cd ~/github/athena
+$ git checkout master
+</pre>
+</td></tr>
+</table>
+
+
+
+<h3><a name="proc.relbranch" href="#toc.proc.relbranch">5.9 Creating a Release Branch</a></h3>
+<p>TBD.
+
+
+</p>
+
+<h3><a name="proc.baseline" href="#toc.proc.baseline">5.10 Establishing a New Development Baseline</a></h3>
+<p>A new development baseline is established when active development is
+complete for one one major version, and it is desired to allow
+preliminary development to begin for the next major version, e.g.,
+when finishing work on version 6.3 and commencing work on version 6.4.</p>
+
+<p>The steps are TBD.
+
+
+</p>
+
+<h3><a name="proc.release" href="#toc.proc.release">5.11 Releasing the Software</a></h3>
+<p>Releasing the software involves creating a release branch, updating all 
+documentation as required, and doing an official build on the release 
+branch.  The resulting installer or .zip file 
+is the release installation set.
+
+</p>
+
+<hr>
+<p><address><a href="mailto:William.H.Duquette@jpl.nasa.gov">William.H.Duquette@jpl.nasa.gov</a></address>
+</p>
+
+</body>
+</html>
+    
+
+
+
+<!-- List of Anchors
+changelog            Change Log
+overview             1. Overview
+overview.github      1.1 Athena at GitHub
+overview.kite        1.2 Kite Project Automation Tool
+overview.mars        1.3 Mars Simulation Infrastructure Library
+overview.boxkite     1.4 Boxkite Server Client
+overview.numbering   1.5 Athena Version Numbering
+overview.docs        1.6 Development Documentation
+overview.bindocs     1.7 Binary Documents
+overview.references  1.8 References
+env                  2. Development Environment
+env.siblings         2.1 Related Projects
+    tab.siblings     Table 2-1: Sibling Project Layout
+env.tree             2.2 Project Tree
+    tab.tree         Table 2-2: Project Directory Tree
+vc                   3. Version Control
+vc.repository        3.1 Git Repositories
+vc.tags              3.2 Repository Tags
+vc.branches          3.3 Git Branches
+issue                4. Issue Tracking
+issue.milestones     4.1 Milestones
+issue.attributes     4.2 Issue Attributes
+issue.lifecycle      4.3 Life Cycle
+proc                 5. Procedures
+proc.winsetup        5.1 Setting Up the Development Environment for Windows
+proc.linuxsetup      5.2 Setting Up the Development Environment for Linux
+proc.newissue        5.3 Creating an Issue
+proc.fixissue        5.4 Fixing an Issue
+proc.build           5.5 Performing a Development Build
+proc.branch          5.6 Creating a Branch
+proc.cmbuild         5.7 Performing an Official Build
+proc.cmbuild2        5.8 Rebuilding an Official Build
+proc.relbranch       5.9 Creating a Release Branch
+proc.baseline        5.10 Establishing a New Development Baseline
+proc.release         5.11 Releasing the Software
+
+-->

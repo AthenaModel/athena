@@ -1,0 +1,470 @@
+<html>
+<head>
+<title>athena 6.3.3: myagent(n) -- mydomain(i) User Agent, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>myagent(n)</b> -- mydomain(i) User Agent, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#see_also">SEE ALSO</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::myagent
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#myagent">myagent <i>name</i> ?<i>options...?</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#myagent-contenttypes">-contenttypes <i>list</i></a></li>
+<li><a class="iref" href="#myagent_register">myagent register <i>handler</i></a></li>
+<li><a class="iref" href="#myagent_resolve">myagent resolve <i>base url</i></a></li>
+<li><a class="iref" href="#resolve"><i>object</i> resolve <i>base url</i></a></li>
+<li><a class="iref" href="#find"><i>object</i> find <i>url</i></a></li>
+<li><a class="iref" href="#get"><i>object</i> get <i>url</i> ?<i>contentTypes</i>?</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>In HTTP-parlance, a "user agent" is a program that accesses an HTTP
+server.  An instance of myagent(n) is an object that clients can use
+to access data from one or more <a href="../mani/mydomain.html">mydomain(i)</a> handlers within
+the same application.  See <a href="../mani/mydomain.html">mydomain(i)</a> for information on
+what a <a href="../mani/mydomain.html">mydomain(i)</a> is and why it is useful.</p>
+
+<p>In addition, the myagent(n) type is responsible keeping track of the
+available mydomain(i) instances.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="myagent">myagent <i>name</i> ?<i>options...?</i></a></dt><dd><p>
+
+Creates a new myagent(n) object called <i>name</i>. The object is
+represented as a new Tcl command in the caller's scope;
+<a class="iref" href="#myagent">myagent</a> returns the fully-qualified form of the
+<i>name</i>.</p>
+
+<p>Before the new myagent(n) can be used, at least one
+<a href="../mani/mydomain.html">mydomain(i)</a> must be registered using
+<a class="iref" href="#myagent_register">myagent register</a>.</p>
+
+<p>The myagent(n) may be created with the following options:
+
+</p><dl>
+
+<dt class="defopt"><a name="myagent-contenttypes">-contenttypes <i>list</i></a></dt><dd><p>
+
+Specifies the list of content types acceptable to this client, e.g.,
+<b>text/html</b>.  Wildcards may be used, e.g., <b>text/*</b>.  This
+list will be passed to the mydomain(i) along with the requested URL;
+the server will only respond with an acceptable content type.</p>
+
+<p>The mydomain(i) must document the content types it is capable of
+returning.  Usually it will do so dynamically as <b>text/html</b> at the
+address <span class="tt">/urlhelp</span>.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="myagent_register">myagent register <i>handler</i></a></dt><dd>
+
+Registers a <a href="../mani/mydomain.html">mydomain(i)</a> object so that it can be accessed by
+instances of myagent(n).  The <i>handler</i> is the actual
+object.  By convention, an application's
+main domains are <b>/app</b> and <b>/help</b>.
+
+</dd>
+<dt class="defitem"><a name="myagent_resolve">myagent resolve <i>base url</i></a></dt><dd><p>
+
+Given a <i>base</i> URL and some other <i>url</i>, possibly relative,
+this command resolves the two into a single <i>url</i>.  For example,
+given <span class="tt">/app/group</span> and <span class="tt">BLUE</span>, this command will
+return <span class="tt">/app/group/BLUE</span>.  If the <i>url</i> were
+<span class="tt">/app/nbhood/N1</span>, the returned URL would be
+<span class="tt">/app/nbhood/N1</span> instead.</p>
+
+<p>The client should always use this command (or, equivalently,
+the instance's <a class="iref" href="#resolve">resolve</a> subcommand) on all links embedded in
+returned content, where <i>base</i> is the URL of the returned content
+as a whole.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each instance of myagent(n) has the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="resolve"><i>object</i> resolve <i>base url</i></a></dt><dd>
+
+This is identical to <a class="iref" href="#myagent_resolve">myagent resolve</a>; it is provided for
+convenience.
+
+</dd>
+<dt class="defitem"><a name="find"><i>object</i> find <i>url</i></a></dt><dd>
+
+Validates the <i>url</i>, verifying its syntax and that its domain is
+known to the agent.  Returns a list, {<i>domain</i> <i>newurl</i>}, where
+the <i>domain</i> is the domain extracted from the <i>url</i>, e.g., "<span class="tt">/app</span>",
+and the <i>newurl</i> is the <i>url</i> in canonical form.
+
+</dd>
+<dt class="defitem"><a name="get"><i>object</i> get <i>url</i> ?<i>contentTypes</i>?</a></dt><dd><p>
+
+Retrieves the <i>url</i>'s content.  If the URL cannot be retrieved, the
+command will throw an error with error code <i>NOTFOUND</i>; the error
+message will indicate the reason for the error.</p>
+
+<p>If present, the <i>url</i>'s scheme must be "<b>my:</b>".</p>
+
+<p>If one or more <i>contentTypes</i> are given, the returned content will
+have the first available content type in the list; if none of the the
+requested content types are available, the server will
+throw <b>NOTFOUND</b>.  If <i>contentTypes</i> is not given, it
+defaults to the value of the <code>-contenttypes</code> option.
+
+</p>
+</dd>
+</dl>
+
+<h2><a name="see_also">SEE ALSO</a></h2>
+    
+
+<p><a href="../mani/mydomain.html">mydomain(i)</a>.
+
+</p>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:58 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+
+

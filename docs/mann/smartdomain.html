@@ -1,0 +1,567 @@
+<html>
+<head>
+<title>athena 6.3.3: smartdomain(n) -- smartdomain(i) Content Handler, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>smartdomain(n)</b> -- smartdomain(i) Content Handler, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#fallbacks">Fallbacks</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#components">COMPONENTS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import projectlib::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#smartdomain_create">::projectlib::smartdomain create <i>name domain</i></a></li>
+<li><a class="iref" href="#smartdomain_new">::projectlib::smartdomain new <i>domain</i></a></li>
+<li><a class="iref" href="#smarturl">smarturl <i>cls suffix docstring body</i></a></li>
+<li><a class="iref" href="#ahttpd"><i>obj</i> ahttpd</a></li>
+<li><a class="iref" href="#mydomain"><i>obj</i> mydomain <i>name</i></a></li>
+<li><a class="iref" href="#domain"><i>obj</i> domain</a></li>
+<li><a class="iref" href="#redirect"><i>obj</i> redirect <i>url</i></a></li>
+<li><a class="iref" href="#request"><i>obj</i> request <i>op suffix</i> ?<i>query</i>?</a></li>
+<li><a class="iref" href="#url"><i>obj</i> url <i>suffix docstring</i></a></li>
+<li><a class="iref" href="#urltree"><i>obj</i> urltree <i>root docstring</i></a></li>
+<li><a class="iref" href="#hb">hb <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#qdict">qdict <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#req">req <i>parm</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>smartdomain(n) is a domain handler for <a href="../mann/ahttpd.html">ahttpd(n)</a> that is used to
+handle dynamic application content.  The application subclasses
+smartdomain(n); the subclass defines specific URLs and handler methods
+for them.  The URLs can contain place-holder variables, which will be
+automatically matched and provided to the handlers.</p>
+
+<p><b>TBD:</b> Eventually we will rearchitect <a href="../mann/mydomain.html">mydomain(n)</a> to be a 
+simple server that serves up <a href="../mann/smartdomain.html">smartdomain(n)</a> content; then one
+smartdomain(n) instance can be used with both <a href="../mann/ahttpd.html">ahttpd(n)</a> and 
+<a href="../mann/mydomain.html">mydomain(n)</a>.  That work has not yet been done.</p>
+
+<p>A smartdomain is associated with a particular server domain, i.e., with a
+subtree of the server's file system: e.g, "<span class="tt">/my/subdomain</span>" or 
+"<span class="tt">/mydomain</span>".  All URLs defined with the smartdomain will be within 
+this subtree.  In addition, the smartdomain defines the URL 
+"<span class="tt"><i>domain</i>/urlschema.html</span>" which
+documents the accepted URLs within the domain.
+
+</p>
+
+<h2><a name="fallbacks">Fallbacks</a></h2>
+<p>If a requested URL matches a directory within the domain, and that 
+directory defines an "<span class="tt">index.html</span>" file, the server will be 
+redirected to the "<span class="tt">index.html</span>" file.  Otherwise, the content
+will be "not found".
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<p><span class="tt">::projectlib::smartdomain</span> is an <span class="tt">oo::class</span>.  It provides the 
+following commands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="smartdomain_create">::projectlib::smartdomain create <i>name domain</i></a></dt><dd>
+
+Creates a new instance of smartdomain(n) with the given command <i>name</i>
+for the given <i>domain</i>.  The <i>domain</i> must begin with "/".
+
+</dd>
+<dt class="defitem"><a name="smartdomain_new">::projectlib::smartdomain new <i>domain</i></a></dt><dd>
+
+Creates a new instance of smartdomain(n) for the given <i>domain</i> and
+returns the instance's name.  The <i>domain</i> must begin with "/".
+
+</dd>
+<dt class="defitem"><a name="smarturl">smarturl <i>cls suffix docstring body</i></a></dt><dd>
+
+This command is used outside of the definition of smartdomain(n) subclass
+<i>cls</i> to add URLs to the subclass.  The <i>suffix</i> and <i>docstring</i>
+are defined as for <a class="iref" href="#url">url</a>, below; and the <i>body</i> is the handler's
+method body.  The handler method will be defined with one argument for
+each placeholder in the suffix, named as in the suffix.
+
+</dd>
+</dl>
+
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+<p>Instances of smartdomain(n) provide the following subcommands.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="ahttpd"><i>obj</i> ahttpd</a></dt><dd>
+
+Installs the smartdomain for use with <a href="../mann/ahttpd.html">ahttpd(n)</a>, which should 
+already be initialized.
+
+</dd>
+<dt class="defitem"><a name="mydomain"><i>obj</i> mydomain <i>name</i></a></dt><dd>
+
+Installs the smartdomain for use with the named <a href="../mann/mydomain.html">mydomain(n)</a>.
+<b>TBD: Not yet implemented.</b>
+
+</dd>
+<dt class="defitem"><a name="domain"><i>obj</i> domain</a></dt><dd>
+Returns the domain's domain, e.g., "/secenario".
+
+</dd>
+<dt class="defitem"><a name="redirect"><i>obj</i> redirect <i>url</i></a></dt><dd>
+
+Redirects the requester to the given <i>url</i> by throwing HTTPD_REDIRECT.
+
+</dd>
+<dt class="defitem"><a name="request"><i>obj</i> request <i>op suffix</i> ?<i>query</i>?</a></dt><dd>
+
+Makes a direct request to the domain handler for the given
+<i>suffix</i>.  The <i>op</i> may be
+<b>GET</b> or <b>POST</b>; on <b>GET</b>, the <i>query</i> will be parsed as a 
+dictionary of query parms and values and passed to the handler. On
+<b>POST</b> it will not be.  The full query string can always be retrieved
+using <a class="iref" href="#req">req</a>.
+
+</dd>
+<dt class="defitem"><a name="url"><i>obj</i> url <i>suffix docstring</i></a></dt><dd><p>
+
+Defines a new URL within the domain.  The <i>suffix</i> is the URL's
+suffix within the domain, beginning with a "/" and ending with a 
+file name and extension.  For example, if the domain is "<span class="tt">/mydomain</span>" 
+and the full URL will be "<span class="tt">/mydomain/this/that/theother.html</span>", then the 
+<i>suffix</i> should be "<span class="tt">/this/that/theother.html</span>".</p>
+
+<p>The file extension is required; it is used to determine the URL's 
+content-type.</p>
+
+<p>The <i>suffix</i> may contain place-holders for any path component but the
+filename, e.g., "<span class="tt">/actor/{a}/index.html</span>" or 
+"<span class="tt">/group/{g}/index.html</span>".  The place-holder is a variable that will
+be matched against the requested URL.  If "<span class="tt">/actor/fred/index.html</span>" is
+requested, then "{a}" will match "fred".  The place-holder must be the
+entire path component, and must be wrapped in "{" and "}" as shown.</p>
+
+<p>The subclass must define a method with the same name as the <i>suffix</i>;
+this method will handle the URL.  It must have one argument for each
+placeholder in the <i>suffix</i>.  The handler may may:
+
+</p><ul>
+<li> Return data of a type consistent with the URL's file extension.
+</li><li> Throw <b>NOTFOUND</b> to indicate that the place-holder values
+     match no available data (i.e., if there is no actor with the
+     given name). 
+
+</li><li> Call <a class="iref" href="#redirect">redirect</a> to redirect to a 
+     different URL.  Note that this causes the handler to throw
+     HTTP_REDIRECT.
+</li></ul>
+<p>The <i>docstring</i> should describe the data returned by the URL in
+general terms, and document any place-holders.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="urltree"><i>obj</i> urltree <i>root docstring</i></a></dt><dd><p>
+
+<b>TBD:</b> This handler type was added to support the on-line help pages, 
+but we might write a different domain handler for that purpose.  In that
+case, this might go away.></p>
+
+<p>Defines a handler for a subtree of the domain.  The <i>root</i> is the 
+subtree's root within the domain, beginning with a "/".  For example, if 
+the domain is "<span class="tt">/mydomain</span>" and the full URL will be 
+"<span class="tt">/mydomain/this/that/...</span>", then the 
+<i>root</i> should be "<span class="tt">/this/that</span>".</p>
+
+<p>The <i>root</i> may contain place-holders in any path component 
+(as for <a class="iref" href="#url">url</a>).  Note that <a class="iref" href="#url">url</a> and <a class="iref" href="#urltree">urltree</a> handlers are
+matched in the order of definition; if the first registered handler is
+an <a class="iref" href="#urltree">urltree</a> handler with root "/{mydir}" then it will match all
+URLs received by the domain and no other handler will ever be called.</p>
+
+<p>The handler is a method with the same name as the <i>root</i>.  It must have
+one argument for each place-holder in the <i>root</i>, giving the actual 
+content from the requested URL, plus an argument for the remainder of
+the URL following the <i>root</i>.  The handler may:
+
+</p><ul>
+<li> Return data of a type consistent with the URL's file extension.
+</li><li> Throw <b>NOTFOUND</b> to indicate that the place-holder values
+     match no available data (i.e., if there is no actor with the
+     given name). 
+
+</li><li> Call <a class="iref" href="#redirect">redirect</a> to redirect to a 
+     different URL.  Note that this causes the handler to throw
+     HTTP_REDIRECT.
+</li></ul>
+<p>The content-type of the returned data will be determined from the 
+file extension of the last component of the requested URL; if there
+is no extension, then it will be "text/plain".  
+<b>TBD:</b> This is not very good.  If we retain this feature, we need
+a way to specify the default content-type for the subtree, and to
+set it explicitly for particular requests.</p>
+
+<p>The <i>docstring</i> should describe the data returned by the URL in
+general terms, and document any place-holders.
+
+
+</p>
+
+</dd>
+</dl>
+
+<h2><a name="components">COMPONENTS</a></h2>
+<p>smartdomain(n) defines the following component objects for use by 
+URL handlers:
+
+</p>
+
+<dl>
+<dt class="defitem"><a name="hb">hb <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+An instance of <a href="../mann/htmlbuffer.html">htmlbuffer(n)</a> which can be used to generate
+HTML output.
+
+</dd>
+<dt class="defitem"><a name="qdict">qdict <i>subcommand</i> ?<i>args...</i>?</a></dt><dd>
+An instance of <a href="../mann/parmdict.html">parmdict(n)</a> which will contain any parsed
+query parameters and their values.
+
+</dd>
+<dt class="defitem"><a name="req">req <i>parm</i></a></dt><dd><p>
+A command that returns data about the request being processed.  
+The <i>parm</i> may be one of the following:
+
+</p><ul>
+<li> <b>method</b>: The HTTP method being used, <b>GET</b> or <b>POST</b>.
+</li><li> <b>query</b>: The full query string from the URL.
+</li><li> <b>url</b>: The full server-relative URL being handled, not including
+any query or fragment.
+</li></ul>
+
+</dd>
+</dl>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:49:00 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

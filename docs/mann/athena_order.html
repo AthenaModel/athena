@@ -1,0 +1,509 @@
+<html>
+<head>
+<title>athena 6.3.3: athena_order(n) -- Athena Order Flunky Component, submodule of athena(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>athena_order(n)</b> -- Athena Order Flunky Component, submodule of <a href="../mann/athena.html">athena(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#order_states">ORDER STATES</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    <ul>
+
+    <li><a href="#public_subcommands">Public Subcommands</a></li>
+
+    <li><a href="#private_subcommands">Private Subcommands</a></li>
+
+</ul>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require athena 6.3.3
+namespace import ::athena::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#available"><i>adb</i> order available <i>name</i></a></li>
+<li><a class="iref" href="#canredo"><i>adb</i> order canredo</a></li>
+<li><a class="iref" href="#canundo"><i>adb</i> order canundo</a></li>
+<li><a class="iref" href="#check"><i>adb</i> order check <i>name</i> ?<i>parm value...</i>?</a></li>
+<li><a class="iref" href="#class"><i>adb</i> order class <i>name</i></a></li>
+<li><a class="iref" href="#make"><i>adb</i> order make <i>name args...</i></a></li>
+<li><a class="iref" href="#monitor"><i>adb</i> order monitor ?<i>flag</i>?</a></li>
+<li><a class="iref" href="#names"><i>adb</i> order names</a></li>
+<li><a class="iref" href="#redotext"><i>adb</i> order redotext</a></li>
+<li><a class="iref" href="#reset"><i>adb</i> order reset</a></li>
+<li><a class="iref" href="#redo"><i>adb</i> order redo</a></li>
+<li><a class="iref" href="#send"><i>adb</i> order send <i>mode name</i> ?<i>option value...</i>?</a></li>
+<li><a class="iref" href="#senddict"><i>adb</i> order senddict <i>mode name parmdict</i></a></li>
+<li><a class="iref" href="#transactions"><i>adb</i> order transactions <i>flag</i></a></li>
+<li><a class="iref" href="#transaction"><i>adb</i> order transaction <i>narrative script</i></a></li>
+<li><a class="iref" href="#undotext"><i>adb</i> order undotext</a></li>
+<li><a class="iref" href="#undo"><i>adb</i> order undo</a></li>
+<li><a class="iref" href="#validate"><i>adb</i> order validate <i>name</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This man page describes a component of the <a href="../mann/athena.html">athena(n)</a> package that
+is responsible for executing and managing simulation orders.  The
+actual work is done by a subclass of the <a href="../../../mars/docs/mann/order_flunky.html">order_flunky(n)</a>
+class; most of the subcommands are identical, though the Athena class
+adds a few capabilities.</p>
+
+<p>The component is accessible as a subcommand of the <a href="../mann/athena.html">athena(n)</a> and
+<a href="../mann/athenadb.html">athenadb(n)</a> objects; <a href="#public_subcommands">Public Subcommands</a> are accessible
+from <a href="../mann/athena.html">athena(n)</a> and (usually) from <a href="../mann/athenadb.html">athenadb(n)</a>, and
+<a href="#private_subcommands">Private Subcommands</a> only from <a href="../mann/athenadb.html">athenadb(n)</a>.
+
+</p>
+
+<h2><a name="order_states">ORDER STATES</a></h2>
+<p>The <a href="../../../mars/docs/mann/order.html">order(n)</a> order processing scheme defines the notion of an
+<i>order state</i>, which is a symbolic constant representing some broad
+state of the application.  Different orders can be available in different
+states.</p>
+
+<p>In <a href="../mann/athena.html">athena(n)</a>, the order states track the scenario states (e.g.,
+<b>PREP</b>, <b>PAUSED</b>) with a single addition, <b>TACTIC</b>, which is used
+to mark those orders that can safely be used from the 
+EXECUTIVE tactic.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<h2><a name="public_subcommands">Public Subcommands</a></h2>
+<p>The <span class="tt"><i>adb</i> order</span> command takes the following subcommands,
+where <i>adb</i> is an instance of <a href="../mann/athena.html">athena(n)</a>.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="available"><i>adb</i> order available <i>name</i></a></dt><dd>
+
+Returns 1 if the named order exists and is available in the current
+order state.
+
+
+</dd>
+<dt class="defitem"><a name="canredo"><i>adb</i> order canredo</a></dt><dd>
+
+Returns 1 if there's anything on the redo stack to redo.
+
+</dd>
+<dt class="defitem"><a name="canundo"><i>adb</i> order canundo</a></dt><dd>
+
+Returns 1 if there's anything on the undo stack to undo.
+
+</dd>
+<dt class="defitem"><a name="check"><i>adb</i> order check <i>name</i> ?<i>parm value...</i>?</a></dt><dd>
+Validates a set of order parameters and values for the named order,
+without actually executing the order.
+
+</dd>
+<dt class="defitem"><a name="class"><i>adb</i> order class <i>name</i></a></dt><dd>
+
+Returns the full TclOO class name of the named order.
+
+</dd>
+<dt class="defitem"><a name="make"><i>adb</i> order make <i>name args...</i></a></dt><dd>
+Creates and returns an instance of the named order, passing 
+the <i>args</i> to the order's constructor.
+
+</dd>
+<dt class="defitem"><a name="monitor"><i>adb</i> order monitor ?<i>flag</i>?</a></dt><dd>
+Sets and queries the order flunky's monitor flag.  When the flag is true,
+any run-time database changes made by an executing order are monitored 
+by the scenario's <a href="../../../mars/docs/mann/sqldocument.html">sqldocument(n)</a> object and the relevant
+<a href="../../../mars/docs/mann/notifier.html">notifier(n)</a> events are sent.  When the flag is false, no 
+such monitoring is done.
+
+</dd>
+<dt class="defitem"><a name="names"><i>adb</i> order names</a></dt><dd>
+
+Returns a list of the names of the orders known to the order flunky, i.e.,
+all orders defined by <a href="../mann/athena.html">athena(n)</a>.
+
+</dd>
+<dt class="defitem"><a name="redotext"><i>adb</i> order redotext</a></dt><dd>
+Returns a narrative string corresponding to the order or transaction 
+on the top of the redo stack, or "" if none.
+
+</dd>
+<dt class="defitem"><a name="reset"><i>adb</i> order reset</a></dt><dd>
+Clears the undo and redo stacks.  This should be done whenever the 
+order state changes.
+
+</dd>
+<dt class="defitem"><a name="redo"><i>adb</i> order redo</a></dt><dd>
+Redoes the previously undone order or transaction, 
+provided that <a class="iref" href="#canredo">canredo</a> is true.
+
+</dd>
+<dt class="defitem"><a name="send"><i>adb</i> order send <i>mode name</i> ?<i>option value...</i>?</a></dt><dd><p>
+Creates an instance of order <i>name</i>, initializing it with the order
+parameters included on the command line in <i>option</i>/<i>value</i> notation,
+validates it, and executes with the given <i>mode</i>, which should be one
+of <b>gui</b>, <b>normal</b>, or <b>private</b>.  If the <i>mode</i> is <b>gui</b> or
+<b>normal</b>, the order will be placed on the undo stack and the redo stack
+will be cleared; if the <i>mode</i> is <b>private</b>, the undo and redo stacks
+will not be affected.</p>
+
+<p>If the order is rejected, this command throws <b>REJECT</b> with a detailed
+human-readable error message.
+
+</p>
+</dd>
+<dt class="defitem"><a name="senddict"><i>adb</i> order senddict <i>mode name parmdict</i></a></dt><dd><p>
+
+Creates an instance of order <i>name</i>, initializing it with the order
+parameters included in the <i>parmdict</i>, and executes with the given
+<i>mode</i>, which is just as for the <a class="iref" href="#send">send</a> command.</p>
+
+<p>If the order is rejected, this command throws <b>REJECT</b> with an
+error dictionary, as returned by <a href="../../../mars/docs/mann/order.html">order(n)</a>'s 
+<a href="../../../mars/docs/mann/order.html#errdict">errdict</a> method.
+
+
+</p>
+</dd>
+<dt class="defitem"><a name="transactions"><i>adb</i> order transactions <i>flag</i></a></dt><dd>
+Sets and queries the order flunky's transactions flag.  If the flag
+is enabled, each order is executed within an <a href="../../../mars/docs/mann/sqldocument.html">sqldocument(n)</a>
+transaction.  If the order mutator throws an error, the underlying 
+database will be rolled-back.  Note that this doesn't affect orders
+that mutate in-memory state.
+
+</dd>
+<dt class="defitem"><a name="transaction"><i>adb</i> order transaction <i>narrative script</i></a></dt><dd>
+
+Executes the <i>script</i> as an "order transaction".  The <i>script</i>
+is a Tcl script that sends a set of orders intended to be treated as a
+single atomic unit; the transaction will be undone and redone as a unit.
+The <i>narrative</i> is used for the transaction's <a class="iref" href="#undotext">undotext</a> and 
+<a class="iref" href="#redotext">redotext</a>.  Note that this kind of "transaction" is entirely 
+distinct from the SQL transactions controlled by <a class="iref" href="#transactions">transactions</a>.
+
+
+</dd>
+<dt class="defitem"><a name="undotext"><i>adb</i> order undotext</a></dt><dd>
+Returns a narrative string corresponding to the order or transaction
+on the top of the undo stack, or "" if none.
+
+</dd>
+<dt class="defitem"><a name="undo"><i>adb</i> order undo</a></dt><dd>
+Undoes the previously executed order or transaction, 
+provided that <a class="iref" href="#canundo">canundo</a> is true, and pushes it onto the redo stack.
+
+</dd>
+<dt class="defitem"><a name="validate"><i>adb</i> order validate <i>name</i></a></dt><dd>
+Validates the order <i>name</i>, returning it in canonical form if it is valid
+and throwing <b>INVALID</b> otherwise.
+
+</dd>
+</dl>
+
+<h2><a name="private_subcommands">Private Subcommands</a></h2>
+<p>The <span class="tt"><i>adb</i> order</span> command takes the following subcommands, where
+where <i>adb</i> is an instance of <a href="../mann/athenadb.html">athenadb(n)</a>.</p>
+
+<p>TBD: None yet documented.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette, Dave Hanks.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:56 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+

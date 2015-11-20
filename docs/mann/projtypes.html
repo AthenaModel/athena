@@ -1,0 +1,1554 @@
+<html>
+<head>
+<title>athena 6.3.3: projtypes(n) -- Athena Data Types, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>projtypes(n)</b> -- Athena Data Types, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#types">TYPES</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::projtypes
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#boolean_validate">boolean validate <i>flag</i></a></li>
+<li><a class="iref" href="#eactortype">eactortype <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#ebeanstate">ebeanstate <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#ecause">ecause <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#ecomparator">ecomparator <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#ecomparatorx">ecomparatorx <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#ecomparatorx_compare">ecomparatorx compare <i>x comp y</i></a></li>
+<li><a class="iref" href="#econcern">econcern <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#econdition_state">econdition_state <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#econdition_type">econdition_type <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#edemeanor">edemeanor <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#eforcetype">eforcetype <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#egoal_state">egoal_state <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#ehousing">ehousing <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#emoveitem">emoveitem <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#emoveitem_move">emoveitem move <i>where list item</i></a></li>
+<li><a class="iref" href="#epagesize">epagesize <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#eorgtype">eorgtype <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#esitstate">esitstate <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#etactic_state">etactic_state <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#etopic_state">etopic_state <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#etraining">etraining <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#eurbanization">eurbanization <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#eyesno">eyesno <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#hexcolor_validate">hexcolor validate <i>color</i></a></li>
+<li><a class="iref" href="#idays_validate">idays validate <i>days</i></a></li>
+<li><a class="iref" href="#ident_validate">ident validate <i>name</i></a></li>
+<li><a class="iref" href="#iminlines_validate">iminlines validate <i>quantity</i></a></li>
+<li><a class="iref" href="#ipositive_validate">ipositive validate <i>quantity</i></a></li>
+<li><a class="iref" href="#iquantity_validate">iquantity validate <i>quantity</i></a></li>
+<li><a class="iref" href="#money_validate">money validate <i>dollars</i></a></li>
+<li><a class="iref" href="#polygon_validate">polygon validate <i>coords</i></a></li>
+<li><a class="iref" href="#qcredit">qcredit</a></li>
+<li><a class="iref" href="#qsecurity">qsecurity</a></li>
+<li><a class="iref" href="#rgain_validate">rgain validate <i>value</i></a></li>
+<li><a class="iref" href="#rpercent_validate">rpercent validate <i>value</i></a></li>
+<li><a class="iref" href="#rpercentpm_validate">rpercentpm validate <i>value</i></a></li>
+<li><a class="iref" href="#rposfrac_validate">rposfrac validate <i>value</i></a></li>
+<li><a class="iref" href="#rrate_validate">rrate validate <i>value</i></a></li>
+<li><a class="iref" href="#unitname_validate">unitname validate <i>name</i></a></li>
+<li><a class="iref" href="#weight_validate">weight validate <i>value</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This module defines data types used by the Athena code base.  Each
+type is defined as a type ensemble command.
+
+</p>
+
+<h2><a name="types">TYPES</a></h2>
+    
+
+<dl>
+
+<dt class="defitem"><a name="boolean_validate">boolean validate <i>flag</i></a></dt><dd><p>
+
+Boolean flag type.  Accepts any of the standard Tcl boolean values.</p>
+
+<p>Validates the <i>flag</i>, returning either 1 for true values and 0
+for false values.  On error, throws an error with <code>-errorcode</code>
+<b>INVALID</b>.</p>
+
+<p>This call differs from <code>snit::boolean</code> in that it converts
+the value to canonical form, and throws <b>INVALID</b> on error.
+
+</p>
+</dd>
+<dt class="defitem"><a name="eactortype">eactortype <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+This <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type defines the set of actor types.
+Almost all actors are "normal" actors.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>NORMAL</tt></td>
+<td>Normal</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>PSEUDO</tt></td>
+<td>Pseudo-actor</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="ebeanstate">ebeanstate <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+This <a href="../mann/enumx.html">enumx(n)</a> enumeration maps the entity states
+<b>normal</b>, <b>disabled</b>, and <b>invalid</b> to standard
+fonts and colors.
+
+</p><table>
+<tr>
+<th align="right">Index</th>
+<th align="left">Name</th>
+<th align="left">color</th>
+<th align="left">font</th>
+</tr>
+<tr>
+<td valign="baseline" align="center">0</td>
+<td valign="baseline" align="left"><tt>normal</tt></td>
+<td valign="baseline" align="left"><tt>black</tt></td>
+<td valign="baseline" align="left"><tt>datafont</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">1</td>
+<td valign="baseline" align="left"><tt>disabled</tt></td>
+<td valign="baseline" align="left"><tt>#999999</tt></td>
+<td valign="baseline" align="left"><tt>datafontstrike</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">2</td>
+<td valign="baseline" align="left"><tt>invalid</tt></td>
+<td valign="baseline" align="left"><tt>#C7001B</tt></td>
+<td valign="baseline" align="left"><tt>datafontstrike</tt></td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="ecause">ecause <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing the "causes" of GRAM
+attitude change.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>CHKPOINT</tt></td>
+<td>Checkpoint/Control Point</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>CIVCAS</tt></td>
+<td>Civilian Casualties</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>COERCION</tt></td>
+<td>Coercion</td>
+</tr>
+<tr class="tr-odd">
+<td>3</td>
+<td><tt>COMMOUT</tt></td>
+<td>Communications Outage</td>
+</tr>
+<tr class="tr-even">
+<td>4</td>
+<td><tt>CONSTRUCT</tt></td>
+<td>Construction</td>
+</tr>
+<tr class="tr-odd">
+<td>5</td>
+<td><tt>CONSUMP</tt></td>
+<td>Consumption of Goods</td>
+</tr>
+<tr class="tr-even">
+<td>6</td>
+<td><tt>CONTROL</tt></td>
+<td>Shift in Control of Neighborhood</td>
+</tr>
+<tr class="tr-odd">
+<td>7</td>
+<td><tt>CRIME</tt></td>
+<td>Criminal Activities</td>
+</tr>
+<tr class="tr-even">
+<td>8</td>
+<td><tt>CULSITE</tt></td>
+<td>Damage to Cultural Site/Artifact</td>
+</tr>
+<tr class="tr-odd">
+<td>9</td>
+<td><tt>CURFEW</tt></td>
+<td>Curfew</td>
+</tr>
+<tr class="tr-even">
+<td>10</td>
+<td><tt>DEMO</tt></td>
+<td>Demonstration</td>
+</tr>
+<tr class="tr-odd">
+<td>11</td>
+<td><tt>DISASTER</tt></td>
+<td>Disaster</td>
+</tr>
+<tr class="tr-even">
+<td>12</td>
+<td><tt>DISPLACED</tt></td>
+<td>Displaced Persons</td>
+</tr>
+<tr class="tr-odd">
+<td>13</td>
+<td><tt>DROUGHT</tt></td>
+<td>Long-term Drought</td>
+</tr>
+<tr class="tr-even">
+<td>14</td>
+<td><tt>EDU</tt></td>
+<td>Schools</td>
+</tr>
+<tr class="tr-odd">
+<td>15</td>
+<td><tt>EMPLOY</tt></td>
+<td>Provide Employment</td>
+</tr>
+<tr class="tr-even">
+<td>16</td>
+<td><tt>ENERGY</tt></td>
+<td>Energy Infrastructure Services</td>
+</tr>
+<tr class="tr-odd">
+<td>17</td>
+<td><tt>ENI</tt></td>
+<td>ENI Services</td>
+</tr>
+<tr class="tr-even">
+<td>18</td>
+<td><tt>FUELSHRT</tt></td>
+<td>Fuel Shortage</td>
+</tr>
+<tr class="tr-odd">
+<td>19</td>
+<td><tt>GARBAGE</tt></td>
+<td>Garbage in the Streets</td>
+</tr>
+<tr class="tr-even">
+<td>20</td>
+<td><tt>GUARD</tt></td>
+<td>Guard</td>
+</tr>
+<tr class="tr-odd">
+<td>21</td>
+<td><tt>HUNGER</tt></td>
+<td>Hunger</td>
+</tr>
+<tr class="tr-even">
+<td>22</td>
+<td><tt>INDSPILL</tt></td>
+<td>Industrial Spill</td>
+</tr>
+<tr class="tr-odd">
+<td>23</td>
+<td><tt>INDUSTRY</tt></td>
+<td>Support Industry</td>
+</tr>
+<tr class="tr-even">
+<td>24</td>
+<td><tt>INFRA</tt></td>
+<td>Support Infrastructure</td>
+</tr>
+<tr class="tr-odd">
+<td>25</td>
+<td><tt>IOM</tt></td>
+<td>Info Ops Message</td>
+</tr>
+<tr class="tr-even">
+<td>26</td>
+<td><tt>LAWENF</tt></td>
+<td>Law Enforcement</td>
+</tr>
+<tr class="tr-odd">
+<td>27</td>
+<td><tt>MAGIC</tt></td>
+<td>Magic</td>
+</tr>
+<tr class="tr-even">
+<td>28</td>
+<td><tt>MEDICAL</tt></td>
+<td>Healthcare</td>
+</tr>
+<tr class="tr-odd">
+<td>29</td>
+<td><tt>MOOD</tt></td>
+<td>Mood</td>
+</tr>
+<tr class="tr-even">
+<td>30</td>
+<td><tt>ORDNANCE</tt></td>
+<td>Unexploded Ordnance/Minefield</td>
+</tr>
+<tr class="tr-odd">
+<td>31</td>
+<td><tt>ORGCAS</tt></td>
+<td>Organization Casualties</td>
+</tr>
+<tr class="tr-even">
+<td>32</td>
+<td><tt>PATROL</tt></td>
+<td>Patrol</td>
+</tr>
+<tr class="tr-odd">
+<td>33</td>
+<td><tt>PIPELINE</tt></td>
+<td>Oil Pipeline Fire</td>
+</tr>
+<tr class="tr-even">
+<td>34</td>
+<td><tt>PSYOP</tt></td>
+<td>PSYOP</td>
+</tr>
+<tr class="tr-odd">
+<td>35</td>
+<td><tt>REFINERY</tt></td>
+<td>Oil Refinery Fire</td>
+</tr>
+<tr class="tr-even">
+<td>36</td>
+<td><tt>RELIEF</tt></td>
+<td>Humanitarian Relief</td>
+</tr>
+<tr class="tr-odd">
+<td>37</td>
+<td><tt>RELSITE</tt></td>
+<td>Damage to Religious Site/Artifact</td>
+</tr>
+<tr class="tr-even">
+<td>38</td>
+<td><tt>SEWAGE</tt></td>
+<td>Sewage Spill</td>
+</tr>
+<tr class="tr-odd">
+<td>39</td>
+<td><tt>SICKNESS</tt></td>
+<td>Sickness</td>
+</tr>
+<tr class="tr-even">
+<td>40</td>
+<td><tt>THIRST</tt></td>
+<td>Thirst</td>
+</tr>
+<tr class="tr-odd">
+<td>41</td>
+<td><tt>TRANSPORT</tt></td>
+<td>Transportation Services</td>
+</tr>
+<tr class="tr-even">
+<td>42</td>
+<td><tt>UNEMP</tt></td>
+<td>Unemployment</td>
+</tr>
+<tr class="tr-odd">
+<td>43</td>
+<td><tt>WATER</tt></td>
+<td>Potable Water</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="ecomparator">ecomparator <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../mann/enum.html">enum(n)</a> type, representing a variety of comparisons
+used by Athena conditions:
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>EQ</tt></td>
+<td>equal to</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>GE</tt></td>
+<td>greater than or equal to</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>GT</tt></td>
+<td>greater than</td>
+</tr>
+<tr class="tr-odd">
+<td>3</td>
+<td><tt>LE</tt></td>
+<td>less than or equal to</td>
+</tr>
+<tr class="tr-even">
+<td>4</td>
+<td><tt>LT</tt></td>
+<td>less than</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="ecomparatorx">ecomparatorx <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../mann/enumx.html">enumx(n)</a> type, representing a variety of comparisons
+used by Athena conditions:
+
+</p><table>
+<tr>
+<th align="right">Index</th>
+<th align="left">Name</th>
+<th align="left">longname</th>
+</tr>
+<tr>
+<td valign="baseline" align="center">0</td>
+<td valign="baseline" align="left"><tt>EQ</tt></td>
+<td valign="baseline" align="left"><tt>equal to</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">1</td>
+<td valign="baseline" align="left"><tt>AE</tt></td>
+<td valign="baseline" align="left"><tt>approximately equal to</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">2</td>
+<td valign="baseline" align="left"><tt>GE</tt></td>
+<td valign="baseline" align="left"><tt>greater than or equal to</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">3</td>
+<td valign="baseline" align="left"><tt>GT</tt></td>
+<td valign="baseline" align="left"><tt>greater than</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">4</td>
+<td valign="baseline" align="left"><tt>LE</tt></td>
+<td valign="baseline" align="left"><tt>less than or equal to</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">5</td>
+<td valign="baseline" align="left"><tt>LT</tt></td>
+<td valign="baseline" align="left"><tt>less than</tt></td>
+</tr>
+</table>
+<p>The type has one unique subcommand:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="ecomparatorx_compare">ecomparatorx compare <i>x comp y</i></a></dt><dd>
+
+Compares numeric value <i>x</i> with numeric value <i>y</i> according to
+<a class="iref" href="#ecomparator">ecomparator</a> value <i>comp</i>, returning 1 if the comparison is
+true and 0 otherwise. 
+
+</dd>
+</dl>
+
+
+
+</dd>
+<dt class="defitem"><a name="econcern">econcern <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing the concerns
+of groups for which satisfaction is tracked.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>AUT</tt></td>
+<td>Autonomy</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>SFT</tt></td>
+<td>Physical Safety</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>CUL</tt></td>
+<td>Culture</td>
+</tr>
+<tr class="tr-odd">
+<td>3</td>
+<td><tt>QOL</tt></td>
+<td>Quality of Life</td>
+</tr>
+</table>
+
+
+
+</dd>
+<dt class="defitem"><a name="econdition_state">econdition_state <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing the current state of a
+condition.  A "normal" condition can be evaluated.  A "disabled" condition has
+been disabled by the user.  An "invalid" condition has failed its sanity
+check, and currently cannot be evaluated.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>normal</tt></td>
+<td>normal</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>disabled</tt></td>
+<td>disabled</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>invalid</tt></td>
+<td>invalid</td>
+</tr>
+</table>
+
+
+
+</dd>
+<dt class="defitem"><a name="econdition_type">econdition_type <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing the list of
+condition types supported by Athena.  See the Athena Analyst's Guide
+for a catalog of condition types, with descriptions.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>CASH</tt></td>
+<td>Cash-on-hand</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>GOAL</tt></td>
+<td>Goal State</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="edemeanor">edemeanor <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing neighborhood group
+demeanor.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>APATHETIC</tt></td>
+<td>Apathetic</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>AVERAGE</tt></td>
+<td>Average</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>AGGRESSIVE</tt></td>
+<td>Aggressive</td>
+</tr>
+</table>
+
+
+
+</dd>
+<dt class="defitem"><a name="eforcetype">eforcetype <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing force group types.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>REGULAR</tt></td>
+<td>Regular Military</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>PARAMILITARY</tt></td>
+<td>Paramilitary</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>POLICE</tt></td>
+<td>Police</td>
+</tr>
+<tr class="tr-odd">
+<td>3</td>
+<td><tt>IRREGULAR</tt></td>
+<td>Irregular Military</td>
+</tr>
+<tr class="tr-even">
+<td>4</td>
+<td><tt>CRIMINAL</tt></td>
+<td>Organized Crime</td>
+</tr>
+</table>
+
+
+
+</dd>
+<dt class="defitem"><a name="egoal_state">egoal_state <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing the current state of a
+goal.  A "normal" goal can be evaluated.  A "disabled" goal is ignored.
+An "invalid" goal is ignored, and should be fixed.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>normal</tt></td>
+<td>normal</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>disabled</tt></td>
+<td>disabled</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>invalid</tt></td>
+<td>invalid</td>
+</tr>
+</table>
+
+
+
+</dd>
+<dt class="defitem"><a name="ehousing">ehousing <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing a civilian group's
+housing status: are they living in their normal homes? Are they
+displaced from their normal homes, living among the settled population
+in their neighborhood?  Or are they isolated from the settled population
+in some kind of refugee or displaced persons camp?
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>AT_HOME</tt></td>
+<td>At Home</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>DISPLACED</tt></td>
+<td>Displaced</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>IN_CAMP</tt></td>
+<td>In Camp</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="emoveitem">emoveitem <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../mann/enumx.html">enumx(n)</a> type, representing ways to move an item in a list.
+
+</p><table>
+<tr>
+<th align="right">Index</th>
+<th align="left">Name</th>
+<th align="left">longname</th>
+</tr>
+<tr>
+<td valign="baseline" align="center">0</td>
+<td valign="baseline" align="left"><tt>top</tt></td>
+<td valign="baseline" align="left"><tt>Move To Top</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">1</td>
+<td valign="baseline" align="left"><tt>up</tt></td>
+<td valign="baseline" align="left"><tt>Move Up</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">2</td>
+<td valign="baseline" align="left"><tt>down</tt></td>
+<td valign="baseline" align="left"><tt>Move Down</tt></td>
+</tr>
+<tr>
+<td valign="baseline" align="center">3</td>
+<td valign="baseline" align="left"><tt>bottom</tt></td>
+<td valign="baseline" align="left"><tt>Move To Bottom</tt></td>
+</tr>
+</table>
+<p>The type has one unique subcommand:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="emoveitem_move">emoveitem move <i>where list item</i></a></dt><dd>
+
+Moves the <i>item</i> to the place in the <i>list</i> indicated by
+by <i>where</i>, which is an <a class="iref" href="#emoveitem">emoveitem</a> value, and returns
+the new list.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="epagesize">epagesize <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing the number of results to 
+display on one page of output.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>10</tt></td>
+<td>10 items per page</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>20</tt></td>
+<td>20 items per page</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>50</tt></td>
+<td>50 items per page</td>
+</tr>
+<tr class="tr-odd">
+<td>3</td>
+<td><tt>100</tt></td>
+<td>100 items per page</td>
+</tr>
+<tr class="tr-even">
+<td>4</td>
+<td><tt>200</tt></td>
+<td>200 items per page</td>
+</tr>
+</table>
+
+
+
+
+
+</dd>
+<dt class="defitem"><a name="eorgtype">eorgtype <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing organization group types.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>NGO</tt></td>
+<td>Non-Governmental Organization</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>IGO</tt></td>
+<td>Intergovernmental Organization</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>CTR</tt></td>
+<td>Contractor</td>
+</tr>
+</table>
+
+
+
+</dd>
+<dt class="defitem"><a name="esitstate">esitstate <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing the current state of a
+situation.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>INITIAL</tt></td>
+<td>Initial</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>ONGOING</tt></td>
+<td>Ongoing</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>RESOLVED</tt></td>
+<td>Resolved</td>
+</tr>
+</table>
+
+
+
+</dd>
+<dt class="defitem"><a name="etactic_state">etactic_state <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing the current state of a
+tactic.  A "normal" tactic can be executed.  A "disabled" tactic has
+been disabled by the user.  An "invalid" tactic has failed its sanity
+check, and is currently unusable.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>normal</tt></td>
+<td>normal</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>disabled</tt></td>
+<td>disabled</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>invalid</tt></td>
+<td>invalid</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="etopic_state">etopic_state <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing the current state of a
+semantic hook topic.  A "normal" topic is considered when computing 
+resonance of a message.  A "disabled" topic has been disabled by the 
+user and is not considered.  An "invalid" topic has failed its sanity 
+check, and is currently unusable.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>normal</tt></td>
+<td>normal</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>disabled</tt></td>
+<td>disabled</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>invalid</tt></td>
+<td>invalid</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="etraining">etraining <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing force group training
+levels.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>PROFICIENT</tt></td>
+<td>Proficient</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>FULL</tt></td>
+<td>Fully Trained</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>PARTIAL</tt></td>
+<td>Partially Trained</td>
+</tr>
+<tr class="tr-odd">
+<td>3</td>
+<td><tt>NONE</tt></td>
+<td>Not Trained</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="eurbanization">eurbanization <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing neighborhood urbanization
+levels.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>ISOLATED</tt></td>
+<td>Isolated</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>RURAL</tt></td>
+<td>Rural</td>
+</tr>
+<tr class="tr-even">
+<td>2</td>
+<td><tt>SUBURBAN</tt></td>
+<td>Suburban</td>
+</tr>
+<tr class="tr-odd">
+<td>3</td>
+<td><tt>URBAN</tt></td>
+<td>Urban</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="eyesno">eyesno <i>subcommand</i> ?<i>args</i>?</a></dt><dd><p>
+
+An <a href="../../../mars/docs/mann/enum.html">enum(n)</a> type, representing boolean "Yes" and "No" values.
+
+</p><table class="table">
+<tr>
+<th>Index</th>
+<th>Name</th>
+<th>Long Name</th>
+</tr>
+<tr class="tr-even">
+<td>0</td>
+<td><tt>YES</tt></td>
+<td>Yes</td>
+</tr>
+<tr class="tr-odd">
+<td>1</td>
+<td><tt>NO</tt></td>
+<td>No</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="hexcolor_validate">hexcolor validate <i>color</i></a></dt><dd><p>
+
+Hex color type.  A hex color specification is a string
+"<code>#<i>rrggbb</i></code>" where <i>rr</i>, <i>gg</i>, and
+<i>bb</i> are two-digit hexadecimal numbers representing the intensity
+of the RGB color channels.</p>
+
+<p>Validates and returns the <i>color</i>; the hex-digits are
+upper-cased.  On error, throws an error with <code>-errorcode</code>
+<b>INVALID</b>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="idays_validate">idays validate <i>days</i></a></dt><dd><p>
+
+Integer days type: a non-negative integer number.</p>
+
+<p>Validates and returns <i>days</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="ident_validate">ident validate <i>name</i></a></dt><dd><p>
+
+Identifier type.  An identifier is a string consisting only of letters
+and digits, beginning with a letter.</p>
+
+<p>Validates and returns the <i>name</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="iminlines_validate">iminlines validate <i>quantity</i></a></dt><dd><p>
+
+The minimum value for the
+<a href="../man5/prefs.html#cli.maxlines">cli.maxlines</a> preferences parameter.  An integer
+number no less than 100.</p>
+
+<p>Validates and returns <i>quantity</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="ipositive_validate">ipositive validate <i>quantity</i></a></dt><dd><p>
+
+Integer quantity type: a positive integer number.</p>
+
+<p>Validates and returns <i>quantity</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="iquantity_validate">iquantity validate <i>quantity</i></a></dt><dd><p>
+
+Integer quantity type: a non-negative integer number.</p>
+
+<p>Validates and returns <i>quantity</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.
+
+
+
+</p>
+</dd>
+<dt class="defitem"><a name="money_validate">money validate <i>dollars</i></a></dt><dd>
+
+Money type; the <i>dollars</i> value must be a string accepted
+by the <a href="../../../mars/docs/mann/marsmisc.html">marsmisc(n)</a> <a href="../../../mars/docs/mann/marsmisc.html#moneyscan">moneyscan</a>
+function.  The value is returned as a normal floating point value.
+
+</dd>
+<dt class="defitem"><a name="polygon_validate">polygon validate <i>coords</i></a></dt><dd>
+
+Validates the polygon described by the <i>coords</i>, which is a flat
+list of <i>x</i> and <i>y</i> coordinates.  It may be passed as a
+single argument, or as one argument per coordinate.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.
+
+</dd>
+<dt class="defitem"><a name="qcredit">qcredit</a></dt><dd><p>
+
+This quality is used to assess the credit an actor receives for
+provision of service to civilian groups.  <a class="iref" href="#qcredit">qcredit</a> values have
+the bounds shown in the following table:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+<th>Bounds</th>
+</tr>
+<tr class="tr-even">
+<td><tt>M</tt>&nbsp;</td>
+<td>Most</td>
+<td>&nbsp;0.75</td>
+<td>&nbsp;0.50 &lt; <i>value</i> &lt;= 1.00</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>S</tt>&nbsp;</td>
+<td>Some</td>
+<td>&nbsp;0.35</td>
+<td>&nbsp;0.20 &lt; <i>value</i> &lt;= 0.50</td>
+</tr>
+<tr class="tr-even">
+<td><tt>N</tt>&nbsp;</td>
+<td>Negligible</td>
+<td>&nbsp;0.10</td>
+<td>&nbsp;0.00 &lt; <i>value</i> &lt;= 0.20</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="qsecurity">qsecurity</a></dt><dd><p>
+
+This quality is use to rate a group's security in a neighborhood.
+Numerically, <a class="iref" href="#qsecurity">qsecurity</a> values are
+formatted as "%4d" 
+and have the bounds shown in the following table:
+
+</p><table class="table">
+<tr>
+<th>Name&nbsp;</th>
+<th>Long Name</th>
+<th>Value</th>
+<th>Bounds</th>
+</tr>
+<tr class="tr-even">
+<td><tt>H</tt>&nbsp;</td>
+<td>High</td>
+<td>&nbsp;60</td>
+<td>&nbsp;25 &lt; <i>value</i> &lt;= 100</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>M</tt>&nbsp;</td>
+<td>Medium</td>
+<td>&nbsp;15</td>
+<td>&nbsp;5 &lt; <i>value</i> &lt;= 25</td>
+</tr>
+<tr class="tr-even">
+<td><tt>L</tt>&nbsp;</td>
+<td>Low</td>
+<td>&nbsp;-10</td>
+<td>&nbsp;-25 &lt; <i>value</i> &lt;= 5</td>
+</tr>
+<tr class="tr-odd">
+<td><tt>N</tt>&nbsp;</td>
+<td>None</td>
+<td>&nbsp;-60</td>
+<td>&nbsp;-100 &lt; <i>value</i> &lt;= -25</td>
+</tr>
+</table>
+
+
+</dd>
+<dt class="defitem"><a name="rgain_validate">rgain validate <i>value</i></a></dt><dd>
+
+A <a href="../../../mars/docs/mann/range.html">range(n)</a> representing a gain control
+setting: a non-negative floating-point value.   On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.
+
+</dd>
+<dt class="defitem"><a name="rpercent_validate">rpercent validate <i>value</i></a></dt><dd>
+
+A <a href="../../../mars/docs/mann/range.html">range(n)</a> representing a non-negative percentage, e.g.,
+a non-negative floating-point value between 0.0 and 100.0, inclusive.
+On error, throws an error with <code>-errorcode</code> <b>INVALID</b>.
+
+</dd>
+<dt class="defitem"><a name="rpercentpm_validate">rpercentpm validate <i>value</i></a></dt><dd>
+
+A <a href="../../../mars/docs/mann/range.html">range(n)</a> representing a positive or negative percentage, e.g.,
+a floating-point value between -100.0 and 100.0, inclusive.
+On error, throws an error with <code>-errorcode</code> <b>INVALID</b>.
+
+</dd>
+<dt class="defitem"><a name="rposfrac_validate">rposfrac validate <i>value</i></a></dt><dd>
+
+A <a href="../../../mars/docs/mann/range.html">range(n)</a> representing a positive fraction from 0.01 to
+1.0, inclusive.  On error, throws an error with <code>-errorcode</code> 
+<b>INVALID</b>.
+
+</dd>
+<dt class="defitem"><a name="rrate_validate">rrate validate <i>value</i></a></dt><dd>
+
+A <a href="../../../mars/docs/mann/range.html">range(n)</a> representing a rate, e.g.,
+events/day: a non-negative floating-point value.   On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.
+
+</dd>
+<dt class="defitem"><a name="unitname_validate">unitname validate <i>name</i></a></dt><dd><p>
+
+Identifier type.  A unit name is a string consisting only of letters
+and digits, "-", or "/", beginning with a letter.</p>
+
+<p>Validates and returns the <i>name</i>.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="weight_validate">weight validate <i>value</i></a></dt><dd><p>
+
+A weight is a non-negative floating-point value, used as a weighting factor.</p>
+
+<p>Validates the <i>value</i>, returning it on success.  On error, throws
+an error with <code>-errorcode</code> <b>INVALID</b>.
+
+</p>
+</dd>
+</dl>
+
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.5 or later.</p>
+
+<p>To use this package in a Tcl script, the environment variable
+<code>TCLLIBPATH</code> must include the parent of the package directory.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original package.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:59 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+
+
+
+
+

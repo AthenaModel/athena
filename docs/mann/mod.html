@@ -1,0 +1,447 @@
+<html>
+<head>
+<title>athena 6.3.3: mod(n) -- Software Mod Loader, submodule of projectlib(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>mod(n)</b> -- Software Mod Loader, submodule of <a href="../mann/projectlib.html">projectlib(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    <ul>
+
+    <li><a href="#mod_syntax">Mod Syntax</a></li>
+
+</ul>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require projectlib 6.3.3
+namespace import ::projectlib::mod
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#mod_load">mod load</a></li>
+<li><a class="iref" href="#mod_apply">mod apply ?<i>package</i> ?<i>number</i>??</a></li>
+<li><a class="iref" href="#mod_modtime">mod modtime</a></li>
+<li><a class="iref" href="#mod_list">mod list</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>mod(n) manages software modification files ("mods") which contain 
+Tcl code to fix bugs or provide <i>ad hoc</i> extensions to existing
+packages at run-time.  Mods are usually loaded at start-up, but
+can be reloaded at any time.</p>
+
+<p>A mod file is a <span class="tt">.tcl</span> file with a particular syntax.  It can be placed
+in one of two locations: either the <span class="tt">mods/</span> subdirectory in the
+Athena installation directory, or in the user's <span class="tt">~/athena/mods</span> 
+directory.  Mod files are read from disk by the <a class="iref" href="#mod_load">mod load</a> 
+command, and made active by the <a class="iref" href="#mod_apply">mod apply</a> command.</p>
+
+<p>To disable a mod, remove it from the mod directory and restart the 
+software.  To revise a mod while the software is running, update the
+mod file, and arrange for <a class="iref" href="#mod_load">mod load</a> and <a class="iref" href="#mod_apply">mod apply</a> to be
+called.
+
+</p>
+
+<h2><a name="mod_syntax">Mod Syntax</a></h2>
+<p>A mod file is a <span class="tt">.tcl</span> file containing one or more "mods".  Each
+mod has this syntax:
+
+</p>
+
+<pre class="example">
+<b>mod</b> <i>package version number title</i> {
+    <i>body</i>
+}
+</pre>
+<p>The arguments indicate that the mod is supposed update a particular
+<i>version</i> of a particular Tcl <i>package</i>.  If the named package is
+not loaded into memory the mod is ignored.  If the loaded version of the
+package differs from the <i>version</i> number given here, the mod will be
+rejected with an error.  (If the stated <i>version</i> is "*" then the mod
+be loaded against any version; this usage is intended only for debugging.)</p>
+
+<p>Note that the <a class="iref" href="#mod_load">mod load</a> command assumes that each modded package
+has a namespace with precisely the same name as the package.</p>
+
+<p>It is possible to define multiple mods for a single package; each such mod
+needs to have a distinct <i>number</i>. If <a class="iref" href="#mod_load">mod load</a>
+finds a second mod with the same <i>package</i> and <i>number</i>, that mod 
+will be rejected with an error.</p>
+
+<p>The <i>title</i> of the mod identifies the mod's purpose to the developer.</p>
+
+<p>For example, the following mod file fixes problems in the <a href="../mann/athena.html">athena(n)</a>
+library and in the Athena Workbench GUI.  If <a href="../man1/arachne.html">arachne(1)</a> is executed,
+it will pick up the <a href="../mann/athena.html">athena(n)</a> fix but not the GUI fix. The
+Workbench will naturally pick up both.
+
+</p>
+
+<pre class="example">
+# athena mod, 4/23/2014
+
+# Mod for the athena(n) library.
+mod athena 6.3.1 1 "Some actor fix" {
+    snit::method ::athena::actor names {} {
+        ...
+    }
+}
+
+# Mod for the Athena Workbench GUI.
+mod app_athenawb 6.3.1 1 "A GUI fix" {
+    snit::method ::appwin log {message} {
+        ...
+    }  
+}
+</pre>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>mod(n) provides the following commands for use by the application.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="mod_load">mod load</a></dt><dd>
+
+Loads all mod files found in the mod directories (see above).  Throws
+<b>MODERROR LOAD</b> if there is a problem with any mod file.  Note that
+<a class="iref" href="#mod_apply">mod apply</a> must be called to make the loaded mods take effect.
+
+</dd>
+<dt class="defitem"><a name="mod_apply">mod apply ?<i>package</i> ?<i>number</i>??</a></dt><dd><p>
+
+By default, this command sources all loaded mods into the Tcl
+interpreter, thus making them take effect.  If <i>package</i> is given,
+only mods for that package will be applied; and if <i>number</i> is given,
+only that specific mod will be loaded for the given <i>package</i>.</p>
+
+<p>This command throws <b>MODERROR APPLY</b> if there are any errors applying
+a mod.  Note that in this case the state of the application is uncertain.
+Thoroughly test all mods before applying them in production!
+
+</p>
+</dd>
+<dt class="defitem"><a name="mod_modtime">mod modtime</a></dt><dd>
+
+Returns the time in seconds of the last attempt to apply mods, whether
+it was successful or unsuccessful.
+
+</dd>
+<dt class="defitem"><a name="mod_list">mod list</a></dt><dd>
+
+This command returns a list of dictionaries of metadata about each
+loaded mod, suitable for formatting by <a href="../../../kite/docs/mann/dictab.html">dictab(n)</a>.
+
+</dd>
+</dl>
+
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>Original library package, based on Athena application code.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:58 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

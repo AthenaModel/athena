@@ -1,0 +1,600 @@
+<html>
+<head>
+<title>athena 6.3.3: athena_autogen(n) -- Athena Scenario Auto-Generation Component, submodule of athena(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>athena_autogen(n)</b> -- Athena Scenario Auto-Generation Component, submodule of <a href="../mann/athena.html">athena(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    <ul>
+
+    <li><a href="#public_subcommands">Public Subcommands</a></li>
+
+    <li><a href="#private_subcommands">Private Subcommands</a></li>
+
+</ul>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require athena 6.3.3
+namespace import ::athena::*
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#scenario"><i>adb</i> autogen scenario <i>options...</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scenario-nb">-nb <i>n</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scenario-actors">-actors <i>n</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scenario-frcg">-frcg <i>n</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scenario-civg">-civg <i>n</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scenario-orgg">-orgg <i>n</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scenario-topics">-topics <i>n</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#scenario-nostrategy">-nostrategy</a></li>
+<li><a class="iref" href="#actors"><i>adb</i> autogen actors ?<i>num</i>?</a></li>
+<li><a class="iref" href="#nbhoods"><i>adb</i> autogen nbhoods ?<i>num</i>?</a></li>
+<li><a class="iref" href="#civgroups"><i>adb</i> autogen civgroups ?<i>num</i>?</a></li>
+<li><a class="iref" href="#frcgroups"><i>adb</i> autogen frcgroups ?<i>num</i>?</a></li>
+<li><a class="iref" href="#orggroups"><i>adb</i> autogen orggroups ?<i>num</i>?</a></li>
+<li><a class="iref" href="#bsystem"><i>adb</i> autogen bsystem ?<i>num</i>?</a></li>
+<li><a class="iref" href="#assign"><i>adb</i> autogen assign ?<i>options</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#assign-frcg">-frcg <i>glist</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#assign-orgg">-orgg <i>glist</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#assign-nbhoods">-nbhoods <i>nlist</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#assign-frcact">-frcact <i>alist</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#assign-orgact">-orgact <i>alist</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>This man page describes a component of the <a href="../mann/athena.html">athena(n)</a> package
+used to automatically generate entire scenarios or parts of scenarios
+as an aid to testing and optimization.</p>
+
+<p>The component is accessible as a subcommand of the <a href="../mann/athena.html">athena(n)</a> and
+<a href="../mann/athenadb.html">athenadb(n)</a> objects; <a href="#public_subcommands">Public Subcommands</a> are accessible
+from <a href="../mann/athena.html">athena(n)</a> and (usually) from <a href="../mann/athenadb.html">athenadb(n)</a>, and
+<a href="#private_subcommands">Private Subcommands</a> only from <a href="../mann/athenadb.html">athenadb(n)</a>.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+    
+
+<h2><a name="public_subcommands">Public Subcommands</a></h2>
+<p>The <span class="tt"><i>adb</i> autogen</span> command takes the following subcommands, 
+where <i>adb</i> is an instance of <a href="../mann/athena.html">athena(n)</a>.
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="scenario"><i>adb</i> autogen scenario <i>options...</i></a></dt><dd><p>
+
+Creates a scenario with a default number of each of Athena's entities
+or, if any of the options are supplied, the number of entities 
+requested by the user. If the <i>-nostrategy</i> flag is supplied then
+no tactics are created, otherwise a default set of tactics are created 
+for each actor.</p>
+
+<p>The available options are:
+
+</p><dl>
+
+<dt class="defopt"><a name="scenario-nb">-nb <i>n</i></a></dt><dd>
+Specifies the number of neighborhoods to create. Each neighborhood is
+a 10x10 pixel square. Neighborhoods are laid out in strips starting at
+the top of the map. Defaults to 10.
+
+</dd>
+<dt class="defopt"><a name="scenario-actors">-actors <i>n</i></a></dt><dd>
+Specifies the number of actors to create. Defaults to 3.
+
+</dd>
+<dt class="defopt"><a name="scenario-frcg">-frcg <i>n</i></a></dt><dd>
+Specifies the number of force groups to create. As they are created,
+the force group type is cycled through each possible type. Each force 
+group is given a base personnel of 100000. Defaults to 3.
+
+</dd>
+<dt class="defopt"><a name="scenario-civg">-civg <i>n</i></a></dt><dd>
+Specifies the number of civilian groups to create per neighborhood. The 
+last group in each neighborhood is created with the subsistence 
+agriculture flag set to true. The different types of housing are 
+cycled through as each group is created. The exception to this are 
+subsistence agriculture groups, which are always  
+<code>AT_HOME</code>.  The population of every group in a neighborhood 
+is some non-negative multiple of 10000. Thus, the first group in a 
+neighborhood has a base population of zero and each group created 
+after has a base population of 10000 more than the previous group.
+Defaults to 6.
+
+</dd>
+<dt class="defopt"><a name="scenario-orgg">-orgg <i>n</i></a></dt><dd>
+Specifies the number of organization groups to create. As groups are
+created, the organization type is cycled through. Each group has a 
+base personnel of 100000. Defaults to 2.
+
+</dd>
+<dt class="defopt"><a name="scenario-topics">-topics <i>n</i></a></dt><dd><p>
+Specifies the number of belief system topics to create.  Each actor and
+civilian group is given its own belief system, and assigned a belief 
+for each topic.  The beliefs
+assigned are cycled through four possibilities comprised of a position
+and emphasis pair. They are:
+
+</p><ul>
+<li><b>Passionately For</b> and <b>Agreement--Strong</b>
+</li><li><b>Passionately For</b> and <b>Disagreement--Extreme</b>
+</li><li><b>Passionately Against</b> and <b>Agreement--Strong</b>
+</li><li><b>Passionately Against</b> and <b>Disagreement--Extreme</b>
+</li></ul>
+<p>Note that if 4 topics are requested then all actors and
+civilians will have identical belief systems resulting in affinities of
+1 between all entity pairs. Defaults to 3.
+
+</p>
+
+</dd>
+<dt class="defopt"><a name="scenario-nostrategy">-nostrategy</a></dt><dd>
+If specified, no tactics are employed by any actor.
+
+</dd>
+</dl>
+<p>To create a scenario with 8 neighborhoods and the default number of
+entities for all others, enter
+
+</p>
+
+<pre>
+    autogen scenario -nb 8
+</pre>
+<p>To create a scenario with no tactics for any actor, enter
+
+</p>
+
+<pre>
+    autogen scenario -nostrategy
+</pre>
+
+</dd>
+<dt class="defitem"><a name="actors"><i>adb</i> autogen actors ?<i>num</i>?</a></dt><dd>
+
+Automatically generates the requested number of actors provided that
+no actors already exist.  If no argument is supplied, three actors are
+created.
+
+</dd>
+<dt class="defitem"><a name="nbhoods"><i>adb</i> autogen nbhoods ?<i>num</i>?</a></dt><dd><p>
+
+Automatically generates the requested number of neighborhoods 
+subject to certain constraints. Each neighborhood is
+a 10x10 pixel square. Neighborhoods are laid out in strips starting at
+the top of the map. If no argument is supplied, 
+ten neighborhoods are created. The constraints are as follows: 
+
+</p><ul>
+<li> No neighborhoods exist
+</li><li> At least one actor exists
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="civgroups"><i>adb</i> autogen civgroups ?<i>num</i>?</a></dt><dd><p>
+
+Automatically generates the requested number of civilian groups per
+neighborhood. The last group in each neighborhood is created with 
+the subsistence agriculture flag set to true. The different types 
+of housing are cycled through as each group is created. The exception
+to this are subsistence agriculture groups, which are
+always <code>AT_HOME</code>. The population of every group in a 
+neighborhood is some non-negative multiple of 10000. Thus, the first
+group in a neighborhood has a base population of zero and each group 
+created after has a base population of 10000 more than the previous 
+group.  If no argument is supplied, six groups per neighborhood are 
+created.</p>
+
+<p>The creation of civilian groups is subject to the following constraints: 
+
+</p><ul>
+<li> Neighborhoods must exist
+</li><li> No civilian groups exist
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="frcgroups"><i>adb</i> autogen frcgroups ?<i>num</i>?</a></dt><dd><p>
+
+Specifies the number of force groups to create. As they are created,
+force group type is cycled through each possible type. Each force 
+group is given a base personnel of 100000.  If no argument is supplied, 
+three groups are created.</p>
+
+<p>The creation of force groups is subject to the following constraints: 
+
+</p><ul>
+<li> At least one actor must exist
+</li><li> No force groups exist
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="orggroups"><i>adb</i> autogen orggroups ?<i>num</i>?</a></dt><dd><p>
+
+Specifies the number of organization groups to create. As they are created,
+organization group type is cycled through each possible type. Each
+group is given a base personnel of 100000.  If no argument is supplied, 
+three groups are created.</p>
+
+<p>The creation of organization groups is subject to the following 
+constraints: 
+
+</p><ul>
+<li> At least one actor must exist
+</li><li> No force groups exist
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="bsystem"><i>adb</i> autogen bsystem ?<i>num</i>?</a></dt><dd><p>
+
+Specifies the number of belief system topics to create.  Each actor and
+civilian group is given its own belief system, and is assigned a belief 
+for each topic.  The beliefs
+assigned are cycled through four possibilities comprised of a position
+and emphasis pair. They are:
+
+</p><ul>
+<li><b>Passionately For</b> and <b>Agreement--Strong</b>
+</li><li><b>Passionately For</b> and <b>Disagreement--Extreme</b>
+</li><li><b>Passionately Against</b> and <b>Agreement--Strong</b>
+</li><li><b>Passionately Against</b> and <b>Disagreement--Extreme</b>
+</li></ul>
+<p>If no argument is supplied, three topics are created.</p>
+
+<p>Creation of a belief system is subject to the following constraints. 
+The constraints are as follows: 
+
+</p>
+
+<ul>
+<li> At least one actor must exist
+</li><li> Civilian groups must exist
+</li><li> No topics exist
+</li></ul>
+
+
+</dd>
+<dt class="defitem"><a name="assign"><i>adb</i> autogen assign ?<i>options</i>?</a></dt><dd><p>
+
+This command automatically generates one or more 
+ASSIGN tactics for force or organization groups
+that belong to the specified owner.  By default all activities are
+assigned in turn for each neighborhood.  For each tactic created,
+100 personnel are specified to be doing the activity.  The list
+of available options are:
+
+</p><dl>
+
+<dt class="defopt"><a name="assign-frcg">-frcg <i>glist</i></a></dt><dd>
+List of force groups owned by owner that should be assigned activities.
+Defaults to all force groups owned by the owner.
+
+</dd>
+<dt class="defopt"><a name="assign-orgg">-orgg <i>glist</i></a></dt><dd>
+List of organization groups owned by owner that should be assigned
+activities. Defaults to all organization groups owned by owner.
+
+</dd>
+<dt class="defopt"><a name="assign-nbhoods">-nbhoods <i>nlist</i></a></dt><dd>
+List of neighborhoods that activities should be assigned in.  Defaults
+to all neighborhoods.
+
+</dd>
+<dt class="defopt"><a name="assign-frcact">-frcact <i>alist</i></a></dt><dd>
+List of force activities that should be assigned, in turn, to each
+force group in each neighborhood.  Defaults to all force activities.
+
+</dd>
+<dt class="defopt"><a name="assign-orgact">-orgact <i>alist</i></a></dt><dd>
+List of organization activities that should be assigned, in turn, to each
+organization group in each neighborhood.  Defaults to all organization
+activities.
+
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+
+<h2><a name="private_subcommands">Private Subcommands</a></h2>
+<p>None defined.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette, Dave Hanks.
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:55 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+

@@ -1,0 +1,695 @@
+<html>
+<head>
+<title>athena 6.3.3: comparison(n) -- Athena Scenario Comparison, submodule of athena(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>comparison(n)</b> -- Athena Scenario Comparison, submodule of <a href="../mann/athena.html">athena(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_commands">INSTANCE COMMANDS</a></li>
+    
+
+    <li><a href="#environment">ENVIRONMENT</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require athena 6.3.3
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#::athena::comparison_check">comparison check <i>s1 s2</i></a></li>
+<li><a class="iref" href="#::athena::comparison_create">comparison create <i>obj</i> <i>s1 t1 s2 t2</i></a></li>
+<li><a class="iref" href="#::athena::comparison_new">comparison new <i>s1 t1 s2 t2</i></a></li>
+<li><a class="iref" href="#add"><i>obj</i> add vartype val1 val2 keys...</a></li>
+<li><a class="iref" href="#compare"><i>obj</i> compare</a></li>
+<li><a class="iref" href="#chain"><i>obj</i> chain <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#chain_dump"><i>obj</i> chain dump <i>varname</i></a></li>
+<li><a class="iref" href="#chain_huddle"><i>obj</i> chain huddle <i>varname</i></a></li>
+<li><a class="iref" href="#chain_json"><i>obj</i> chain json <i>varname</i></a></li>
+<li><a class="iref" href="#contribs"><i>obj</i> contribs <i>subcommand</i> <i>keys...</i></a></li>
+<li><a class="iref" href="#diffs"><i>obj</i> diffs <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#diffs_dump"><i>obj</i> diffs dump ?-all?</a></li>
+<li><a class="iref" href="#diffs_huddle"><i>obj</i> diffs huddle ?-all?</a></li>
+<li><a class="iref" href="#diffs_json"><i>obj</i> diffs json ?-all?</a></li>
+<li><a class="iref" href="#eval"><i>obj</i> eval <i>sql</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#exists"><i>obj</i> exists <i>varname</i></a></li>
+<li><a class="iref" href="#explain"><i>obj</i> explain <i>varname</i></a></li>
+<li><a class="iref" href="#getchain"><i>obj</i> getchain <i>varname</i></a></li>
+<li><a class="iref" href="#getdiff"><i>obj</i> getdiff <i>name</i></a></li>
+<li><a class="iref" href="#list"><i>obj</i> list ?-all?</a></li>
+<li><a class="iref" href="#maxabs"><i>obj</i> maxabs <i>values</i></a></li>
+<li><a class="iref" href="#maxsum"><i>obj</i> maxsum <i>values</i></a></li>
+<li><a class="iref" href="#normalizer"><i>obj</i> normalizer <i>vartype values</i></a></li>
+<li><a class="iref" href="#normalizeScores"><i>obj</i> normalizeScores <i>scoresVar AVar</i></a></li>
+<li><a class="iref" href="#query"><i>obj</i> query <i>sql</i> <i>args...</i></a></li>
+<li><a class="iref" href="#reset"><i>obj</i> reset</a></li>
+<li><a class="iref" href="#s1"><i>obj</i> s1 ?<i>subcommand args...</i>?</a></li>
+<li><a class="iref" href="#s2"><i>obj</i> s2 ?<i>subcommand args...</i>?</a></li>
+<li><a class="iref" href="#score"><i>obj</i> score <i>vardiff</i></a></li>
+<li><a class="iref" href="#scoreByType"><i>obj</i> scoreByType <i>scoresVar normalizer diffs</i></a></li>
+<li><a class="iref" href="#t1"><i>obj</i> t1</a></li>
+<li><a class="iref" href="#t2"><i>obj</i> t2</a></li>
+<li><a class="iref" href="#validate"><i>obj</i> validate <i>varname</i></a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>The comparison(n) object compares two
+scenarios for significant differences, providing
+information about the differences in a variety of formats.  It is also
+used to drill down on particular differences for more information, and
+provides services to the <a href="../mann/vardiff.html">vardiff(n)</a> objects that are used to 
+represent differences.</p>
+
+<p>To compare two scenarios, first use <a class="iref" href="#::athena::comparison_check">::athena::comparison check</a> to
+verify that they are comparable.  Then, create a new comparison(n) instance
+using <a class="iref" href="#::athena::comparison_new">::athena::comparison new</a> and ask it to <a class="iref" href="#compare">compare</a> the
+scenarios.  The significant outputs can then be retrieved in a number of
+ways, and the <a class="iref" href="#explain">explain</a> and <a class="iref" href="#getchain">getchain</a> subcommands can be used
+to drill down and explain the change in a particular output.
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>comparison(n) provides the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="::athena::comparison_check">comparison check <i>s1 s2</i></a></dt><dd><p>
+
+Checks scenarios <i>s1</i> and <i>s2</i> for comparability, throwing
+<b>ATHENA INCOMPARABLE</b> with an appropriate error message if they are
+not.  The requirements are still evolving, but include:
+
+</p><ul>
+    <li> Identical neighborhood names
+    </li><li> Identical actor names
+    </li><li> Identical group names
+    </li><li> Identical belief system names
+</li></ul>
+
+
+</dd>
+<dt class="defitem"><a name="::athena::comparison_create">comparison create <i>obj</i> <i>s1 t1 s2 t2</i></a></dt><dd><p> 
+
+Creates a new comparison(n) instance named <i>obj</i>, and
+returns the fully qualified object name.  The object will contain
+a comparison of scenarios <i>s1</i> and <i>s2</i> (which might be identical)
+at times <i>t1</i> and <i>t2</i>.</p>
+
+<p>The object is initially empty; call <a class="iref" href="#compare">compare</a> to compare the two
+scenarios and find the significant outputs.
+
+</p>
+</dd>
+<dt class="defitem"><a name="::athena::comparison_new">comparison new <i>s1 t1 s2 t2</i></a></dt><dd>
+
+Creates a new comparison(n) instance object, just as for 
+<a class="iref" href="#::athena::comparison_create">::athena::comparison create</a>, but assigns an object name.
+
+</dd>
+</dl>
+
+<h2><a name="instance_commands">INSTANCE COMMANDS</a></h2>
+<p>Each instance of comparison(n) provides the following subcommands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="add"><i>obj</i> add vartype val1 val2 keys...</a></dt><dd><p>
+
+<b>This command is used when populating the comparison with 
+<a href="../mann/vardiff.html">vardiff(n)</a> instances; clients should rarely
+if ever need it.</b></p>
+
+<p>This command compares two values of a given variable type, and retains
+them if the difference is significant.  The <i>vartype</i> is the barename of
+an <span class="tt">::athena::vardiff::*</span> class, (e.g., <span class="tt">nbsecurity</span>).  
+The values <i>val1</i> and <i>val2</i>
+are the values of a variable of the given <i>vartype</i> from 
+<i>s1</i>@<i>t1</i> and <i>s2</i>@<i>t2</i>.  The <i>keys...</i> are the key values for
+the specific variable/<a href="../mann/vardiff.html">vardiff(n)</a> subclass.  For example, the key
+value for the <span class="tt">nbsecurity/<i>n</i></span> variable is a neighborhood name, and the
+key values for the <span class="tt">support/<i>n</i>/<i>a</i></span> variable are a 
+neighborhood name and an actor name.</p>
+
+<p>Returns the resulting <a href="../mann/vardiff.html">vardiff(n)</a> instance, or "" if the variable
+wasn't significant.  Note that if the same variable is checked multiple
+times, the previously saved instance will be returned the second and
+subsequent times.
+
+</p>
+</dd>
+<dt class="defitem"><a name="compare"><i>obj</i> compare</a></dt><dd>
+
+Asks the comparison(n) object to compare the two scenarios at the given
+times and record all primary outputs with signicant differences.  Scores
+are assigned so that the differences can be ranked.
+
+</dd>
+<dt class="defitem"><a name="chain"><i>obj</i> chain <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+This command has a family of subcommands for retrieving causality 
+chains in different data formats.
+
+</p><dl>
+
+<dt class="defitem"><a name="chain_dump"><i>obj</i> chain dump <i>varname</i></a></dt><dd>
+
+Returns a text string that lists all of the variables in <i>varname</i>'s
+causality chain in tree form.
+
+</dd>
+<dt class="defitem"><a name="chain_huddle"><i>obj</i> chain huddle <i>varname</i></a></dt><dd>
+
+Returns a huddle(n) object representing a list of the <a href="../mann/vardiff.html">vardiff(n)</a> objects
+in <i>varname</i>'s causality chain.  The tree structure is defined by 
+each object's <span class="tt">inputs</span> field.
+
+</dd>
+<dt class="defitem"><a name="chain_json"><i>obj</i> chain json <i>varname</i></a></dt><dd>
+
+Returns a JSON object representing a list of the <a href="../mann/vardiff.html">vardiff(n)</a> objects
+in <i>varname</i>'s causality chain.  The tree structure is defined by 
+each object's <span class="tt">inputs</span> field.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="contribs"><i>obj</i> contribs <i>subcommand</i> <i>keys...</i></a></dt><dd><p>
+
+Determines contributions by driver for the curve indicated by the 
+subcommand and keys (e.g., <span class="tt">sat</span> and a civilian group name; 
+see <a href="../../../mars/docs/mann/uram.html">uram(n)</a>'s <a href="../../../mars/docs/mann/uram.html#contrib">contrib</a> subcommand).
+Returns a flat list <span class="tt">{<i>drid</i> <i>val1</i> <i>val2</i> ...}</span> of the
+contributions made by the driver in each scenario.</p>
+
+<p>The driver ID used, <i>drid</i>, is an ID consisting of the driver's type
+(the rule set name) and signature tokens joined together with "/", e.g.,
+"ENI/SUNN" (effect of ENI on group SUNN) or "PATROL/NB1/BLUE" (effect of
+patrolling by force group BLUE in neighborhood NB1).
+
+</p>
+</dd>
+<dt class="defitem"><a name="diffs"><i>obj</i> diffs <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+Asks for the set of significant differences; the <i>subcommand</i> determines
+the output format.
+
+</p><dl>
+
+<dt class="defitem"><a name="diffs_dump"><i>obj</i> diffs dump ?-all?</a></dt><dd>
+
+Returns a dump of the signicant outputs as a simple text table; this
+format is usually used for debugging.  If <span class="tt">-all</span> is given, the
+output includes not only the top-level variables but all that have
+been cached as part of chains.
+
+</dd>
+<dt class="defitem"><a name="diffs_huddle"><i>obj</i> diffs huddle ?-all?</a></dt><dd>
+
+Returns a dump of the signicant differences as a huddle(n) list containing
+difference records.  This dump can be included into a larger huddle(n)
+object for conversion to JSON.  The option is as for <a class="iref" href="#diffs_dump">diffs dump</a>.
+
+</dd>
+<dt class="defitem"><a name="diffs_json"><i>obj</i> diffs json ?-all?</a></dt><dd>
+
+Returns a dump of the signicant differences as a JSON list containing
+difference records.  The option is as for <a class="iref" href="#diffs_dump">diffs dump</a>.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="eval"><i>obj</i> eval <i>sql</i> ?<i>args...</i>?</a></dt><dd>
+
+The comparison(n) object contains an internal SQLite3 database, to which
+the two scenario files are attached as databases "S1" and "S2".  This 
+command gives SQL access to that database.
+
+</dd>
+<dt class="defitem"><a name="exists"><i>obj</i> exists <i>varname</i></a></dt><dd>
+
+Returns 1 if variable <i>varname</i> has been cached by the comparison(n)
+instance, as either a significant output or as part of a causality
+chain.
+
+</dd>
+<dt class="defitem"><a name="explain"><i>obj</i> explain <i>varname</i></a></dt><dd>
+
+Computes the causality chain for variable
+<i>varname</i>, adding the <a href="../mann/vardiff.html">vardiff(n)</a> objects to the list of 
+<i>varname</i>'s significant inputs, and then for those variable's 
+significant inputs, and so forth.  If differences have already been
+computed for <i>varname</i>, does nothing.
+
+</dd>
+<dt class="defitem"><a name="getchain"><i>obj</i> getchain <i>varname</i></a></dt><dd><p>
+
+Returns a list of <a href="../mann/vardiff.html">vardiff(n)</a> objects representing the named
+variable and all of the variables in its causality chain.  Calls
+<a class="iref" href="#explain">explain</a> if necessary to compute the chain.</p>
+
+<p>A single variable can appear in the causality chain in multiple places
+with different scores.  This routine simply returns a list of the relevant
+<a href="../mann/vardiff.html">vardiff(n)</a> objects; each object appears only once.  To trace the 
+chain, start with the root (the first item in the list) and follow its
+<a href="../mann/vardiff.html#inputs">inputs</a>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="getdiff"><i>obj</i> getdiff <i>name</i></a></dt><dd>
+
+Given a variable name, returns the variable's <a href="../mann/vardiff.html">vardiff(n)</a> object,
+or "" if none.
+
+</dd>
+<dt class="defitem"><a name="list"><i>obj</i> list ?-all?</a></dt><dd><p>
+
+Returns a list of the <a href="../mann/vardiff.html">vardiff(n)</a> objects that represent primary
+scenario outputs with signficant differences between the two scenarios
+(i.e., the "significant outputs").</p>
+
+<p>Other <a href="../mann/vardiff.html">vardiff(n)</a> objects are added to the comparison as the user
+drills down into causality chains; if <b>-all</b> is given, then those 
+objects are included in the list.
+
+</p>
+</dd>
+<dt class="defitem"><a name="maxabs"><i>obj</i> maxabs <i>values</i></a></dt><dd>
+
+Given a flat list of variable <i>x1 x2</i> values, returns the maximum 
+absolute value in the list.
+
+</dd>
+<dt class="defitem"><a name="maxsum"><i>obj</i> maxsum <i>values</i></a></dt><dd>
+
+Given a flat list of variable <i>x1 x2</i> values, returns the maximum 
+of the sum of the x1's and the sum of the x2's.
+
+</dd>
+<dt class="defitem"><a name="normalizer"><i>obj</i> normalizer <i>vartype values</i></a></dt><dd><p>
+
+Returns the normalizer value for the given <i>vartype</i> given a flat list
+of {<span class="tt">x1 x2</span>} values for a set of <a href="../mann/vardiffs.html">vardiffs(n)</a> of the given 
+type.  The <i>vartype</i> is the barename of
+an <span class="tt">::athena::vardiff::*</span> class, (e.g., <span class="tt">nbsecurity</span>).</p>
+
+<p>A <i>normalizer</i> is a value used in scoring a set of <a href="../mann/vardiff.html">vardiff(n)</a>
+instances of the same variable type in the context of a particular output,
+e.g., all satisfaction levels that are inputs to a particular mood.  Each
+<a href="../mann/vardiff.html">vardiff(n)</a> subclass defines a metadata item called <b>normfunc</b>, 
+which may take one of the following values:
+
+</p><ul>
+<li> A constant number.
+</li><li> A symbol, <b><a class="iref" href="#maxabs">maxabs</a></b> or <b><a class="iref" href="#maxsum">maxsum</a></b>, 
+     which indicates that the named subcommand is
+     used to compute the normalizer from the <i>values</i>.
+</li></ul>
+
+</dd>
+<dt class="defitem"><a name="normalizeScores"><i>obj</i> normalizeScores <i>scoresVar AVar</i></a></dt><dd><p>
+
+Once all <a href="../mann/vardiff.html">vardiff(n)</a> instances have been scored in the given 
+context, this command is used to normalize the scores so that the
+largest is 100.0.  The scores are found in the <i>scoresVar</i>, which is
+an array of scores by <a href="../mann/vardiff.html">vardiff(n)</a> object name.</p>
+
+<p>Each variable type has its own distinct <i>A</i> factor within the given 
+context; <i>A</i> factors default to 1.0, and can be increased or decreased
+to move variables of that type higher or lower in the final scores 
+ranking.   The <i>AVar</i> is the name of an array of <i>A</i> factors by 
+variable type for the caller's context.
+
+</p>
+</dd>
+<dt class="defitem"><a name="query"><i>obj</i> query <i>sql</i> <i>args...</i></a></dt><dd>
+
+Queries the comparison(n) object's internal database and returns the 
+results in human-readable form.  See <a class="iref" href="#eval">eval</a> for more about 
+the internal database.
+
+</dd>
+<dt class="defitem"><a name="reset"><i>obj</i> reset</a></dt><dd>
+
+Resets the comparison object back to its empty state.
+
+</dd>
+<dt class="defitem"><a name="s1"><i>obj</i> s1 ?<i>subcommand args...</i>?</a></dt><dd>
+
+Called with no arguments, returns the <a href="../mann/athena.html">athena(n)</a> scenario
+object for scenario <i>s1</i>.  Otherwise, the remaining arguments are
+passed along to <i>s1</i> as a subcommand and the result is returned.
+
+</dd>
+<dt class="defitem"><a name="s2"><i>obj</i> s2 ?<i>subcommand args...</i>?</a></dt><dd>
+
+Called with no arguments, returns the <a href="../mann/athena.html">athena(n)</a> scenario
+object for scenario <i>s2</i>.  Otherwise, the remaining arguments are
+passed along to <i>s2</i> as a subcommand and the result is returned.
+
+</dd>
+<dt class="defitem"><a name="score"><i>obj</i> score <i>vardiff</i></a></dt><dd>
+
+Given the name of a <a href="../mann/vardiff.html">vardiff(n)</a> object representing a primary 
+output variable, returns the score of that variable relative to the rest
+of the primary outputs.
+
+</dd>
+<dt class="defitem"><a name="scoreByType"><i>obj</i> scoreByType <i>scoresVar normalizer diffs</i></a></dt><dd>
+
+Computes a score for each of the <a href="../mann/vardiff.html">vardiff(n)</a> objects in list 
+<i>diffs</i>; they must all have the same type.  The <i>normalizer</i> is a 
+normalizer value computed using <a class="iref" href="#normalizer">normalizer</a>.  The <i>scoresVar</i> is
+the name of an array variable in the caller's context; computed scores
+will be placed in the array by <a href="../mann/vardiff.html">vardiff(n)</a> object name.
+
+</dd>
+<dt class="defitem"><a name="t1"><i>obj</i> t1</a></dt><dd>
+
+Returns the value of <i>t1</i>, a simulation time in integer weeks.
+
+</dd>
+<dt class="defitem"><a name="t2"><i>obj</i> t2</a></dt><dd>
+
+Returns the value of <i>t2</i>, a simulation time in integer weeks.
+
+</dd>
+<dt class="defitem"><a name="validate"><i>obj</i> validate <i>varname</i></a></dt><dd>
+
+Validates variable <i>varname</i>, returning <i>varname</i> if it
+<a class="iref" href="#exists">exists</a> and throwing INVALID otherwise.
+
+</dd>
+</dl>
+
+<h2><a name="environment">ENVIRONMENT</a></h2>
+<p>Requires Tcl 8.6 or later.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:57 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
+

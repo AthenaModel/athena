@@ -1,0 +1,1028 @@
+<html>
+<head>
+<title>athena 6.3.3: athenadb(n) -- Athena Private Scenario Type, submodule of athena(n)</title>
+<style type="text/css" media="screen,print">
+/* ehtml(5) Standard CSS */
+
+/*---------------------------------------------------------*/
+/* General Use                                             */
+
+a {
+    /* No underlines */
+    text-decoration: none;
+}
+
+/* Special formatting for definition lists, to get proper
+ * blank lines after descriptions but not after topics. */
+dt {
+    margin-bottom: 0;
+}
+
+dd { 
+    margin-bottom: 1em; 
+}
+
+dd > p:first-child { 
+    margin-top: 0; 
+}
+
+
+/*---------------------------------------------------------*/
+/* Specific Macros                                         */
+
+/* bigmark */
+div.bigmark {
+    display: inline;
+    font-family: Verdana;
+    font-size: 100%;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/* def, defitem, defopt */
+
+dt.def {
+    font-weight: bold;
+}
+
+dt.defitem {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+dt.defopt {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+
+/* example/ */
+pre.example {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    2px;
+    padding-bottom: 2px;
+    padding-left:   4px;
+}
+
+
+/* hrule */
+hr.hrule {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+/* iref */
+a.iref {
+    font-family: monospace;
+}
+
+/* itemlist */                
+ul.itemlist {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+/* listing/ */
+pre.listing {
+    background:     #FFFDD1 ;
+    border:         1px solid blue;
+    padding-top:    4px;
+    padding-bottom: 4px;
+    padding-left:   4px;
+}
+
+span.linenum {
+    background:     #E3E08F ;
+}
+
+/* mark */
+div.mark {
+    display:       inline;
+    font-family:   Verdana;
+    font-size:     75%;
+    background:    black;
+    color:         white;
+    border:        1px solid black;
+    border-radius: 5px;
+    padding-left:  2px;
+    padding-right: 2px;
+}
+
+/* procedure */
+
+table.procedure {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.procedure td {
+    border: 1px solid black;
+}
+
+td.procedure-index {
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+}
+
+
+/* topiclist/ */
+.topiclist {
+    margin-top:    1em;
+    margin-bottom: 1em;
+}
+
+tr.topic {
+    vertical-align: baseline;
+}
+
+tr.topicname {
+    min-width: 1.5em;
+}
+
+/* tt/ */
+
+.tt {
+    font-family: monospace;
+}
+
+
+
+/* olp/ */
+
+ol.olp > li {
+    margin-bottom: 1em;
+}
+
+/* ulp/ */
+
+ul.ulp > li {
+    margin-bottom: 1em;
+}
+
+/*---------------------------------------------------------*/
+/* table/ plus macros that use it.    Most formatting is
+ * depends on the "table" class.                           */
+
+table {
+    margin-top:     1em;
+    margin-bottom:  1em;
+    vertical-align: baseline;
+}
+
+th {
+    padding-left: 5px;
+    text-align:   left;
+}
+
+td {
+    padding-left:   5px;
+    vertical-align: baseline;
+}
+
+
+/* "table" class: standard table formatting. */
+.table {
+    border:           1px solid black;
+    border-spacing:   0;
+    color:            black;
+    background-color: white;
+}
+
+.table tr:first-child {
+    font-weight:      bold;
+    color:            white;
+    background-color: #000099;    
+}
+
+.table tr.tr-odd {
+    background-color: #EEEEEE;
+}
+
+.table tr.tr-even { }
+
+.table-wide {
+    width: 100%;
+}
+
+        BODY {
+            color: black;
+            background: white;
+            margin-left: 6%;
+            margin-right: 6%;
+        }
+
+        H1 {
+            margin-left: -5%;
+        }
+        H2 {
+            margin-left: -5%;
+        }
+        HR {
+            margin-left: -5%;
+        }
+
+        TABLE {
+            text-align:    left;
+        }
+        
+        /* mktree styles */
+        ul.mktree  li  { list-style: none; }
+        ul.mktree, ul.mktree ul, ul.mktree li { 
+            margin-left:10px; padding:0px; }
+        ul.mktree li .bullet { padding-left: 10px }
+        ul.mktree  li.liOpen   .bullet {cursor : pointer; }
+        ul.mktree  li.liClosed .bullet {cursor : pointer; }
+        ul.mktree  li.liBullet .bullet {cursor : default; }
+        ul.mktree  li.liOpen   ul {display: block; }
+        ul.mktree  li.liClosed ul {display: none; }
+    
+</style>
+
+
+
+</head>
+
+<body>
+<h1 style="background: red;">
+&nbsp;athena 6.3.3: Athena Regional Stability Simulation
+</h1>
+    
+
+<h2><a name="name">NAME</a></h2>
+    
+
+<p><b>athenadb(n)</b> -- Athena Private Scenario Type, submodule of <a href="../mann/athena.html">athena(n)</a>
+
+</p>
+
+<ul>
+
+    <li><a href="#name">NAME</a></li>
+    
+
+    <li><a href="#synopsis">SYNOPSIS</a></li>
+    
+
+    <li><a href="#description">DESCRIPTION</a></li>
+    
+
+    <li><a href="#commands">COMMANDS</a></li>
+    
+
+    <li><a href="#instance_command">INSTANCE COMMAND</a></li>
+    
+
+    <li><a href="#components">COMPONENTS</a></li>
+    
+
+    <li><a href="#sql_functions">SQL FUNCTIONS</a></li>
+    
+
+    <li><a href="#author">AUTHOR</a></li>
+    
+
+    <li><a href="#history">HISTORY</a></li>
+    
+
+</ul>
+    
+    
+
+<h2><a name="synopsis">SYNOPSIS</a></h2>
+    
+
+<pre>
+package require athena 6.3.3
+</pre>
+
+<ul class="itemlist">
+<li><a class="iref" href="#athenadb_create">athenadb create <i>name</i> ?<i>options...</i>?</a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athenadb create-adbfile">-adbfile <i>filename</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athenadb create-executivecmd">-executivecmd <i>cmd</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athenadb create-logdir">-logdir <i>dirname</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athenadb create-scratch">-scratch <i>dirname</i></a></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;<a class="iref" href="#athenadb create-subject">-subject <i>name</i></a></li>
+<li><a class="iref" href="#adbfile"><i>obj</i> adbfile</a></li>
+<li><a class="iref" href="#advance"><i>obj</i> advance ?<i>options...</i>?</a></li>
+<li><a class="iref" href="#busy"><i>obj</i> busy <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#canlock"><i>obj</i> canlock</a></li>
+<li><a class="iref" href="#dbsync"><i>obj</i> dbsync</a></li>
+<li><a class="iref" href="#enter"><i>obj</i> enter <i>options...</i></a></li>
+<li><a class="iref" href="#idle"><i>obj</i> idle</a></li>
+<li><a class="iref" href="#interrupt"><i>obj</i> interrupt</a></li>
+<li><a class="iref" href="#interruptible"><i>obj</i> interruptible</a></li>
+<li><a class="iref" href="#is"><i>obj</i> is <i>predicate</i></a></li>
+<li><a class="iref" href="#isbusy"><i>obj</i> isbusy</a></li>
+<li><a class="iref" href="#load"><i>obj</i> load <i>filename</i></a></li>
+<li><a class="iref" href="#lock"><i>obj</i> lock</a></li>
+<li><a class="iref" href="#locked"><i>obj</i> locked</a></li>
+<li><a class="iref" href="#paste"><i>obj</i> paste <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#progress"><i>obj</i> progress ?<i>value</i>?</a></li>
+<li><a class="iref" href="#rdb"><i>obj</i> rdb <i>subcommand</i> ?<i>args</i>?</a></li>
+<li><a class="iref" href="#reset"><i>obj</i> reset</a></li>
+<li><a class="iref" href="#save"><i>obj</i> save ?<i>filename</i>?</a></li>
+<li><a class="iref" href="#state"><i>obj</i> state</a></li>
+<li><a class="iref" href="#statetext"><i>obj</i> statetext</a></li>
+<li><a class="iref" href="#unlock"><i>obj</i> unlock</a></li>
+<li><a class="iref" href="#unlocked"><i>obj</i> unlocked</a></li>
+<li><a class="iref" href="#unsaved"><i>obj</i> unsaved</a></li>
+<li><a class="iref" href="#version"><i>obj</i> version</a></li>
+<li><a class="iref" href="#eval"><i>obj</i> eval ...</a></li>
+<li><a class="iref" href="#delete"><i>obj</i> delete ...</a></li>
+<li><a class="iref" href="#exists"><i>obj</i> exists ...</a></li>
+<li><a class="iref" href="#grab"><i>obj</i> grab ...</a></li>
+<li><a class="iref" href="#last_insert_rowid"><i>obj</i> last_insert_rowid</a></li>
+<li><a class="iref" href="#monitor"><i>obj</i> order monitor ?<i>flag</i>?</a></li>
+<li><a class="iref" href="#onecolumn"><i>obj</i> onecolumn ...</a></li>
+<li><a class="iref" href="#query"><i>obj</i> query ...</a></li>
+<li><a class="iref" href="#schema"><i>obj</i> schema ...</a></li>
+<li><a class="iref" href="#tables"><i>obj</i> tables ...</a></li>
+<li><a class="iref" href="#ungrab"><i>obj</i> ungrab ...</a></li>
+<li><a class="iref" href="#component"><i>obj</i> component <i>name</i></a></li>
+<li><a class="iref" href="#cprofile"><i>obj</i> cprofile ?<i>depth</i>? <i>component args...</i></a></li>
+<li><a class="iref" href="#delete"><i>obj</i> delete ...</a></li>
+<li><a class="iref" href="#eval"><i>obj</i> eval ...</a></li>
+<li><a class="iref" href="#exists"><i>obj</i> exists ...</a></li>
+<li><a class="iref" href="#grab"><i>obj</i> grab ...</a></li>
+<li><a class="iref" href="#last_insert_rowid"><i>obj</i> last_insert_rowid</a></li>
+<li><a class="iref" href="#loadtemp"><i>obj</i> loadtemp <i>filename</i></a></li>
+<li><a class="iref" href="#log"><i>obj</i> log <i>level component message</i></a></li>
+<li><a class="iref" href="#marksaved"><i>obj</i> marksaved</a></li>
+<li><a class="iref" href="#monitor"><i>obj</i> order monitor ?<i>flag</i>?</a></li>
+<li><a class="iref" href="#notify"><i>obj</i> notify <i>component event</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#onecolumn"><i>obj</i> onecolumn ...</a></li>
+<li><a class="iref" href="#order"><i>obj</i> order <i>subcommand</i> ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#monitor"><i>obj</i> order monitor ?<i>flag</i>?</a></li>
+<li><a class="iref" href="#transactions"><i>obj</i> order transactions ?<i>flag</i>?</a></li>
+<li><a class="iref" href="#profile"><i>obj</i> profile ?<i>depth</i>? <i>command...</i></a></li>
+<li><a class="iref" href="#query"><i>obj</i> query ...</a></li>
+<li><a class="iref" href="#rdbfile"><i>obj</i> rdbfile</a></li>
+<li><a class="iref" href="#safe"><i>obj</i> safe <i>subcommand</i> <i>args</i></a></li>
+<li><a class="iref" href="#savetemp"><i>obj</i> savetemp <i>filename</i></a></li>
+<li><a class="iref" href="#schema"><i>obj</i> schema ...</a></li>
+<li><a class="iref" href="#scratch"><i>obj</i> scratch ?<i>args...</i>?</a></li>
+<li><a class="iref" href="#send"><i>obj</i> send</a></li>
+<li><a class="iref" href="#tables"><i>obj</i> tables ...</a></li>
+<li><a class="iref" href="#tkloaded"><i>obj</i> tkloaded</a></li>
+<li><a class="iref" href="#ungrab"><i>obj</i> ungrab ...</a></li>
+</ul>
+
+
+<h2><a name="description">DESCRIPTION</a></h2>
+<p>athenadb(n) is a Snit type whose instances represent entire Athena
+scenarios.  It is the main type in the <a href="../mann/athena.html">athena(n)</a> library; 
+creating an instance of athenadb(n) creates all of the other objects 
+required by a scenario.  It is also a utility object for all objects in 
+the scenario; it passes itself to all objects it creates, and they use it 
+as the primary means of accessing other objects.</p>
+
+<p>athenadb(n) is a <b>private</b> type, to be used only within the library code.
+Note that <a href="../mann/athena.html">athena(n)</a>, the public interface to the library, is a thin
+wrapper around athenadb(n), providing only the public operations.
+
+
+</p>
+
+<h2><a name="commands">COMMANDS</a></h2>
+<p>This module defines the following commands:
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="athenadb_create">athenadb create <i>name</i> ?<i>options...</i>?</a></dt><dd><p>
+
+Creates a new instance of athenadb(n) called <i>name</i>, which becomes a 
+Tcl command defined in the current scope; <a class="iref" href="#athenadb_create">athenadb create</a> returns
+the fully-qualified form of the name.</p>
+
+<p>The following options may be used:
+
+</p><dl>
+
+<dt class="defopt"><a name="athenadb create-adbfile">-adbfile <i>filename</i></a></dt><dd>
+
+Specifies the name of an Athena scenario (<span class="tt">*.adb</span>) file.  If given,
+the file is loaded immediately.
+
+</dd>
+<dt class="defopt"><a name="athenadb create-executivecmd">-executivecmd <i>cmd</i></a></dt><dd>
+
+A callback command to be used to define application-specific executive
+commands.  It is called with on additional argument, the scenario's
+<a href="../mann/executive.html">executive(n)</a> component.  This option is read-only after creation.
+
+</dd>
+<dt class="defopt"><a name="athenadb create-logdir">-logdir <i>dirname</i></a></dt><dd><p>
+
+Specifies the name of log directory; athenadb(n) should create a 
+logger(n) object with this <span class="tt">-logdir</span>.</p>
+
+<p>If the object uses background processing, the background thread 
+should use the log directory name created by appending ".bg" to this 
+directory name.
+
+</p>
+</dd>
+<dt class="defopt"><a name="athenadb create-scratch">-scratch <i>dirname</i></a></dt><dd>
+
+Names a scratch directory where athenadb(n) can write debugging files.
+Defaults to the current working directory.
+
+</dd>
+<dt class="defopt"><a name="athenadb create-subject">-subject <i>name</i></a></dt><dd><p>
+
+Specifies the subject <i>name</i> used for any <a href="../../../mars/docs/mann/notifier.html">notifier(n)</a>
+events sent by the object.  By default, the <i>name</i> defaults to the
+object's fully-qualified command name.</p>
+
+<p>For example, 
+athenadb(n) wraps an <a href="../../../mars/docs/mann/sqldocument.html">sqldocument(n)</a> object used to contain
+the scenario's run-time database (RDB).  When monitoring is enabled, the
+RDB can generate <a href="../../../mars/docs/mann/notifier.html">notifier(n)</a> events as tables are updated.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2><a name="instance_command">INSTANCE COMMAND</a></h2>
+<p>Each athenadb(n) instance has many subcommands, most of which correspond
+to a particular subcomponent; e.g., the <span class="tt">civgroup</span> subcommand corresponds
+to the module that handles the editing of civilian group entities.</p>
+
+<p>Because this is a private module, and because the list of such components
+changes over time, few of these subcommands will be documented here. 
+Rather, the man page documents those athenadb(n) subcommands defined 
+directly by athenadb(n) <i>itself</i>.  Note that
+such athenadb(n) subcommands that are also exposed by 
+<a href="../mann/athena.html">athena(n)</a> are listed here, but documented there. 
+
+</p>
+
+<dl>
+
+<dt class="defitem"><a name="adbfile"><i>obj</i> adbfile</a></dt>
+<dt class="defitem"><a name="advance"><i>obj</i> advance ?<i>options...</i>?</a></dt>
+<dt class="defitem"><a name="busy"><i>obj</i> busy <i>subcommand</i> ?<i>args...</i>?</a></dt>
+<dt class="defitem"><a name="canlock"><i>obj</i> canlock</a></dt>
+<dt class="defitem"><a name="dbsync"><i>obj</i> dbsync</a></dt>
+<dt class="defitem"><a name="enter"><i>obj</i> enter <i>options...</i></a></dt>
+<dt class="defitem"><a name="idle"><i>obj</i> idle</a></dt>
+<dt class="defitem"><a name="interrupt"><i>obj</i> interrupt</a></dt>
+<dt class="defitem"><a name="interruptible"><i>obj</i> interruptible</a></dt>
+<dt class="defitem"><a name="is"><i>obj</i> is <i>predicate</i></a></dt>
+<dt class="defitem"><a name="isbusy"><i>obj</i> isbusy</a></dt>
+<dt class="defitem"><a name="load"><i>obj</i> load <i>filename</i></a></dt>
+<dt class="defitem"><a name="lock"><i>obj</i> lock</a></dt>
+<dt class="defitem"><a name="locked"><i>obj</i> locked</a></dt>
+<dt class="defitem"><a name="paste"><i>obj</i> paste <i>subcommand</i> ?<i>args...</i>?</a></dt>
+<dt class="defitem"><a name="progress"><i>obj</i> progress ?<i>value</i>?</a></dt>
+<dt class="defitem"><a name="rdb"><i>obj</i> rdb <i>subcommand</i> ?<i>args</i>?</a></dt>
+<dt class="defitem"><a name="reset"><i>obj</i> reset</a></dt>
+<dt class="defitem"><a name="save"><i>obj</i> save ?<i>filename</i>?</a></dt>
+<dt class="defitem"><a name="state"><i>obj</i> state</a></dt>
+<dt class="defitem"><a name="statetext"><i>obj</i> statetext</a></dt>
+<dt class="defitem"><a name="unlock"><i>obj</i> unlock</a></dt>
+<dt class="defitem"><a name="unlocked"><i>obj</i> unlocked</a></dt>
+<dt class="defitem"><a name="unsaved"><i>obj</i> unsaved</a></dt>
+<dt class="defitem"><a name="version"><i>obj</i> version</a></dt><dd>
+
+These commands and their subcommands are documented in the 
+<a href="../mann/athena.html">athena(n)</a> man page.
+
+</dd>
+<dt class="defitem"><a name="eval"><i>obj</i> eval ...</a></dt>
+<dt class="defitem"><a name="delete"><i>obj</i> delete ...</a></dt>
+<dt class="defitem"><a name="exists"><i>obj</i> exists ...</a></dt>
+<dt class="defitem"><a name="grab"><i>obj</i> grab ...</a></dt>
+<dt class="defitem"><a name="last_insert_rowid"><i>obj</i> last_insert_rowid ...</a></dt>
+<dt class="defitem"><a name="monitor"><i>obj</i> monitor ...</a></dt>
+<dt class="defitem"><a name="onecolumn"><i>obj</i> onecolumn ...</a></dt>
+<dt class="defitem"><a name="query"><i>obj</i> query ...</a></dt>
+<dt class="defitem"><a name="schema"><i>obj</i> schema ...</a></dt>
+<dt class="defitem"><a name="tables"><i>obj</i> tables ...</a></dt>
+<dt class="defitem"><a name="ungrab"><i>obj</i> ungrab ...</a></dt><dd>
+
+These commands and their subcommands provide read/write access to the
+underlying run-time database (RDB), a <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="component"><i>obj</i> component <i>name</i></a></dt><dd><p>
+
+Returns the fully-qualified command name for the named component, so that
+it can be passed to other objects that need direct access.  The following
+components are accessible:
+
+</p><dl>
+<dt class="def">clock</dt><dd>
+The instance's simulation clock, a <a href="../mann/weekclock.html">weekclock(n)</a> object.
+
+</dd>
+<dt class="def">rdb</dt><dd>
+The instance's run-time database object, a <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="cprofile"><i>obj</i> cprofile ?<i>depth</i>? <i>component args...</i></a></dt><dd>
+
+This is exactly like <a class="iref" href="#profile">profile</a>, but the command to call is an
+<a href="../mann/athenadb.html">athenadb(n)</a> subcomponent called as a subcommand of <i>obj</i>.
+
+
+</dd>
+<dt class="defitem"><a name="delete"><i>obj</i> delete ...</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="eval"><i>obj</i> eval ...</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="exists"><i>obj</i> exists ...</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="grab"><i>obj</i> grab ...</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="last_insert_rowid"><i>obj</i> last_insert_rowid</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="loadtemp"><i>obj</i> loadtemp <i>filename</i></a></dt><dd><p>
+
+Loads the scenario from the named <span class="tt">*.adb</span> file into this scenario
+object, throwing away any previous data.  The scenario will be marked
+<a class="iref" href="#unsaved">unsaved</a>, and the <i>filename</i> will not be remembered. Afterwards, 
+the scenario will be <i>locked</i> or <i>unlocked</i> depending on the loaded 
+data.</p>
+
+<p>Together with <a class="iref" href="#savetemp">savetemp</a>, this command allows athenadb(n) to save 
+itself to a temporary file, run some process on the contents of that file
+(i.e., in another thread) and load the results, while setting the 
+<a class="iref" href="#unsaved">unsaved</a> flag properly and not changing the user's <a class="iref" href="#adbfile">adbfile</a>.</p>
+
+<p>On error, throws <b>ATHENA LOAD</b>.
+
+</p>
+</dd>
+<dt class="defitem"><a name="log"><i>obj</i> log <i>level component message</i></a></dt><dd><p>
+
+Adds a message to the scenario's log by passing the arguments to the
+<span class="tt">logcmd</span>.  If <i>component</i> is the empty string, the last part of the
+scenario's <span class="tt">-subject</span> is used; otherwise, the specified <i>component</i>
+is joined to the <span class="tt">-subject</span> with a ".".  Thus, if <span class="tt">-subject</span> is 
+"adb" then the econ model logs as "adb.econ".</p>
+
+<p><b>TBD:</b> This might be silly.  We can't include multiple scenarios in 
+one log without confusion, because they'll all have different simulation
+times.  Reconsider this.
+
+</p>
+</dd>
+<dt class="defitem"><a name="marksaved"><i>obj</i> marksaved</a></dt><dd>
+
+Marks the RDB and all components saved.
+
+</dd>
+<dt class="defitem"><a name="monitor"><i>obj</i> monitor ...</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="notify"><i>obj</i> notify <i>component event</i> ?<i>args...</i>?</a></dt><dd>
+
+Sends a <a href="../../../mars/docs/mann/notifier.html">notifier(n)</a> event on behalf of <a href="../mann/athena.html">athena(n)</a>.  If
+the <i>component</i> name is "", then the event is sent by the 
+<span class="tt">-subject</span>; otherwise, the <span class="tt">-subject</span> is suffixed with 
+"<span class="tt">.<i>component</i></span>"
+
+</dd>
+<dt class="defitem"><a name="onecolumn"><i>obj</i> onecolumn ...</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="order"><i>obj</i> order <i>subcommand</i> ?<i>args...</i>?</a></dt><dd><p>
+
+<b>TBD:</b> Document these in athena(n).</p>
+
+<p>The subcommands of this command are passed along to the scenario's
+"order flunky".  Most subcommands are documented by the
+<a href="../../../mars/docs/mann/order_flunky.html">order_flunky(n)</a> man page; the Athena-specific subcommands
+are as follows:
+
+</p><dl>
+
+<dt class="defitem"><a name="monitor"><i>obj</i> order monitor ?<i>flag</i>?</a></dt><dd><p>
+
+Sets and queries the monitor flag.  If set, RDB changes taking place
+during order execution are monitored, and relevant notifier events are
+sent to the application.  See <a href="../mann/athena.html">athena(n)</a> for details.</p>
+
+<p>Defaults to true.
+
+</p>
+</dd>
+<dt class="defitem"><a name="transactions"><i>obj</i> order transactions ?<i>flag</i>?</a></dt><dd><p>
+
+Sets and queries the transaction flag.  If set, all orders are executed
+in the context of an SQL transaction; if the order throws an error, the
+transaction is rolled back, thus preventing corruption of the RDB.</p>
+
+<p>Defaults to true.
+
+</p>
+</dd>
+</dl>
+
+</dd>
+<dt class="defitem"><a name="profile"><i>obj</i> profile ?<i>depth</i>? <i>command...</i></a></dt><dd><p>
+
+Calls the command once using <span class="tt">time</span>, in the caller's context,
+and the logs the outcome, returning the commands return value.
+In other words, you can prefix any statement with 
+"<span class="tt"><i>obj</i> profile</span>" and profile that call without changing code
+or adding new routines.</p>
+
+<p>If the <i>depth</i> is given, it must be an integer; that many "*" characters
+are added to the beginning of the log message.  This is useful when 
+profiling calls within another profiled call.
+
+</p>
+</dd>
+<dt class="defitem"><a name="query"><i>obj</i> query ...</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="rdbfile"><i>obj</i> rdbfile</a></dt><dd>
+
+Returns the name of the scenario's run-time database (RDB) file.  Note
+that this will change on <a class="iref" href="#load">load</a> or <a class="iref" href="#reset">reset</a>.
+
+</dd>
+<dt class="defitem"><a name="safe"><i>obj</i> safe <i>subcommand</i> <i>args</i></a></dt><dd><p>
+
+This command configures the underlying RDB, a <a href="../mann/scenariodb.html">scenariodb(n)</a> object,
+for readonly mode using an SQLite3 authorizer command and the executes the
+given athenadb(n) subcommand in that context.  Thus, to process an SQL
+query with no danger that it will modify the database, one can write code
+like this:
+
+</p><pre class="example">
+# Do this
+puts [$myathenadb safe query $sql]
+
+# Not this
+puts [$myathenadb query $sql]
+</pre>
+<p>The <a class="iref" href="#safe">safe</a> command will work with any athenadb(n) subcommand, but it's
+intended primarily for use with <a class="iref" href="#eval">eval</a>, <a class="iref" href="#exists">exists</a>,
+<a class="iref" href="#onecolumn">onecolumn</a>, and <a class="iref" href="#query">query</a>.
+
+</p>
+
+</dd>
+<dt class="defitem"><a name="savetemp"><i>obj</i> savetemp <i>filename</i></a></dt><dd><p>
+
+Saves the scenario to disk as an <span class="tt">.adb</span> file called <i>filename</i>.  
+Any existing file of the same name is deleted.  The state of the 
+loaded scenario is completely unchanged.</p>
+
+<p>On failure, throws "<span class="tt">ATHENA SAVE</span>".
+
+</p>
+</dd>
+<dt class="defitem"><a name="schema"><i>obj</i> schema ...</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="scratch"><i>obj</i> scratch ?<i>args...</i>?</a></dt><dd>
+
+Called with no arguments, returns the <span class="tt">-scratch</span> directory.  Any
+arguments are joined to the scratch directory as by <span class="tt">file join</span>, and
+the resulting path is returned.
+
+</dd>
+<dt class="defitem"><a name="send"><i>obj</i> send</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/order_flunky.html">order_flunky(n)</a> 
+component.
+
+</dd>
+<dt class="defitem"><a name="tables"><i>obj</i> tables ...</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+<dt class="defitem"><a name="tkloaded"><i>obj</i> tkloaded</a></dt><dd>
+
+Returns 1 if Tk is loaded, and 0 otherwise.
+
+</dd>
+<dt class="defitem"><a name="ungrab"><i>obj</i> ungrab ...</a></dt><dd>
+This command is delegated to the underlying <a href="../mann/scenariodb.html">scenariodb(n)</a> object.
+
+</dd>
+</dl>
+
+<h2><a name="components">COMPONENTS</a></h2>
+<p>The following components are exposed as athenadb(n) subcommands.  See
+the code for details of their APIs.  Note that <a href="../mann/athena.html">athena(n)</a> documents
+those component subcommands which are made available by the public 
+facade.
+
+</p>
+
+<table class="table topiclist">
+<tr>
+<th>Component</th> 
+<th>Subcommand</th>
+</tr>
+        
+<tr class="tr-even">
+<td>aam</td>
+<td>
+        
+</td></tr><tr class="tr-odd">
+<td>abevent</td>
+<td>
+        
+</td></tr><tr class="tr-even">
+<td>absit</td>
+<td>
+        
+</td></tr><tr class="tr-odd">
+<td>activity</td>
+<td>
+        
+</td></tr><tr class="tr-even">
+<td>actor</td>
+<td>
+        
+</td></tr><tr class="tr-odd">
+<td>agent</td>
+<td>
+        
+</td></tr><tr class="tr-even">
+<td>agent</td>
+<td>
+        
+</td></tr><tr class="tr-odd">
+<td>aram</td>
+<td>
+        
+</td></tr><tr class="tr-even">
+<td>autogen</td>
+<td>
+        
+</td></tr><tr class="tr-odd">
+<td>background</td>
+<td>
+                 
+</td></tr><tr class="tr-even">
+<td>bgslave</td>
+<td>
+                 
+</td></tr><tr class="tr-odd">
+<td>broadcast</td>
+<td>
+        
+</td></tr><tr class="tr-even">
+<td>bsys</td>
+<td>
+                   
+</td></tr><tr class="tr-odd">
+<td>cap</td>
+<td>
+                    
+</td></tr><tr class="tr-even">
+<td>cash</td>
+<td>
+                   
+</td></tr><tr class="tr-odd">
+<td>civgroup</td>
+<td>
+               
+</td></tr><tr class="tr-even">
+<td>control</td>
+<td>
+                
+</td></tr><tr class="tr-odd">
+<td>control_model</td>
+<td>
+          
+</td></tr><tr class="tr-even">
+<td>coop</td>
+<td>
+                   
+</td></tr><tr class="tr-odd">
+<td>coverage_model</td>
+<td>
+         
+</td></tr><tr class="tr-even">
+<td>curse</td>
+<td>
+                  
+</td></tr><tr class="tr-odd">
+<td>demog</td>
+<td>
+                  
+</td></tr><tr class="tr-even">
+<td>econ</td>
+<td>
+                   
+</td></tr><tr class="tr-odd">
+<td>executive</td>
+<td>
+              
+</td></tr><tr class="tr-even">
+<td>exporter</td>
+<td>
+               As <span class="tt">export</span></td>
+</tr>
+        
+<tr class="tr-odd">
+<td>flunky</td>
+<td>
+                 As <span class="tt">order</span></td>
+</tr>
+        
+<tr class="tr-even">
+<td>frcgroup</td>
+<td>
+               
+</td></tr><tr class="tr-odd">
+<td>gofer</td>
+<td>
+                  
+</td></tr><tr class="tr-even">
+<td>group</td>
+<td>
+                  
+</td></tr><tr class="tr-odd">
+<td>hist</td>
+<td>
+                   
+</td></tr><tr class="tr-even">
+<td>hook</td>
+<td>
+                   
+</td></tr><tr class="tr-odd">
+<td>hrel</td>
+<td>
+                   
+</td></tr><tr class="tr-even">
+<td>inject</td>
+<td>
+                 
+</td></tr><tr class="tr-odd">
+<td>iom</td>
+<td>
+                    
+</td></tr><tr class="tr-even">
+<td>map</td>
+<td>
+                    
+</td></tr><tr class="tr-odd">
+<td>nbhood</td>
+<td>
+                 
+</td></tr><tr class="tr-even">
+<td>nbrel</td>
+<td>
+                  
+</td></tr><tr class="tr-odd">
+<td>orggroup</td>
+<td>
+               
+</td></tr><tr class="tr-even">
+<td>parmdb</td>
+<td>
+                 
+</td></tr><tr class="tr-odd">
+<td>paster</td>
+<td>
+                 As <span class="tt">paste</span></td>
+</tr>
+        
+<tr class="tr-even">
+<td>payload</td>
+<td>
+                
+</td></tr><tr class="tr-odd">
+<td>personnel</td>
+<td>
+              
+</td></tr><tr class="tr-even">
+<td>plant</td>
+<td>
+                  
+</td></tr><tr class="tr-odd">
+<td>pot</td>
+<td>
+                    As <span class="tt">bean</span></td>
+</tr>
+        
+<tr class="tr-even">
+<td>ptype</td>
+<td>
+                  
+</td></tr><tr class="tr-odd">
+<td>rdb</td>
+<td>
+                    
+</td></tr><tr class="tr-even">
+<td>ruleset</td>
+<td>
+                
+</td></tr><tr class="tr-odd">
+<td>sanity</td>
+<td>
+                 
+</td></tr><tr class="tr-even">
+<td>sat</td>
+<td>
+                    
+</td></tr><tr class="tr-odd">
+<td>security_model</td>
+<td>
+         
+</td></tr><tr class="tr-even">
+<td>service</td>
+<td>
+                
+</td></tr><tr class="tr-odd">
+<td>sigevent</td>
+<td>
+               
+</td></tr><tr class="tr-even">
+<td>sim</td>
+<td>
+                    
+</td></tr><tr class="tr-odd">
+<td>simclock</td>
+<td>
+               As <span class="tt">clock</span></td>
+</tr>
+        
+<tr class="tr-even">
+<td>stance</td>
+<td>
+                 
+</td></tr><tr class="tr-odd">
+<td>strategy</td>
+<td>
+               
+</td></tr><tr class="tr-even">
+<td>unit</td>
+<td>
+                   
+</td></tr><tr class="tr-odd">
+<td>vrel</td>
+<td>
+                   
+
+</td></tr></table>
+        
+
+
+
+<h2><a name="sql_functions">SQL FUNCTIONS</a></h2>
+<p>athenadb(n) defines many SQL functions for use in database queries.  
+See <a href="../mann/athena.html">athena(n)</a> for details.
+
+</p>
+
+<h2><a name="author">AUTHOR</a></h2>
+<p>Will Duquette
+
+</p>
+
+<h2><a name="history">HISTORY</a></h2>
+<p>New package derived from Athena internals.
+
+</p>
+
+<hr>
+<p><i>athena 6.3.3 Man page generated by manpage(n) on 
+Fri Nov 20 09:48:56 PST 2015</i>
+</p>
+
+</body>
+</html>
+    
+
+
+
+
+
