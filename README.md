@@ -1,7 +1,7 @@
 athena
 ======
 
-Athena Regional Stability Simulation.  Athena is a decision support model of political, economic, and military actors and the effects of their operations on the civilian population of a war-torn region.  See [Documentation Tree](http://htmlpreview.github.io/?https://github.com/AthenaModel/athena/blob/master/docs/developer.html) for more information.
+Athena Regional Stability Simulation.  Athena is a decision support model of political, economic, and military actors and the effects of their operations on the civilian population of a war-torn region.  See the Athena [Documentation Tree](http://htmlpreview.github.io/?https://github.com/AthenaModel/athena/blob/master/docs/developer.html) for more information.
 
 ## License
 
