@@ -10,8 +10,6 @@ teapot.txt
 *.exe
 /bin/*-linux
 /bin/*-macosx*
-/docs/*.html
-/docs/*/*.html
 /docs/~*
 /htdocs/arachne.html
 /htdocs/index.html
