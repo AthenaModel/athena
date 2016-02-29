@@ -234,7 +234,7 @@
         enum a -listcmd {$adb_ ptype a+self+none names} -defvalue SELF
 
         rcc "Message ID:" -for iom
-        enumlong iom -showkeys yes -dictcmd {$adb iom normal namedict}
+        enumlong iom -showkeys yes -dictcmd {$adb_ iom normal namedict}
 
         rcc "Prep. Cost:"
         text cost
